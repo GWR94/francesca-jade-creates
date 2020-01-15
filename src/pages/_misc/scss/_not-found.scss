@@ -1,0 +1,35 @@
+.not-found__background {
+  background: $off-white;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  justify-items: center;
+}
+
+.not-found__error-text {
+  font-size: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.not-found__oops {
+  font-size: 80px;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.not-found__link {
+  font-size: 24px;
+  color: $black;
+  text-align: center;
+}
+
+.not-found__box {
+  border: 2px solid black;
+  margin: 0 auto;
+  background: white;
+  padding: 15px 30px;
+  border-radius: 15px;
+}
