@@ -1,0 +1,146 @@
+.landing__image-container {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  z-index: 1;
+  margin-top: -6px;
+}
+
+.landing__image {
+  height: auto;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 1;
+  @media (max-width: $s-breakpoint) {
+    height: 40vh;
+    width: auto;
+    margin-left: -50%;
+  }
+}
+
+.landing__logo {
+  background: none;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 60px;
+  left: 20px;
+}
+
+.landing__info {
+  border: 4px solid $light-pink;
+  border-radius: 5px;
+  width: 45vw;
+  margin: -140px auto 0;
+  background: white;
+  z-index: 2;
+  position: relative;
+  padding: 20px 40px;
+  @media (max-width: $md-breakpoint) {
+    width: 75vw;
+    padding: 10px 20px;
+    margin: -60px auto 0;
+  }
+}
+
+%button__home {
+  margin: 0 4px;
+  width: 140px;
+  font-size: 15px;
+  font-family: $title-font;
+}
+
+.button__cakes {
+  @extend %button__home;
+  border-color: $purple;
+  color: $purple;
+  &:hover {
+    border-color: $purple;
+    background: $purple;
+  }
+}
+.button__creations {
+  @extend %button__home;
+  border-color: $sky-blue;
+  color: $sky-blue;
+  &:hover {
+    border-color: $sky-blue;
+    background: $sky-blue;
+  }
+}
+
+.home__container {
+  padding-top: 60px;
+  width: 82vw;
+  margin: -20px auto 0;
+  background: white;
+}
+
+.landing__creates,
+.landing__cakes {
+  display: inline-flex;
+}
+
+%landing__icon {
+  font-size: 22px;
+  padding-right: 30px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.landing__creates-icon {
+  @extend %landing__icon;
+  color: $sky-blue;
+}
+
+.landing__cakes-icon {
+  @extend %landing__icon;
+  color: $purple;
+}
+
+.landing__title {
+  font-family: $header-font;
+  color: $pink;
+  font-size: 50px;
+  padding: 16px 0;
+  text-align: center;
+  @media screen and (max-width: $l-breakpoint) {
+    font-size: 36px;
+  }
+  @media screen and (max-width: $md-breakpoint) {
+    font-size: 32px;
+  }
+}
+
+.landing__buttons {
+  margin-top: 8px;
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.landing__text {
+  font-size: 18px;
+  font-family: $title-font;
+  margin: 7px 0;
+  @media screen and (max-width: $md-breakpoint) {
+    font-size: 16px;
+  }
+}
+
+.landing__subtitle {
+  font-family: $title-font;
+  font-size: 40px;
+  color: $pink;
+}
+
+.landing__container {
+  background: #fff;
+  margin: 40px auto 0;
+  padding: 40px;
+  border: 2px solid $light-pink;
+  border-radius: 10px;
+  @media screen and (max-width: $l-breakpoint) {
+    padding: 20px;
+  }
+}

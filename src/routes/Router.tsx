@@ -5,8 +5,11 @@ import { createBrowserHistory } from "history";
  * import { Provider } from "react-redux";
  * Optional react-redux import
  */
-import Home from "../pages/home/components/Home";
-import NotFoundPage from "../pages/_misc/components/NotFoundPage";
+import Home from "../pages/HomePage";
+import NotFoundPage from "../pages/NotFoundPage";
+import CreatesPage from "../pages/CreatesPage";
+import AccountsPage from "../pages/AccountsPage";
+import NavBar from "../components/NavBar";
 /**
  * import other components...
  */
@@ -15,8 +18,11 @@ export const history = createBrowserHistory();
 
 const AppRouter: FC = (): JSX.Element => (
   <Router history={history}>
+    <NavBar />
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" exact component={Home} />
+      <Route path="/creates" component={CreatesPage} />
+      <Route path="/account" component={AccountsPage} />
       <Route component={NotFoundPage} />
     </Switch>
   </Router>

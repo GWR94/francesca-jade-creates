@@ -13,7 +13,7 @@
         },
         "categories": {
             "auth": {
-                "francescajadecreates71924f06": {
+                "francescajadecreates0ab7f115": {
                     "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\",\"client_id\":\"3322422957832312\",\"client_secret\":\"37aaa46327210e3959fe554dedca8a0f\"},{\"ProviderName\":\"Google\",\"client_id\":\"623764640437-32v09c3trgih8d5tfiknjkqs24b7r1ai.apps.googleusercontent.com\",\"client_secret\":\"XactNy8uDXCbTx7Eb-dO_qQw\"},{\"ProviderName\":\"LoginWithAmazon\",\"client_id\":\"amzn1.application-oa2-client.93cd208e7df94957b4678f4c511e9d5c\",\"client_secret\":\"d9e2eb8af1049c3e21c7cfce51149fb9fa28cf3c4a887b676fde5198b340e8ee\"}]"
                 }
             }

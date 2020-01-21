@@ -17,13 +17,16 @@
   },
   "rules": {
     "@typescript-eslint/no-var-requires": "off",
-    "no-nested-ternary": "off",
-    "no-shadow": "off",
-    "no-unused-expressions": "off",
-    "react/jsx-one-expression-per-line": "off",
     "jsx-a11y/click-events-have-key-events": "off",
+    "no-console": "off",
     "no-param-reassign": "off",
-    "no-plusplus": "off"
+    "no-plusplus": "off",
+    "no-nested-ternary": "off",
+    "no-unused-expressions": "off",
+    "no-shadow": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/prop-types": "off",
+    "react/no-array-index-key": "off"
   },
   "settings": {
     "react": {

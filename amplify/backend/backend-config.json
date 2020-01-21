@@ -1,6 +1,6 @@
 {
 	"auth": {
-		"francescajadecreates71924f06": {
+		"francescajadecreates0ab7f115": {
 			"service": "Cognito",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": []
@@ -16,11 +16,18 @@
 					"defaultAuthentication": {
 						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
 						"userPoolConfig": {
-							"userPoolId": "authfrancescajadecreates71924f06"
+							"userPoolId": "authfrancescajadecreates0ab7f115"
 						}
 					}
 				}
 			}
+		}
+	},
+	"function": {},
+	"storage": {
+		"francescajadecreates": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
 		}
 	}
 }

@@ -8,9 +8,9 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 module.exports = () => {
   const isProduction = process.env.NODE_ENV === "production";
   return {
-    entry: ["./src/app.tsx"],
+    entry: ["./src/index.tsx"],
     resolve: {
-      extensions: [".ts", ".tsx", ".js", ".jsx"],
+      extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx"],
     },
     output: {
       path: path.join(__dirname, "dist"),
@@ -50,6 +50,7 @@ module.exports = () => {
           test: /\.js$/,
           use: ["source-map-loader"],
           enforce: "pre",
+          exclude: [path.resolve(__dirname, "./node_modules")],
         },
         {
           test: /\.(sa|sc|c)ss$/,
@@ -65,7 +66,7 @@ module.exports = () => {
           ],
         },
         {
-          test: /\.(jpg|jpeg|png|gif|svg|pdf|ico)$/i,
+          test: /\.(jpg|jpeg|png|gif|svg|pdf|ico|eot|woff|ttf)$/i,
           loader: "file-loader?name=[path][hash].[ext]",
         },
         {
@@ -89,6 +90,7 @@ module.exports = () => {
     devServer: {
       contentBase: path.join(__dirname, "public"),
       historyApiFallback: true,
+      port: 3000,
       // Using a API/Server?
       // proxy: {
       //   "/api/*": {

@@ -14,6 +14,7 @@ export const getProduct = `query GetProduct($id: ID!) {
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -36,6 +37,7 @@ export const listProducts = `query ListProducts(
       price
       shippingCost
       type
+      tags
       owner
     }
     nextToken
@@ -49,6 +51,7 @@ export const getUser = `query GetUser($id: ID!) {
     email
     name
     registered
+    admin
     orders {
       items {
         id
@@ -83,6 +86,7 @@ export const searchProducts = `query SearchProducts(
       price
       shippingCost
       type
+      tags
       owner
     }
     nextToken

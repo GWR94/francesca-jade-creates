@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "francescajadecreates71924f06_identitypool_71924f06",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "france71924f06",
-    "userPoolName": "francescajadecreates71924f06_userpool_71924f06",
+    "identityPoolName": "francescajadecreates0ab7f115_identitypool_0ab7f115",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "france0ab7f115",
+    "userPoolName": "francescajadecreates0ab7f115_userpool_0ab7f115",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -18,8 +18,7 @@
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-        "email",
-        "name"
+        "email"
     ],
     "userpoolClientGenerateSecret": true,
     "userpoolClientRefreshTokenValidity": 30,
@@ -29,9 +28,9 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "france71924f06_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "france0ab7f115_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "resourceName": "francescajadecreates71924f06",
+    "resourceName": "francescajadecreates0ab7f115",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -47,22 +46,14 @@
     },
     "useDefault": "defaultSocial",
     "hostedUI": true,
-    "usernameAttributes": [
-        "email"
-    ],
-    "triggers": "{}",
     "hostedUIDomainName": "francescajadecreates",
     "authProvidersUserPool": [
         "Facebook",
         "Google",
         "LoginWithAmazon"
     ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"name\":\"name\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"name\":\"name\",\"username\":\"sub\"}},{\"ProviderName\":\"LoginWithAmazon\",\"authorize_scopes\":\"profile profile:user_id\",\"AttributeMapping\":{\"email\":\"email\",\"name\":\"name\",\"username\":\"user_id\"}}]",
+    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}},{\"ProviderName\":\"LoginWithAmazon\",\"authorize_scopes\":\"profile profile:user_id\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"user_id\"}}]",
     "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/auth/login/\",\"https://www.francescajadecreates.co.uk/auth/login/\"],\"LogoutURLs\":[\"http://localhost:3000/auth/logout/\",\"https://www.francescajadecreates.co.uk/auth/logout/\"]}",
     "userPoolGroupList": [],
-    "parentStack": {
-        "Ref": "AWS::StackId"
-    },
-    "permissions": [],
     "dependsOn": []
 }

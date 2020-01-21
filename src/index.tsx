@@ -2,7 +2,10 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
+import Amplify from "aws-amplify";
+import awsExports from "./aws-exports";
 import AppRouter from "./routes/Router";
+import "./scss/styles.scss";
 
 /**
  * ? Optional Redux DevTools ?
@@ -12,6 +15,8 @@ import AppRouter from "./routes/Router";
  *   }
  * }
  */
+
+Amplify.configure(awsExports);
 
 const App: FC = (): JSX.Element => (
   <div id="app">

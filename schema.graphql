@@ -24,6 +24,7 @@ type User
   email: String!
   name: String
   registered: Boolean
+  admin: Boolean
   orders: [Order] @connection(name: "UserOrders")
 }
 

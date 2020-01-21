@@ -14,6 +14,7 @@ export const onCreateProduct = `subscription OnCreateProduct($owner: String!) {
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -31,6 +32,7 @@ export const onUpdateProduct = `subscription OnUpdateProduct($owner: String!) {
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -48,6 +50,7 @@ export const onDeleteProduct = `subscription OnDeleteProduct($owner: String!) {
     price
     shippingCost
     type
+    tags
     owner
   }
 }

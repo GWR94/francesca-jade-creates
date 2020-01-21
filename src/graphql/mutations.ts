@@ -17,6 +17,7 @@ export const createProduct = `mutation CreateProduct(
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -37,6 +38,7 @@ export const updateProduct = `mutation UpdateProduct(
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -57,6 +59,7 @@ export const deleteProduct = `mutation DeleteProduct(
     price
     shippingCost
     type
+    tags
     owner
   }
 }
@@ -71,6 +74,7 @@ export const registerUser = `mutation RegisterUser(
     email
     name
     registered
+    admin
     orders {
       items {
         id
@@ -91,6 +95,7 @@ export const updateUser = `mutation UpdateUser(
     email
     name
     registered
+    admin
     orders {
       items {
         id
@@ -119,6 +124,7 @@ export const createOrder = `mutation CreateOrder(
       price
       shippingCost
       type
+      tags
       owner
     }
     user {
@@ -127,6 +133,7 @@ export const createOrder = `mutation CreateOrder(
       email
       name
       registered
+      admin
       orders {
         nextToken
       }
