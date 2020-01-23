@@ -1,125 +1,160 @@
 import React, { Component } from "react";
-import { API, graphqlOperation, Auth, Hub } from "aws-amplify";
-import { Authenticator } from "aws-amplify-react";
-import { Tabs, Tab } from "@blueprintjs/core";
-import { getUser } from "../graphql/queries";
-import { registerUser } from "../graphql/mutations";
+import { API, graphqlOperation } from "aws-amplify";
+import { listProducts } from "../graphql/queries";
 import NewProduct from "../components/NewProduct";
 import Profile from "../components/Profile";
-import Products from "../components/Products";
+import Products from "../components/ProductsList";
 import background from "../img/background.jpg";
+import {
+  onUpdateProduct,
+  onCreateProduct,
+  onDeleteProduct,
+} from "../graphql/subscriptions";
+import { ProductProps } from "../interfaces/Product.i";
+import Loading from "../components/Loading";
 
-interface State {
-  user: any;
-  admin: boolean;
-  selectedTab: "profile" | "current" | "new";
+interface AccountsState {
+  show: "profile" | "products" | "create";
+  products: ProductProps[];
+  isLoading: boolean;
 }
 
-export default class AccountsPage extends Component<{}, State> {
-  public readonly state: State = {
-    user: null,
-    admin: false,
-    selectedTab: "new", // ! CHANGE LATER
+interface AccountsProps {
+  user: any;
+  admin: boolean;
+}
+
+export default class AccountsPage extends Component<AccountsProps, AccountsState> {
+  public readonly state: AccountsState = {
+    show: "profile",
+    products: null,
+    isLoading: true,
   };
 
-  public componentDidMount(): void {
-    this.getUserData();
-    Hub.listen("auth", this.onHubCapsule);
+  private updateProductListener;
+
+  private deleteProductListener;
+
+  private createProductListener;
+
+  public async componentDidMount(): Promise<void> {
+    await this.handleGetProducts();
+    this.createSubscriptions();
   }
 
-  public getUserData = async (): Promise<void> => {
-    const authUser = await Auth.currentAuthenticatedUser();
-    const { data } = await API.graphql(
-      graphqlOperation(getUser, { id: authUser.attributes.sub }),
-    );
-    authUser
-      ? this.setState({ user: authUser, admin: data.getUser.admin })
-      : this.setState({ user: null });
-  };
+  public componentWillUnmount(): void {
+    this.updateProductListener.unsubscribe();
+    this.deleteProductListener.unsubscribe();
+    this.createProductListener.unsubscribe();
+  }
 
-  public registerNewUser = async (signInData): Promise<void> => {
-    const getUserInput = {
-      id: signInData.signInUserSession.idToken.payload.sub,
-    };
-    const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
-    if (!data.getUser) {
-      try {
-        const registerUserInput = {
-          ...getUserInput,
-          username: signInData.username,
-          email: signInData.signInUserSession.idToken.payload.email,
-          registered: true,
-        };
-        const newUser = await API.graphql(
-          graphqlOperation(registerUser, {
-            input: registerUserInput,
-          }),
+  private createSubscriptions = (): void => {
+    const { products } = this.state;
+    const { user } = this.props;
+    const {
+      attributes: { sub },
+    } = user;
+
+    this.createProductListener = API.graphql(
+      graphqlOperation(onCreateProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        console.log(products);
+        const createdProduct = productData.value.data.onCreateProduct;
+        const prevProducts = products.filter(
+          (item): boolean => item.id !== createdProduct.id,
         );
-        console.log(newUser);
-      } catch (err) {
-        console.error("error registering new user", err);
-      }
-    }
+        const updatedProducts = [createdProduct, ...prevProducts];
+        this.setState({ products: updatedProducts });
+      },
+    });
+
+    this.updateProductListener = API.graphql(
+      graphqlOperation(onUpdateProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        const updatedProduct = productData.value.data.onUpdateProduct;
+        const updatedProductIdx = products.findIndex(
+          (item): boolean => item.id === updatedProduct.id,
+        );
+        const updatedProducts = [
+          ...products.slice(0, updatedProductIdx),
+          updatedProduct,
+          ...products.slice(updatedProductIdx + 1),
+        ];
+        this.setState({ products: updatedProducts });
+      },
+    });
+
+    this.deleteProductListener = API.graphql(
+      graphqlOperation(onDeleteProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        const deletedProduct = productData.value.data.onDeleteProduct;
+        const updatedProducts = products.filter(
+          (item): boolean => item.id !== deletedProduct.id,
+        );
+        this.setState({ products: updatedProducts });
+      },
+    });
   };
 
-  private onHubCapsule = (capsule): void => {
-    switch (capsule.payload.event) {
-      case "signIn":
-        console.log("Signed in");
-        this.getUserData();
-        this.registerNewUser(capsule.payload.data);
-        break;
-      case "signUp":
-        console.log("Signed up");
-        break;
-      case "signOut":
-        console.log("Signed out");
-        this.setState({ user: null });
-        break;
+  private getCurrentPage = (): JSX.Element => {
+    const { show, products } = this.state;
+    switch (show) {
+      case "profile":
+        return <Profile />;
+      case "products":
+        return <Products products={products} />;
+      case "create":
+        return <NewProduct onCancel={(): void => this.setState({ show: "products" })} />;
       default:
-        break;
+        return null;
     }
   };
 
-  public handleTabChange = (selectedTab): void => this.setState({ selectedTab });
+  private handleGetProducts = async (): Promise<void> => {
+    const { data } = await API.graphql(graphqlOperation(listProducts));
+    this.setState({ products: data.listProducts.items, isLoading: false });
+  };
 
   public render(): JSX.Element {
-    const { user, admin, selectedTab } = this.state;
-    return (
+    const { isLoading } = this.state;
+    return isLoading ? (
+      <Loading size={100} />
+    ) : (
       <div
         style={{
           background: `url(${background}) no-repeat center center fixed`,
         }}
       >
-        {!user ? (
-          <Authenticator />
-        ) : (
-          <div className="content-container">
-            <Tabs
-              id="accountsTabs"
-              className="account__tabs-container"
-              onChange={this.handleTabChange}
-              selectedTabId={selectedTab}
-            >
-              <Tab id="profile" title="Profile" panel={<Profile />} />
-
-              {admin ? (
-                <Tab id="current" title="Current Products" panel={<Products />} />
-              ) : (
-                <Tab id="orders" title="My Orders" panel={<Orders />} />
-              )}
-              {admin && (
-                <Tab
-                  id="new"
-                  title="Create Product"
-                  panel={
-                    <NewProduct onCancel={(): void => this.handleTabChange("profile")} />
-                  }
-                />
-              )}
-            </Tabs>
+        <div className="content-container">
+          <div
+            className="accounts__tab"
+            onClick={(): void => this.setState({ show: "profile" })}
+            role="button"
+            tabIndex={0}
+          >
+            Profile
           </div>
-        )}
+          <div
+            className="accounts__tab"
+            onClick={(): void => this.setState({ show: "products" })}
+            role="button"
+            tabIndex={0}
+          >
+            Products
+          </div>
+          <div
+            className="accounts__tab"
+            onClick={(): void => this.setState({ show: "create" })}
+            role="button"
+            tabIndex={0}
+          >
+            Create Product
+          </div>
+          {this.getCurrentPage()}
+        </div>
       </div>
     );
   }

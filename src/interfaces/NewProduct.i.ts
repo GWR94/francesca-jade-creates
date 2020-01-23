@@ -1,7 +1,3 @@
-export interface NewProductProps {
-  onCancel: () => void;
-}
-
 export interface NewProductState {
   title: string;
   description: string;
@@ -18,6 +14,10 @@ export interface NewProductState {
   confirmDialogOpen: boolean;
   percentUploaded: number;
   tags: string[];
+}
+
+export interface NewProductProps {
+  onCancel: () => void;
 }
 
 interface Image {

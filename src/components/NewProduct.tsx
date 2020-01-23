@@ -10,8 +10,6 @@ import {
   Switch,
   Callout,
   Button,
-  Toaster,
-  Position,
   TagInput,
 } from "@blueprintjs/core";
 import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
@@ -26,14 +24,11 @@ import ConfirmDialog from "./ConfirmDialog";
 import { getUser } from "../graphql/queries";
 import awsExports from "../aws-exports";
 import { S3ObjectInput } from "../API";
-
-const AppToaster = Toaster.create({
-  position: Position.TOP,
-});
+import { Toaster } from "../utils/index";
 
 const initialState: NewProductState = {
-  title: "Hello test ",
-  description: "Hello test Hello test Hello test Hello test Hello test Hello test ",
+  title: "",
+  description: "",
   type: "Cake",
   setPrice: false,
   productCost: "",
@@ -64,9 +59,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
     );
   };
 
-  private handleTagChange = (tags): void => {
-    this.setState({ tags });
-  };
+  private handleTagChange = (tags): void => this.setState({ tags });
 
   private handleProductCheck = (): void => {
     const { title, description, image } = this.state;
@@ -90,7 +83,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       });
     }
     if (errors) {
-      AppToaster.show({
+      Toaster.show({
         intent: "danger",
         message: "Please fix the highlighted errors before continuing",
       });
@@ -108,6 +101,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       productCost,
       setPrice,
       type,
+      tags,
     } = this.state;
     try {
       this.setState({ isUploading: true });
@@ -116,14 +110,13 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         graphqlOperation(getUser, { id: data.attributes.sub }),
       );
       if (!user.data.getUser.admin) {
-        AppToaster.show({
+        Toaster.show({
           intent: "danger",
           message: `You do not have the correct privileges to complete this action.
           Speak to an admin if you think this is a mistake.`,
         });
         return;
       }
-      console.log(image);
       const { identityId } = await Auth.currentCredentials();
       const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
       const uploadedFile = await Storage.put(filename, image.file, {
@@ -146,18 +139,18 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
         shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
         type,
+        tags,
       };
-      const res = await API.graphql(graphqlOperation(createProduct, { input }));
-      console.log("Created Product", res);
-      AppToaster.show({
+      await API.graphql(graphqlOperation(createProduct, { input }));
+      Toaster.show({
         intent: "success",
-        message: "Product successfully added!",
+        message: `${title} has been successfully added!`,
       });
       this.setState({ ...initialState });
     } catch (err) {
-      AppToaster.show({
+      Toaster.show({
         intent: "danger",
-        message: `Error adding product.
+        message: `Error adding ${title}.
         Please try again.`,
       });
       this.setState({ isUploading: false });
@@ -231,106 +224,109 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
               <Radio label="Card" value="Card" />
               <Radio label="Frame" value="Frame" />
             </RadioGroup>
+
+            <Callout
+              title="Is there a set price?"
+              intent="primary"
+              className="product__callout"
+            >
+              You can set a price if there is one set, or turn the switch off to set no
+              price, where the customer can contact you for an estimated price.
+              <Switch
+                checked={setPrice}
+                large
+                className="text-center"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                  this.setState({ setPrice: e.target.checked })
+                }
+              />
+            </Callout>
+            {setPrice && (
+              <>
+                <FormGroup className="product__form" label="Pricing:">
+                  <InputGroup
+                    leftIcon="euro"
+                    placeholder="Product price..."
+                    min={0.5}
+                    type="number"
+                    value={productCost}
+                    className="product__form-item"
+                    onChange={(e): void => this.handleFormItem(e, "productCost")}
+                  />
+                  <InputGroup
+                    leftIcon="envelope"
+                    placeholder="Shipping cost..."
+                    min={0.5}
+                    type="number"
+                    className="product__form-item"
+                    value={shippingCost}
+                    onChange={(e): void => this.handleFormItem(e, "shippingCost")}
+                  />
+                </FormGroup>
+              </>
+            )}
+            <FormGroup label="Tags:" labelInfo="(optional)" className="product__form">
+              <TagInput
+                leftIcon="tag"
+                onChange={this.handleTagChange}
+                rightElement={clearButton}
+                placeholder="Add tags by clicking enter..."
+                values={tags}
+              />
+            </FormGroup>
+
+            {imagePreview && (
+              <img
+                className="product__image-preview"
+                src={imagePreview}
+                alt="Product Preview"
+              />
+            )}
+
+            <PhotoPicker
+              title={imagePreview ? "Change Image" : "Product Image"}
+              preview="hidden"
+              headerHint="You can add multiple images once the product has been created."
+              headerText="Add a photo of your product"
+              onLoad={(url): void =>
+                this.setState({ imagePreview: url, imageError: null })
+              }
+              onPick={(file): void => this.setState({ image: file })}
+              theme={{
+                formContainer: {
+                  margin: 0,
+                  padding: "0.8em",
+                },
+                formSection: {
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  boxShadow: imageError
+                    ? "1px 1px 4px 0 rgba(240, 24, 24, 0.65)"
+                    : "1px 1px 4px 0 rgba(0, 0, 0, 0.35)",
+                  marginBottom: 0,
+                  minWidth: "220px",
+                },
+                sectionBody: {
+                  display: "none",
+                },
+                sectionHeader: {
+                  padding: "0.2em",
+                  color: "#fd4ef2",
+                  textAlign: "center",
+                },
+                photoPickerButton: {
+                  background: "#ff80f7",
+                },
+              }}
+            />
+            {imageError && (
+              <p style={{ color: "#c23030", fontSize: "12px" }}>{imageError}</p>
+            )}
           </div>
 
-          <Callout
-            title="Is there a set price?"
-            intent="primary"
-            className="product__callout"
-          >
-            You can set a price if there is one set, or turn the switch off to set no
-            price, where the customer can contact you for an estimated price.
-            <Switch
-              checked={setPrice}
-              large
-              className="text-center"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                this.setState({ setPrice: e.target.checked })
-              }
-            />
-          </Callout>
-          {setPrice && (
-            <>
-              <FormGroup className="product__form" label="Pricing:">
-                <InputGroup
-                  leftIcon="euro"
-                  placeholder="Product price..."
-                  min={0.5}
-                  type="number"
-                  value={productCost}
-                  className="product__form-item"
-                  onChange={(e): void => this.handleFormItem(e, "productCost")}
-                />
-                <InputGroup
-                  leftIcon="envelope"
-                  placeholder="Shipping cost..."
-                  min={0.5}
-                  type="number"
-                  className="product__form-item"
-                  value={shippingCost}
-                  onChange={(e): void => this.handleFormItem(e, "shippingCost")}
-                />
-              </FormGroup>
-            </>
-          )}
-          <FormGroup label="Tags:" labelInfo="(optional)" className="product__form">
-            <TagInput
-              leftIcon="tag"
-              onChange={this.handleTagChange}
-              rightElement={clearButton}
-              placeholder="Add tags by clicking enter..."
-              values={tags}
-            />
-          </FormGroup>
-
-          {imagePreview && (
-            <img
-              className="product__image-preview"
-              src={imagePreview}
-              alt="Product Preview"
-            />
-          )}
-
-          <PhotoPicker
-            title={imagePreview ? "Change Image" : "Product Image"}
-            preview="hidden"
-            headerHint="You can add multiple images once the product has been created."
-            headerText="Add a photo of your product"
-            onLoad={(url): void => this.setState({ imagePreview: url, imageError: null })}
-            onPick={(file): void => {
-              this.setState({ image: file });
-            }}
-            theme={{
-              formContainer: {
-                margin: 0,
-                padding: "0.8em",
-              },
-              formSection: {
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: imageError
-                  ? "1px 1px 4px 0 rgba(240, 24, 24, 0.65)"
-                  : "1px 1px 4px 0 rgba(0, 0, 0, 0.35)",
-                marginBottom: 0,
-              },
-              sectionBody: {
-                display: "none",
-              },
-              sectionHeader: {
-                padding: "0.2em",
-                color: "#fd4ef2",
-                textAlign: "center",
-              },
-              photoPickerButton: {
-                background: "#ff80f7",
-              },
-            }}
-          />
-          {imageError && (
-            <p style={{ color: "#c23030", fontSize: "12px" }}>{imageError}</p>
-          )}
           <div>
             <Button
               text="Cancel"
