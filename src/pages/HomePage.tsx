@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import NavBar from "../components/NavBar";
 import background from "../img/background.jpg";
 import Landing from "../components/Landing";
 

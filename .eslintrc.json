@@ -26,7 +26,8 @@
     "no-shadow": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/prop-types": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }]
   },
   "settings": {
     "react": {

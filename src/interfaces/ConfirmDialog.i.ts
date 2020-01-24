@@ -1,3 +1,5 @@
+import { ProductProps } from "./Product.i";
+
 export interface ConfirmDialogProps {
   confirmDialogOpen: boolean;
   title: string;
@@ -11,4 +13,7 @@ export interface ConfirmDialogProps {
   onProductCreate: () => void;
   closeModal: () => void;
   tags: string[];
+  product: ProductProps;
+  percentUploaded: number;
+  update: boolean;
 }

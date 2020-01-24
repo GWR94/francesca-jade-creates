@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
+import { Authenticator } from "aws-amplify-react";
 import Home from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import CreatesPage from "../pages/CreatesPage";
@@ -11,7 +12,6 @@ import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState } from "../interfaces/Router.i";
 import CakesPage from "../pages/CakesPage";
-import { Authenticator } from "aws-amplify-react";
 
 export const history = createBrowserHistory();
 export const UserContext = React.createContext(null);

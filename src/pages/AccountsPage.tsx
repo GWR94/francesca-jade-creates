@@ -14,7 +14,7 @@ import { ProductProps } from "../interfaces/Product.i";
 import Loading from "../components/Loading";
 
 interface AccountsState {
-  show: "profile" | "products" | "create";
+  show: "profile" | "products" | "create" | "orders";
   products: ProductProps[];
   isLoading: boolean;
 }
@@ -26,7 +26,7 @@ interface AccountsProps {
 
 export default class AccountsPage extends Component<AccountsProps, AccountsState> {
   public readonly state: AccountsState = {
-    show: "profile",
+    show: "products",
     products: null,
     isLoading: true,
   };
@@ -119,7 +119,9 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
   };
 
   public render(): JSX.Element {
-    const { isLoading } = this.state;
+    const { isLoading, show } = this.state;
+    const { admin } = this.props;
+
     return isLoading ? (
       <Loading size={100} />
     ) : (
@@ -129,29 +131,52 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
         }}
       >
         <div className="content-container">
-          <div
-            className="accounts__tab"
-            onClick={(): void => this.setState({ show: "profile" })}
-            role="button"
-            tabIndex={0}
-          >
-            Profile
-          </div>
-          <div
-            className="accounts__tab"
-            onClick={(): void => this.setState({ show: "products" })}
-            role="button"
-            tabIndex={0}
-          >
-            Products
-          </div>
-          <div
-            className="accounts__tab"
-            onClick={(): void => this.setState({ show: "create" })}
-            role="button"
-            tabIndex={0}
-          >
-            Create Product
+          <div className="accounts__tab-container">
+            <div
+              className={show === "profile" ? "accounts__tab--active" : "accounts__tab"}
+              onClick={(): void => this.setState({ show: "profile" })}
+              role="button"
+              tabIndex={0}
+            >
+              <i className="fas fa-user-circle" />
+              <span style={{ marginLeft: "5px" }}>Profile</span>
+            </div>
+            {admin ? (
+              <>
+                <div
+                  className={
+                    show === "products" ? "accounts__tab--active" : "accounts__tab"
+                  }
+                  onClick={(): void => this.setState({ show: "products" })}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <i className="fas fa-clipboard" />
+                  <span style={{ marginLeft: "5px" }}>Products</span>
+                </div>
+                <div
+                  className={
+                    show === "create" ? "accounts__tab--active" : "accounts__tab"
+                  }
+                  onClick={(): void => this.setState({ show: "create" })}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <i className="fas fa-plus-circle" />
+                  <span style={{ marginLeft: "5px" }}>Create Product</span>
+                </div>
+              </>
+            ) : (
+              <div
+                className={show === "create" ? "accounts__tab--active" : "accounts__tab"}
+                onClick={(): void => this.setState({ show: "orders" })}
+                role="button"
+                tabIndex={0}
+              >
+                <i className="fas fa-shopping-basket" />
+                <span style={{ marginLeft: "5px" }}>My Orders</span>
+              </div>
+            )}
           </div>
           {this.getCurrentPage()}
         </div>

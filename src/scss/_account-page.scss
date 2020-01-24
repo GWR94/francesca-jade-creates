@@ -1,3 +1,30 @@
-.account__tabs-container {
-  height: 100vh;
+.accounts__tab-container {
+  width: 100%;
+  display: inline-flex;
+  justify-content: space-evenly;
+  margin: 5px 0 20px;
+  font-family: $title-font;
+  font-weight: bold;
+}
+
+.accounts__tab {
+  font-size: 16px;
+  padding: 6px 12px;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid transparent;
+  width: 160px;
+  &:hover {
+    border-bottom: 2px solid $light-pink;
+  }
+  @media screen and (max-width: $s-breakpoint) {
+    font-size: 13px;
+  }
+}
+
+.accounts__tab--active {
+  @extend .accounts__tab;
+  border-bottom: 2px solid $pink;
 }

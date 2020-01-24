@@ -1,3 +1,5 @@
+import { ProductProps, S3ImageProps } from "./Product.i";
+
 export interface NewProductState {
   title: string;
   description: string;
@@ -5,7 +7,7 @@ export interface NewProductState {
   setPrice: boolean;
   productCost: string;
   shippingCost: string;
-  image: Image;
+  image: ImageProps | S3ImageProps;
   imagePreview: string;
   isUploading: boolean;
   titleError: string;
@@ -18,9 +20,11 @@ export interface NewProductState {
 
 export interface NewProductProps {
   onCancel: () => void;
+  update?: boolean;
+  product?: ProductProps;
 }
 
-interface Image {
+export interface ImageProps {
   file: File;
   name: string;
   size: number;

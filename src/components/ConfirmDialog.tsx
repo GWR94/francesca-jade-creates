@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog, Classes, Button, Tag, ProgressBar } from "@blueprintjs/core";
+import { S3Image } from "aws-amplify-react";
 import { ConfirmDialogProps } from "../interfaces/ConfirmDialog.i";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -16,6 +17,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   closeModal,
   percentUploaded,
   tags,
+  product,
+  update,
 }): JSX.Element => {
   return (
     <Dialog
@@ -67,7 +70,23 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <p>
           <strong>Cover image:</strong>
         </p>
-        <img src={imagePreview} alt={`${title} Preview`} className="product__preview" />
+        {imagePreview ? (
+          <img src={imagePreview} alt={`${title} Preview`} className="product__preview" />
+        ) : (
+          update &&
+          product.image && (
+            <S3Image
+              imgKey={product.image.key}
+              theme={{
+                photoImg: {
+                  display: "block",
+                  width: "340px",
+                  margin: "0 auto",
+                },
+              }}
+            />
+          )
+        )}
       </div>
       <div className="product__button-container">
         <Button
