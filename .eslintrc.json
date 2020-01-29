@@ -5,8 +5,8 @@
     "plugin:@typescript-eslint/recommended",
     "airbnb",
     "airbnb-typescript",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint"
   ],
   "plugins": ["react", "@typescript-eslint", "prettier"],
   "env": {
@@ -27,7 +27,8 @@
     "react/jsx-one-expression-per-line": "off",
     "react/prop-types": "off",
     "react/no-array-index-key": "off",
-    "react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }]
+    "react/destructuring-assignment": [1, "always", { "ignoreClassFields": true }],
+    "react/jsx-wrap-multilines": "off"
   },
   "settings": {
     "react": {

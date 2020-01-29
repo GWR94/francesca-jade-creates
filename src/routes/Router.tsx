@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { Authenticator } from "aws-amplify-react";
+import { Authenticator, NavBar as Nav } from "aws-amplify-react";
 import Home from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import CreatesPage from "../pages/CreatesPage";
@@ -12,6 +12,8 @@ import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState } from "../interfaces/Router.i";
 import CakesPage from "../pages/CakesPage";
+import { attributesToObject, Toaster } from "../utils/index";
+import Loading from "../components/Loading";
 
 export const history = createBrowserHistory();
 export const UserContext = React.createContext(null);
@@ -20,6 +22,9 @@ class AppRouter extends Component {
   public readonly state: RouterState = {
     user: null,
     admin: false,
+    userAttributes: null,
+    isLoading: true,
+    accountsTab: "profile",
   };
 
   public componentDidMount(): void {
@@ -33,8 +38,33 @@ class AppRouter extends Component {
       graphqlOperation(getUser, { id: authUser.attributes.sub }),
     );
     authUser
-      ? this.setState({ user: authUser, admin: data.getUser.admin })
-      : this.setState({ user: null });
+      ? this.setState(
+          { user: authUser, admin: data.getUser.admin },
+          (): Promise<void> => this.getUserAttributes(authUser),
+        )
+      : this.setState({ user: null, isLoading: false });
+  };
+
+  private handleSignOut = async (): Promise<void> => {
+    try {
+      await Auth.signOut();
+      Toaster.show({
+        intent: "success",
+        message: "Successfully signed out.",
+      });
+    } catch (err) {
+      console.error("Error signing out", err);
+      Toaster.show({
+        intent: "danger",
+        message: "Error signing out. Please try again.",
+      });
+    }
+  };
+
+  private getUserAttributes = async (authUserData): Promise<void> => {
+    const attributesArr = await Auth.userAttributes(authUserData);
+    const userAttributes = attributesToObject(attributesArr);
+    this.setState({ userAttributes, isLoading: false });
   };
 
   private registerNewUser = async (signInData): Promise<void> => {
@@ -82,22 +112,41 @@ class AppRouter extends Component {
   };
 
   public render(): JSX.Element {
-    const { user, admin } = this.state;
+    const { user, admin, userAttributes, isLoading, accountsTab } = this.state;
     return (
       <Router history={history}>
-        <NavBar />
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/creates" component={CreatesPage} />
-          <Route path="/cakes" component={CakesPage} />
-          <Route
-            path="/account"
-            component={(): JSX.Element =>
-              user ? <AccountsPage user={user} admin={admin} /> : <Authenticator />
-            }
-          />
-          <Route component={NotFoundPage} />
-        </Switch>
+        <NavBar
+          signOut={this.handleSignOut}
+          admin={admin}
+          setAccountsTab={(tab): void => {
+            if (tab !== accountsTab) this.setState({ accountsTab: tab });
+          }}
+        />
+        {isLoading ? (
+          <Loading size={100} />
+        ) : (
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/creates" component={CreatesPage} />
+            <Route path="/cakes" component={CakesPage} />
+            <Route
+              path="/account"
+              component={(): JSX.Element =>
+                user ? (
+                  <AccountsPage
+                    user={user}
+                    userAttributes={userAttributes}
+                    admin={admin}
+                    accountsTab={accountsTab}
+                  />
+                ) : (
+                  <Authenticator hide={[NavBar]} />
+                )
+              }
+            />
+            <Route component={NotFoundPage} />
+          </Switch>
+        )}
       </Router>
     );
   }

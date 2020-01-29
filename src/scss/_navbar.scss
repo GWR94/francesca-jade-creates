@@ -31,11 +31,16 @@
   }
 }
 
+span.bp3-popover-target {
+  display: flex;
+}
+
 .headroom-wrapper {
-  height: 50px !important;
+  height: 46px !important;
 }
 
 .nav__link--active {
+  @extend .nav__link;
   color: $dark-pink !important;
   padding-top: 2px;
   border-bottom: 2px solid $pink;
@@ -96,4 +101,12 @@
   width: 100%;
   font-family: $title-font;
   border-bottom: 1px solid $light-gray;
+}
+
+.nav__dropdown-icon {
+  height: 22px;
+  width: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

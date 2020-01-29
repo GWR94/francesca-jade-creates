@@ -1,4 +1,4 @@
-.product__container {
+.new-product__container {
   margin: 0 auto;
   width: 40vw;
   display: flex;
@@ -15,7 +15,7 @@
   }
 }
 
-.product__input {
+.new-product__input {
   width: 100%;
   margin-bottom: 8px;
   @media screen and (max-width: $s-breakpoint) {
@@ -23,57 +23,43 @@
   }
 }
 
-.product__radio {
+.new-product__radio {
   display: inline-flex;
   justify-content: space-evenly;
   width: 100%;
 }
 
-.product__title {
-  @extend .product__input;
+.new-product__title {
+  @extend .new-product__input;
 }
 
-.product__description {
-  @extend .product__input;
+.new-product__description {
+  @extend .new-product__input;
 }
 
-.product__callout {
+.new-product__callout {
   margin: 12px 0;
   width: 100%;
 }
 
-.product__form {
+.new-product__form {
   display: inline-flex;
   justify-content: space-evenly;
   width: 100%;
 }
 
-.product__form-item {
+.new-product__form-item {
   display: inline-flex !important;
   width: 45%;
   margin: 5px;
 }
 
-.product__image-preview {
+.new-product__image-preview {
   width: 100%;
 }
 
-.product__preview {
-  display: block;
-  width: 340px;
-  margin: 0 auto;
-}
-
-.product__button-container {
+.new-product__button-container {
   width: 100%;
   display: inline-flex;
   justify-content: center;
-}
-
-.product__card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-family: $title-font;
-  height: 100%;
 }

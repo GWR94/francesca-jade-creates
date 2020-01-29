@@ -71,7 +71,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <strong>Cover image:</strong>
         </p>
         {imagePreview ? (
-          <img src={imagePreview} alt={`${title} Preview`} className="product__preview" />
+          <img src={imagePreview} alt={`${title} Preview`} className="confirm__image" />
         ) : (
           update &&
           product.image && (
@@ -88,7 +88,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           )
         )}
       </div>
-      <div className="product__button-container">
+      <div className="new-product__button-container">
         <Button
           text="Edit"
           intent="warning"

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
+import { withRouter } from "react-router-dom";
 import { listProducts } from "../graphql/queries";
 import NewProduct from "../components/NewProduct";
 import Profile from "../components/Profile";
@@ -10,25 +11,18 @@ import {
   onCreateProduct,
   onDeleteProduct,
 } from "../graphql/subscriptions";
-import { ProductProps } from "../interfaces/Product.i";
 import Loading from "../components/Loading";
+import { AccountsProps, AccountsState } from "../interfaces/Accounts.i";
 
-interface AccountsState {
-  show: "profile" | "products" | "create" | "orders";
-  products: ProductProps[];
-  isLoading: boolean;
+interface Props {
+  page: string;
 }
 
-interface AccountsProps {
-  user: any;
-  admin: boolean;
-}
-
-export default class AccountsPage extends Component<AccountsProps, AccountsState> {
+class AccountsPage extends Component<AccountsProps, AccountsState> {
   public readonly state: AccountsState = {
-    show: "products",
     products: null,
     isLoading: true,
+    currentTab: "profile",
   };
 
   private updateProductListener;
@@ -37,29 +31,21 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
 
   private createProductListener;
 
-  public async componentDidMount(): Promise<void> {
-    await this.handleGetProducts();
-    this.createSubscriptions();
-  }
+  public componentDidMount(): void {
+    this.handleGetProducts();
 
-  public componentWillUnmount(): void {
-    this.updateProductListener.unsubscribe();
-    this.deleteProductListener.unsubscribe();
-    this.createProductListener.unsubscribe();
-  }
-
-  private createSubscriptions = (): void => {
     const { products } = this.state;
-    const { user } = this.props;
+    const { user, accountsTab } = this.props;
     const {
       attributes: { sub },
     } = user;
+
+    if (accountsTab) this.setState({ currentTab: accountsTab });
 
     this.createProductListener = API.graphql(
       graphqlOperation(onCreateProduct, { owner: sub }),
     ).subscribe({
       next: (productData): void => {
-        console.log(products);
         const createdProduct = productData.value.data.onCreateProduct;
         const prevProducts = products.filter(
           (item): boolean => item.id !== createdProduct.id,
@@ -97,17 +83,26 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
         this.setState({ products: updatedProducts });
       },
     });
-  };
+  }
+
+  public componentWillUnmount(): void {
+    this.updateProductListener.unsubscribe();
+    this.deleteProductListener.unsubscribe();
+    this.createProductListener.unsubscribe();
+  }
 
   private getCurrentPage = (): JSX.Element => {
-    const { show, products } = this.state;
-    switch (show) {
+    const { products, currentTab } = this.state;
+    const { userAttributes, user } = this.props;
+    switch (currentTab) {
       case "profile":
-        return <Profile />;
+        return <Profile user={user} userAttributes={userAttributes} />;
       case "products":
         return <Products products={products} />;
       case "create":
-        return <NewProduct onCancel={(): void => this.setState({ show: "products" })} />;
+        return (
+          <NewProduct onCancel={(): void => this.setState({ currentTab: "products" })} />
+        );
       default:
         return null;
     }
@@ -119,7 +114,7 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
   };
 
   public render(): JSX.Element {
-    const { isLoading, show } = this.state;
+    const { isLoading, currentTab } = this.state;
     const { admin } = this.props;
 
     return isLoading ? (
@@ -133,8 +128,10 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
         <div className="content-container">
           <div className="accounts__tab-container">
             <div
-              className={show === "profile" ? "accounts__tab--active" : "accounts__tab"}
-              onClick={(): void => this.setState({ show: "profile" })}
+              className={
+                currentTab === "profile" ? "accounts__tab--active" : "accounts__tab"
+              }
+              onClick={(): void => this.setState({ currentTab: "profile" })}
               role="button"
               tabIndex={0}
             >
@@ -145,9 +142,9 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
               <>
                 <div
                   className={
-                    show === "products" ? "accounts__tab--active" : "accounts__tab"
+                    currentTab === "products" ? "accounts__tab--active" : "accounts__tab"
                   }
-                  onClick={(): void => this.setState({ show: "products" })}
+                  onClick={(): void => this.setState({ currentTab: "products" })}
                   role="button"
                   tabIndex={0}
                 >
@@ -156,9 +153,9 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
                 </div>
                 <div
                   className={
-                    show === "create" ? "accounts__tab--active" : "accounts__tab"
+                    currentTab === "create" ? "accounts__tab--active" : "accounts__tab"
                   }
-                  onClick={(): void => this.setState({ show: "create" })}
+                  onClick={(): void => this.setState({ currentTab: "create" })}
                   role="button"
                   tabIndex={0}
                 >
@@ -168,8 +165,10 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
               </>
             ) : (
               <div
-                className={show === "create" ? "accounts__tab--active" : "accounts__tab"}
-                onClick={(): void => this.setState({ show: "orders" })}
+                className={
+                  currentTab === "create" ? "accounts__tab--active" : "accounts__tab"
+                }
+                onClick={(): void => this.setState({ currentTab: "orders" })}
                 role="button"
                 tabIndex={0}
               >
@@ -184,3 +183,5 @@ export default class AccountsPage extends Component<AccountsProps, AccountsState
     );
   }
 }
+
+export default withRouter<any, any>(AccountsPage);

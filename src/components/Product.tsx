@@ -74,8 +74,6 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
     },
   };
 
-  console.log(customer);
-
   return (
     <>
       <Card elevation={2} interactive className="product__card">
@@ -101,13 +99,15 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
             )}
           </div>
         )}
-        <S3Image
-          imgKey={image.key}
-          theme={{
-            photoImg: { maxWidth: "100%", maxHeight: "100%" },
-          }}
-        />
-        <div className="product__button-container">
+        <div id="s3Image">
+          <S3Image
+            imgKey={image.key}
+            theme={{
+              photoImg: { maxWidth: "100%", maxHeight: "100%" },
+            }}
+          />
+        </div>
+        <div className="new-product__button-container">
           {customer ? (
             <Button
               intent="success"

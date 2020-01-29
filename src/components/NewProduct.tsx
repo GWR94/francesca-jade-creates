@@ -268,16 +268,16 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
 
     return (
       <>
-        <div className="product__container">
+        <div className="new-product__container">
           <H3>{update ? "Update Product" : "Create a Product"}</H3>
           <FormGroup
             helperText={titleError}
             label="Title:"
             intent={titleError ? "danger" : "none"}
-            className="product__input"
+            className="new-product__input"
           >
             <InputGroup
-              className="product__title"
+              className="new-product__title"
               placeholder="Enter a product title..."
               onChange={(e): void => this.handleFormItem(e, "title")}
               value={title}
@@ -288,17 +288,17 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
             helperText={descriptionError}
             label="Description:"
             intent={descriptionError ? "danger" : "none"}
-            className="product__input"
+            className="new-product__input"
           >
             <TextArea
-              className="product__description"
+              className="new-product__description"
               placeholder="Enter a product description..."
               onChange={(e): void => this.handleFormItem(e, "description")}
               value={description}
               rows={5}
             />
           </FormGroup>
-          <div className="product__input">
+          <div className="new-product__input">
             <Label style={{ marginBottom: "5px" }}>Product Type:</Label>
             <RadioGroup
               inline
@@ -306,7 +306,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                 this.handleFormItem(e, "type");
               }}
               selectedValue={type}
-              className="product__radio"
+              className="new-product__radio"
             >
               <Radio label="Cake" value="Cake" />
               <Radio label="Canvas" value="Canvas" />
@@ -317,7 +317,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
             <Callout
               title="Is there a set price?"
               intent="primary"
-              className="product__callout"
+              className="new-product__callout"
             >
               You can set a price if there is one set, or turn the switch off to set no
               price, where the customer can contact you for an estimated price.
@@ -332,14 +332,14 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
             </Callout>
             {setPrice && (
               <>
-                <FormGroup className="product__form" label="Pricing:">
+                <FormGroup className="new-product__form" label="Pricing:">
                   <InputGroup
                     leftIcon="euro"
                     placeholder="Product price..."
                     min={0.5}
                     type="number"
                     value={productCost}
-                    className="product__form-item"
+                    className="new-product__form-item"
                     onChange={(e): void => this.handleFormItem(e, "productCost")}
                   />
                   <InputGroup
@@ -347,14 +347,14 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                     placeholder="Shipping cost..."
                     min={0.5}
                     type="number"
-                    className="product__form-item"
+                    className="new-product__form-item"
                     value={shippingCost}
                     onChange={(e): void => this.handleFormItem(e, "shippingCost")}
                   />
                 </FormGroup>
               </>
             )}
-            <FormGroup label="Tags:" labelInfo="(optional)" className="product__form">
+            <FormGroup label="Tags:" labelInfo="(optional)" className="new-product__form">
               <TagInput
                 leftIcon="tag"
                 onChange={this.handleTagChange}
@@ -366,7 +366,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
 
             {imagePreview && (
               <img
-                className="product__image-preview"
+                className="new-product__image-preview"
                 src={imagePreview}
                 alt="Product Preview"
               />
