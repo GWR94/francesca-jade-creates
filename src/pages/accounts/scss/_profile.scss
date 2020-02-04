@@ -1,0 +1,81 @@
+.profile__container {
+  width: 80%;
+  margin: 0 auto;
+  font-family: $title-font;
+  font-weight: bold;
+  @media screen and (max-width: $md-breakpoint) {
+    width: 90%;
+  }
+  @media screen and (max-width: $s-breakpoint) {
+    width: 94%;
+  }
+}
+
+.profile__row {
+  margin-bottom: 8px;
+}
+
+.profile__tag {
+  margin-left: 5px;
+}
+
+.profile__input {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.profile__password {
+  width: 100%;
+  justify-content: center;
+}
+
+.profile__inputs-container {
+  display: inline-flex;
+  margin-bottom: 6px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.profile__image-container {
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+  height: 160px;
+  width: 160px;
+  overflow: hidden;
+}
+
+.profile__image {
+  min-width: 100%;
+  height: 100%;
+}
+
+.profile__tab {
+  float: right;
+}
+
+.profile__title {
+  font-weight: bold;
+  text-align: right;
+  align-items: center;
+  justify-content: flex-end;
+  display: flex;
+}
+
+.profile__input--small {
+  width: 33%;
+}
+
+.profile__password-button {
+  color: rgb(48, 48, 202) !important;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px;
+  font-style: italic;
+}
+
+.profile__button-container {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+}

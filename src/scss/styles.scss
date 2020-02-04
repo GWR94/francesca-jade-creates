@@ -9,11 +9,18 @@
 @import "./base/base";
 
 // components
-@import "./not-found";
 @import "./navbar";
 @import "./landing";
-@import "./new-product";
-@import "./account-page";
 @import "./loading";
-@import "./confirm";
 @import "./product";
+
+// not found page
+@import "../pages/not-found/scss/not-found";
+
+//accounts page
+@import "../pages/accounts/scss/new-product";
+@import "../pages/accounts/scss/account-page";
+@import "../pages/accounts/scss/password";
+@import "../pages/accounts/scss/profile";
+@import "../pages/accounts/scss/confirm";
+@import "../pages/accounts/scss/verify";

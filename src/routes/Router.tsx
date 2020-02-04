@@ -3,15 +3,15 @@ import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import { Authenticator, NavBar as Nav } from "aws-amplify-react";
-import Home from "../pages/HomePage";
-import NotFoundPage from "../pages/NotFoundPage";
-import CreatesPage from "../pages/CreatesPage";
-import AccountsPage from "../pages/AccountsPage";
+import Home from "../pages/home/HomePage";
+import NotFoundPage from "../pages/not-found/NotFoundPage";
+import CreatesPage from "../pages/creates/CreatesPage";
+import AccountsPage from "../pages/accounts/AccountsPage";
 import NavBar from "../components/NavBar";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState } from "../interfaces/Router.i";
-import CakesPage from "../pages/CakesPage";
+import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../components/Loading";
 
@@ -33,16 +33,20 @@ class AppRouter extends Component {
   }
 
   private getUserData = async (): Promise<void> => {
-    const authUser = await Auth.currentAuthenticatedUser();
-    const { data } = await API.graphql(
-      graphqlOperation(getUser, { id: authUser.attributes.sub }),
-    );
-    authUser
-      ? this.setState(
-          { user: authUser, admin: data.getUser.admin },
-          (): Promise<void> => this.getUserAttributes(authUser),
-        )
-      : this.setState({ user: null, isLoading: false });
+    try {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const { data } = await API.graphql(
+        graphqlOperation(getUser, { id: authUser.attributes.sub }),
+      );
+      authUser
+        ? this.setState(
+            { user: authUser, admin: data.getUser.admin },
+            (): Promise<void> => this.getUserAttributes(authUser),
+          )
+        : this.setState({ user: null, isLoading: false });
+    } catch (err) {
+      this.setState({ user: null, isLoading: false });
+    }
   };
 
   private handleSignOut = async (): Promise<void> => {
@@ -59,12 +63,17 @@ class AppRouter extends Component {
         message: "Error signing out. Please try again.",
       });
     }
+    history.push("/");
   };
 
   private getUserAttributes = async (authUserData): Promise<void> => {
-    const attributesArr = await Auth.userAttributes(authUserData);
-    const userAttributes = attributesToObject(attributesArr);
-    this.setState({ userAttributes, isLoading: false });
+    try {
+      const attributesArr = await Auth.userAttributes(authUserData);
+      const userAttributes = attributesToObject(attributesArr);
+      this.setState({ userAttributes, isLoading: false });
+    } catch (err) {
+      this.setState({ isLoading: false, userAttributes: null });
+    }
   };
 
   private registerNewUser = async (signInData): Promise<void> => {
@@ -117,6 +126,7 @@ class AppRouter extends Component {
       <Router history={history}>
         <NavBar
           signOut={this.handleSignOut}
+          user={user}
           admin={admin}
           setAccountsTab={(tab): void => {
             if (tab !== accountsTab) this.setState({ accountsTab: tab });
@@ -140,7 +150,7 @@ class AppRouter extends Component {
                     accountsTab={accountsTab}
                   />
                 ) : (
-                  <Authenticator hide={[NavBar]} />
+                  <Authenticator hide={[Nav]} />
                 )
               }
             />

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import background from "../img/background.jpg";
-import Landing from "../components/Landing";
+import background from "../../img/background.jpg";
+import Landing from "../../components/Landing";
 
 const Home: FC = (): JSX.Element => {
   return (

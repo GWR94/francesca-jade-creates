@@ -91,14 +91,6 @@ module.exports = () => {
       contentBase: path.join(__dirname, "public"),
       historyApiFallback: true,
       port: 3000,
-      // Using a API/Server?
-      // proxy: {
-      //   "/api/*": {
-      //     target: "http://[::1]:5000",
-      //     secure: false,
-      //     changeOrigin: true,
-      //   },
-      // },
     },
   };
 };

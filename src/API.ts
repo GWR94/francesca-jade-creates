@@ -104,6 +104,17 @@ export type CreateUserInput = {
   name?: string | null,
   registered?: boolean | null,
   admin?: boolean | null,
+  profileImage?: S3ObjectInput | null,
+  shippingAddress?: ShippingAddressInput | null,
+};
+
+export type ShippingAddressInput = {
+  city: string,
+  country: string,
+  address_line1: string,
+  address_line2?: string | null,
+  address_county: string,
+  address_postcode: string,
 };
 
 export type ModelUserConditionInput = {
@@ -131,6 +142,8 @@ export type UpdateUserInput = {
   name?: string | null,
   registered?: boolean | null,
   admin?: boolean | null,
+  profileImage?: S3ObjectInput | null,
+  shippingAddress?: ShippingAddressInput | null,
 };
 
 export type CreateOrderInput = {
@@ -139,15 +152,6 @@ export type CreateOrderInput = {
   createdAt: string,
   orderProductId?: string | null,
   orderUserId?: string | null,
-};
-
-export type ShippingAddressInput = {
-  city: string,
-  country: string,
-  address_line1: string,
-  address_line2?: string | null,
-  address_county: string,
-  address_postcode: string,
 };
 
 export type ModelOrderConditionInput = {
@@ -325,6 +329,21 @@ export type RegisterUserMutation = {
       } | null > | null,
       nextToken: string | null,
     } | null,
+    profileImage:  {
+      __typename: "S3Object",
+      bucket: string,
+      region: string,
+      key: string,
+    } | null,
+    shippingAddress:  {
+      __typename: "ShippingAddress",
+      city: string,
+      country: string,
+      address_line1: string,
+      address_line2: string | null,
+      address_county: string,
+      address_postcode: string,
+    } | null,
   } | null,
 };
 
@@ -350,6 +369,21 @@ export type UpdateUserMutation = {
         createdAt: string,
       } | null > | null,
       nextToken: string | null,
+    } | null,
+    profileImage:  {
+      __typename: "S3Object",
+      bucket: string,
+      region: string,
+      key: string,
+    } | null,
+    shippingAddress:  {
+      __typename: "ShippingAddress",
+      city: string,
+      country: string,
+      address_line1: string,
+      address_line2: string | null,
+      address_county: string,
+      address_postcode: string,
     } | null,
   } | null,
 };
@@ -391,6 +425,21 @@ export type CreateOrderMutation = {
       orders:  {
         __typename: "ModelOrderConnection",
         nextToken: string | null,
+      } | null,
+      profileImage:  {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null,
+      shippingAddress:  {
+        __typename: "ShippingAddress",
+        city: string,
+        country: string,
+        address_line1: string,
+        address_line2: string | null,
+        address_county: string,
+        address_postcode: string,
       } | null,
     } | null,
     shippingAddress:  {
@@ -481,6 +530,21 @@ export type GetUserQuery = {
         createdAt: string,
       } | null > | null,
       nextToken: string | null,
+    } | null,
+    profileImage:  {
+      __typename: "S3Object",
+      bucket: string,
+      region: string,
+      key: string,
+    } | null,
+    shippingAddress:  {
+      __typename: "ShippingAddress",
+      city: string,
+      country: string,
+      address_line1: string,
+      address_line2: string | null,
+      address_county: string,
+      address_postcode: string,
     } | null,
   } | null,
 };

@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { withRouter } from "react-router-dom";
-import { listProducts } from "../graphql/queries";
-import NewProduct from "../components/NewProduct";
-import Profile from "../components/Profile";
-import Products from "../components/ProductsList";
-import background from "../img/background.jpg";
+import { listProducts } from "../../graphql/queries";
+import NewProduct from "./components/NewProduct";
+import Profile from "./components/Profile";
+import Products from "./components/ProductsList";
+import background from "../../img/background.jpg";
 import {
   onUpdateProduct,
   onCreateProduct,
   onDeleteProduct,
-} from "../graphql/subscriptions";
-import Loading from "../components/Loading";
-import { AccountsProps, AccountsState } from "../interfaces/Accounts.i";
+} from "../../graphql/subscriptions";
+import Loading from "../../components/Loading";
+import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
 
 interface Props {
   page: string;
@@ -20,7 +20,7 @@ interface Props {
 
 class AccountsPage extends Component<AccountsProps, AccountsState> {
   public readonly state: AccountsState = {
-    products: null,
+    products: [],
     isLoading: true,
     currentTab: "profile",
   };
@@ -31,8 +31,8 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
 
   private createProductListener;
 
-  public componentDidMount(): void {
-    this.handleGetProducts();
+  public async componentDidMount(): Promise<void> {
+    await this.handleGetProducts();
 
     const { products } = this.state;
     const { user, accountsTab } = this.props;
@@ -47,9 +47,9 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     ).subscribe({
       next: (productData): void => {
         const createdProduct = productData.value.data.onCreateProduct;
-        const prevProducts = products.filter(
-          (item): boolean => item.id !== createdProduct.id,
-        );
+        const prevProducts = products
+          ? products.filter((item): boolean => item.id !== createdProduct.id)
+          : [];
         const updatedProducts = [createdProduct, ...prevProducts];
         this.setState({ products: updatedProducts });
       },
@@ -60,6 +60,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     ).subscribe({
       next: (productData): void => {
         const updatedProduct = productData.value.data.onUpdateProduct;
+        console.log(products);
         const updatedProductIdx = products.findIndex(
           (item): boolean => item.id === updatedProduct.id,
         );
@@ -77,9 +78,9 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     ).subscribe({
       next: (productData): void => {
         const deletedProduct = productData.value.data.onDeleteProduct;
-        const updatedProducts = products.filter(
-          (item): boolean => item.id !== deletedProduct.id,
-        );
+        const updatedProducts = products
+          ? products.filter((item): boolean => item.id !== deletedProduct.id)
+          : [];
         this.setState({ products: updatedProducts });
       },
     });

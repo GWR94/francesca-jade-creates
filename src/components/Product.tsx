@@ -3,10 +3,10 @@ import { Card, Button, Alert, Tag } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
 import { S3Image } from "aws-amplify-react";
 import ReactModal from "react-modal";
-import { ProductProps } from "../interfaces/Product.i";
+import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../graphql/mutations";
 import { Toaster } from "../utils/index";
-import NewProduct from "./NewProduct";
+import NewProduct from "../pages/accounts/components/NewProduct";
 import useScreenWidth from "../hooks/useScreenWidth";
 
 const Product: React.FC<ProductProps> = (product): JSX.Element => {

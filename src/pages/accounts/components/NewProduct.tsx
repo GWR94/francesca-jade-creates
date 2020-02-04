@@ -14,7 +14,7 @@ import {
 } from "@blueprintjs/core";
 import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
 import { PhotoPicker, S3Image } from "aws-amplify-react";
-import { createProduct, updateProduct } from "../graphql/mutations";
+import { createProduct, updateProduct } from "../../../graphql/mutations";
 import {
   NewProductProps,
   NewProductState,
@@ -22,10 +22,10 @@ import {
   ImageProps,
 } from "../interfaces/NewProduct.i";
 import ConfirmDialog from "./ConfirmDialog";
-import { getUser } from "../graphql/queries";
-import awsExports from "../aws-exports";
-import { S3ObjectInput } from "../API";
-import { Toaster } from "../utils/index";
+import { getUser } from "../../../graphql/queries";
+import awsExports from "../../../aws-exports";
+import { S3ObjectInput } from "../../../API";
+import { Toaster } from "../../../utils/index";
 
 const initialState: NewProductState = {
   title: "",

@@ -2,17 +2,17 @@ import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { H3 } from "@blueprintjs/core";
 import { Row, Col, Container } from "reactstrap";
-import { listProducts } from "../graphql/queries";
-import Loading from "../components/Loading";
-import Product from "../components/Product";
-import { ProductProps } from "../interfaces/Product.i";
+import { listProducts } from "../../graphql/queries";
+import Loading from "../../components/Loading";
+import Product from "../../components/Product";
+import { ProductProps } from "../accounts/interfaces/Product.i";
 
 interface State {
   isLoading: boolean;
   products: ProductProps[];
 }
 
-export default class CakesPage extends Component<{}, State> {
+export default class CreatesPage extends Component<{}, State> {
   public readonly state: State = {
     isLoading: true,
     products: null,
@@ -27,7 +27,7 @@ export default class CakesPage extends Component<{}, State> {
       graphqlOperation(listProducts, {
         filter: {
           type: {
-            eq: "Cake",
+            ne: "Cake",
           },
         },
       }),
@@ -37,11 +37,12 @@ export default class CakesPage extends Component<{}, State> {
 
   public render(): JSX.Element {
     const { isLoading, products } = this.state;
+    console.log(products);
     return isLoading ? (
       <Loading size={100} />
     ) : (
       <Container style={{ marginTop: "20px" }}>
-        <H3>Cakes</H3>
+        <H3>Creations</H3>
         <Row>
           {products.map(
             (product): JSX.Element => (

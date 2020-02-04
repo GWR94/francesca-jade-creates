@@ -1,9 +1,10 @@
-import { UserAttributeProps } from "./Accounts.i";
+import { UsernameAttributes } from "aws-amplify-react/lib-esm/Auth/common/types";
+import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
 
 export interface RouterState {
-  user: any;
+  user: UsernameAttributes;
   admin: boolean;
   userAttributes: UserAttributeProps;
   isLoading: boolean;
-  show: "profile" | "products" | "create" | "orders";
+  accountsTab: "profile" | "products" | "create" | "orders";
 }

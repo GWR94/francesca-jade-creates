@@ -82,6 +82,19 @@ export const registerUser = `mutation RegisterUser(
       }
       nextToken
     }
+    profileImage {
+      bucket
+      region
+      key
+    }
+    shippingAddress {
+      city
+      country
+      address_line1
+      address_line2
+      address_county
+      address_postcode
+    }
   }
 }
 `;
@@ -102,6 +115,19 @@ export const updateUser = `mutation UpdateUser(
         createdAt
       }
       nextToken
+    }
+    profileImage {
+      bucket
+      region
+      key
+    }
+    shippingAddress {
+      city
+      country
+      address_line1
+      address_line2
+      address_county
+      address_postcode
     }
   }
 }
@@ -136,6 +162,19 @@ export const createOrder = `mutation CreateOrder(
       admin
       orders {
         nextToken
+      }
+      profileImage {
+        bucket
+        region
+        key
+      }
+      shippingAddress {
+        city
+        country
+        address_line1
+        address_line2
+        address_county
+        address_postcode
       }
     }
     shippingAddress {

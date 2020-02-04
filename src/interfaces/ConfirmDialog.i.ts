@@ -1,4 +1,4 @@
-import { ProductProps } from "./Product.i";
+import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 
 export interface ConfirmDialogProps {
   confirmDialogOpen: boolean;
