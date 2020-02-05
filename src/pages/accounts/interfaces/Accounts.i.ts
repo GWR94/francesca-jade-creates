@@ -15,9 +15,9 @@ export interface AccountsProps {
 }
 
 export interface UserAttributeProps {
-  sub: string;
-  email_verified: boolean;
-  phone_number_verified: boolean;
-  phone_number: string;
-  email: string;
+  sub?: string;
+  email_verified?: boolean;
+  phone_number_verified?: boolean;
+  phone_number?: string;
+  email?: string;
 }

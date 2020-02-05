@@ -4,7 +4,8 @@
   "description": "Francesca Jade Creates AWS Site",
   "main": "app.ts",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack -p --mode production"
   },
   "repository": {
     "type": "git",

@@ -37,10 +37,10 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       error: "",
     },
     phoneNumber: {
-      value: this.props.userAttributes.phone_number,
+      value: "",
       verified: this.props.userAttributes.phone_number_verified,
       error: "",
-      code: "+44",
+      code: "",
     },
 
     shippingAddress: null,
@@ -49,7 +49,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     percentUploaded: null,
     dialogOpen: {
       password: false,
-      email: true,
+      email: false,
       phoneNumber: false,
     },
   };
@@ -59,10 +59,8 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
   }
 
   private checkUpdateCredentials = (): void => {
-    const {
-      user: { attributes },
-    } = this.props;
     const { email, phoneNumber } = this.state;
+    const { userAttributes } = this.props;
     let errors = false;
     const invalidEmail = validate({ from: email.value }, { from: { email: true } });
     if (invalidEmail) {
@@ -87,28 +85,30 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       });
     }
     if (errors) return;
-    if (attributes.email !== email.value || !attributes.email_verified) {
-      this.handleVerify("email");
-      return;
+    if (!email.verified || email.value !== userAttributes.email) {
+      this.handleVerifyEmail();
     }
-    this.onUpdateProfile;
+    if (!phoneNumber.verified) {
+      this.handleVerifyPhone();
+    } else {
+      this.onUpdateProfile();
+    }
   };
 
-  private handleVerify = async (attr): Promise<void> => {
+  private handleVerifyEmail = async (): Promise<void> => {
     const { user } = this.props;
-    const { email, phoneNumber } = this.state;
+    const { email } = this.state;
     const updatedAttributes = {
-      email: email.value || undefined,
-      phone_number: `${phoneNumber.code}${phoneNumber.value}` || undefined,
+      email: email.value,
     };
     try {
       const res = await Auth.updateUserAttributes(user, updatedAttributes);
       if (res === "SUCCESS") {
-        attr === "email"
-          ? this.sendVerificationCode("email")
-          : this.sendVerificationCode("phone_number");
-        this.onUpdateProfile;
+        this.sendVerificationCode("email");
       }
+      const attr = await Auth.currentAuthenticatedUser();
+      console.log(attr);
+      this.onUpdateProfile();
     } catch (err) {
       console.error(err);
       Toaster.show({
@@ -118,27 +118,44 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     }
   };
 
+  private handleVerifyPhone = async (): Promise<void> => {
+    const { user } = this.props;
+    const { phoneNumber } = this.state;
+    const updatedAttributes = {
+      phone_number: `${phoneNumber.code}${phoneNumber.value}`,
+    };
+    try {
+      await Auth.updateUserAttributes(user, updatedAttributes);
+      const attr = await Auth.currentAuthenticatedUser();
+      console.log(attr);
+      this.onUpdateProfile();
+    } catch (err) {
+      console.error(err);
+      Toaster.show({
+        intent: "danger",
+        message: "Unable to update phone number. Please try again.",
+      });
+    }
+  };
+
   private sendVerificationCode = async (attr): Promise<void> => {
-    const { email, phoneNumber, dialogOpen } = this.state;
+    const { email, dialogOpen } = this.state;
     await Auth.verifyCurrentUserAttribute(attr);
     this.setState({
       dialogOpen: {
         ...dialogOpen,
-        email: attr === "email" ? true : dialogOpen.email,
-        phoneNumber: attr === "phone_number" ? true : dialogOpen.phoneNumber,
+        email: true,
       },
     });
     Toaster.show({
       intent: "primary",
-      message: `Verification code has been sent to ${
-        attr === "email" ? email.value : phoneNumber.value
-      }`,
+      message: `Verification code has been sent to ${email.value}`,
     });
   };
 
   private onUpdateProfile = async (): Promise<void> => {
     const { user } = this.props;
-    const { displayImage, newDisplayImage, shippingAddress } = this.state;
+    const { displayImage, newDisplayImage, shippingAddress, dialogOpen } = this.state;
     try {
       if (displayImage && newDisplayImage) {
         await Storage.remove(displayImage.key);
@@ -173,7 +190,18 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           address_postcode: shippingAddress.postcode,
         },
       };
-      const res = await API.graphql(graphqlOperation(updateUser, { input }));
+      await API.graphql(graphqlOperation(updateUser, { input }));
+      Toaster.show({
+        intent: "success",
+        message: "Profile Successfully Updated.",
+      });
+      this.setState({
+        dialogOpen: {
+          ...dialogOpen,
+          email: false,
+        },
+        isEditing: false,
+      });
     } catch (err) {
       console.error(err);
       Toaster.show({
@@ -183,12 +211,38 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     }
   };
 
+  private getCountryCode = (num: string): { code: string; value: string } => {
+    let length = 2;
+    let i = 0;
+    while (length < 4) {
+      const code = num.substring(0, length);
+      if (code === euroNumbers[i].value) {
+        return {
+          code,
+          value: num.substring(length),
+        };
+      }
+      i++;
+      if (i === euroNumbers.length) {
+        length++;
+        i = 0;
+      }
+    }
+    return {
+      code: null,
+      value: num,
+    };
+  };
+
   private getUserData = async (): Promise<void> => {
-    const { user } = this.props;
+    const { user, userAttributes } = this.props;
+    const { phoneNumber } = this.state;
     const {
       attributes: { sub },
     } = user;
     const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+    const { code, value } = this.getCountryCode(userAttributes.phone_number);
+    console.log(code, value);
     this.setState(
       (prevState): ProfileState => ({
         ...prevState,
@@ -196,9 +250,14 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
         shippingAddress: {
           line1: data.getUser.shippingAddress?.address_line1 ?? "",
           line2: data.getUser.shippingAddress?.address_line2 ?? "",
-          city: data.getUser.shippingAddress?.address_city ?? "",
+          city: data.getUser.shippingAddress?.city ?? "",
           county: data.getUser.shippingAddress?.address_county ?? "",
           postcode: data.getUser.shippingAddress?.address_postcode ?? "",
+        },
+        phoneNumber: {
+          ...phoneNumber,
+          code,
+          value,
         },
         isLoading: false,
       }),
@@ -316,34 +375,18 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     className="profile__input"
                     intent={phoneNumber.error ? "danger" : "none"}
                     helperText={phoneNumber.error}
-                    labelInfo={
-                      <Tag
-                        className="profile__tab"
-                        intent={
-                          phoneNumber.verified &&
-                          phoneNumber.value === userAttributes.phone_number
-                            ? "success"
-                            : "danger"
-                        }
-                      >
-                        {phoneNumber.verified &&
-                        phoneNumber.value === userAttributes.phone_number
-                          ? "Verified"
-                          : "Unverified"}
-                      </Tag>
-                    }
                   >
                     <ControlGroup className="profile__input" fill>
-                      {isEditing && (
-                        <HTMLSelect
-                          options={euroNumbers}
-                          onChange={(e): void =>
-                            this.setState({
-                              phoneNumber: { ...phoneNumber, code: e.target.value },
-                            })
-                          }
-                        />
-                      )}
+                      <HTMLSelect
+                        disabled={!isEditing}
+                        value={phoneNumber.code}
+                        options={euroNumbers}
+                        onChange={(e): void =>
+                          this.setState({
+                            phoneNumber: { ...phoneNumber, code: e.target.value },
+                          })
+                        }
+                      />
                       <InputGroup
                         disabled={!isEditing}
                         intent={phoneNumber.error ? "danger" : "none"}

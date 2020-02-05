@@ -25,5 +25,5 @@ export default [
   { label: "+386 (SVN)", value: "+386" },
   { label: "+34 (ESP)", value: "+34" },
   { label: "+46 (SWE)", value: "+46" },
-  { label: "Other", value: "" },
+  // { label: "Other", value: null },
 ];
