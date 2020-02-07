@@ -42,7 +42,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       error: "",
       code: "",
     },
-
     shippingAddress: null,
     displayImage: null,
     newDisplayImage: null,
@@ -59,7 +58,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
   }
 
   private checkUpdateCredentials = (): void => {
-    const { email, phoneNumber } = this.state;
+    const { email, phoneNumber, shippingAddress } = this.state;
     const { userAttributes } = this.props;
     let errors = false;
     const invalidEmail = validate({ from: email.value }, { from: { email: true } });
@@ -75,7 +74,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     const validPhoneNumber = /^[+]?[(]?[0-9]{3}[)]?[-.]?[0-9]{3}[-.]?[0-9]{4,6}$/im.test(
       `${phoneNumber.code}${phoneNumber.value}`,
     );
-    if (!validPhoneNumber) {
+    if (phoneNumber.value.length && !validPhoneNumber) {
       errors = true;
       this.setState({
         phoneNumber: {
@@ -83,6 +82,24 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           error: "Please enter a valid phone number.",
         },
       });
+    }
+    if (shippingAddress.line1.length) {
+      if (
+        shippingAddress.line1.length < 5 ||
+        !shippingAddress.city ||
+        shippingAddress.city.length < 4 ||
+        !shippingAddress.county ||
+        shippingAddress.county.length < 4 ||
+        !shippingAddress.postcode
+      ) {
+        errors = true;
+        this.setState({
+          shippingAddress: {
+            ...shippingAddress,
+            error: "Please enter a valid address.",
+          },
+        });
+      }
     }
     if (errors) return;
     if (!email.verified || email.value !== userAttributes.email) {
@@ -126,8 +143,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     };
     try {
       await Auth.updateUserAttributes(user, updatedAttributes);
-      const attr = await Auth.currentAuthenticatedUser();
-      console.log(attr);
+      await Auth.currentAuthenticatedUser();
       this.onUpdateProfile();
     } catch (err) {
       console.error(err);
@@ -155,7 +171,13 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
 
   private onUpdateProfile = async (): Promise<void> => {
     const { user } = this.props;
-    const { displayImage, newDisplayImage, shippingAddress, dialogOpen } = this.state;
+    const {
+      displayImage,
+      newDisplayImage,
+      shippingAddress,
+      dialogOpen,
+      username,
+    } = this.state;
     try {
       if (displayImage && newDisplayImage) {
         await Storage.remove(displayImage.key);
@@ -181,15 +203,19 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       const input = {
         id: user.attributes.sub,
         profileImage: file,
-        shippingAddress: {
-          city: shippingAddress.city,
-          country: "United Kingdom",
-          address_line1: shippingAddress.line1,
-          address_line2: shippingAddress.line2 || null,
-          address_county: shippingAddress.county,
-          address_postcode: shippingAddress.postcode,
-        },
+        username: username.value,
+        shippingAddress: shippingAddress.line1.length
+          ? {
+              city: shippingAddress.city,
+              country: "United Kingdom",
+              address_line1: shippingAddress.line1,
+              address_line2: shippingAddress.line2.length ? shippingAddress.line2 : null,
+              address_county: shippingAddress.county,
+              address_postcode: shippingAddress.postcode,
+            }
+          : null,
       };
+      console.log(input);
       await API.graphql(graphqlOperation(updateUser, { input }));
       Toaster.show({
         intent: "success",
@@ -236,28 +262,35 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
 
   private getUserData = async (): Promise<void> => {
     const { user, userAttributes } = this.props;
-    const { phoneNumber } = this.state;
+    const { phoneNumber, username } = this.state;
     const {
       attributes: { sub },
     } = user;
     const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-    const { code, value } = this.getCountryCode(userAttributes.phone_number);
-    console.log(code, value);
+    let res;
+    if (userAttributes.phone_number) {
+      res = this.getCountryCode(userAttributes.phone_number);
+    }
     this.setState(
       (prevState): ProfileState => ({
         ...prevState,
-        displayImage: data.getUser.profileImage,
+        username: {
+          ...username,
+          value: data.getUser?.username ?? user.username,
+        },
+        displayImage: data.getUser?.profileImage ?? "",
         shippingAddress: {
           line1: data.getUser.shippingAddress?.address_line1 ?? "",
           line2: data.getUser.shippingAddress?.address_line2 ?? "",
           city: data.getUser.shippingAddress?.city ?? "",
           county: data.getUser.shippingAddress?.address_county ?? "",
           postcode: data.getUser.shippingAddress?.address_postcode ?? "",
+          error: "",
         },
         phoneNumber: {
           ...phoneNumber,
-          code,
-          value,
+          code: res?.code ?? "",
+          value: res?.value ?? "",
         },
         isLoading: false,
       }),
@@ -372,6 +405,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                 <Col md={6}>
                   <FormGroup
                     label="Phone Number:"
+                    labelInfo="(optional)"
                     className="profile__input"
                     intent={phoneNumber.error ? "danger" : "none"}
                     helperText={phoneNumber.error}
@@ -416,12 +450,14 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     className="profile__input"
                     disabled={!isEditing}
                     value={shippingAddress.line1}
+                    intent={shippingAddress.error ? "danger" : "none"}
                     placeholder="Address line 1..."
                     onChange={(e): void =>
                       this.setState({
                         shippingAddress: {
                           ...shippingAddress,
                           line1: e.target.value,
+                          error: "",
                         },
                       })
                     }
@@ -430,12 +466,13 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     className="profile__input"
                     disabled={!isEditing}
                     value={shippingAddress.line2}
-                    placeholder="Address line 2..."
+                    placeholder="Address line 2... (optional)"
                     onChange={(e): void =>
                       this.setState({
                         shippingAddress: {
                           ...shippingAddress,
                           line2: e.target.value,
+                          error: "",
                         },
                       })
                     }
@@ -445,12 +482,14 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                       className="profile__input--small"
                       disabled={!isEditing}
                       value={shippingAddress.city}
+                      intent={shippingAddress.error ? "danger" : "none"}
                       placeholder="City..."
                       onChange={(e): void =>
                         this.setState({
                           shippingAddress: {
                             ...shippingAddress,
                             city: e.target.value,
+                            error: "",
                           },
                         })
                       }
@@ -459,12 +498,14 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                       className="profile__input--small"
                       disabled={!isEditing}
                       value={shippingAddress.county}
+                      intent={shippingAddress.error ? "danger" : "none"}
                       placeholder="County..."
                       onChange={(e): void =>
                         this.setState({
                           shippingAddress: {
                             ...shippingAddress,
                             county: e.target.value,
+                            error: "",
                           },
                         })
                       }
@@ -473,18 +514,23 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                       className="profile__input--small"
                       disabled={!isEditing}
                       value={shippingAddress.postcode}
+                      intent={shippingAddress.error ? "danger" : "none"}
                       placeholder="Post code..."
                       onChange={(e): void =>
                         this.setState({
                           shippingAddress: {
                             ...shippingAddress,
                             postcode: e.target.value,
+                            error: "",
                           },
                         })
                       }
                     />
                   </div>
                 </FormGroup>
+                <span className="password__error" style={{ padding: "0 15px" }}>
+                  {shippingAddress.error}
+                </span>
               </Row>
               <div className="profile__button-container">
                 <Button

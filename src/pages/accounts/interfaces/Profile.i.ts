@@ -31,6 +31,7 @@ export interface ProfileState {
     line2?: string;
     county: string;
     postcode: string;
+    error: string;
   };
   displayImage: S3ObjectInput;
   newDisplayImage: ImageProps;

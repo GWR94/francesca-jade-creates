@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "francescajadecreates0ab7f115_identitypool_0ab7f115",
-    "allowUnauthenticatedIdentities": true,
-    "resourceNameTruncated": "france0ab7f115",
-    "userPoolName": "francescajadecreates0ab7f115_userpool_0ab7f115",
+    "identityPoolName": "francescajadecreates21d0a9cc_identitypool_21d0a9cc",
+    "allowUnauthenticatedIdentities": false,
+    "resourceNameTruncated": "france21d0a9cc",
+    "userPoolName": "francescajadecreates21d0a9cc_userpool_21d0a9cc",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,9 +28,9 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "france0ab7f115_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "france21d0a9cc_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "resourceName": "francescajadecreates0ab7f115",
+    "resourceName": "francescajadecreates21d0a9cc",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -46,14 +46,14 @@
     },
     "useDefault": "defaultSocial",
     "hostedUI": true,
-    "hostedUIDomainName": "francescajadecreates",
+    "hostedUIDomainName": "fjadecreates",
     "authProvidersUserPool": [
         "Facebook",
         "Google",
         "LoginWithAmazon"
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}},{\"ProviderName\":\"LoginWithAmazon\",\"authorize_scopes\":\"profile profile:user_id\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"user_id\"}}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/auth/login/\",\"https://www.francescajadecreates.co.uk/auth/login/\"],\"LogoutURLs\":[\"http://localhost:3000/auth/logout/\",\"https://www.francescajadecreates.co.uk/auth/logout/\"]}",
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/\"]}",
     "userPoolGroupList": [],
     "dependsOn": []
 }

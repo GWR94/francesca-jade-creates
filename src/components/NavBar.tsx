@@ -3,6 +3,7 @@ import { NavLink, useHistory } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
+import { Auth } from "aws-amplify";
 import logo from "../img/logo.png";
 
 const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
@@ -52,7 +53,7 @@ const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
             <Nav navbar>
               {!user ? (
                 <div
-                  onClick={(): void => history.push("/account")}
+                  onClick={(): Promise<any> => Auth.federatedSignIn()}
                   role="button"
                   tabIndex={0}
                   className={accountOpen ? "nav__link--active" : "nav__link"}

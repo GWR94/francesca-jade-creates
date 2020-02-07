@@ -27,8 +27,8 @@ class AppRouter extends Component {
     accountsTab: "profile",
   };
 
-  public componentDidMount(): void {
-    this.getUserData();
+  public async componentDidMount(): Promise<void> {
+    await this.getUserData();
     Hub.listen("auth", this.onHubCapsule);
   }
 
@@ -40,11 +40,12 @@ class AppRouter extends Component {
       );
       authUser
         ? this.setState(
-            { user: authUser, admin: data.getUser.admin },
+            { user: authUser, admin: data.getUser?.admin ?? false },
             (): Promise<void> => this.getUserAttributes(authUser),
           )
         : this.setState({ user: null, isLoading: false });
     } catch (err) {
+      console.error(err);
       this.setState({ user: null, isLoading: false });
     }
   };
@@ -76,17 +77,18 @@ class AppRouter extends Component {
     }
   };
 
-  private registerNewUser = async (signInData): Promise<void> => {
+  private registerNewUser = async ({ signInUserSession, username }): Promise<void> => {
     const getUserInput = {
-      id: signInData.signInUserSession.idToken.payload.sub,
+      id: signInUserSession.idToken.payload.sub,
     };
+    console.log(getUserInput);
     const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
     if (!data.getUser) {
       try {
         const registerUserInput = {
           ...getUserInput,
-          username: signInData.username,
-          email: signInData.signInUserSession.idToken.payload.email,
+          username,
+          email: signInUserSession.idToken.payload.email,
           registered: true,
         };
         const newUser = await API.graphql(
@@ -101,11 +103,10 @@ class AppRouter extends Component {
     }
   };
 
-  private onHubCapsule = (capsule): void => {
+  private onHubCapsule = async (capsule): Promise<void> => {
     switch (capsule.payload.event) {
       case "signIn":
-        console.log("Signed in");
-        this.getUserData();
+        await this.getUserData();
         this.registerNewUser(capsule.payload.data);
         break;
       case "signUp":

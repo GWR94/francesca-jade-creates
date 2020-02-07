@@ -11,6 +11,7 @@ type Product
   price: Float!
   shippingCost: Float!
   type: String!
+  tags: [String]
 }
 
 type User
@@ -26,6 +27,8 @@ type User
   registered: Boolean
   admin: Boolean
   orders: [Order] @connection(name: "UserOrders")
+  profileImage: S3Object
+  shippingAddress: ShippingAddress
 }
 
 type Order
