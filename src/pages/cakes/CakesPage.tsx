@@ -3,8 +3,8 @@ import { API, graphqlOperation } from "aws-amplify";
 import { H3 } from "@blueprintjs/core";
 import { Row, Col, Container } from "reactstrap";
 import { listProducts } from "../../graphql/queries";
-import Loading from "../../components/Loading";
-import Product from "../../components/Product";
+import Loading from "../../common/Loading";
+import Product from "../../common/Product";
 import { ProductProps } from "../accounts/interfaces/Product.i";
 
 interface State {
@@ -23,16 +23,26 @@ export default class CakesPage extends Component<{}, State> {
   }
 
   private handleGetProducts = async (): Promise<void> => {
-    const { data } = await API.graphql(
-      graphqlOperation(listProducts, {
-        filter: {
-          type: {
-            eq: "Cake",
+    try {
+      const { data } = await API.graphql({
+        query: listProducts,
+        variables: {
+          input: {
+            filter: {
+              type: {
+                eq: "Cake",
+              },
+            },
           },
         },
-      }),
-    );
-    this.setState({ products: data.listProducts.items, isLoading: false });
+        authMode: "API_KEY",
+      });
+      console.log(data);
+
+      this.setState({ products: data.listProducts.items, isLoading: false });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   public render(): JSX.Element {

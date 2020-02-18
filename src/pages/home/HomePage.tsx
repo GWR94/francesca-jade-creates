@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import background from "../../img/background.jpg";
-import Landing from "../../components/Landing";
+import Landing from "../../common/Landing";
 
 const Home: FC = (): JSX.Element => {
   return (
@@ -9,6 +9,7 @@ const Home: FC = (): JSX.Element => {
         style={{
           background: `url(${background}) no-repeat center center fixed`,
         }}
+        className="home__background"
       >
         <Landing />
       </div>

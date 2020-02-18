@@ -2,7 +2,11 @@ type Product
   @model
   @searchable
   @auth(
-    rules: [{ allow: owner, identityField: "sub", operations: [create, update, delete] }]
+    rules: [
+      { allow: public, provider: iam, operations: [read] }
+      { allow: public, prodider: apiKey, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
   ) {
   id: String!
   title: String!
@@ -19,6 +23,14 @@ type User
     queries: { get: "getUser" }
     mutations: { create: "registerUser", update: "updateUser" }
     subscriptions: null
+  )
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "sub" }
+      { allow: groups, groups: ["Admin"] }
+      { allow: private, provider: iam, operations: [read] }
+      { allow: public, prodider: apiKey, operations: [read] }
+    ]
   ) {
   id: ID!
   username: String!

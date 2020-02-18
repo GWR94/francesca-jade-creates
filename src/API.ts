@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
 export type CreateProductInput = {
@@ -10,6 +11,7 @@ export type CreateProductInput = {
   shippingCost: number,
   type: string,
   tags?: Array< string | null > | null,
+  _version?: number | null,
 };
 
 export type S3ObjectInput = {
@@ -91,10 +93,12 @@ export type UpdateProductInput = {
   shippingCost?: number | null,
   type?: string | null,
   tags?: Array< string | null > | null,
+  _version?: number | null,
 };
 
 export type DeleteProductInput = {
   id?: string | null,
+  _version?: number | null,
 };
 
 export type CreateUserInput = {
@@ -103,9 +107,9 @@ export type CreateUserInput = {
   email: string,
   name?: string | null,
   registered?: boolean | null,
-  admin?: boolean | null,
   profileImage?: S3ObjectInput | null,
   shippingAddress?: ShippingAddressInput | null,
+  _version?: number | null,
 };
 
 export type ShippingAddressInput = {
@@ -122,7 +126,6 @@ export type ModelUserConditionInput = {
   email?: ModelStringInput | null,
   name?: ModelStringInput | null,
   registered?: ModelBooleanInput | null,
-  admin?: ModelBooleanInput | null,
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
@@ -141,17 +144,47 @@ export type UpdateUserInput = {
   email?: string | null,
   name?: string | null,
   registered?: boolean | null,
-  admin?: boolean | null,
   profileImage?: S3ObjectInput | null,
   shippingAddress?: ShippingAddressInput | null,
+  _version?: number | null,
 };
 
 export type CreateOrderInput = {
   id?: string | null,
+  product?: ProductInput | null,
+  user?: UserInput | null,
   shippingAddress?: ShippingAddressInput | null,
   createdAt: string,
+  _version?: number | null,
   orderProductId?: string | null,
   orderUserId?: string | null,
+};
+
+export type ProductInput = {
+  id: string,
+  title: string,
+  description: string,
+  image: S3ObjectInput,
+  price: number,
+  shippingCost: number,
+  type: string,
+  tags?: Array< string | null > | null,
+  _version: number,
+  _deleted?: boolean | null,
+  _lastChangedAt: number,
+};
+
+export type UserInput = {
+  id: string,
+  username: string,
+  email: string,
+  name?: string | null,
+  registered?: boolean | null,
+  profileImage?: S3ObjectInput | null,
+  shippingAddress?: ShippingAddressInput | null,
+  _version: number,
+  _deleted?: boolean | null,
+  _lastChangedAt: number,
 };
 
 export type ModelOrderConditionInput = {
@@ -159,6 +192,41 @@ export type ModelOrderConditionInput = {
   and?: Array< ModelOrderConditionInput | null > | null,
   or?: Array< ModelOrderConditionInput | null > | null,
   not?: ModelOrderConditionInput | null,
+};
+
+export type ModelUserFilterInput = {
+  id?: ModelIDInput | null,
+  username?: ModelStringInput | null,
+  email?: ModelStringInput | null,
+  name?: ModelStringInput | null,
+  registered?: ModelBooleanInput | null,
+  and?: Array< ModelUserFilterInput | null > | null,
+  or?: Array< ModelUserFilterInput | null > | null,
+  not?: ModelUserFilterInput | null,
+};
+
+export type ModelIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
+export type ModelOrderFilterInput = {
+  id?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelOrderFilterInput | null > | null,
+  or?: Array< ModelOrderFilterInput | null > | null,
+  not?: ModelOrderFilterInput | null,
 };
 
 export type ModelProductFilterInput = {
@@ -189,6 +257,10 @@ export type SearchableProductFilterInput = {
 
 export type SearchableStringFilterInput = {
   ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
   eq?: string | null,
   match?: string | null,
   matchPhrase?: string | null,
@@ -252,7 +324,9 @@ export type CreateProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -277,7 +351,9 @@ export type UpdateProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -302,7 +378,9 @@ export type DeleteProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -319,15 +397,18 @@ export type RegisterUserMutation = {
     email: string,
     name: string | null,
     registered: boolean | null,
-    admin: boolean | null,
     orders:  {
       __typename: "ModelOrderConnection",
       items:  Array< {
         __typename: "Order",
         id: string,
         createdAt: string,
+        _version: number,
+        _deleted: boolean | null,
+        _lastChangedAt: number,
       } | null > | null,
       nextToken: string | null,
+      startedAt: number | null,
     } | null,
     profileImage:  {
       __typename: "S3Object",
@@ -344,6 +425,9 @@ export type RegisterUserMutation = {
       address_county: string,
       address_postcode: string,
     } | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -360,15 +444,18 @@ export type UpdateUserMutation = {
     email: string,
     name: string | null,
     registered: boolean | null,
-    admin: boolean | null,
     orders:  {
       __typename: "ModelOrderConnection",
       items:  Array< {
         __typename: "Order",
         id: string,
         createdAt: string,
+        _version: number,
+        _deleted: boolean | null,
+        _lastChangedAt: number,
       } | null > | null,
       nextToken: string | null,
+      startedAt: number | null,
     } | null,
     profileImage:  {
       __typename: "S3Object",
@@ -385,6 +472,9 @@ export type UpdateUserMutation = {
       address_county: string,
       address_postcode: string,
     } | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -397,23 +487,6 @@ export type CreateOrderMutation = {
   createOrder:  {
     __typename: "Order",
     id: string,
-    product:  {
-      __typename: "Product",
-      id: string,
-      title: string,
-      description: string,
-      image:  {
-        __typename: "S3Object",
-        bucket: string,
-        region: string,
-        key: string,
-      },
-      price: number,
-      shippingCost: number,
-      type: string,
-      tags: Array< string | null > | null,
-      owner: string | null,
-    } | null,
     user:  {
       __typename: "User",
       id: string,
@@ -421,10 +494,10 @@ export type CreateOrderMutation = {
       email: string,
       name: string | null,
       registered: boolean | null,
-      admin: boolean | null,
       orders:  {
         __typename: "ModelOrderConnection",
         nextToken: string | null,
+        startedAt: number | null,
       } | null,
       profileImage:  {
         __typename: "S3Object",
@@ -441,6 +514,9 @@ export type CreateOrderMutation = {
         address_county: string,
         address_postcode: string,
       } | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
     } | null,
     shippingAddress:  {
       __typename: "ShippingAddress",
@@ -452,30 +528,176 @@ export type CreateOrderMutation = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
+    product:  {
+      __typename: "Product",
+      id: string,
+      title: string,
+      description: string,
+      image:  {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      },
+      price: number,
+      shippingCost: number,
+      type: string,
+      tags: Array< string | null > | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+    } | null,
   } | null,
 };
 
-export type GetProductQueryVariables = {
+export type SyncUsersQueryVariables = {
+  filter?: ModelUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  lastSync?: number | null,
+};
+
+export type SyncUsersQuery = {
+  syncUsers:  {
+    __typename: "ModelUserConnection",
+    items:  Array< {
+      __typename: "User",
+      id: string,
+      username: string,
+      email: string,
+      name: string | null,
+      registered: boolean | null,
+      orders:  {
+        __typename: "ModelOrderConnection",
+        nextToken: string | null,
+        startedAt: number | null,
+      } | null,
+      profileImage:  {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null,
+      shippingAddress:  {
+        __typename: "ShippingAddress",
+        city: string,
+        country: string,
+        address_line1: string,
+        address_line2: string | null,
+        address_county: string,
+        address_postcode: string,
+      } | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+    } | null > | null,
+    nextToken: string | null,
+    startedAt: number | null,
+  } | null,
+};
+
+export type GetUserQueryVariables = {
   id: string,
 };
 
-export type GetProductQuery = {
-  getProduct:  {
-    __typename: "Product",
+export type GetUserQuery = {
+  getUser:  {
+    __typename: "User",
     id: string,
-    title: string,
-    description: string,
-    image:  {
+    username: string,
+    email: string,
+    name: string | null,
+    registered: boolean | null,
+    orders:  {
+      __typename: "ModelOrderConnection",
+      items:  Array< {
+        __typename: "Order",
+        id: string,
+        createdAt: string,
+        _version: number,
+        _deleted: boolean | null,
+        _lastChangedAt: number,
+      } | null > | null,
+      nextToken: string | null,
+      startedAt: number | null,
+    } | null,
+    profileImage:  {
       __typename: "S3Object",
       bucket: string,
       region: string,
       key: string,
-    },
-    price: number,
-    shippingCost: number,
-    type: string,
-    tags: Array< string | null > | null,
-    owner: string | null,
+    } | null,
+    shippingAddress:  {
+      __typename: "ShippingAddress",
+      city: string,
+      country: string,
+      address_line1: string,
+      address_line2: string | null,
+      address_county: string,
+      address_postcode: string,
+    } | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
+  } | null,
+};
+
+export type SyncOrdersQueryVariables = {
+  filter?: ModelOrderFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  lastSync?: number | null,
+};
+
+export type SyncOrdersQuery = {
+  syncOrders:  {
+    __typename: "ModelOrderConnection",
+    items:  Array< {
+      __typename: "Order",
+      id: string,
+      user:  {
+        __typename: "User",
+        id: string,
+        username: string,
+        email: string,
+        name: string | null,
+        registered: boolean | null,
+        _version: number,
+        _deleted: boolean | null,
+        _lastChangedAt: number,
+      } | null,
+      shippingAddress:  {
+        __typename: "ShippingAddress",
+        city: string,
+        country: string,
+        address_line1: string,
+        address_line2: string | null,
+        address_county: string,
+        address_postcode: string,
+      } | null,
+      createdAt: string,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+      product:  {
+        __typename: "Product",
+        id: string,
+        title: string,
+        description: string,
+        price: number,
+        shippingCost: number,
+        type: string,
+        tags: Array< string | null > | null,
+        _version: number,
+        _deleted: boolean | null,
+        _lastChangedAt: number,
+      } | null,
+    } | null > | null,
+    nextToken: string | null,
+    startedAt: number | null,
   } | null,
 };
 
@@ -503,49 +725,38 @@ export type ListProductsQuery = {
       shippingCost: number,
       type: string,
       tags: Array< string | null > | null,
-      owner: string | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
     } | null > | null,
     nextToken: string | null,
+    startedAt: number | null,
   } | null,
 };
 
-export type GetUserQueryVariables = {
+export type GetProductQueryVariables = {
   id: string,
 };
 
-export type GetUserQuery = {
-  getUser:  {
-    __typename: "User",
+export type GetProductQuery = {
+  getProduct:  {
+    __typename: "Product",
     id: string,
-    username: string,
-    email: string,
-    name: string | null,
-    registered: boolean | null,
-    admin: boolean | null,
-    orders:  {
-      __typename: "ModelOrderConnection",
-      items:  Array< {
-        __typename: "Order",
-        id: string,
-        createdAt: string,
-      } | null > | null,
-      nextToken: string | null,
-    } | null,
-    profileImage:  {
+    title: string,
+    description: string,
+    image:  {
       __typename: "S3Object",
       bucket: string,
       region: string,
       key: string,
-    } | null,
-    shippingAddress:  {
-      __typename: "ShippingAddress",
-      city: string,
-      country: string,
-      address_line1: string,
-      address_line2: string | null,
-      address_county: string,
-      address_postcode: string,
-    } | null,
+    },
+    price: number,
+    shippingCost: number,
+    type: string,
+    tags: Array< string | null > | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };
 
@@ -574,15 +785,47 @@ export type SearchProductsQuery = {
       shippingCost: number,
       type: string,
       tags: Array< string | null > | null,
-      owner: string | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
     } | null > | null,
     nextToken: string | null,
     total: number | null,
   } | null,
 };
 
-export type OnCreateProductSubscriptionVariables = {
-  owner: string,
+export type SyncProductsQueryVariables = {
+  filter?: ModelProductFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  lastSync?: number | null,
+};
+
+export type SyncProductsQuery = {
+  syncProducts:  {
+    __typename: "ModelProductConnection",
+    items:  Array< {
+      __typename: "Product",
+      id: string,
+      title: string,
+      description: string,
+      image:  {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      },
+      price: number,
+      shippingCost: number,
+      type: string,
+      tags: Array< string | null > | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+    } | null > | null,
+    nextToken: string | null,
+    startedAt: number | null,
+  } | null,
 };
 
 export type OnCreateProductSubscription = {
@@ -601,12 +844,10 @@ export type OnCreateProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
-};
-
-export type OnUpdateProductSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnUpdateProductSubscription = {
@@ -625,12 +866,10 @@ export type OnUpdateProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
-};
-
-export type OnDeleteProductSubscriptionVariables = {
-  owner: string,
 };
 
 export type OnDeleteProductSubscription = {
@@ -649,6 +888,8 @@ export type OnDeleteProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null > | null,
-    owner: string | null,
+    _version: number,
+    _deleted: boolean | null,
+    _lastChangedAt: number,
   } | null,
 };

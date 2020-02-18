@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "francescajadecreates21d0a9cc_identitypool_21d0a9cc",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "france21d0a9cc",
-    "userPoolName": "francescajadecreates21d0a9cc_userpool_21d0a9cc",
+    "identityPoolName": "francescajadecreates65e4759c_identitypool_65e4759c",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "france65e4759c",
+    "userPoolName": "francescajadecreates65e4759c_userpool_65e4759c",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,9 +28,9 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "france21d0a9cc_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "france65e4759c_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "resourceName": "francescajadecreates21d0a9cc",
+    "resourceName": "francescajadecreates65e4759c",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -46,6 +46,7 @@
     },
     "useDefault": "defaultSocial",
     "hostedUI": true,
+    "triggers": "{}",
     "hostedUIDomainName": "fjadecreates",
     "authProvidersUserPool": [
         "Facebook",
@@ -54,6 +55,11 @@
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}},{\"ProviderName\":\"LoginWithAmazon\",\"authorize_scopes\":\"profile profile:user_id\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"user_id\"}}]",
     "userPoolGroupList": [],
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "permissions": [],
     "dependsOn": [],
+    "adminQueryGroup": "Admin",
     "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"]}"
 }

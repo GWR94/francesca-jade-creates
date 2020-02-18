@@ -6,7 +6,7 @@ import Headroom from "react-headroom";
 import { Auth } from "aws-amplify";
 import logo from "../img/logo.png";
 
-const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
+const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element => {
   const [navOpen, setNavOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -14,6 +14,8 @@ const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
   useEffect((): void => {
     setAccountOpen(window.location.href.split("/").includes("account"));
   });
+
+  console.log(userAttributes);
 
   const history = useHistory();
   return (
@@ -51,17 +53,7 @@ const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
               </NavLink>
             </Nav>
             <Nav navbar>
-              {!user ? (
-                <div
-                  onClick={(): Promise<any> => Auth.federatedSignIn()}
-                  role="button"
-                  tabIndex={0}
-                  className={accountOpen ? "nav__link--active" : "nav__link"}
-                >
-                  <i className="fas fa-user nav__icon" />
-                  Account
-                </div>
-              ) : (
+              {user ? (
                 <Popover
                   content={
                     <Menu>
@@ -73,7 +65,7 @@ const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
                           history.push("account");
                         }}
                       />
-                      {admin ? (
+                      {userAttributes ? (
                         <>
                           <MenuItem
                             icon={
@@ -124,6 +116,16 @@ const NavBar = ({ signOut, admin, setAccountsTab, user }): JSX.Element => {
                     Account
                   </div>
                 </Popover>
+              ) : (
+                <div
+                  onClick={(): Promise<any> => Auth.federatedSignIn()}
+                  role="button"
+                  tabIndex={0}
+                  className={accountOpen ? "nav__link--active" : "nav__link"}
+                >
+                  <i className="fas fa-user nav__icon" />
+                  Account
+                </div>
               )}
               <NavLink
                 to="/contact"

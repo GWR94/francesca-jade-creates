@@ -2,7 +2,11 @@ type Product
   @model
   @searchable
   @auth(
-    rules: [{ allow: owner, identityField: "sub", operations: [create, update, delete] }]
+    rules: [
+      { allow: private, provider: userPools, operations: [update, delete, create, read] }
+      { allow: public, provider: apiKey, operations: [read] }
+      { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
+    ]
   ) {
   id: String!
   title: String!
@@ -19,13 +23,13 @@ type User
     queries: { get: "getUser" }
     mutations: { create: "registerUser", update: "updateUser" }
     subscriptions: null
-  ) {
+  )
+  @auth(rules: [{ allow: owner, ownerField: "id", identityClaim: "sub" }]) {
   id: ID!
   username: String!
   email: String!
   name: String
   registered: Boolean
-  admin: Boolean
   orders: [Order] @connection(name: "UserOrders")
   profileImage: S3Object
   shippingAddress: ShippingAddress

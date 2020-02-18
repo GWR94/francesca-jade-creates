@@ -76,6 +76,10 @@
   background: white;
 }
 
+.home__background {
+  min-height: calc(100vh - 40px);
+}
+
 .landing__creates,
 .landing__cakes {
   display: inline-flex;

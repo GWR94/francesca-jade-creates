@@ -7,7 +7,9 @@ interface Props {
   open: boolean;
   closeDialog: () => void;
   user: any;
-  email: any;
+  email: {
+    value: string;
+  };
 }
 
 const VerificationDialog: React.FC<Props> = ({
@@ -24,12 +26,13 @@ const VerificationDialog: React.FC<Props> = ({
         intent: "success",
         message: "Email address successfully verified",
       });
+      closeDialog();
       setTimeout((): void => window.location.reload(), 3000);
     } catch (err) {
       console.error(err);
       Toaster.show({
         intent: "danger",
-        message: "Error updating email, please try again.",
+        message: "Error updating email, please check the code is valid.",
       });
     }
   };

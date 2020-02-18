@@ -7,12 +7,14 @@ interface Props {
   displayImage: S3ObjectInput;
   isEditing: boolean;
   setImageFile: (image) => void;
+  userImage: string;
 }
 
 const ImagePicker: React.FC<Props> = ({
   displayImage,
   isEditing,
   setImageFile,
+  userImage,
 }): JSX.Element => {
   const [imagePreview, setImagePreview] = useState(null);
   return (
@@ -40,7 +42,10 @@ const ImagePicker: React.FC<Props> = ({
           <img
             className="profile__image"
             alt="User Profile"
-            src="https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
+            src={
+              userImage ||
+              "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
+            }
           />
         </div>
       )}

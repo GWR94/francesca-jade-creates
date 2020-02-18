@@ -11,7 +11,7 @@ import {
   onCreateProduct,
   onDeleteProduct,
 } from "../../graphql/subscriptions";
-import Loading from "../../components/Loading";
+import Loading from "../../common/Loading";
 import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
 
 interface Props {
@@ -87,9 +87,9 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   }
 
   public componentWillUnmount(): void {
-    this.updateProductListener.unsubscribe();
-    this.deleteProductListener.unsubscribe();
-    this.createProductListener.unsubscribe();
+    this.updateProductListener?.unsubscribe();
+    this.deleteProductListener?.unsubscribe();
+    this.createProductListener?.unsubscribe();
   }
 
   private getCurrentPage = (): JSX.Element => {
@@ -110,8 +110,13 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   };
 
   private handleGetProducts = async (): Promise<void> => {
-    const { data } = await API.graphql(graphqlOperation(listProducts));
-    this.setState({ products: data.listProducts.items, isLoading: false });
+    try {
+      const { data } = await API.graphql(graphqlOperation(listProducts));
+      this.setState({ products: data.listProducts.items, isLoading: false });
+    } catch (err) {
+      console.error(err);
+      this.setState({ isLoading: false, products: null });
+    }
   };
 
   public render(): JSX.Element {

@@ -2,50 +2,48 @@ import React, { Component } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { Authenticator, NavBar as Nav } from "aws-amplify-react";
 import Home from "../pages/home/HomePage";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import CreatesPage from "../pages/creates/CreatesPage";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import NavBar from "../components/NavBar";
+import NavBar from "../common/NavBar";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState } from "../interfaces/Router.i";
 import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
-import Loading from "../components/Loading";
+import Loading from "../common/Loading";
 
 export const history = createBrowserHistory();
-export const UserContext = React.createContext(null);
+
+/**
+ * TODO
+ * [ ] Create federated login component with Authenticator
+ */
 
 class AppRouter extends Component {
   public readonly state: RouterState = {
     user: null,
-    admin: false,
     userAttributes: null,
     isLoading: true,
     accountsTab: "profile",
   };
 
-  public async componentDidMount(): Promise<void> {
-    await this.getUserData();
+  public componentDidMount(): void {
+    this.getUserData();
     Hub.listen("auth", this.onHubCapsule);
   }
 
   private getUserData = async (): Promise<void> => {
     try {
-      const authUser = await Auth.currentAuthenticatedUser();
-      const { data } = await API.graphql(
-        graphqlOperation(getUser, { id: authUser.attributes.sub }),
-      );
-      authUser
-        ? this.setState(
-            { user: authUser, admin: data.getUser?.admin ?? false },
-            (): Promise<void> => this.getUserAttributes(authUser),
-          )
-        : this.setState({ user: null, isLoading: false });
+      const user = await Auth.currentAuthenticatedUser();
+      if (user) {
+        this.setState(
+          { user, isLoading: false },
+          (): Promise<void> => this.getUserAttributes(user),
+        );
+      }
     } catch (err) {
-      console.error(err);
       this.setState({ user: null, isLoading: false });
     }
   };
@@ -72,23 +70,23 @@ class AppRouter extends Component {
       const attributesArr = await Auth.userAttributes(authUserData);
       const userAttributes = attributesToObject(attributesArr);
       this.setState({ userAttributes, isLoading: false });
+      console.log("userAttributes: ", userAttributes);
     } catch (err) {
       this.setState({ isLoading: false, userAttributes: null });
     }
   };
 
-  private registerNewUser = async ({ signInUserSession, username }): Promise<void> => {
+  private registerNewUser = async (signInData): Promise<void> => {
     const getUserInput = {
-      id: signInUserSession.idToken.payload.sub,
+      id: signInData.signInUserSession.idToken.payload.sub,
     };
-    console.log(getUserInput);
     const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
     if (!data.getUser) {
       try {
         const registerUserInput = {
           ...getUserInput,
-          username,
-          email: signInUserSession.idToken.payload.email,
+          username: signInData.username,
+          email: signInData.signInUserSession.idToken.payload.email,
           registered: true,
         };
         const newUser = await API.graphql(
@@ -96,7 +94,7 @@ class AppRouter extends Component {
             input: registerUserInput,
           }),
         );
-        console.log(newUser);
+        console.log("user registered: ", newUser);
       } catch (err) {
         console.error("error registering new user", err);
       }
@@ -107,10 +105,10 @@ class AppRouter extends Component {
     switch (capsule.payload.event) {
       case "signIn":
         await this.getUserData();
-        this.registerNewUser(capsule.payload.data);
         break;
       case "signUp":
         console.log("Signed up");
+        this.registerNewUser(capsule.payload.data);
         break;
       case "signOut":
         console.log("Signed out");
@@ -122,13 +120,13 @@ class AppRouter extends Component {
   };
 
   public render(): JSX.Element {
-    const { user, admin, userAttributes, isLoading, accountsTab } = this.state;
+    const { user, userAttributes, isLoading, accountsTab, identity } = this.state;
     return (
       <Router history={history}>
         <NavBar
           signOut={this.handleSignOut}
           user={user}
-          admin={admin}
+          userAttributes={userAttributes}
           setAccountsTab={(tab): void => {
             if (tab !== accountsTab) this.setState({ accountsTab: tab });
           }}
@@ -138,20 +136,17 @@ class AppRouter extends Component {
         ) : (
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/creates" component={CreatesPage} />
-            <Route path="/cakes" component={CakesPage} />
+            <Route path="/creates" user={user} component={CreatesPage} />
+            <Route path="/cakes" user={user} component={CakesPage} />
             <Route
               path="/account"
               component={(): JSX.Element =>
-                user ? (
+                user && (
                   <AccountsPage
                     user={user}
                     userAttributes={userAttributes}
-                    admin={admin}
                     accountsTab={accountsTab}
                   />
-                ) : (
-                  <Authenticator hide={[Nav]} />
                 )
               }
             />

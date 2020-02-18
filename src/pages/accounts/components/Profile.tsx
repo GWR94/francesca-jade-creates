@@ -13,37 +13,28 @@ import { Container, Row, Col } from "reactstrap";
 import validate from "validate.js";
 import { Toaster } from "../../../utils/index";
 import { getUser } from "../../../graphql/queries";
-import Loading from "../../../components/Loading";
+import Loading from "../../../common/Loading";
 import { ProfileProps, ProfileState } from "../interfaces/Profile.i";
 import { updateUser } from "../../../graphql/mutations";
 import { UploadedFile } from "../interfaces/NewProduct.i";
 import awsExports from "../../../aws-exports";
 import euroNumbers from "../../../utils/europeanCodes";
-import ImagePicker from "../../../components/ImagePicker";
+import ImagePicker from "../../../common/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
 
+/**
+ * TODO
+ * [ ] Check auth for product in schema
+ * [ ] Test admin privileges work
+ * [ ] Remove admin from database if cognito admin group can be used
+ */
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
+    username: null,
+    email: null,
     isLoading: true,
     isEditing: false,
-    username: {
-      value: this.props.user.username,
-      error: "",
-    },
-    email: {
-      value: this.props.userAttributes.email,
-      verified: this.props.userAttributes.email_verified,
-      error: "",
-    },
-    phoneNumber: {
-      value: "",
-      verified: this.props.userAttributes.phone_number_verified,
-      error: "",
-      code: "",
-    },
-    shippingAddress: null,
-    displayImage: null,
     newDisplayImage: null,
     percentUploaded: null,
     dialogOpen: {
@@ -51,11 +42,62 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       email: false,
       phoneNumber: false,
     },
+    phoneNumber: null,
+    shippingAddress: null,
+    displayImage: null,
   };
 
-  public componentDidMount(): void {
-    this.getUserData();
+  public async componentDidMount(): Promise<void> {
+    await this.handleRetrieveData();
   }
+
+  private handleRetrieveData = async (): Promise<void> => {
+    try {
+      const { user, userAttributes } = this.props;
+      const { username } = this.state;
+      const {
+        attributes: { sub },
+      } = user;
+      const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+
+      const res = userAttributes.phone_number
+        ? this.getCountryCode(userAttributes.phone_number)
+        : null;
+
+      this.setState(
+        (prevState): ProfileState => ({
+          ...prevState,
+          username: {
+            ...username,
+            value: data.getUser?.username ?? user.username,
+          },
+          email: {
+            value: this.props.userAttributes.email,
+            verified: this.props.userAttributes.email_verified,
+            error: "",
+          },
+          phoneNumber: {
+            value: res?.value ?? "",
+            code: res?.code ?? "+44",
+            verified: userAttributes.phone_number_verified,
+            error: "",
+          },
+          displayImage: data.getUser?.profileImage ?? userAttributes.picture,
+          shippingAddress: {
+            line1: data.getUser?.shippingAddress?.address_line1 ?? "",
+            line2: data.getUser?.shippingAddress?.address_line2 ?? "",
+            city: data.getUser?.shippingAddress?.city ?? "",
+            county: data.getUser?.shippingAddress?.address_county ?? "",
+            postcode: data.getUser?.shippingAddress?.address_postcode ?? "",
+            error: "",
+          },
+          isLoading: false,
+        }),
+      );
+    } catch (err) {
+      console.error("Error with retrieval: ", err);
+    }
+  };
 
   private checkUpdateCredentials = (): void => {
     const { email, phoneNumber, shippingAddress } = this.state;
@@ -260,43 +302,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     };
   };
 
-  private getUserData = async (): Promise<void> => {
-    const { user, userAttributes } = this.props;
-    const { phoneNumber, username } = this.state;
-    const {
-      attributes: { sub },
-    } = user;
-    const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-    let res;
-    if (userAttributes.phone_number) {
-      res = this.getCountryCode(userAttributes.phone_number);
-    }
-    this.setState(
-      (prevState): ProfileState => ({
-        ...prevState,
-        username: {
-          ...username,
-          value: data.getUser?.username ?? user.username,
-        },
-        displayImage: data.getUser?.profileImage ?? "",
-        shippingAddress: {
-          line1: data.getUser.shippingAddress?.address_line1 ?? "",
-          line2: data.getUser.shippingAddress?.address_line2 ?? "",
-          city: data.getUser.shippingAddress?.city ?? "",
-          county: data.getUser.shippingAddress?.address_county ?? "",
-          postcode: data.getUser.shippingAddress?.address_postcode ?? "",
-          error: "",
-        },
-        phoneNumber: {
-          ...phoneNumber,
-          code: res?.code ?? "",
-          value: res?.value ?? "",
-        },
-        isLoading: false,
-      }),
-    );
-  };
-
   public render(): JSX.Element {
     const {
       isLoading,
@@ -358,6 +363,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
               <Row className="profile__row">
                 <ImagePicker
                   displayImage={displayImage}
+                  userImage={userAttributes.picture || null}
                   isEditing={isEditing}
                   setImageFile={(displayImage): void => this.setState({ displayImage })}
                 />

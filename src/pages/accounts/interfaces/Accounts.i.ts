@@ -20,4 +20,5 @@ export interface UserAttributeProps {
   phone_number_verified?: boolean;
   phone_number?: string;
   email?: string;
+  picture?: string;
 }

@@ -63,7 +63,12 @@ if (isLocalhost) {
 }
 const configUpdate = config;
 configUpdate.oauth = oauth;
-Amplify.configure(configUpdate);
+Amplify.configure({
+  ...configUpdate,
+  Auth: {
+    mandatorySignIn: false,
+  },
+});
 
 const App: FC = (): JSX.Element => (
   <div id="app">

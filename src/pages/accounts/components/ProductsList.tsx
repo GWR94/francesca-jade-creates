@@ -1,8 +1,8 @@
 import React from "react";
 import { H3 } from "@blueprintjs/core";
 import { Col, Row, Container } from "reactstrap";
-import Loading from "../../../components/Loading";
-import Product from "../../../components/Product";
+import Loading from "../../../common/Loading";
+import Product from "../../../common/Product";
 import { ProductProps } from "../interfaces/Product.i";
 
 interface ProductListProps {
