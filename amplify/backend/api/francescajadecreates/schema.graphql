@@ -24,7 +24,12 @@ type User
     mutations: { create: "registerUser", update: "updateUser" }
     subscriptions: null
   )
-  @auth(rules: [{ allow: owner, ownerField: "id", identityClaim: "sub" }]) {
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "id", identityClaim: "sub" }
+      { allow: private, provider: userPools }
+    ]
+  ) {
   id: ID!
   username: String!
   email: String!

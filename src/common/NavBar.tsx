@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink, useHistory, Link } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
-import { Auth } from "aws-amplify";
 import logo from "../img/logo.png";
 
 const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element => {
@@ -14,8 +13,6 @@ const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element 
   useEffect((): void => {
     setAccountOpen(window.location.href.split("/").includes("account"));
   });
-
-  console.log(userAttributes);
 
   const history = useHistory();
   return (
@@ -117,15 +114,13 @@ const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element 
                   </div>
                 </Popover>
               ) : (
-                <div
-                  onClick={(): Promise<any> => Auth.federatedSignIn()}
-                  role="button"
-                  tabIndex={0}
+                <Link
+                  to="/login"
                   className={accountOpen ? "nav__link--active" : "nav__link"}
                 >
                   <i className="fas fa-user nav__icon" />
                   Account
-                </div>
+                </Link>
               )}
               <NavLink
                 to="/contact"

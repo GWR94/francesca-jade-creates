@@ -9,6 +9,7 @@
 .landing__image {
   height: auto;
   width: 100vw;
+  margin-top: 6px;
   overflow: hidden;
   z-index: 1;
   @media (max-width: $s-breakpoint) {

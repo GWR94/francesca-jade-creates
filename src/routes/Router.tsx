@@ -13,6 +13,7 @@ import { RouterState } from "../interfaces/Router.i";
 import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
+import Login from "../pages/accounts/components/Login";
 
 export const history = createBrowserHistory();
 
@@ -70,23 +71,24 @@ class AppRouter extends Component {
       const attributesArr = await Auth.userAttributes(authUserData);
       const userAttributes = attributesToObject(attributesArr);
       this.setState({ userAttributes, isLoading: false });
-      console.log("userAttributes: ", userAttributes);
     } catch (err) {
       this.setState({ isLoading: false, userAttributes: null });
     }
   };
 
   private registerNewUser = async (signInData): Promise<void> => {
+    console.log(signInData);
     const getUserInput = {
-      id: signInData.signInUserSession.idToken.payload.sub,
+      id: signInData.id || signInData.signInUserSession.idToken.payload.sub,
     };
     const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
-    if (!data.getUser) {
-      try {
+    console.log(data);
+    try {
+      if (!data.getUser) {
         const registerUserInput = {
           ...getUserInput,
           username: signInData.username,
-          email: signInData.signInUserSession.idToken.payload.email,
+          email: signInData.email || signInData.signInUserSession.idToken.payload.email,
           registered: true,
         };
         const newUser = await API.graphql(
@@ -95,20 +97,22 @@ class AppRouter extends Component {
           }),
         );
         console.log("user registered: ", newUser);
-      } catch (err) {
-        console.error("error registering new user", err);
       }
+    } catch (err) {
+      console.error("error registering new user", err);
     }
   };
 
   private onHubCapsule = async (capsule): Promise<void> => {
     switch (capsule.payload.event) {
       case "signIn":
+        console.log("Signed it");
         await this.getUserData();
+        this.registerNewUser(capsule.payload.data);
+
         break;
       case "signUp":
         console.log("Signed up");
-        this.registerNewUser(capsule.payload.data);
         break;
       case "signOut":
         console.log("Signed out");
@@ -138,6 +142,7 @@ class AppRouter extends Component {
             <Route path="/" exact component={Home} />
             <Route path="/creates" user={user} component={CreatesPage} />
             <Route path="/cakes" user={user} component={CakesPage} />
+            <Route path="/login" user={user} component={Login} />
             <Route
               path="/account"
               component={(): JSX.Element =>
