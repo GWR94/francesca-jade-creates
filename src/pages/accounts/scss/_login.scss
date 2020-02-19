@@ -1,6 +1,6 @@
 .login__container {
   min-height: 380px;
-  margin-top: 100px;
+  margin-top: 20vh;
   font-family: $title-font;
   padding: 20px;
 }
@@ -50,9 +50,19 @@
   color: black !important;
 }
 
-.login__cognito {
+.login__cognito-container {
   width: 360px;
   margin: 0 auto;
+  flex-direction: column;
+  display: flex;
+  height: 100%;
+}
+
+.login__cognito {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .login__forgot {
@@ -79,4 +89,14 @@
   width: 120px;
   display: block;
   text-align: center;
+}
+
+.login__create {
+  color: #337ab7;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  &:hover {
+    text-decoration: underline;
+  }
 }
