@@ -190,4 +190,4 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   }
 }
 
-export default withRouter<any, any>(AccountsPage);
+export default AccountsPage;

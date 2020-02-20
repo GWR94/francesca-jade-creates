@@ -97,7 +97,7 @@ const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element 
                       <MenuItem
                         icon={<i className="fas fa-sign-out-alt nav__dropdown-icon" />}
                         text="Logout"
-                        onClick={(): void => signOut()}
+                        onClick={signOut}
                       />
                     </Menu>
                   }

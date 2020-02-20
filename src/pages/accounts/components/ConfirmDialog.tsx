@@ -25,7 +25,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       isOpen={confirmDialogOpen}
       icon="info-sign"
       title="Are you sure this is correct?"
-      onClose={(): void => closeModal()}
+      onClose={closeModal}
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
@@ -92,14 +92,14 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <Button
           text="Edit"
           intent="warning"
-          onClick={(): void => closeModal()}
+          onClick={closeModal}
           style={{ margin: "6px 4px" }}
         />
         <Button
           text="Looks good!"
           intent="success"
           loading={isUploading}
-          onClick={(): void => onProductCreate()}
+          onClick={onProductCreate}
           style={{ margin: "6px 4px" }}
         />
       </div>

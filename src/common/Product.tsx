@@ -140,7 +140,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         icon="trash"
         intent="danger"
         onCancel={(): void => setDeleteAlert(false)}
-        onConfirm={(): Promise<void> => handleDeleteProduct()}
+        onConfirm={handleDeleteProduct}
       >
         <p>Are you sure you want to delete &quot;{title}&quot;?</p>
         <p>This cannot be undone.</p>

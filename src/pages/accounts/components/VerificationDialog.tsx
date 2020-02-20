@@ -6,7 +6,6 @@ import { Toaster } from "../../../utils";
 interface Props {
   open: boolean;
   closeDialog: () => void;
-  user: any;
   email: {
     value: string;
   };

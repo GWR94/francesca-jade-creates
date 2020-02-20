@@ -13,14 +13,9 @@ import { RouterState } from "../interfaces/Router.i";
 import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
-import Login from "../pages/accounts/components/Login";
+import Login from "../pages/login/Login";
 
 export const history = createBrowserHistory();
-
-/**
- * TODO
- * [ ] Create federated login component with Authenticator
- */
 
 class AppRouter extends Component {
   public readonly state: RouterState = {
@@ -142,7 +137,7 @@ class AppRouter extends Component {
             <Route path="/" exact component={Home} />
             <Route path="/creates" user={user} component={CreatesPage} />
             <Route path="/cakes" user={user} component={CakesPage} />
-            <Route path="/login" user={user} component={Login} />
+            <Route path="/login" history={history} user={user} component={Login} />
             <Route
               path="/account"
               component={(): JSX.Element =>
