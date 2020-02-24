@@ -66,6 +66,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@aws-amplify/api": "^2.1.5",
     "@aws-amplify/auth": "^2.1.5",
     "@aws-amplify/cli": "^4.13.4",
     "@aws-amplify/core": "^2.2.4",

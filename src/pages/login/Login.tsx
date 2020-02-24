@@ -45,7 +45,6 @@ class Login extends React.Component<LoginProps, LoginState> {
       await Auth.signIn(username, password);
       history.push("/");
     } catch (err) {
-      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Failed to sign in. Please check your username and password.",

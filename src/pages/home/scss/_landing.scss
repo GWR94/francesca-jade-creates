@@ -94,6 +94,7 @@
   text-align: center;
   font-size: 18px;
   padding: 8px 12px;
+  border-radius: 10px;
 }
 
 .landing__top-left-box {
@@ -141,7 +142,7 @@
 
 .landing__review-alt {
   @extend %landing__box;
-  margin: -20px 0 0 10px;
+  margin: -25px 0 0 10px;
   text-align: center;
   border: 1px solid $pink;
   min-height: 240px;

@@ -5,9 +5,7 @@ import { Col, Row } from "reactstrap";
 import header from "../../../img/header.png";
 import logo from "../../../img/logo.png";
 
-interface Props {}
-
-const Landing: React.FC<Props> = (): JSX.Element => {
+const Landing: React.FC<{}> = (): JSX.Element => {
   return (
     <>
       <div className="landing__image-container">

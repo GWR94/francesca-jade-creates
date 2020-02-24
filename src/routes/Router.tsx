@@ -52,7 +52,6 @@ class AppRouter extends Component {
         message: "Successfully signed out.",
       });
     } catch (err) {
-      console.error("Error signing out", err);
       Toaster.show({
         intent: "danger",
         message: "Error signing out. Please try again.",
@@ -72,12 +71,10 @@ class AppRouter extends Component {
   };
 
   private registerNewUser = async (signInData): Promise<void> => {
-    console.log(signInData);
     const getUserInput = {
       id: signInData.id || signInData.signInUserSession.idToken.payload.sub,
     };
     const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
-    console.log(data);
     try {
       if (!data.getUser) {
         const registerUserInput = {
@@ -86,31 +83,28 @@ class AppRouter extends Component {
           email: signInData.email || signInData.signInUserSession.idToken.payload.email,
           registered: true,
         };
-        const newUser = await API.graphql(
+        await API.graphql(
           graphqlOperation(registerUser, {
             input: registerUserInput,
           }),
         );
-        console.log("user registered: ", newUser);
+        console.log("user registered");
       }
     } catch (err) {
-      console.error("error registering new user", err);
+      console.error("error registering new user");
     }
   };
 
   private onHubCapsule = async (capsule): Promise<void> => {
     switch (capsule.payload.event) {
       case "signIn":
-        console.log("Signed it");
         await this.getUserData();
         this.registerNewUser(capsule.payload.data);
-
         break;
       case "signUp":
-        console.log("Signed up");
+        this.registerNewUser(capsule.payload.data);
         break;
       case "signOut":
-        console.log("Signed out");
         this.setState({ user: null });
         break;
       default:
@@ -119,7 +113,7 @@ class AppRouter extends Component {
   };
 
   public render(): JSX.Element {
-    const { user, userAttributes, isLoading, accountsTab, identity } = this.state;
+    const { user, userAttributes, isLoading, accountsTab } = this.state;
     return (
       <Router history={history}>
         <NavBar

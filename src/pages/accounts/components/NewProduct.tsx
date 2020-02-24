@@ -174,7 +174,6 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         Please try again.`,
       });
       this.setState({ isUploading: false });
-      console.error(err);
     }
   };
 
@@ -198,7 +197,6 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       const auth = this.checkAuthentication();
       if (!auth) throw new Error("Not authenticated");
       let file: S3ObjectInput = null;
-      console.log(image);
       if (imagePreview) {
         const { identityId } = await Auth.currentCredentials();
         const image = this.state.image as ImageProps;
@@ -242,7 +240,6 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         Please try again.`,
       });
       this.setState({ isUploading: false, confirmDialogOpen: false });
-      console.error(err);
     }
   };
 

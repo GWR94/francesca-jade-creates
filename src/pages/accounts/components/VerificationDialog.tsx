@@ -28,7 +28,6 @@ const VerificationDialog: React.FC<Props> = ({
       closeDialog();
       setTimeout((): void => window.location.reload(), 3000);
     } catch (err) {
-      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Error updating email, please check the code is valid.",

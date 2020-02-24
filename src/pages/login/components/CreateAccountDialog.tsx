@@ -156,7 +156,6 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
         destination: codeDeliveryDetails.Destination,
       });
     } catch (err) {
-      console.error(err);
       this.setState({ createLoading: false });
       Toaster.show({
         intent: "danger",
@@ -206,7 +205,6 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
         intent: "danger",
         message,
       });
-      console.error(err);
     }
   };
 
@@ -264,7 +262,10 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                               message: "Verification code resent.",
                             });
                           } catch (err) {
-                            console.error(err);
+                            Toaster.show({
+                              intent: "danger",
+                              message: "Failed to send email. Please try again.",
+                            });
                           }
                         }}
                       >

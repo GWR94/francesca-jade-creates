@@ -34,7 +34,6 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         message: `${title} has been successfully removed.`,
       });
     } catch (err) {
-      console.error("Error deleting product", err);
       Toaster.show({
         intent: "danger",
         message: `${title} could not be removed.

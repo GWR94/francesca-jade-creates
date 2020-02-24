@@ -84,7 +84,7 @@ module.exports = () => {
       }),
       new HtmlWebpackPlugin({
         template: "./public/index.html",
-        // favicon: "./public/images/favicon.png"
+        favicon: "./public/favicon.ico",
       }),
       new Dotenv(),
     ],

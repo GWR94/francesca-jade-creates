@@ -34,6 +34,7 @@ export default class CreatesPage extends Component<{}, State> {
           },
         },
       },
+      // @ts-ignore
       authMode: "API_KEY",
     });
     this.setState({ products: data.listProducts.items, isLoading: false });
@@ -41,7 +42,6 @@ export default class CreatesPage extends Component<{}, State> {
 
   public render(): JSX.Element {
     const { isLoading, products } = this.state;
-    console.log(products);
     return isLoading ? (
       <Loading size={100} />
     ) : (

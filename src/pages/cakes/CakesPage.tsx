@@ -35,13 +35,13 @@ export default class CakesPage extends Component<{}, State> {
             },
           },
         },
+        // @ts-ignore
         authMode: "API_KEY",
       });
-      console.log(data);
 
       this.setState({ products: data.listProducts.items, isLoading: false });
     } catch (err) {
-      console.error(err);
+      console.error("Failed handleGetProducts()");
     }
   };
 

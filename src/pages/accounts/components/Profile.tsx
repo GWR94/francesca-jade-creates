@@ -95,7 +95,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
         }),
       );
     } catch (err) {
-      console.error("Error with retrieval: ", err);
+      console.error("Failed handleRetrieveData()");
     }
   };
 
@@ -165,11 +165,9 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       if (res === "SUCCESS") {
         this.sendVerificationCode("email");
       }
-      const attr = await Auth.currentAuthenticatedUser();
-      console.log(attr);
+      await Auth.currentAuthenticatedUser();
       this.onUpdateProfile();
     } catch (err) {
-      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Unable to update email address. Please try again.",
@@ -188,7 +186,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       await Auth.currentAuthenticatedUser();
       this.onUpdateProfile();
     } catch (err) {
-      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Unable to update phone number. Please try again.",
@@ -257,7 +254,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
             }
           : null,
       };
-      console.log(input);
       await API.graphql(graphqlOperation(updateUser, { input }));
       Toaster.show({
         intent: "success",
@@ -271,7 +267,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
         isEditing: false,
       });
     } catch (err) {
-      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Error updating profile. Please try again.",

@@ -47,7 +47,6 @@ class ChangePasswordDialog extends React.Component<PasswordProps, PasswordState>
       });
     } catch (err) {
       this.setState({ codeLoading: false });
-      console.error(err);
       let message;
       switch (err.name) {
         case "LimitExceededException":
@@ -84,7 +83,6 @@ class ChangePasswordDialog extends React.Component<PasswordProps, PasswordState>
       onClose();
     } catch (err) {
       this.setState({ verifyLoading: false });
-      console.error(err);
       let message;
       switch (err.name) {
         case "InvalidParameterException":

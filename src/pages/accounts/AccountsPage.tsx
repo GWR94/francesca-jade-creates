@@ -14,10 +14,6 @@ import {
 import Loading from "../../common/Loading";
 import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
 
-interface Props {
-  page: string;
-}
-
 class AccountsPage extends Component<AccountsProps, AccountsState> {
   public readonly state: AccountsState = {
     products: [],
@@ -60,7 +56,6 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     ).subscribe({
       next: (productData): void => {
         const updatedProduct = productData.value.data.onUpdateProduct;
-        console.log(products);
         const updatedProductIdx = products.findIndex(
           (item): boolean => item.id === updatedProduct.id,
         );
@@ -114,7 +109,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
       const { data } = await API.graphql(graphqlOperation(listProducts));
       this.setState({ products: data.listProducts.items, isLoading: false });
     } catch (err) {
-      console.error(err);
+      console.error("Failed handleGetProduct()");
       this.setState({ isLoading: false, products: null });
     }
   };

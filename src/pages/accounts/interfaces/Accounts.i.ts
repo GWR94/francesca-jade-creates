@@ -8,7 +8,6 @@ export interface AccountsState {
 
 export interface AccountsProps {
   user: any;
-  admin: boolean;
   userAttributes: UserAttributeProps;
   setAccountsTab: (page) => void;
   accountsTab: "profile" | "products" | "create" | "orders";
