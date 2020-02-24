@@ -5,11 +5,11 @@ import { CognitoHostedUIIdentityProvider as Provider } from "@aws-amplify/auth/l
 import { ICredentials } from "@aws-amplify/core";
 import { FormGroup, InputGroup, Button, H4 } from "@blueprintjs/core";
 import { History } from "history";
-import { Authenticator } from "aws-amplify-react";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import background from "../../img/background.jpg";
+import PasswordInput from "../../common/PasswordInput";
 
 interface LoginProps {
   history: History;
@@ -24,10 +24,10 @@ interface LoginState {
 
 /**
  * TODO
- * [ ] Refactor graphql to handle code and number rather than just one number
- * [ ] Add create account
- * [ ] Add option to show password on click
+ * [x] Add create account
+ * [x] Add option to show password on click
  * [ ] Open verification option if user is unverified
+ * [ ] Fix styling for smaller devices
  */
 
 class Login extends React.Component<LoginProps, LoginState> {
@@ -109,7 +109,7 @@ class Login extends React.Component<LoginProps, LoginState> {
             <Col sm={6}>
               <div className="login__cognito-container">
                 <div className="login__text">
-                  <H4>Login with your account</H4>
+                  <h3>Login with your account</h3>
                   <p>Please login with your user credentials, or create a new account.</p>
                 </div>
                 <div className="login__cognito">
@@ -134,12 +134,9 @@ class Login extends React.Component<LoginProps, LoginState> {
                       </div>
                     }
                   >
-                    <InputGroup
+                    <PasswordInput
                       value={password}
-                      type="password"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({ password: e.target.value })
-                      }
+                      setValue={(password): void => this.setState({ password })}
                     />
                   </FormGroup>
                   <Button

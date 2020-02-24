@@ -13,6 +13,7 @@ import { Row, Col } from "reactstrap";
 import { Auth } from "aws-amplify";
 import euroNumbers from "../../../utils/europeanCodes";
 import { Toaster } from "../../../utils";
+import PasswordInput from "../../../common/PasswordInput";
 
 interface CreateProps {
   isOpen: boolean;
@@ -337,18 +338,12 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                     intent={password.error ? "danger" : "none"}
                     helperText={password.error}
                   >
-                    <InputGroup
+                    <PasswordInput
                       value={password.value}
-                      type="password"
-                      intent={password.error ? "danger" : "none"}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({
-                          password: {
-                            value: e.target.value,
-                            error: "",
-                          },
-                        })
-                      }
+                      error={password.error}
+                      setValue={(value): void => {
+                        this.setState({ password: { value, error: "" } });
+                      }}
                     />
                   </FormGroup>
                 </Col>

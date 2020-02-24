@@ -10,7 +10,6 @@
 
 // common components
 @import "../common/scss/navbar";
-@import "../common/scss/landing";
 @import "../common/scss/loading";
 @import "../common/scss/product";
 
@@ -28,3 +27,6 @@
 // login page
 @import "../pages/login/scss/login";
 @import "../pages/login/scss/dialog";
+
+// home page
+@import "../pages/home/scss/landing";

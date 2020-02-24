@@ -1,12 +1,13 @@
 import React from "react";
-import { Dialog, InputGroup, Button } from "@blueprintjs/core";
+import { Dialog, InputGroup, Button, FormGroup } from "@blueprintjs/core";
 import { Auth } from "aws-amplify";
 import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
+import PasswordInput from "../../../common/PasswordInput";
 
 /**
  * TODO
- * [ ] Change error text colour
+ * [x] Change error text colour
  * [ ] Test
  */
 
@@ -17,15 +18,19 @@ interface Props {
 }
 
 interface State {
-  error: string;
+  error: "";
   oldPassword: string;
   newPassword: string;
   repeatPassword: string;
+  oldPasswordError: string;
+  newPasswordError: string;
 }
 
 class PasswordChange extends React.Component<Props, State> {
   public readonly state: State = {
     error: "",
+    oldPasswordError: "",
+    newPasswordError: "",
     oldPassword: "",
     newPassword: "",
     repeatPassword: "",
@@ -41,7 +46,19 @@ class PasswordChange extends React.Component<Props, State> {
     if (newPassword.length < 8) {
       errors = true;
       this.setState({
-        error: "Please enter a longer password",
+        newPasswordError: "Please enter a longer password",
+      });
+    }
+    if (newPassword.length === 0) {
+      errors = true;
+      this.setState({
+        newPasswordError: "Please enter a new password",
+      });
+    }
+    if (oldPassword.length === 0) {
+      errors = true;
+      this.setState({
+        oldPasswordError: "Please enter your old new password",
       });
     }
     if (errors) return;
@@ -64,8 +81,16 @@ class PasswordChange extends React.Component<Props, State> {
   };
 
   public render(): JSX.Element {
-    const { error, oldPassword, newPassword, repeatPassword } = this.state;
+    const {
+      error,
+      oldPasswordError,
+      newPasswordError,
+      oldPassword,
+      newPassword,
+      repeatPassword,
+    } = this.state;
     const { open, closeDialog } = this.props;
+
     return (
       <Dialog
         className="password__container"
@@ -75,37 +100,27 @@ class PasswordChange extends React.Component<Props, State> {
         icon="key"
       >
         <Row className="password__dialog">
+          <p>Please enter your old password, and set a new password below.</p>
           <Col xs={4} className="profile__title">
             Old Password:
           </Col>
           <Col xs={8}>
-            <InputGroup
+            <PasswordInput
               className="profile__input"
               value={oldPassword}
-              type="password"
-              onChange={(e): void =>
-                this.setState({
-                  oldPassword: e.target.value,
-                  error: null,
-                })
-              }
+              error={oldPasswordError}
+              setValue={(oldPassword): void => this.setState({ oldPassword, error: "" })}
             />
           </Col>
           <Col xs={4} className="profile__title">
             New Password:
           </Col>
           <Col xs={8}>
-            <InputGroup
+            <PasswordInput
               className="profile__input"
               value={newPassword}
-              intent={error ? "danger" : "none"}
-              type="password"
-              onChange={(e): void =>
-                this.setState({
-                  newPassword: e.target.value,
-                  error: null,
-                })
-              }
+              error={error || newPasswordError}
+              setValue={(newPassword): void => this.setState({ newPassword, error: "" })}
             />
           </Col>
           <Col xs={4} className="profile__title">

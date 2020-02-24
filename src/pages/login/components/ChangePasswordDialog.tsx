@@ -4,6 +4,7 @@ import { Dialog, FormGroup, InputGroup, Button } from "@blueprintjs/core";
 import { Auth } from "aws-amplify";
 import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
+import PasswordInput from "../../../common/PasswordInput";
 
 interface PasswordProps {
   isOpen: boolean;
@@ -149,12 +150,9 @@ class ChangePasswordDialog extends React.Component<PasswordProps, PasswordState>
                 </Col>
                 <Col sm={6}>
                   <FormGroup label="New Password:">
-                    <InputGroup
+                    <PasswordInput
                       value={newPassword}
-                      type="password"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({ newPassword: e.target.value })
-                      }
+                      setValue={(newPassword): void => this.setState({ newPassword })}
                     />
                   </FormGroup>
                 </Col>
