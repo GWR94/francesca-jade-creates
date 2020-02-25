@@ -4,8 +4,27 @@ import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
 import logo from "../img/logo.png";
+import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
 
-const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element => {
+/**
+ * TODO
+ * [ ] Close nav when clicking a link in mobile nav
+ */
+
+interface NavBarProps {
+  signOut: () => void;
+  setAccountsTab: (tab) => void;
+  user: any;
+  userAttributes: UserAttributeProps;
+  admin: boolean;
+}
+
+const NavBar: React.FC<NavBarProps> = ({
+  signOut,
+  setAccountsTab,
+  user,
+  admin,
+}): JSX.Element => {
   const [navOpen, setNavOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -62,7 +81,7 @@ const NavBar = ({ signOut, setAccountsTab, user, userAttributes }): JSX.Element 
                           history.push("account");
                         }}
                       />
-                      {userAttributes ? (
+                      {admin ? (
                         <>
                           <MenuItem
                             icon={

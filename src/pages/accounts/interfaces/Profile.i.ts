@@ -5,6 +5,7 @@ import { ImageProps } from "./NewProduct.i";
 export interface ProfileProps {
   userAttributes: UserAttributeProps;
   user: any;
+  admin: boolean;
 }
 
 export interface ProfileState {

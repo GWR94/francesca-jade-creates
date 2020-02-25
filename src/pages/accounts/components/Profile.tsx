@@ -28,6 +28,7 @@ import VerificationDialog from "./VerificationDialog";
  * [ ] Check auth for product in schema
  * [ ] Test admin privileges work
  * [ ] Remove admin from database if cognito admin group can be used
+ * [ ] Remove auto verifying email and add button/tag to verify
  */
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
@@ -47,55 +48,51 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     displayImage: null,
   };
 
-  public async componentDidMount(): Promise<void> {
-    await this.handleRetrieveData();
+  public componentDidMount(): void {
+    this.handleRetrieveData();
   }
 
   private handleRetrieveData = async (): Promise<void> => {
     try {
       const { user, userAttributes } = this.props;
-      const { username } = this.state;
       const {
         attributes: { sub },
       } = user;
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+      let res = null;
+      if (user.phone_number) {
+        res = this.getCountryCode(userAttributes.phone_number);
+      }
 
-      const res = userAttributes.phone_number
-        ? this.getCountryCode(userAttributes.phone_number)
-        : null;
-
-      this.setState(
-        (prevState): ProfileState => ({
-          ...prevState,
-          username: {
-            ...username,
-            value: data.getUser?.username ?? user.username,
-          },
-          email: {
-            value: this.props.userAttributes.email,
-            verified: this.props.userAttributes.email_verified,
-            error: "",
-          },
-          phoneNumber: {
-            value: res?.value ?? "",
-            code: res?.code ?? "+44",
-            verified: userAttributes.phone_number_verified,
-            error: "",
-          },
-          displayImage: data.getUser?.profileImage ?? userAttributes.picture,
-          shippingAddress: {
-            line1: data.getUser?.shippingAddress?.address_line1 ?? "",
-            line2: data.getUser?.shippingAddress?.address_line2 ?? "",
-            city: data.getUser?.shippingAddress?.city ?? "",
-            county: data.getUser?.shippingAddress?.address_county ?? "",
-            postcode: data.getUser?.shippingAddress?.address_postcode ?? "",
-            error: "",
-          },
-          isLoading: false,
-        }),
-      );
+      this.setState({
+        username: {
+          value: data.getUser?.username ?? user.username,
+          error: "",
+        },
+        email: {
+          value: this.props.userAttributes?.email ?? "",
+          verified: this.props.userAttributes?.email_verified ?? false,
+          error: "",
+        },
+        phoneNumber: {
+          value: res?.value ?? "",
+          code: res?.code ?? "+44",
+          verified: userAttributes?.phone_number_verified ?? false,
+          error: "",
+        },
+        displayImage: data.getUser.profileImage,
+        shippingAddress: {
+          line1: data.getUser?.shippingAddress?.address_line1 ?? "",
+          line2: data.getUser?.shippingAddress?.address_line2 ?? "",
+          city: data.getUser?.shippingAddress?.city ?? "",
+          county: data.getUser?.shippingAddress?.address_county ?? "",
+          postcode: data.getUser?.shippingAddress?.address_postcode ?? "",
+          error: "",
+        },
+        isLoading: false,
+      });
     } catch (err) {
-      console.error("Failed handleRetrieveData()");
+      console.error("Failed handleRetrieveData()", err);
     }
   };
 
@@ -358,7 +355,10 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
               <Row className="profile__row">
                 <ImagePicker
                   displayImage={displayImage}
-                  userImage={userAttributes.picture || null}
+                  userImage={
+                    user?.picture ??
+                    "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
+                  }
                   isEditing={isEditing}
                   setImageFile={(displayImage): void => this.setState({ displayImage })}
                 />
@@ -539,7 +539,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                   large
                   onClick={(): void => this.setState({ isEditing: !isEditing })}
                   intent={isEditing ? "warning" : "success"}
-                  style={{ margin: "0 5px" }}
+                  style={{ margin: "0 5px 30px" }}
                 />
                 {isEditing && (
                   <Button
@@ -547,7 +547,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     large
                     intent="success"
                     onClick={this.checkUpdateCredentials}
-                    style={{ margin: "0 5px" }}
+                    style={{ margin: "0 5px 30px" }}
                   />
                 )}
               </div>

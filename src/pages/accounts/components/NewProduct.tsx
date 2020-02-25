@@ -130,11 +130,10 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       type,
       tags,
     } = this.state;
-    const { onCancel } = this.props;
+    const { onCancel, admin } = this.props;
     try {
       this.setState({ isUploading: true });
-      const auth = this.checkAuthentication();
-      if (!auth) throw new Error("Not authenticated.");
+      if (!admin) throw new Error("Not authenticated.");
       const image = this.state.image as ImageProps;
       const { identityId } = await Auth.currentCredentials();
       const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
@@ -158,8 +157,9 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
         shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
         type,
-        tags,
+        tags: tags.length === 0 ? null : tags,
       };
+      console.log(input);
       await API.graphql(graphqlOperation(createProduct, { input }));
       Toaster.show({
         intent: "success",
@@ -168,6 +168,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       this.setState({ ...initialState });
       onCancel();
     } catch (err) {
+      console.error(err);
       Toaster.show({
         intent: "danger",
         message: `Error adding ${title}.

@@ -22,6 +22,7 @@ export interface NewProductProps {
   onCancel: () => void;
   update?: boolean;
   product?: ProductProps;
+  admin: boolean;
 }
 
 export interface ImageProps {

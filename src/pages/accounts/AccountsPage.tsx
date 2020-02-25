@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
-import { withRouter } from "react-router-dom";
 import { listProducts } from "../../graphql/queries";
 import NewProduct from "./components/NewProduct";
 import Profile from "./components/Profile";
@@ -14,12 +13,13 @@ import {
 import Loading from "../../common/Loading";
 import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
 
+const initialState: AccountsState = {
+  products: [],
+  isLoading: true,
+  currentTab: "profile",
+};
 class AccountsPage extends Component<AccountsProps, AccountsState> {
-  public readonly state: AccountsState = {
-    products: [],
-    isLoading: true,
-    currentTab: "profile",
-  };
+  public readonly state = initialState;
 
   private updateProductListener;
 
@@ -29,7 +29,22 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
 
   public async componentDidMount(): Promise<void> {
     await this.handleGetProducts();
+    await this.handleSubscriptions();
+    this.setState({ isLoading: false });
+  }
 
+  public componentWillUnmount(): void {
+    this.updateProductListener?.unsubscribe();
+    this.deleteProductListener?.unsubscribe();
+    this.createProductListener?.unsubscribe();
+  }
+
+  private handleGetProducts = async (): Promise<void> => {
+    const { data } = await API.graphql(graphqlOperation(listProducts));
+    this.setState({ products: data.listProducts.items, isLoading: false });
+  };
+
+  private handleSubscriptions = async (): Promise<void> => {
     const { products } = this.state;
     const { user, accountsTab } = this.props;
     const {
@@ -79,45 +94,31 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
         this.setState({ products: updatedProducts });
       },
     });
-  }
-
-  public componentWillUnmount(): void {
-    this.updateProductListener?.unsubscribe();
-    this.deleteProductListener?.unsubscribe();
-    this.createProductListener?.unsubscribe();
-  }
+  };
 
   private getCurrentPage = (): JSX.Element => {
     const { products, currentTab } = this.state;
-    const { userAttributes, user } = this.props;
+    const { userAttributes, user, admin } = this.props;
     switch (currentTab) {
       case "profile":
-        return <Profile user={user} userAttributes={userAttributes} />;
+        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
       case "products":
         return <Products products={products} />;
       case "create":
         return (
-          <NewProduct onCancel={(): void => this.setState({ currentTab: "products" })} />
+          <NewProduct
+            admin={admin}
+            onCancel={(): void => this.setState({ currentTab: "products" })}
+          />
         );
       default:
-        return null;
-    }
-  };
-
-  private handleGetProducts = async (): Promise<void> => {
-    try {
-      const { data } = await API.graphql(graphqlOperation(listProducts));
-      this.setState({ products: data.listProducts.items, isLoading: false });
-    } catch (err) {
-      console.error("Failed handleGetProduct()");
-      this.setState({ isLoading: false, products: null });
+        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
     }
   };
 
   public render(): JSX.Element {
     const { isLoading, currentTab } = this.state;
     const { admin } = this.props;
-
     return isLoading ? (
       <Loading size={100} />
     ) : (

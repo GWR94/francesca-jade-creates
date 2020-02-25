@@ -32,45 +32,9 @@
 					}
 				}
 			}
-		},
-		"AdminQueries": {
-			"service": "API Gateway",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": [
-				{
-					"category": "auth",
-					"resourceName": "francescajadecreates65e4759c",
-					"attributes": [
-						"UserPoolId"
-					]
-				},
-				{
-					"category": "function",
-					"resourceName": "AdminQueries54f2d6ca",
-					"attributes": [
-						"Arn",
-						"Name"
-					]
-				}
-			]
 		}
 	},
-	"function": {
-		"AdminQueries54f2d6ca": {
-			"service": "Lambda",
-			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": [
-				{
-					"category": "auth",
-					"resourceName": "francescajadecreates65e4759c",
-					"attributes": [
-						"UserPoolId"
-					]
-				}
-			]
-		}
-	},
+	"function": {},
 	"storage": {
 		"fjadecreatesmedia": {
 			"service": "S3",

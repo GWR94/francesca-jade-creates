@@ -14,6 +14,7 @@ const ImagePicker: React.FC<Props> = ({
   displayImage,
   isEditing,
   setImageFile,
+  userImage,
 }): JSX.Element => {
   const [imagePreview, setImagePreview] = useState(null);
   return (
@@ -30,7 +31,7 @@ const ImagePicker: React.FC<Props> = ({
           </div>
         ) : (
           <div className="profile__image-container">
-            {typeof displayImage === "object" ? (
+            {displayImage ? (
               <S3Image
                 imgKey={displayImage.key}
                 theme={{
@@ -38,14 +39,7 @@ const ImagePicker: React.FC<Props> = ({
                 }}
               />
             ) : (
-              <img
-                src={
-                  displayImage ||
-                  "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
-                }
-                alt="Profile"
-                className="profile__image"
-              />
+              <img src={userImage} alt="Profile" className="profile__image" />
             )}
           </div>
         )}

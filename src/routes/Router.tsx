@@ -25,6 +25,8 @@ class AppRouter extends Component {
     accountsTab: "profile",
   };
 
+  private admin = false;
+
   public componentDidMount(): void {
     this.getUserData();
     Hub.listen("auth", this.onHubCapsule);
@@ -34,12 +36,16 @@ class AppRouter extends Component {
     try {
       const user = await Auth.currentAuthenticatedUser();
       if (user) {
+        this.admin =
+          user.signInUserSession.idToken.payload["cognito:groups"].includes("Admin") ||
+          false;
         this.setState(
           { user, isLoading: false },
           (): Promise<void> => this.getUserAttributes(user),
         );
       }
     } catch (err) {
+      this.admin = false;
       this.setState({ user: null, isLoading: false });
     }
   };
@@ -119,6 +125,7 @@ class AppRouter extends Component {
         <NavBar
           signOut={this.handleSignOut}
           user={user}
+          admin={this.admin}
           userAttributes={userAttributes}
           setAccountsTab={(tab): void => {
             if (tab !== accountsTab) this.setState({ accountsTab: tab });
@@ -140,6 +147,7 @@ class AppRouter extends Component {
                     user={user}
                     userAttributes={userAttributes}
                     accountsTab={accountsTab}
+                    admin={this.admin}
                   />
                 )
               }

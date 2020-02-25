@@ -11,6 +11,7 @@ export interface AccountsProps {
   userAttributes: UserAttributeProps;
   setAccountsTab: (page) => void;
   accountsTab: "profile" | "products" | "create" | "orders";
+  admin: boolean;
 }
 
 export interface UserAttributeProps {
