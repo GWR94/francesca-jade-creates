@@ -2,18 +2,20 @@ import React, { Component } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import Home from "../pages/home/HomePage";
+import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import CreatesPage from "../pages/creates/CreatesPage";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import NavBar from "../common/NavBar";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
-import { RouterState } from "../interfaces/Router.i";
+import { RouterState } from "./interfaces/Router.i";
 import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
 import Login from "../pages/login/Login";
+import background from "../img/background.jpg";
+import Product from "../common/Product";
 
 export const history = createBrowserHistory();
 
@@ -122,39 +124,45 @@ class AppRouter extends Component {
     const { user, userAttributes, isLoading, accountsTab } = this.state;
     return (
       <Router history={history}>
-        <NavBar
-          signOut={this.handleSignOut}
-          user={user}
-          admin={this.admin}
-          userAttributes={userAttributes}
-          setAccountsTab={(tab): void => {
-            if (tab !== accountsTab) this.setState({ accountsTab: tab });
-          }}
-        />
-        {isLoading ? (
-          <Loading size={100} />
-        ) : (
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/creates" user={user} component={CreatesPage} />
-            <Route path="/cakes" user={user} component={CakesPage} />
-            <Route path="/login" history={history} user={user} component={Login} />
-            <Route
-              path="/account"
-              component={(): JSX.Element =>
-                user && (
-                  <AccountsPage
-                    user={user}
-                    userAttributes={userAttributes}
-                    accountsTab={accountsTab}
-                    admin={this.admin}
-                  />
-                )
-              }
-            />
-            <Route component={NotFoundPage} />
-          </Switch>
-        )}
+        <div
+          className="landing__background"
+          style={{ background: `url(${background}) no-repeat center` }}
+        >
+          <NavBar
+            signOut={this.handleSignOut}
+            user={user}
+            admin={this.admin}
+            userAttributes={userAttributes}
+            setAccountsTab={(tab): void => {
+              if (tab !== accountsTab) this.setState({ accountsTab: tab });
+            }}
+          />
+          {isLoading ? (
+            <Loading size={100} />
+          ) : (
+            <Switch>
+              <Route path="/" exact component={Landing} />
+              <Route path="/creates" user={user} component={CreatesPage} />
+              <Route path="/cakes" exact user={user} component={CakesPage} />
+              <Route path="/cakes/:id" component={Product} />
+              <Route path="/login" history={history} user={user} component={Login} />
+              <Route
+                path="/account"
+                component={(): JSX.Element =>
+                  user && (
+                    <AccountsPage
+                      user={user}
+                      userAttributes={userAttributes}
+                      accountsTab={accountsTab}
+                      admin={this.admin}
+                    />
+                  )
+                }
+              />
+              <Route component={NotFoundPage} />
+            </Switch>
+          )}
+        </div>
       </Router>
     );
   }

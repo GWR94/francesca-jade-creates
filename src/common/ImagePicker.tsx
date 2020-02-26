@@ -1,16 +1,9 @@
 import React, { useState } from "react";
 import { FormGroup } from "@blueprintjs/core";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
-import { S3ObjectInput } from "../API";
+import { ImagePickerProps } from "./interfaces/ImagePicker.i";
 
-interface Props {
-  displayImage: S3ObjectInput;
-  isEditing: boolean;
-  setImageFile: (image) => void;
-  userImage: string;
-}
-
-const ImagePicker: React.FC<Props> = ({
+const ImagePicker: React.FC<ImagePickerProps> = ({
   displayImage,
   isEditing,
   setImageFile,

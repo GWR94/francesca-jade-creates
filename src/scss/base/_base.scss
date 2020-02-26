@@ -1,8 +1,8 @@
 .content-container {
-  width: 80vw;
+  width: 70vw;
   background: #fff;
-  margin: 10px auto 0;
-  min-height: calc(100vh - 56px);
+  margin: 0 auto;
+  min-height: calc(100vh - 54px);
   @media screen and (max-width: $s-breakpoint) {
     width: 100vw;
   }

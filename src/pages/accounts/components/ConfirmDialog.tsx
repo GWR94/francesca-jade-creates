@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog, Classes, Button, Tag, ProgressBar } from "@blueprintjs/core";
 import { S3Image } from "aws-amplify-react";
-import { ConfirmDialogProps } from "../../../interfaces/ConfirmDialog.i";
+import { ConfirmDialogProps } from "../interfaces/ConfirmDialog.i";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   confirmDialogOpen,

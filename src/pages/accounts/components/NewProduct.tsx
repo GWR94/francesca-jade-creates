@@ -22,24 +22,29 @@ import {
   ImageProps,
 } from "../interfaces/NewProduct.i";
 import ConfirmDialog from "./ConfirmDialog";
-import { getUser } from "../../../graphql/queries";
 import awsExports from "../../../aws-exports";
 import { S3ObjectInput } from "../../../API";
 import { Toaster } from "../../../utils/index";
 
 const initialState: NewProductState = {
-  title: "",
-  description: "",
+  title: {
+    value: "",
+    error: "",
+  },
+  description: {
+    value: "",
+    error: "",
+  },
   type: "Cake",
   setPrice: false,
   productCost: "",
   shippingCost: "",
-  image: null,
-  imagePreview: null,
+  image: {
+    value: null,
+    error: "",
+    preview: null,
+  },
   isUploading: false,
-  titleError: null,
-  descriptionError: null,
-  imageError: null,
   confirmDialogOpen: false,
   percentUploaded: 0,
   tags: [],
@@ -50,7 +55,19 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
     ? {
         ...initialState,
         ...this.props.product,
-        image: this.props.product.image,
+        title: {
+          value: this.props.product.title,
+          error: "",
+        },
+        description: {
+          value: this.props.product.description,
+          error: "",
+        },
+        image: {
+          value: this.props.product.image,
+          error: "",
+          preview: null,
+        },
         setPrice: this.props.product.price > 0,
         productCost: this.props.product.price.toString(),
         shippingCost: this.props.product.shippingCost.toString(),
@@ -59,13 +76,14 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
     : initialState;
 
   private handleFormItem = (e, type: string): void => {
-    if (type === "title") this.setState({ titleError: null });
-    if (type === "description") this.setState({ descriptionError: null });
     const { value } = e.target;
     this.setState(
-      (state): NewProductState => ({
-        ...state,
-        [type]: value,
+      (prevState): NewProductState => ({
+        ...prevState,
+        [type]: {
+          value,
+          error: "",
+        },
       }),
     );
   };
@@ -76,22 +94,31 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
     const { title, description, image } = this.state;
     const { update } = this.props;
     let errors = false;
-    if (title.length < 5) {
+    if (title.value.length < 5) {
       errors = true;
       this.setState({
-        titleError: "Please enter a longer title (Minimum 5 characters).",
+        title: {
+          ...title,
+          error: "Please enter a longer title (Minimum 5 characters).",
+        },
       });
     }
-    if (description.length <= 20) {
+    if (description.value.length <= 20) {
       errors = true;
       this.setState({
-        descriptionError: "Please enter a detailed description (Minimum 20 characters).",
+        description: {
+          ...description,
+          error: "Please enter a detailed description (Minimum 20 characters).",
+        },
       });
     }
     if (!image && !update) {
       errors = true;
       this.setState({
-        imageError: "Please add an image for your product",
+        image: {
+          ...image,
+          error: "Please add an image for your product",
+        },
       });
     }
     if (errors) {
@@ -102,22 +129,6 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       return;
     }
     this.setState({ confirmDialogOpen: true });
-  };
-
-  private checkAuthentication = async (): Promise<boolean> => {
-    const data = await Auth.currentAuthenticatedUser();
-    const user = await API.graphql(
-      graphqlOperation(getUser, { id: data.attributes.sub }),
-    );
-    if (!user.data.getUser.admin) {
-      Toaster.show({
-        intent: "danger",
-        message: `You do not have the correct privileges to complete this action.
-          Speak to an admin if you think this is a mistake.`,
-      });
-      return false;
-    }
-    return true;
   };
 
   private onProductCreate = async (): Promise<void> => {
@@ -133,8 +144,15 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
     const { onCancel, admin } = this.props;
     try {
       this.setState({ isUploading: true });
-      if (!admin) throw new Error("Not authenticated.");
-      const image = this.state.image as ImageProps;
+      if (!admin) {
+        Toaster.show({
+          intent: "danger",
+          message: `You do not have the correct privileges to complete this action.
+          Speak to an admin if you think this is a mistake.`,
+        });
+        return;
+      }
+      const image = this.state.image.value as ImageProps;
       const { identityId } = await Auth.currentCredentials();
       const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
       const uploadedFile = await Storage.put(filename, image.file, {
@@ -159,7 +177,6 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         type,
         tags: tags.length === 0 ? null : tags,
       };
-      console.log(input);
       await API.graphql(graphqlOperation(createProduct, { input }));
       Toaster.show({
         intent: "success",
@@ -181,26 +198,26 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
   private onProductUpdate = async (): Promise<void> => {
     const {
       title,
-      imagePreview,
       description,
       productCost,
       shippingCost,
       setPrice,
       type,
       tags,
+      image,
     } = this.state;
     const {
-      product: { id, image },
+      product: { id },
       onCancel,
       product,
+      admin,
     } = this.props;
     try {
-      const auth = this.checkAuthentication();
-      if (!auth) throw new Error("Not authenticated");
+      if (!admin) throw new Error("Not authenticated");
       let file: S3ObjectInput = null;
-      if (imagePreview) {
+      if (image.preview) {
         const { identityId } = await Auth.currentCredentials();
-        const image = this.state.image as ImageProps;
+        const image = this.state.image.value as ImageProps;
         await Storage.remove(product.image.key);
         const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
         const newImage = await Storage.put(filename, image.file, {
@@ -221,7 +238,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         id,
         title,
         description,
-        image: imagePreview ? file : image,
+        image: image.preview ? file : product.image,
         price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
         shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
         type,
@@ -252,11 +269,11 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       setPrice,
       shippingCost,
       productCost,
-      imagePreview,
-      titleError,
-      descriptionError,
-      imageError,
+      image,
       tags,
+      percentUploaded,
+      isUploading,
+      confirmDialogOpen,
     } = this.state;
     const { update, product } = this.props;
 
@@ -269,30 +286,30 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         <div className="new-product__container">
           <H3>{update ? "Update Product" : "Create a Product"}</H3>
           <FormGroup
-            helperText={titleError}
+            helperText={title.error}
             label="Title:"
-            intent={titleError ? "danger" : "none"}
+            intent={title.error ? "danger" : "none"}
             className="new-product__input"
           >
             <InputGroup
               className="new-product__title"
               placeholder="Enter a product title..."
               onChange={(e): void => this.handleFormItem(e, "title")}
-              value={title}
-              intent={titleError ? "danger" : "none"}
+              value={title.value}
+              intent={title.error ? "danger" : "none"}
             />
           </FormGroup>
           <FormGroup
-            helperText={descriptionError}
+            helperText={description.error}
             label="Description:"
-            intent={descriptionError ? "danger" : "none"}
+            intent={description.error ? "danger" : "none"}
             className="new-product__input"
           >
             <TextArea
               className="new-product__description"
               placeholder="Enter a product description..."
               onChange={(e): void => this.handleFormItem(e, "description")}
-              value={description}
+              value={description.value}
               rows={5}
             />
           </FormGroup>
@@ -362,14 +379,14 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
               />
             </FormGroup>
 
-            {imagePreview && (
+            {image.preview && (
               <img
                 className="new-product__image-preview"
-                src={imagePreview}
+                src={image.preview}
                 alt="Product Preview"
               />
             )}
-            {!imagePreview && update && (
+            {!image.preview && update && (
               <S3Image
                 imgKey={product.image.key}
                 theme={{
@@ -379,12 +396,18 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
             )}
 
             <PhotoPicker
-              title={imagePreview || update ? "Change Image" : "Product Image"}
+              title={image.preview || update ? "Change Image" : "Product Image"}
               preview="hidden"
               headerHint="You can add multiple images once the product has been created."
               headerText="Add a photo of your product"
               onLoad={(url): void =>
-                this.setState({ imagePreview: url, imageError: null })
+                this.setState({
+                  image: {
+                    ...image,
+                    preview: url,
+                    error: null,
+                  },
+                })
               }
               onPick={(file): void => this.setState({ image: file })}
               theme={{
@@ -398,7 +421,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                   alignItems: "center",
                   justifyContent: "center",
                   width: "100%",
-                  boxShadow: imageError
+                  boxShadow: image.error
                     ? "1px 1px 4px 0 rgba(240, 24, 24, 0.65)"
                     : "1px 1px 4px 0 rgba(0, 0, 0, 0.35)",
                   marginBottom: 0,
@@ -417,8 +440,8 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                 },
               }}
             />
-            {imageError && (
-              <p style={{ color: "#c23030", fontSize: "12px" }}>{imageError}</p>
+            {image.error && (
+              <p style={{ color: "#c23030", fontSize: "12px" }}>{image.error}</p>
             )}
           </div>
 
@@ -446,9 +469,19 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
           </div>
         </div>
         <ConfirmDialog
-          {...this.state}
+          title={title.value}
+          description={description.value}
+          type={type}
+          setPrice={setPrice}
+          productCost={productCost}
+          shippingCost={shippingCost}
+          isUploading={isUploading}
+          imagePreview={image.preview}
+          percentUploaded={percentUploaded}
+          tags={tags}
           product={product}
           update={update}
+          confirmDialogOpen={confirmDialogOpen}
           onProductCreate={update ? this.onProductUpdate : this.onProductCreate}
           closeModal={(): void => this.setState({ confirmDialogOpen: false })}
         />

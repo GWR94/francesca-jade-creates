@@ -5,7 +5,7 @@ import { Row, Col, Container } from "reactstrap";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import Product from "../../common/Product";
-import { ProductProps } from "../accounts/interfaces/Product.i";
+import { ProductProps } from "../../common/interfaces/Product.i";
 
 interface State {
   isLoading: boolean;

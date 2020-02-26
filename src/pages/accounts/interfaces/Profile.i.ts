@@ -1,10 +1,10 @@
-import { UserAttributeProps } from "./Accounts.i";
+import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
 import { ImageProps } from "./NewProduct.i";
 
 export interface ProfileProps {
   userAttributes: UserAttributeProps;
-  user: any;
+  user: CognitoUserProps;
   admin: boolean;
 }
 

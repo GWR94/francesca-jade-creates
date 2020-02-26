@@ -1,4 +1,9 @@
-import { ProductProps } from "./Product.i";
+import {
+  CognitoUserPool,
+  CognitoUserSession,
+  ClientMetadata,
+} from "amazon-cognito-identity-js";
+import { ProductProps } from "../../../common/interfaces/Product.i";
 
 export interface AccountsState {
   products: ProductProps[];
@@ -7,7 +12,7 @@ export interface AccountsState {
 }
 
 export interface AccountsProps {
-  user: any;
+  user: CognitoUserProps;
   userAttributes: UserAttributeProps;
   setAccountsTab: (page) => void;
   accountsTab: "profile" | "products" | "create" | "orders";
@@ -21,4 +26,20 @@ export interface UserAttributeProps {
   phone_number?: string;
   email?: string;
   picture?: string;
+}
+
+export interface CognitoUserProps {
+  username: string;
+  pool: CognitoUserPool;
+  Session: null;
+  client: ClientMetadata;
+  signInUserSession: CognitoUserSession;
+  authenticationFlowType: string;
+  storage: Storage;
+  keyPrefix: string;
+  userDataKey: string;
+  picture?: string;
+  attributes: {
+    [key: string]: string;
+  };
 }

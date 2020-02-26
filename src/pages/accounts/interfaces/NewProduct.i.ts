@@ -1,18 +1,24 @@
-import { ProductProps, S3ImageProps } from "./Product.i";
+import { ProductProps, S3ImageProps } from "../../../common/interfaces/Product.i";
 
 export interface NewProductState {
-  title: string;
-  description: string;
+  title: {
+    value: string;
+    error: string;
+  };
+  description: {
+    value: string;
+    error: string;
+  };
   type: string;
   setPrice: boolean;
   productCost: string;
   shippingCost: string;
-  image: ImageProps | S3ImageProps;
-  imagePreview: string;
+  image: {
+    value: ImageProps | S3ImageProps;
+    error: string;
+    preview: string;
+  };
   isUploading: boolean;
-  titleError: string;
-  descriptionError: string;
-  imageError: string;
   confirmDialogOpen: boolean;
   percentUploaded: number;
   tags: string[];

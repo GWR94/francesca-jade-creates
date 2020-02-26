@@ -1,14 +1,13 @@
 import React from "react";
 
-interface Props {}
-
-const PrivacyPolicy: React.FC<Props> = () => {
+const PrivacyPolicy: React.SFC = () => {
   return (
     <div>
       <h2>Privacy Policy</h2>
       <p>
-        Your privacy is important to us. It is Francesca Jade Creates' policy to respect
-        your privacy regarding any information we may collect from you across our website,{" "}
+        Your privacy is important to us. It is Francesca Jade Creates&apos; policy to
+        respect your privacy regarding any information we may collect from you across our
+        website,{" "}
         <a href="https://www.francescajadecreates.co.uk">
           https://www.francescajadecreates.co.uk
         </a>

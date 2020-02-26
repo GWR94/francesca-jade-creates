@@ -1,11 +1,8 @@
 .profile__container {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   font-family: $title-font;
   font-weight: bold;
-  @media screen and (max-width: $md-breakpoint) {
-    width: 90%;
-  }
   @media screen and (max-width: $s-breakpoint) {
     width: 94%;
   }

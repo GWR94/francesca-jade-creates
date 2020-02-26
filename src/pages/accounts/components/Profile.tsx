@@ -25,11 +25,12 @@ import VerificationDialog from "./VerificationDialog";
 
 /**
  * TODO
- * [ ] Check auth for product in schema
+ * [x] Check auth for product in schema
  * [ ] Test admin privileges work
- * [ ] Remove admin from database if cognito admin group can be used
+ * [x] Remove admin from database if cognito admin group can be used
  * [ ] Remove auto verifying email and add button/tag to verify
  */
+
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
     username: null,
@@ -60,7 +61,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       } = user;
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
       let res = null;
-      if (user.phone_number) {
+      if (userAttributes.phone_number) {
         res = this.getCountryCode(userAttributes.phone_number);
       }
 
@@ -70,8 +71,8 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           error: "",
         },
         email: {
-          value: this.props.userAttributes?.email ?? "",
-          verified: this.props.userAttributes?.email_verified ?? false,
+          value: userAttributes?.email ?? "",
+          verified: userAttributes?.email_verified ?? false,
           error: "",
         },
         phoneNumber: {
@@ -309,11 +310,11 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     return (
       <>
         <Container className="profile__container">
-          <H3>Profile</H3>
           {isLoading ? (
             <Loading size={100} />
           ) : (
             <div className="profile__container">
+              <H3>Profile</H3>
               <Row className="profile__row">
                 <Col md={6}>
                   <FormGroup label="Username:" className="profile__input">

@@ -3,7 +3,7 @@ import { H3 } from "@blueprintjs/core";
 import { Col, Row, Container } from "reactstrap";
 import Loading from "../../../common/Loading";
 import Product from "../../../common/Product";
-import { ProductProps } from "../interfaces/Product.i";
+import { ProductProps } from "../../../common/interfaces/Product.i";
 
 interface ProductListProps {
   products: ProductProps[];

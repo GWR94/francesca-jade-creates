@@ -1,9 +1,10 @@
 import React from "react";
-import { Dialog, InputGroup, Button, FormGroup } from "@blueprintjs/core";
+import { Dialog, InputGroup, Button } from "@blueprintjs/core";
 import { Auth } from "aws-amplify";
 import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
 import PasswordInput from "../../../common/PasswordInput";
+import { PasswordProps, PasswordState } from "../interfaces/PasswordChange.i";
 
 /**
  * TODO
@@ -11,23 +12,8 @@ import PasswordInput from "../../../common/PasswordInput";
  * [ ] Test
  */
 
-interface Props {
-  user: any;
-  closeDialog: () => void;
-  open: boolean;
-}
-
-interface State {
-  error: "";
-  oldPassword: string;
-  newPassword: string;
-  repeatPassword: string;
-  oldPasswordError: string;
-  newPasswordError: string;
-}
-
-class PasswordChange extends React.Component<Props, State> {
-  public readonly state: State = {
+class PasswordChange extends React.Component<PasswordProps, PasswordState> {
+  public readonly state: PasswordState = {
     error: "",
     oldPasswordError: "",
     newPasswordError: "",

@@ -31,6 +31,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     await this.handleGetProducts();
     await this.handleSubscriptions();
     this.setState({ isLoading: false });
+    console.log(this.props.user);
   }
 
   public componentWillUnmount(): void {

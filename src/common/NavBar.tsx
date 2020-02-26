@@ -4,20 +4,12 @@ import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
 import logo from "../img/logo.png";
-import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
+import { NavBarProps } from "./interfaces/NavBar.i";
 
 /**
  * TODO
  * [ ] Close nav when clicking a link in mobile nav
  */
-
-interface NavBarProps {
-  signOut: () => void;
-  setAccountsTab: (tab) => void;
-  user: any;
-  userAttributes: UserAttributeProps;
-  admin: boolean;
-}
 
 const NavBar: React.FC<NavBarProps> = ({
   signOut,
@@ -37,7 +29,7 @@ const NavBar: React.FC<NavBarProps> = ({
   return (
     <>
       <Headroom wrapperStyle={{ position: "relative", zIndex: 3, height: "50px" }}>
-        <Navbar className="nav__bar animated slideInDown" light expand="md">
+        <Navbar on className="nav__bar animated slideInDown" light expand="md">
           <img src={logo} alt="Francesca Jade Creates" className="navbar__logo" />
           <NavbarToggler onClick={(): void => setNavOpen(!navOpen)} />
           <Collapse isOpen={navOpen} navbar>
@@ -47,6 +39,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 exact
                 activeClassName="nav__link--active"
                 className="nav__link"
+                onClick={(): void => setNavOpen(false)}
               >
                 <i className="fas fa-home nav__icon" />
                 Home
@@ -55,6 +48,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 to="/cakes"
                 activeClassName="nav__link--active"
                 className="nav__link"
+                onClick={(): void => setNavOpen(false)}
               >
                 <i className="fas fa-birthday-cake nav__icon" />
                 Cakes
@@ -63,6 +57,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 to="/creates"
                 activeClassName="nav__link--active"
                 className="nav__link"
+                onClick={(): void => setNavOpen(false)}
               >
                 <i className="fas fa-camera nav__icon" />
                 Creates
@@ -77,6 +72,7 @@ const NavBar: React.FC<NavBarProps> = ({
                         icon={<i className="fas fa-id-badge nav__dropdown-icon" />}
                         text="Profile"
                         onClick={(): void => {
+                          setNavOpen(false);
                           setAccountsTab("profile");
                           history.push("account");
                         }}
@@ -89,6 +85,7 @@ const NavBar: React.FC<NavBarProps> = ({
                             }
                             text="Products"
                             onClick={(): void => {
+                              setNavOpen(false);
                               setAccountsTab("products");
                               history.push("account");
                             }}
@@ -97,6 +94,7 @@ const NavBar: React.FC<NavBarProps> = ({
                             icon={<i className="fas fa-plus-square nav__dropdown-icon" />}
                             text="Create Product"
                             onClick={(): void => {
+                              setNavOpen(false);
                               setAccountsTab("create");
                               history.push("account");
                             }}
@@ -107,6 +105,7 @@ const NavBar: React.FC<NavBarProps> = ({
                           icon={<i className="fas fa-envelope-open nav__dropdown-icon" />}
                           text="Orders"
                           onClick={(): void => {
+                            setNavOpen(false);
                             setAccountsTab("orders");
                             history.push("account");
                           }}
@@ -116,14 +115,20 @@ const NavBar: React.FC<NavBarProps> = ({
                       <MenuItem
                         icon={<i className="fas fa-sign-out-alt nav__dropdown-icon" />}
                         text="Logout"
-                        onClick={signOut}
+                        onClick={(): void => {
+                          setNavOpen(false);
+                          signOut();
+                        }}
                       />
                     </Menu>
                   }
                   position="bottom-right"
                 >
                   <div
-                    onClick={(): void => setMenuOpen(!menuOpen)}
+                    onClick={(): void => {
+                      setNavOpen(false);
+                      setMenuOpen(!menuOpen);
+                    }}
                     role="button"
                     tabIndex={0}
                     className={accountOpen ? "nav__link--active" : "nav__link"}
@@ -133,16 +138,19 @@ const NavBar: React.FC<NavBarProps> = ({
                   </div>
                 </Popover>
               ) : (
-                <Link
+                <NavLink
                   to="/login"
+                  onClick={(): void => setNavOpen(false)}
+                  activeClassName="/login"
                   className={accountOpen ? "nav__link--active" : "nav__link"}
                 >
                   <i className="fas fa-user nav__icon" />
                   Account
-                </Link>
+                </NavLink>
               )}
               <NavLink
                 to="/contact"
+                onClick={(): void => setNavOpen(false)}
                 activeClassName="nav__link--active"
                 className="nav__link"
               >
