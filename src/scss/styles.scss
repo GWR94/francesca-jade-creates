@@ -24,9 +24,7 @@
 @import "../pages/accounts/scss/confirm";
 @import "../pages/accounts/scss/verify";
 
-// login page
-@import "../pages/login/scss/login";
-@import "../pages/login/scss/dialog";
-
 // home page
+@import "../pages/home/scss/login";
+@import "../pages/home/scss/dialog";
 @import "../pages/home/scss/landing";

@@ -13,7 +13,7 @@ import { RouterState } from "./interfaces/Router.i";
 import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
-import Login from "../pages/login/Login";
+import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
 import Product from "../common/Product";
 

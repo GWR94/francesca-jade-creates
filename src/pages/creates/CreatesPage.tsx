@@ -6,6 +6,7 @@ import { listProducts } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import Product from "../../common/Product";
 import { ProductProps } from "../../common/interfaces/Product.i";
+import SearchFilter from "../../common/SearchFilter";
 
 interface State {
   isLoading: boolean;
@@ -47,6 +48,7 @@ export default class CreatesPage extends Component<{}, State> {
     ) : (
       <Container style={{ marginTop: "20px" }}>
         <H3>Creations</H3>
+        <SearchFilter />
         <Row>
           {products.map(
             (product): JSX.Element => (
