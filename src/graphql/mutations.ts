@@ -74,10 +74,7 @@ export const deleteProduct = /* GraphQL */ `
   }
 `;
 export const registerUser = /* GraphQL */ `
-  mutation RegisterUser(
-    $input: CreateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
+  mutation RegisterUser($input: CreateUserInput!, $condition: ModelUserConditionInput) {
     registerUser(input: $input, condition: $condition) {
       id
       username
@@ -115,10 +112,7 @@ export const registerUser = /* GraphQL */ `
   }
 `;
 export const updateUser = /* GraphQL */ `
-  mutation UpdateUser(
-    $input: UpdateUserInput!
-    $condition: ModelUserConditionInput
-  ) {
+  mutation UpdateUser($input: UpdateUserInput!, $condition: ModelUserConditionInput) {
     updateUser(input: $input, condition: $condition) {
       id
       username
@@ -156,10 +150,7 @@ export const updateUser = /* GraphQL */ `
   }
 `;
 export const createOrder = /* GraphQL */ `
-  mutation CreateOrder(
-    $input: CreateOrderInput!
-    $condition: ModelOrderConditionInput
-  ) {
+  mutation CreateOrder($input: CreateOrderInput!, $condition: ModelOrderConditionInput) {
     createOrder(input: $input, condition: $condition) {
       id
       user {

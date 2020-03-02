@@ -31,7 +31,6 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     await this.handleGetProducts();
     await this.handleSubscriptions();
     this.setState({ isLoading: false });
-    console.log(this.props.user);
   }
 
   public componentWillUnmount(): void {
@@ -104,7 +103,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
       case "profile":
         return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
       case "products":
-        return <Products products={products} />;
+        return <Products products={products} admin={admin} />;
       case "create":
         return (
           <NewProduct

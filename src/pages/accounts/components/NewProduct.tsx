@@ -13,8 +13,7 @@ import {
   TagInput,
 } from "@blueprintjs/core";
 import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
-import { PhotoPicker, S3Image } from "aws-amplify-react";
-import { createProduct, updateProduct } from "../../../graphql/mutations";
+import { createProduct } from "../../../graphql/mutations";
 import {
   NewProductProps,
   NewProductState,
@@ -25,6 +24,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import awsExports from "../../../aws-exports";
 import { S3ObjectInput } from "../../../API";
 import { Toaster } from "../../../utils/index";
+import ImagePicker from "../../../common/ImagePicker";
 
 const initialState: NewProductState = {
   title: {
@@ -48,32 +48,11 @@ const initialState: NewProductState = {
   confirmDialogOpen: false,
   percentUploaded: 0,
   tags: [],
+  newImage: null,
 };
 
 export default class AdminDashboard extends Component<NewProductProps, NewProductState> {
-  public readonly state: NewProductState = this.props.update
-    ? {
-        ...initialState,
-        ...this.props.product,
-        title: {
-          value: this.props.product.title,
-          error: "",
-        },
-        description: {
-          value: this.props.product.description,
-          error: "",
-        },
-        image: {
-          value: this.props.product.image,
-          error: "",
-          preview: null,
-        },
-        setPrice: this.props.product.price > 0,
-        productCost: this.props.product.price.toString(),
-        shippingCost: this.props.product.shippingCost.toString(),
-        tags: this.props.product.tags || [],
-      }
-    : initialState;
+  public readonly state: NewProductState = initialState;
 
   private handleFormItem = (e, type: string): void => {
     const { value } = e.target;
@@ -91,8 +70,9 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
   private handleTagChange = (tags): void => this.setState({ tags });
 
   private handleProductCheck = (): void => {
-    const { title, description, image } = this.state;
+    const { title, description, image, newImage } = this.state;
     const { update } = this.props;
+    console.log(image);
     let errors = false;
     if (title.value.length < 5) {
       errors = true;
@@ -112,7 +92,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         },
       });
     }
-    if (!image && !update) {
+    if (!image.value && !update && !newImage) {
       errors = true;
       this.setState({
         image: {
@@ -140,6 +120,8 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       setPrice,
       type,
       tags,
+      image,
+      newImage,
     } = this.state;
     const { onCancel, admin } = this.props;
     try {
@@ -152,11 +134,11 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         });
         return;
       }
-      const image = this.state.image.value as ImageProps;
+      const current = (newImage || image.value) as ImageProps;
       const { identityId } = await Auth.currentCredentials();
-      const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
-      const uploadedFile = await Storage.put(filename, image.file, {
-        contentType: image.type,
+      const filename = `/public/${identityId}/${Date.now()}-${current.name}`;
+      const uploadedFile = await Storage.put(filename, current.file, {
+        contentType: current.type,
         progressCallback: (progress): void => {
           const percentUploaded = progress.loaded / progress.total;
           this.setState({ percentUploaded });
@@ -169,9 +151,9 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
         region: awsExports.aws_project_region,
       };
       const input = {
-        title,
-        description,
-        image: file,
+        title: title.value,
+        description: description.value,
+        image: [file],
         price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
         shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
         type,
@@ -180,7 +162,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       await API.graphql(graphqlOperation(createProduct, { input }));
       Toaster.show({
         intent: "success",
-        message: `${title} has been successfully added!`,
+        message: `${title.value} has been successfully added!`,
       });
       this.setState({ ...initialState });
       onCancel();
@@ -188,78 +170,78 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
       console.error(err);
       Toaster.show({
         intent: "danger",
-        message: `Error adding ${title}.
+        message: `Error adding ${title.value}.
         Please try again.`,
       });
       this.setState({ isUploading: false });
     }
   };
 
-  private onProductUpdate = async (): Promise<void> => {
-    const {
-      title,
-      description,
-      productCost,
-      shippingCost,
-      setPrice,
-      type,
-      tags,
-      image,
-    } = this.state;
-    const {
-      product: { id },
-      onCancel,
-      product,
-      admin,
-    } = this.props;
-    try {
-      if (!admin) throw new Error("Not authenticated");
-      let file: S3ObjectInput = null;
-      if (image.preview) {
-        const { identityId } = await Auth.currentCredentials();
-        const image = this.state.image.value as ImageProps;
-        await Storage.remove(product.image.key);
-        const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
-        const newImage = await Storage.put(filename, image.file, {
-          contentType: image.type,
-          progressCallback: (progress): void => {
-            const percentUploaded = progress.loaded / progress.total;
-            this.setState({ percentUploaded });
-          },
-        });
-        const { key } = newImage as UploadedFile;
-        file = {
-          key,
-          bucket: awsExports.aws_user_files_s3_bucket,
-          region: awsExports.aws_project_region,
-        };
-      }
-      const input = {
-        id,
-        title,
-        description,
-        image: image.preview ? file : product.image,
-        price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
-        shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
-        type,
-        tags,
-      };
-      await API.graphql(graphqlOperation(updateProduct, { input }));
-      Toaster.show({
-        intent: "success",
-        message: `${title} has been successfully updated!`,
-      });
-      this.setState({ ...initialState });
-      onCancel();
-    } catch (err) {
-      Toaster.show({
-        intent: "danger",
-        message: `Error updating ${title}.
-        Please try again.`,
-      });
-      this.setState({ isUploading: false, confirmDialogOpen: false });
-    }
-  };
+  // private onProductUpdate = async (): Promise<void> => {
+  //   const {
+  //     title,
+  //     description,
+  //     productCost,
+  //     shippingCost,
+  //     setPrice,
+  //     type,
+  //     tags,
+  //     image,
+  //     newImage,
+  //   } = this.state;
+  //   const { product, onCancel, admin } = this.props;
+  //   try {
+  //     if (!admin) throw new Error("Not authenticated");
+  //     console.log(image);
+  //     let file: S3ObjectInput = null;
+  //     if (image.preview) {
+  //       const { identityId } = await Auth.currentCredentials();
+  //       const image = newImage as ImageProps;
+  //       const filename = `/public/${identityId}/${Date.now()}-${image.name}`;
+  //       const uploadedImage = await Storage.put(filename, image.file, {
+  //         contentType: image.type,
+  //         progressCallback: (progress): void => {
+  //           const percentUploaded = progress.loaded / progress.total;
+  //           this.setState({ percentUploaded });
+  //         },
+  //       });
+  //       const { key } = uploadedImage as UploadedFile;
+  //       file = {
+  //         key,
+  //         bucket: awsExports.aws_user_files_s3_bucket,
+  //         region: awsExports.aws_project_region,
+  //       };
+  //     }
+  //     console.log({ file });
+  //     const input = {
+  //       id: product.id,
+  //       title: title.value,
+  //       description: description.value,
+  //       image: [...product.image, image.preview && file],
+  //       price: setPrice ? parseFloat(productCost).toFixed(2) : 0.0,
+  //       shippingCost: setPrice ? parseFloat(shippingCost).toFixed(2) : 0.0,
+  //       type,
+  //       tags,
+  //     };
+  //     console.log(input);
+
+  //     await API.graphql(graphqlOperation(updateProduct, { input }));
+  //     Toaster.show({
+  //       intent: "success",
+  //       message: `${title} has been successfully updated!`,
+  //     });
+  //     this.setState({ ...initialState });
+  //     onCancel();
+  //   } catch (err) {
+  //     console.error(err);
+  //     Toaster.show({
+  //       intent: "danger",
+  //       message: `Error updating ${title}.
+  //       Please try again.`,
+  //     });
+  //     this.setState({ isUploading: false, confirmDialogOpen: false });
+  //   }
+  // };
 
   public render(): JSX.Element {
     const {
@@ -307,6 +289,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
           >
             <TextArea
               className="new-product__description"
+              intent={description.error ? "danger" : "none"}
               placeholder="Enter a product description..."
               onChange={(e): void => this.handleFormItem(e, "description")}
               value={description.value}
@@ -378,38 +361,17 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                 values={tags}
               />
             </FormGroup>
-
-            {image.preview && (
-              <img
-                className="new-product__image-preview"
-                src={image.preview}
-                alt="Product Preview"
-              />
-            )}
-            {!image.preview && update && (
-              <S3Image
-                imgKey={product.image.key}
-                theme={{
-                  photoImg: { width: "100%" },
-                }}
-              />
-            )}
-
-            <PhotoPicker
-              title={image.preview || update ? "Change Image" : "Product Image"}
-              preview="hidden"
-              headerHint="You can add multiple images once the product has been created."
-              headerText="Add a photo of your product"
-              onLoad={(url): void =>
+            <ImagePicker
+              savedS3Image={product?.image[0]}
+              disabled={false}
+              setImageFile={(file): void =>
                 this.setState({
-                  image: {
-                    ...image,
-                    preview: url,
-                    error: null,
-                  },
+                  newImage: file,
                 })
               }
-              onPick={(file): void => this.setState({ image: file })}
+              setImagePreview={(preview): void =>
+                this.setState({ image: { ...image, preview } })
+              }
               theme={{
                 formContainer: {
                   margin: 0,
@@ -421,11 +383,10 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
                   alignItems: "center",
                   justifyContent: "center",
                   width: "100%",
-                  boxShadow: image.error
-                    ? "1px 1px 4px 0 rgba(240, 24, 24, 0.65)"
-                    : "1px 1px 4px 0 rgba(0, 0, 0, 0.35)",
+                  boxShadow: image.error ? "none" : "1px 1px 4px 0 rgba(0, 0, 0, 0.35)",
                   marginBottom: 0,
                   minWidth: "220px",
+                  border: image.error ? "1px solid #c23030" : "none",
                 },
                 sectionBody: {
                   display: "none",
@@ -482,7 +443,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
           product={product}
           update={update}
           confirmDialogOpen={confirmDialogOpen}
-          onProductCreate={update ? this.onProductUpdate : this.onProductCreate}
+          onProductCreate={this.onProductCreate}
           closeModal={(): void => this.setState({ confirmDialogOpen: false })}
         />
       </>

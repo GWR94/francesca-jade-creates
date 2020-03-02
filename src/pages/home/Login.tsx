@@ -1,14 +1,13 @@
 import React from "react";
-import { Container, Col, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import { Auth } from "aws-amplify";
 import { CognitoHostedUIIdentityProvider as Provider } from "@aws-amplify/auth/lib/types";
 import { ICredentials } from "@aws-amplify/core";
-import { FormGroup, InputGroup, Button, H4 } from "@blueprintjs/core";
+import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
 import { History } from "history";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
-import background from "../../img/background.jpg";
 import PasswordInput from "../../common/PasswordInput";
 
 interface LoginProps {

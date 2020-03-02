@@ -6,15 +6,7 @@ import Amplify from "aws-amplify";
 import config from "./aws-exports";
 import AppRouter from "./routes/Router";
 import "./scss/styles.scss";
-
-/**
- * ? Optional Redux DevTools ?
- * declare global {
- * interface Window {
- *  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
- *   }
- * }
- */
+import "remove-focus-outline";
 
 const urlsIn = config.oauth.redirectSignIn.split(",");
 const urlsOut = config.oauth.redirectSignOut.split(",");

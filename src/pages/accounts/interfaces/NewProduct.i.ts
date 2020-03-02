@@ -22,6 +22,7 @@ export interface NewProductState {
   confirmDialogOpen: boolean;
   percentUploaded: number;
   tags: string[];
+  newImage: File;
 }
 
 export interface NewProductProps {

@@ -7,7 +7,6 @@
 }
 
 .login__container {
-  min-height: 380px;
   width: 800px;
   font-family: $title-font;
   padding: 20px;
@@ -45,8 +44,6 @@
   flex-direction: column;
   text-align: center;
   justify-content: center;
-  position: relative;
-  top: 0;
   height: 25%;
 }
 

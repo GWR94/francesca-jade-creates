@@ -38,7 +38,6 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     isLoading: true,
     isEditing: false,
     newDisplayImage: null,
-    percentUploaded: null,
     dialogOpen: {
       password: false,
       email: false,
@@ -64,6 +63,8 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       if (userAttributes.phone_number) {
         res = this.getCountryCode(userAttributes.phone_number);
       }
+
+      console.log("image:", data.getUser.profileImage);
 
       this.setState({
         username: {
@@ -111,7 +112,8 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
         },
       });
     }
-    const validPhoneNumber = /^[+]?[(]?[0-9]{3}[)]?[-.]?[0-9]{3}[-.]?[0-9]{4,6}$/im.test(
+    const ValidPhoneNumberRegex = /^[+]?[(]?[0-9]{3}[)]?[-.]?[0-9]{3}[-.]?[0-9]{4,6}$/im;
+    const validPhoneNumber = ValidPhoneNumberRegex.test(
       `${phoneNumber.code}${phoneNumber.value}`,
     );
     if (phoneNumber.value.length && !validPhoneNumber) {
@@ -144,15 +146,16 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     if (errors) return;
     if (!email.verified || email.value !== userAttributes.email) {
       this.handleVerifyEmail();
+      return;
     }
-    if (!phoneNumber.verified) {
+    if (!phoneNumber.verified && phoneNumber.value) {
       this.handleVerifyPhone();
-    } else {
-      this.onUpdateProfile();
+      return;
     }
+    this.onUpdateProfile();
   };
 
-  private handleVerifyEmail = async (): Promise<void> => {
+  private handleVerifyEmail = async (sendEmail?: boolean): Promise<void> => {
     const { user } = this.props;
     const { email } = this.state;
     const updatedAttributes = {
@@ -160,17 +163,17 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     };
     try {
       const res = await Auth.updateUserAttributes(user, updatedAttributes);
-      if (res === "SUCCESS") {
+      if (res === "SUCCESS" && sendEmail) {
         this.sendVerificationCode("email");
       }
       await Auth.currentAuthenticatedUser();
-      this.onUpdateProfile();
     } catch (err) {
       Toaster.show({
         intent: "danger",
         message: "Unable to update email address. Please try again.",
       });
     }
+    this.onUpdateProfile();
   };
 
   private handleVerifyPhone = async (): Promise<void> => {
@@ -181,14 +184,13 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     };
     try {
       await Auth.updateUserAttributes(user, updatedAttributes);
-      await Auth.currentAuthenticatedUser();
-      this.onUpdateProfile();
     } catch (err) {
       Toaster.show({
         intent: "danger",
         message: "Unable to update phone number. Please try again.",
       });
     }
+    this.onUpdateProfile();
   };
 
   private sendVerificationCode = async (attr): Promise<void> => {
@@ -208,27 +210,14 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
 
   private onUpdateProfile = async (): Promise<void> => {
     const { user } = this.props;
-    const {
-      displayImage,
-      newDisplayImage,
-      shippingAddress,
-      dialogOpen,
-      username,
-    } = this.state;
+    const { newDisplayImage, shippingAddress, dialogOpen, username } = this.state;
     try {
-      if (displayImage && newDisplayImage) {
-        await Storage.remove(displayImage.key);
-      }
       let file;
       if (newDisplayImage) {
         const { identityId } = await Auth.currentCredentials();
-        const filename = `/public/${identityId}/${Date.now()}/-${newDisplayImage.name}`;
+        const filename = `${identityId}/${Date.now()}/${newDisplayImage.name}`;
         const uploadedFile = await Storage.put(filename, newDisplayImage.file, {
           contentType: newDisplayImage.type,
-          progressCallback: (progress): void => {
-            const percentUploaded = progress.loaded / progress.total;
-            this.setState({ percentUploaded });
-          },
         });
         const { key } = uploadedFile as UploadedFile;
         file = {
@@ -237,22 +226,27 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           region: awsExports.aws_project_region,
         };
       }
-      const input = {
-        id: user.attributes.sub,
-        profileImage: file,
-        username: username.value,
-        shippingAddress: shippingAddress.line1.length
-          ? {
-              city: shippingAddress.city,
-              country: "United Kingdom",
-              address_line1: shippingAddress.line1,
-              address_line2: shippingAddress.line2.length ? shippingAddress.line2 : null,
-              address_county: shippingAddress.county,
-              address_postcode: shippingAddress.postcode,
-            }
-          : null,
-      };
-      await API.graphql(graphqlOperation(updateUser, { input }));
+      await API.graphql(
+        graphqlOperation(updateUser, {
+          input: {
+            id: user.attributes.sub,
+            profileImage: file,
+            username: username.value,
+            shippingAddress: shippingAddress.line1.length
+              ? {
+                  city: shippingAddress.city,
+                  country: "United Kingdom",
+                  address_line1: shippingAddress.line1,
+                  address_line2: shippingAddress.line2.length
+                    ? shippingAddress.line2
+                    : null,
+                  address_county: shippingAddress.county,
+                  address_postcode: shippingAddress.postcode,
+                }
+              : null,
+          },
+        }),
+      );
       Toaster.show({
         intent: "success",
         message: "Profile Successfully Updated.",
@@ -265,6 +259,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
         isEditing: false,
       });
     } catch (err) {
+      console.error(err);
       Toaster.show({
         intent: "danger",
         message: "Error updating profile. Please try again.",
@@ -355,13 +350,15 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
               </Row>
               <Row className="profile__row">
                 <ImagePicker
-                  displayImage={displayImage}
-                  userImage={
+                  savedS3Image={displayImage}
+                  savedImage={
                     user?.picture ??
                     "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
                   }
-                  isEditing={isEditing}
-                  setImageFile={(displayImage): void => this.setState({ displayImage })}
+                  disabled={!isEditing}
+                  setImageFile={(newDisplayImage): void =>
+                    this.setState({ newDisplayImage })
+                  }
                 />
               </Row>
               <Row className="profile__row">

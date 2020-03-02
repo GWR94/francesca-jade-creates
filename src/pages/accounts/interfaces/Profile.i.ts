@@ -36,7 +36,6 @@ export interface ProfileState {
   };
   displayImage: S3ObjectInput;
   newDisplayImage: ImageProps;
-  percentUploaded: number;
   dialogOpen: {
     password: boolean;
     email: boolean;

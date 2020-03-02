@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useHistory, Link } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
 import logo from "../img/logo.png";
 import { NavBarProps } from "./interfaces/NavBar.i";
-
-/**
- * TODO
- * [ ] Close nav when clicking a link in mobile nav
- */
 
 const NavBar: React.FC<NavBarProps> = ({
   signOut,
@@ -29,7 +24,7 @@ const NavBar: React.FC<NavBarProps> = ({
   return (
     <>
       <Headroom wrapperStyle={{ position: "relative", zIndex: 3, height: "50px" }}>
-        <Navbar on className="nav__bar animated slideInDown" light expand="md">
+        <Navbar className="nav__bar animated slideInDown" light expand="md">
           <img src={logo} alt="Francesca Jade Creates" className="navbar__logo" />
           <NavbarToggler onClick={(): void => setNavOpen(!navOpen)} />
           <Collapse isOpen={navOpen} navbar>
@@ -125,10 +120,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   position="bottom-right"
                 >
                   <div
-                    onClick={(): void => {
-                      setNavOpen(false);
-                      setMenuOpen(!menuOpen);
-                    }}
+                    onClick={(): void => setMenuOpen(!menuOpen)}
                     role="button"
                     tabIndex={0}
                     className={accountOpen ? "nav__link--active" : "nav__link"}

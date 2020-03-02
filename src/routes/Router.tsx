@@ -16,6 +16,7 @@ import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
 import Product from "../common/Product";
+import UpdateProduct from "../pages/accounts/components/UpdateProduct";
 
 export const history = createBrowserHistory();
 
@@ -148,6 +149,7 @@ class AppRouter extends Component {
               <Route path="/login" history={history} user={user} component={Login} />
               <Route
                 path="/account"
+                exact
                 component={(): JSX.Element =>
                   user && (
                     <AccountsPage
@@ -159,6 +161,7 @@ class AppRouter extends Component {
                   )
                 }
               />
+              <Route path="/account/:id" component={UpdateProduct} />
               <Route component={NotFoundPage} />
             </Switch>
           )}

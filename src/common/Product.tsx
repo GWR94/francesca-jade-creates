@@ -20,6 +20,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
     type,
     tags,
     customer,
+    admin,
   } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
   const [editDialogOpen, setEditDialog] = useState(false);
@@ -34,6 +35,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         message: `${title} has been successfully removed.`,
       });
     } catch (err) {
+      console.error(err);
       Toaster.show({
         intent: "danger",
         message: `${title} could not be removed.
@@ -100,7 +102,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         )}
         <div id="s3Image">
           <S3Image
-            imgKey={image.key}
+            imgKey={image[0]?.key}
             theme={{
               photoImg: { maxWidth: "100%", maxHeight: "100%" },
             }}
@@ -155,6 +157,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
           update
           product={product}
           onCancel={(): void => setEditDialog(false)}
+          admin={admin}
         />
       </ReactModal>
     </>

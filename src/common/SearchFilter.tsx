@@ -1,6 +1,8 @@
 import React from "react";
 
-interface Props {}
+interface Props {
+  type: string;
+}
 
 const SearchFilter: React.FC<Props> = () => {
   return (

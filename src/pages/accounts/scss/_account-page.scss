@@ -20,7 +20,9 @@
     border-bottom: 2px solid $light-pink;
   }
   @media screen and (max-width: $s-breakpoint) {
-    font-size: 13px;
+    width: 120px;
+    font-size: 14px;
+    padding: 4px 8px;
   }
 }
 

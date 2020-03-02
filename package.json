@@ -92,6 +92,7 @@
     "react-router-dom": "^5.1.2",
     "reactstrap": "^8.4.1",
     "regenerator-runtime": "^0.13.3",
+    "remove-focus-outline": "^1.2.1",
     "validate.js": "^0.13.1"
   }
 }
