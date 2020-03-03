@@ -10,6 +10,7 @@ export interface ProductProps {
   owner: string;
   customer?: boolean;
   admin: boolean;
+  setPrice?: boolean;
 }
 
 export interface S3ImageProps {

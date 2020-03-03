@@ -348,9 +348,10 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                   </FormGroup>
                 </Col>
               </Row>
-              <Row className="profile__row">
+              <Row className="profile__row" style={{ padding: "0 15px" }}>
                 <ImagePicker
                   savedS3Image={displayImage}
+                  profile
                   savedImage={
                     user?.picture ??
                     "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png"
@@ -359,6 +360,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                   setImageFile={(newDisplayImage): void =>
                     this.setState({ newDisplayImage })
                   }
+                  showPreview
                 />
               </Row>
               <Row className="profile__row">

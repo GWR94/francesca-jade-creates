@@ -16,9 +16,6 @@ export const onCreateProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
@@ -37,9 +34,6 @@ export const onUpdateProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
@@ -58,9 +52,6 @@ export const onDeleteProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;

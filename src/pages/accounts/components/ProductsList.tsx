@@ -21,7 +21,7 @@ const ProductsList: React.FC<ProductListProps> = ({ products, admin }): JSX.Elem
           products.map(
             (product: ProductProps): JSX.Element => (
               <Col
-                onClick={(): void => history.push(`account/${product.id}`)}
+                onClick={(): void => history.push(`/account/${product.id}`)}
                 lg={3}
                 md={4}
                 sm={6}

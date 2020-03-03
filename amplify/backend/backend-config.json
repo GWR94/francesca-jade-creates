@@ -19,9 +19,6 @@
 								"description": "public",
 								"apiKeyExpirationDays": "365"
 							}
-						},
-						{
-							"authenticationType": "AWS_IAM"
 						}
 					],
 					"defaultAuthentication": {

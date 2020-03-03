@@ -3,9 +3,9 @@ type Product
   @searchable
   @auth(
     rules: [
-      { allow: private, provider: userPools, operations: [read] }
+      { allow: private, provider: userPools, operations: [update, delete, create, read] }
       { allow: public, provider: apiKey, operations: [read] }
-      { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
+      { allow: groups, groups: ["Admin"], operations: [create, read, update] }
     ]
   ) {
   id: String!
@@ -15,7 +15,7 @@ type Product
   price: Float!
   shippingCost: Float!
   type: String!
-  tags: [String]!
+  tags: [String]
 }
 
 type User
@@ -27,7 +27,7 @@ type User
   @auth(
     rules: [
       { allow: owner, ownerField: "id", identityClaim: "sub" }
-      { allow: private, provider: userPools, operations: [read] }
+      { allow: private, provider: userPools }
     ]
   ) {
   id: ID!

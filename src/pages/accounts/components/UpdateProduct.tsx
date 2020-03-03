@@ -14,16 +14,18 @@ import {
   Callout,
   Switch,
   TagInput,
+  H3,
 } from "@blueprintjs/core";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
-import { ProductProps } from "../../../common/interfaces/Product.i";
 import ImagePicker from "../../../common/ImagePicker";
 import { updateProduct } from "../../../graphql/mutations";
-import { UploadedFile, ImageProps } from "../interfaces/NewProduct.i";
+import { UploadedFile } from "../interfaces/NewProduct.i";
 import awsExports from "../../../aws-exports";
 import { Toaster } from "../../../utils";
 import { S3ObjectInput } from "../../../API";
+import { UpdateProps, UpdateState } from "../interfaces/UpdateProduct.i";
+import ConfirmDialog from "./ConfirmDialog";
 
 /**
  * TODO
@@ -31,45 +33,25 @@ import { S3ObjectInput } from "../../../API";
  * [ ] Test
  */
 
-interface UpdateProps {
-  match: {
-    params: {
-      id: string;
-    };
-  };
-}
-interface UpdateState {
-  isLoading: boolean;
-  product: ProductProps;
-  isAnimating: boolean;
-  currentIndex: number;
-  confirmDialogOpen: boolean;
-  imagePreview: string;
-  fileToUpload: ImageProps;
-  isUploading: boolean;
-  errors: {
-    title: boolean;
-    description: boolean;
-  };
-}
-
 export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
     isLoading: true,
     product: null,
     isAnimating: false,
     currentIndex: 0,
+    imageConfirmOpen: false,
     confirmDialogOpen: false,
+    deleteAlertOpen: false,
     imagePreview: null,
     fileToUpload: null,
     isUploading: false,
     errors: {
-      title: false,
-      description: false,
+      title: null,
+      description: null,
     },
+    percentUploaded: 0,
+    keyToDelete: null,
   };
-
-  private slides;
 
   public async componentDidMount(): Promise<void> {
     const {
@@ -86,7 +68,6 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
           setPrice: product.price > 0,
         },
       });
-      this.handleSlideUpdate(product.image);
     } catch (err) {
       console.error(err);
     }
@@ -105,31 +86,33 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
         },
       }),
     );
-    console.log(this.state.product);
   };
 
-  private handleSlideUpdate = (images: S3ObjectInput[]): void => {
-    this.slides = images.map((image, i) => {
-      return (
-        <CarouselItem
-          onExiting={(): void => this.setState({ isAnimating: true })}
-          onExited={(): void => this.setState({ isAnimating: false })}
-          key={i}
-        >
-          <div className="update__image-container">
-            <S3Image
-              imgKey={image.key}
-              theme={{
-                photoImg: {
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                },
-              }}
-            />
-          </div>
-        </CarouselItem>
+  private handleDeleteImage = async (): Promise<void> => {
+    const {
+      keyToDelete,
+      product: { image, id },
+      product,
+    } = this.state;
+    try {
+      const updatedImages = image.filter((img) => img.key !== keyToDelete);
+      this.setState({ product: { ...product, image: updatedImages }, currentIndex: 0 });
+      await Storage.remove(keyToDelete);
+      await API.graphql(
+        graphqlOperation(updateProduct, { input: { id, image: updatedImages } }),
       );
-    });
+      Toaster.show({
+        intent: "success",
+        message: "Successfully removed image.",
+      });
+      this.setState({ deleteAlertOpen: false });
+    } catch (err) {
+      console.error(err);
+      Toaster.show({
+        intent: "danger",
+        message: "Failed to removed image. Please try again.",
+      });
+    }
   };
 
   private next = (): void => {
@@ -164,6 +147,11 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     this.setState({ currentIndex });
   };
 
+  private handleTagChange = (tags): void => {
+    const { product } = this.state;
+    this.setState({ product: { ...product, tags } });
+  };
+
   private handleImageUpload = async (): Promise<void> => {
     const { product, fileToUpload } = this.state;
     try {
@@ -183,16 +171,15 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
         graphqlOperation(updateProduct, {
           input: {
             id: product.id,
-            image: file,
+            image: [...product.image, file],
           },
         }),
       );
       this.setState({
         product: { ...product, image: [...product.image, file] },
-        confirmDialogOpen: false,
+        imageConfirmOpen: false,
         isUploading: false,
       });
-      this.handleSlideUpdate([...product.image, file]);
     } catch (err) {
       Toaster.show({
         intent: "danger",
@@ -202,16 +189,88 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     }
   };
 
+  private handleProductErrors = (): void => {
+    const {
+      product: { title, description },
+      errors,
+    } = this.state;
+    let error = false;
+    if (title.length < 5) {
+      error = true;
+      this.setState({
+        errors: {
+          ...errors,
+          title: "Please enter a longer title (Minimum 5 characters).",
+        },
+      });
+    }
+    if (description.length <= 20) {
+      error = true;
+      this.setState({
+        errors: {
+          ...errors,
+          description: "Please enter a detailed description (Minimum 20 characters).",
+        },
+      });
+    }
+    if (error) {
+      Toaster.show({
+        intent: "danger",
+        message: "Please fix the highlighted errors before continuing",
+      });
+      return;
+    }
+    this.setState({ confirmDialogOpen: true });
+  };
+
+  private handleProductUpdate = async (): Promise<void> => {
+    const { product } = this.state;
+    const { id, title, description, price, shippingCost, type, tags } = product;
+    const { history } = this.props;
+    this.setState({ isUploading: true });
+    try {
+      const input = {
+        id,
+        title,
+        description,
+        price,
+        shippingCost,
+        type,
+        tags: tags || [],
+      };
+      console.log(input);
+      const res = await API.graphql(graphqlOperation(updateProduct, { input }));
+      console.log(res);
+      Toaster.show({
+        intent: "success",
+        message: `Successfully updated ${title}.`,
+      });
+      this.setState({ isUploading: false, confirmDialogOpen: false });
+      history.push("/account");
+    } catch (err) {
+      console.error(err);
+      Toaster.show({
+        intent: "danger",
+        message: `Unable to updated ${title}. Please try again.`,
+      });
+    }
+  };
+
   public render(): JSX.Element {
     const {
       product,
       isLoading,
       currentIndex,
-      confirmDialogOpen,
+      imageConfirmOpen,
       imagePreview,
       isUploading,
       errors,
+      confirmDialogOpen,
+      percentUploaded,
+      deleteAlertOpen,
+      keyToDelete,
     } = this.state;
+    const { history } = this.props;
 
     const clearButton = (
       <Button
@@ -233,7 +292,8 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     ) : (
       <>
         <div className="content-container">
-          <div className="update__container">
+          <div className="new-product__container">
+            <H3 style={{ padding: "20px 0 5px" }}>Update Product</H3>
             <FormGroup
               helperText={errors.title}
               label="Title:"
@@ -287,11 +347,13 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 You can set a price if there is one set, or turn the switch off to set no
                 price, where the customer can contact you for an estimated price.
                 <Switch
-                  checked={product.price > 0}
+                  checked={product.setPrice}
                   large
                   className="text-center"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    this.setState({ setPrice: e.target.checked })
+                    this.setState({
+                      product: { ...product, setPrice: e.target.checked },
+                    })
                   }
                 />
               </Callout>
@@ -305,7 +367,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                       type="number"
                       value={product.price.toString()}
                       className="new-product__form-item"
-                      onChange={(e): void => this.handleFormItem(e, "productCost")}
+                      onChange={(e): void => this.handleFormItem(e, "price")}
                     />
                     <InputGroup
                       leftIcon="envelope"
@@ -329,11 +391,13 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                   onChange={this.handleTagChange}
                   rightElement={clearButton}
                   placeholder="Add tags by clicking enter..."
-                  values={product.tags}
+                  values={product.tags || []}
                 />
               </FormGroup>
-
-              {product?.image.length && (
+              <FormGroup
+                label={product.image.length === 1 ? "Display Image:" : "Display Images:"}
+                className="new-product__form"
+              >
                 <div className="update__carousel-container">
                   <Carousel
                     activeIndex={currentIndex}
@@ -345,7 +409,36 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                       activeIndex={currentIndex}
                       onClickHandler={this.goToIndex}
                     />
-                    {this.slides}
+                    {product.image.map((image, i) => (
+                      <CarouselItem
+                        onExiting={(): void => this.setState({ isAnimating: true })}
+                        onExited={(): void => this.setState({ isAnimating: false })}
+                        key={i}
+                      >
+                        <i
+                          className="fas fa-times update__delete-icon"
+                          role="button"
+                          tabIndex={0}
+                          onClick={(): void =>
+                            this.setState({
+                              deleteAlertOpen: true,
+                              keyToDelete: image.key,
+                            })
+                          }
+                        />
+                        <div className="update__image-container">
+                          <S3Image
+                            imgKey={image.key}
+                            theme={{
+                              photoImg: {
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                              },
+                            }}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
                     <CarouselControl
                       direction="prev"
                       directionText="Previous"
@@ -358,54 +451,122 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                     />
                   </Carousel>
                 </div>
-              )}
-              <ImagePicker
-                disabled={false}
-                setImageFile={(file): void =>
-                  this.setState({
-                    fileToUpload: file,
-                    confirmDialogOpen: true,
-                  })
-                }
-                setImagePreview={(imagePreview): void => this.setState({ imagePreview })}
-                update
-              />
+                <ImagePicker
+                  disabled={false}
+                  setImageFile={(file): void =>
+                    this.setState({
+                      fileToUpload: file,
+                      imageConfirmOpen: true,
+                    })
+                  }
+                  setImagePreview={(imagePreview): void =>
+                    this.setState({ imagePreview })
+                  }
+                  update
+                />
+                <div
+                  className="dialog__button-container"
+                  style={{ marginBottom: "40px" }}
+                >
+                  <Button
+                    text="Cancel"
+                    onClick={(): void => history.push("/")}
+                    intent="danger"
+                    style={{ margin: "0 10px" }}
+                    large
+                  />
+                  <Button
+                    text="Confirm"
+                    onClick={this.handleProductErrors}
+                    intent="success"
+                    style={{ margin: "0 10px" }}
+                    large
+                  />
+                </div>
+              </FormGroup>
             </div>
-            <Dialog
-              isOpen={confirmDialogOpen}
-              icon="info-sign"
-              title="Are you sure this is correct?"
-              onClose={(): void => this.setState({ confirmDialogOpen: false })}
-            >
-              <div style={{ padding: "8px 12px" }}>
-                <p className="text-center">Are you sure you want to add this image?</p>
-                <p className="text-center">
-                  This action cannot be undone in this version of the site.
-                </p>
-              </div>
-              <img
-                src={imagePreview}
-                className="confirm__image"
-                alt="Image upload preview"
-              />
-              <div className="dialog__button-container">
-                <Button
-                  intent="danger"
-                  text="Cancel"
-                  onClick={(): void => this.setState({ confirmDialogOpen: false })}
-                  style={{ margin: "0 5px" }}
-                />
-                <Button
-                  intent="success"
-                  text="Confirm"
-                  onClick={this.handleImageUpload}
-                  style={{ margin: "0 5px" }}
-                  loading={isUploading}
-                />
-              </div>
-            </Dialog>
           </div>
         </div>
+        <Dialog
+          isOpen={deleteAlertOpen}
+          icon="trash"
+          onClose={(): void =>
+            this.setState({ deleteAlertOpen: false, keyToDelete: null })
+          }
+          title="Are you sure?"
+        >
+          <div className="update__alert-container">
+            <p className="text-center">Are you sure you want to delete this image?</p>
+            <p className="text-center">Other images can be added at a later date.</p>
+
+            <S3Image
+              imgKey={keyToDelete}
+              theme={{
+                photoImg: { maxWidth: "100%", marginBottom: "20px" },
+              }}
+            />
+            <div className="dialog__button-container">
+              <Button
+                intent="danger"
+                text="Cancel"
+                onClick={(): void =>
+                  this.setState({ keyToDelete: null, deleteAlertOpen: false })
+                }
+                style={{ margin: "0 5px" }}
+              />
+              <Button
+                intent="success"
+                text="Confirm"
+                onClick={this.handleDeleteImage}
+                style={{ margin: "0 5px" }}
+              />
+            </div>
+          </div>
+        </Dialog>
+        <Dialog
+          isOpen={imageConfirmOpen}
+          icon="info-sign"
+          title="Are you sure this is correct?"
+          onClose={(): void => this.setState({ imageConfirmOpen: false })}
+        >
+          <div style={{ padding: "8px 12px" }}>
+            <p className="text-center">Are you sure you want to add this image?</p>
+          </div>
+          <img
+            src={imagePreview}
+            className="confirm__image"
+            alt="Image upload preview"
+            style={{ marginBottom: "20px" }}
+          />
+          <div className="dialog__button-container">
+            <Button
+              intent="danger"
+              text="Cancel"
+              onClick={(): void => this.setState({ imageConfirmOpen: false })}
+              style={{ margin: "0 5px" }}
+            />
+            <Button
+              intent="success"
+              text="Confirm"
+              onClick={this.handleImageUpload}
+              style={{ margin: "0 5px" }}
+              loading={isUploading}
+            />
+          </div>
+        </Dialog>
+        <ConfirmDialog
+          isOpen={confirmDialogOpen}
+          {...product}
+          isUploading={isUploading}
+          image={product.image}
+          shippingCost={product.shippingCost.toString()}
+          productCost={product.price.toString()}
+          setPrice={product.setPrice}
+          percentUploaded={percentUploaded}
+          onProductCreate={this.handleProductUpdate}
+          closeModal={(): void => this.setState({ confirmDialogOpen: false })}
+          update
+        />
       </>
     );
   }

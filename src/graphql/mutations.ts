@@ -19,9 +19,6 @@ export const createProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
@@ -43,9 +40,6 @@ export const updateProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
@@ -67,14 +61,14 @@ export const deleteProduct = /* GraphQL */ `
       shippingCost
       type
       tags
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
 export const registerUser = /* GraphQL */ `
-  mutation RegisterUser($input: CreateUserInput!, $condition: ModelUserConditionInput) {
+  mutation RegisterUser(
+    $input: CreateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
     registerUser(input: $input, condition: $condition) {
       id
       username
@@ -85,12 +79,8 @@ export const registerUser = /* GraphQL */ `
         items {
           id
           createdAt
-          _version
-          _deleted
-          _lastChangedAt
         }
         nextToken
-        startedAt
       }
       profileImage {
         bucket
@@ -105,14 +95,14 @@ export const registerUser = /* GraphQL */ `
         address_county
         address_postcode
       }
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
 export const updateUser = /* GraphQL */ `
-  mutation UpdateUser($input: UpdateUserInput!, $condition: ModelUserConditionInput) {
+  mutation UpdateUser(
+    $input: UpdateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
     updateUser(input: $input, condition: $condition) {
       id
       username
@@ -123,12 +113,8 @@ export const updateUser = /* GraphQL */ `
         items {
           id
           createdAt
-          _version
-          _deleted
-          _lastChangedAt
         }
         nextToken
-        startedAt
       }
       profileImage {
         bucket
@@ -143,14 +129,14 @@ export const updateUser = /* GraphQL */ `
         address_county
         address_postcode
       }
-      _version
-      _deleted
-      _lastChangedAt
     }
   }
 `;
 export const createOrder = /* GraphQL */ `
-  mutation CreateOrder($input: CreateOrderInput!, $condition: ModelOrderConditionInput) {
+  mutation CreateOrder(
+    $input: CreateOrderInput!
+    $condition: ModelOrderConditionInput
+  ) {
     createOrder(input: $input, condition: $condition) {
       id
       user {
@@ -161,7 +147,6 @@ export const createOrder = /* GraphQL */ `
         registered
         orders {
           nextToken
-          startedAt
         }
         profileImage {
           bucket
@@ -176,9 +161,6 @@ export const createOrder = /* GraphQL */ `
           address_county
           address_postcode
         }
-        _version
-        _deleted
-        _lastChangedAt
       }
       shippingAddress {
         city
@@ -189,9 +171,6 @@ export const createOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
-      _version
-      _deleted
-      _lastChangedAt
       product {
         id
         title
@@ -205,9 +184,6 @@ export const createOrder = /* GraphQL */ `
         shippingCost
         type
         tags
-        _version
-        _deleted
-        _lastChangedAt
       }
     }
   }

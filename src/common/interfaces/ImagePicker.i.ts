@@ -10,4 +10,5 @@ export interface ImagePickerProps {
   setImagePreview?: (preview) => void;
   showPreview?: boolean;
   update?: boolean;
+  profile?: boolean;
 }

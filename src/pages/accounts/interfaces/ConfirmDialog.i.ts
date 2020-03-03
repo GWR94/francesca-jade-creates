@@ -1,7 +1,7 @@
-import { ProductProps } from "../../../common/interfaces/Product.i";
+import { ProductProps, S3ImageProps } from "../../../common/interfaces/Product.i";
 
 export interface ConfirmDialogProps {
-  confirmDialogOpen: boolean;
+  isOpen: boolean;
   title: string;
   description: string;
   type: string;
@@ -9,11 +9,12 @@ export interface ConfirmDialogProps {
   productCost: string;
   shippingCost: string;
   isUploading: boolean;
-  imagePreview: string;
+  imagePreview?: string;
   onProductCreate: () => void;
   closeModal: () => void;
   tags: string[];
-  product: ProductProps;
+  image: S3ImageProps[];
+  product?: ProductProps;
   percentUploaded: number;
   update: boolean;
 }

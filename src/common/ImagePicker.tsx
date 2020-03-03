@@ -17,6 +17,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   setImagePreview,
   showPreview,
   update,
+  profile,
 }): JSX.Element => {
   const [imagePreview, setPreview] = useState(null);
   const styles = theme || {
@@ -52,8 +53,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
       <FormGroup
         label={!update && "Display Image:"}
         className="profile__input"
-        labelInfo={!update && "(optional)"}
-        style={{ padding: "0 15px" }}
+        labelInfo={(!update || profile) && "(optional)"}
       >
         {imagePreview ? (
           <div className="image__container">

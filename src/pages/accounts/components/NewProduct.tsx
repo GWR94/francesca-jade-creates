@@ -372,6 +372,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
               setImagePreview={(preview): void =>
                 this.setState({ image: { ...image, preview } })
               }
+              showPreview
               theme={{
                 formContainer: {
                   margin: 0,
@@ -442,7 +443,7 @@ export default class AdminDashboard extends Component<NewProductProps, NewProduc
           tags={tags}
           product={product}
           update={update}
-          confirmDialogOpen={confirmDialogOpen}
+          isOpen={confirmDialogOpen}
           onProductCreate={this.onProductCreate}
           closeModal={(): void => this.setState({ confirmDialogOpen: false })}
         />

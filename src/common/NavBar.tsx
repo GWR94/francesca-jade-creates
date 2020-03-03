@@ -69,7 +69,7 @@ const NavBar: React.FC<NavBarProps> = ({
                         onClick={(): void => {
                           setNavOpen(false);
                           setAccountsTab("profile");
-                          history.push("account");
+                          history.push("/account");
                         }}
                       />
                       {admin ? (
@@ -82,7 +82,7 @@ const NavBar: React.FC<NavBarProps> = ({
                             onClick={(): void => {
                               setNavOpen(false);
                               setAccountsTab("products");
-                              history.push("account");
+                              history.push("/account");
                             }}
                           />
                           <MenuItem
@@ -91,7 +91,7 @@ const NavBar: React.FC<NavBarProps> = ({
                             onClick={(): void => {
                               setNavOpen(false);
                               setAccountsTab("create");
-                              history.push("account");
+                              history.push("/account");
                             }}
                           />
                         </>
@@ -102,7 +102,7 @@ const NavBar: React.FC<NavBarProps> = ({
                           onClick={(): void => {
                             setNavOpen(false);
                             setAccountsTab("orders");
-                            history.push("account");
+                            history.push("/account");
                           }}
                         />
                       )}
