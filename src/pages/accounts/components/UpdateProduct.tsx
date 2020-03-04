@@ -23,13 +23,11 @@ import { updateProduct } from "../../../graphql/mutations";
 import { UploadedFile } from "../interfaces/NewProduct.i";
 import awsExports from "../../../aws-exports";
 import { Toaster } from "../../../utils";
-import { S3ObjectInput } from "../../../API";
 import { UpdateProps, UpdateState } from "../interfaces/UpdateProduct.i";
 import ConfirmDialog from "./ConfirmDialog";
 
 /**
  * TODO
- * [ ] Complete update component with uploading
  * [ ] Test
  */
 

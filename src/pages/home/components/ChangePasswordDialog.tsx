@@ -5,21 +5,7 @@ import { Auth } from "aws-amplify";
 import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
 import PasswordInput from "../../../common/PasswordInput";
-
-interface PasswordProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-interface PasswordState {
-  codeSent: boolean;
-  username: string;
-  code: string;
-  newPassword: string;
-  destination: string;
-  codeLoading: boolean;
-  verifyLoading: boolean;
-}
+import { PasswordProps, PasswordState } from "../interfaces/Password.i";
 
 const initialState = {
   codeSent: false,

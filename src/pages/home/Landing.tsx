@@ -5,7 +5,7 @@ import { Col, Row } from "reactstrap";
 import header from "../../img/header.png";
 import logo from "../../img/logo.png";
 
-const Landing: React.FC<{}> = (): JSX.Element => {
+const Landing: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="landing__image-container">

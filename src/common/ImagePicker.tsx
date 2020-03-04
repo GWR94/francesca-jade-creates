@@ -3,11 +3,6 @@ import { FormGroup } from "@blueprintjs/core";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
 import { ImagePickerProps } from "./interfaces/ImagePicker.i";
 
-/**
- * TODO
- * [ ] Add delete button to remove image from db
- */
-
 const ImagePicker: React.FC<ImagePickerProps> = ({
   savedS3Image,
   disabled,

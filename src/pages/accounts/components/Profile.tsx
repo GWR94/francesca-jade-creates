@@ -7,6 +7,9 @@ import {
   FormGroup,
   ControlGroup,
   HTMLSelect,
+  Alert,
+  Popover,
+  Tooltip,
 } from "@blueprintjs/core";
 import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import { Container, Row, Col } from "reactstrap";
@@ -23,14 +26,6 @@ import ImagePicker from "../../../common/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
 
-/**
- * TODO
- * [x] Check auth for product in schema
- * [ ] Test admin privileges work
- * [x] Remove admin from database if cognito admin group can be used
- * [ ] Remove auto verifying email and add button/tag to verify
- */
-
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
     username: null,
@@ -41,6 +36,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     dialogOpen: {
       password: false,
       email: false,
+      emailConfirm: false,
       phoneNumber: false,
     },
     phoneNumber: null,
@@ -145,7 +141,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     }
     if (errors) return;
     if (!email.verified || email.value !== userAttributes.email) {
-      this.handleVerifyEmail();
+      this.handleVerifyEmail(true);
       return;
     }
     if (!phoneNumber.verified && phoneNumber.value) {
@@ -155,7 +151,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     this.onUpdateProfile();
   };
 
-  private handleVerifyEmail = async (sendEmail?: boolean): Promise<void> => {
+  private handleVerifyEmail = async (updateProfile: boolean): Promise<void> => {
     const { user } = this.props;
     const { email } = this.state;
     const updatedAttributes = {
@@ -163,17 +159,18 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
     };
     try {
       const res = await Auth.updateUserAttributes(user, updatedAttributes);
-      if (res === "SUCCESS" && sendEmail) {
+      if (res === "SUCCESS") {
         this.sendVerificationCode("email");
       }
-      await Auth.currentAuthenticatedUser();
     } catch (err) {
       Toaster.show({
         intent: "danger",
         message: "Unable to update email address. Please try again.",
       });
     }
-    this.onUpdateProfile();
+    if (updateProfile) {
+      this.onUpdateProfile();
+    }
   };
 
   private handleVerifyPhone = async (): Promise<void> => {
@@ -370,18 +367,37 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     helperText={email.error}
                     intent={email.error ? "danger" : "none"}
                     labelInfo={
-                      <Tag
-                        className="profile__tab"
-                        intent={
-                          email.verified && email.value === userAttributes.email
-                            ? "success"
-                            : "danger"
-                        }
-                      >
-                        {email.verified && email.value === userAttributes.email
-                          ? "Verified"
-                          : "Unverified"}
-                      </Tag>
+                      <Popover position="top" className="profile__popover">
+                        <Tooltip
+                          content={
+                            (!email.verified || email.value !== userAttributes.email) &&
+                            "Click to verify your email address"
+                          }
+                          position="top"
+                          intent="primary"
+                          className="profile__tooltip"
+                        >
+                          <Tag
+                            className="profile__tag"
+                            intent={
+                              email.verified && email.value === userAttributes.email
+                                ? "success"
+                                : "danger"
+                            }
+                            onClick={(): void => {
+                              if (email.verified && email.value === userAttributes.email)
+                                return;
+                              this.setState({
+                                dialogOpen: { ...dialogOpen, emailConfirm: true },
+                              });
+                            }}
+                          >
+                            {email.verified && email.value === userAttributes.email
+                              ? "Verified"
+                              : "Unverified"}
+                          </Tag>
+                        </Tooltip>
+                      </Popover>
                     }
                     className="profile__input"
                   >
@@ -535,7 +551,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
               </Row>
               <div className="profile__button-container">
                 <Button
-                  text={isEditing ? "Cancel" : "Edit"}
+                  text={isEditing ? "Cancel" : "Edit Profile"}
                   large
                   onClick={(): void => this.setState({ isEditing: !isEditing })}
                   intent={isEditing ? "warning" : "success"}
@@ -561,18 +577,34 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           }
           user={user}
         />
-        {dialogOpen.email && (
-          <VerificationDialog
-            open={dialogOpen.email}
-            closeDialog={(): void =>
-              this.setState({ dialogOpen: { ...dialogOpen, email: false } })
-            }
-            email={email}
-          />
-        )}
+        <VerificationDialog
+          open={dialogOpen.email}
+          closeDialog={(): void =>
+            this.setState({ dialogOpen: { ...dialogOpen, email: false } })
+          }
+          email={email}
+        />
+        <Alert
+          isOpen={dialogOpen.emailConfirm}
+          onCancel={(): void => {
+            this.setState({ dialogOpen: { ...dialogOpen, emailConfirm: false } });
+          }}
+          onConfirm={(): void => {
+            this.setState({
+              dialogOpen: { ...dialogOpen, emailConfirm: false },
+            });
+            this.handleVerifyEmail(false);
+          }}
+          cancelButtonText="No"
+          confirmButtonText="Yes"
+          intent="primary"
+          icon="info-sign"
+        >
+          <p>Do you want to verify your email address?</p>
+        </Alert>
         {/* <PhoneNumberChange
           open={phoneNumber.dialogOpen}
-          closeDialog={(): void =>
+          closeDialog={(): void => 
             this.setState({ email: { ...email, dialogOpen: false } })
           }
         /> */}

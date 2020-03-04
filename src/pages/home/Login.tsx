@@ -4,31 +4,11 @@ import { Auth } from "aws-amplify";
 import { CognitoHostedUIIdentityProvider as Provider } from "@aws-amplify/auth/lib/types";
 import { ICredentials } from "@aws-amplify/core";
 import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
-import { History } from "history";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import PasswordInput from "../../common/PasswordInput";
-
-interface LoginProps {
-  history: History;
-}
-
-interface LoginState {
-  username: string;
-  password: string;
-  passwordDialogOpen: boolean;
-  accountDialogOpen: boolean;
-}
-
-/**
- * TODO
- * [x] Add create account
- * [x] Add option to show password on click
- * [ ] Open verification option if user is unverified
- * [ ] Fix styling for smaller devices
- * [ ] Fix login with social media
- */
+import { LoginProps, LoginState } from "./interfaces/Login.i";
 
 class Login extends React.Component<LoginProps, LoginState> {
   public readonly state: LoginState = {

@@ -8,7 +8,6 @@ import { PasswordProps, PasswordState } from "../interfaces/PasswordChange.i";
 
 /**
  * TODO
- * [x] Change error text colour
  * [ ] Test
  */
 

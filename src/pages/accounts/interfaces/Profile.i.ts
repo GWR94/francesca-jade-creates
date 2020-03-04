@@ -39,6 +39,7 @@ export interface ProfileState {
   dialogOpen: {
     password: boolean;
     email: boolean;
+    emailConfirm: boolean;
     phoneNumber: boolean;
   };
 }

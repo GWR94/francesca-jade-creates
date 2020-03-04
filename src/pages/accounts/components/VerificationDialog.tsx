@@ -36,38 +36,40 @@ const VerificationDialog: React.FC<Props> = ({
   };
 
   return (
-    <Dialog
-      className="verify__container"
-      isOpen={open}
-      onClose={closeDialog}
-      title="Verify your email address"
-    >
-      <div className="verify__dialog">
-        <p className="verify__text">
-          Please enter the verification code sent to {email.value}
-        </p>
-        <InputGroup
-          type="text"
-          value={code}
-          placeholder="Enter the verification code..."
-          onChange={(e): void => setCode(e.target.value)}
-        />
-        <div className="verify__button-container">
-          <Button
-            intent="success"
-            text="Verify Email"
-            onClick={(): Promise<void> => handleVerificationCode("email")}
-            style={{ margin: "0 4px" }}
+    open && (
+      <Dialog
+        className="verify__container"
+        isOpen={open}
+        onClose={closeDialog}
+        title="Verify your email address"
+      >
+        <div className="verify__dialog">
+          <p className="verify__text">
+            Please enter the verification code sent to {email.value}
+          </p>
+          <InputGroup
+            type="text"
+            value={code}
+            placeholder="Enter the verification code..."
+            onChange={(e): void => setCode(e.target.value)}
           />
-          <Button
-            intent="warning"
-            text="Verify Later"
-            onClick={closeDialog}
-            style={{ margin: "0 4px" }}
-          />
+          <div className="verify__button-container">
+            <Button
+              intent="success"
+              text="Verify Email"
+              onClick={(): Promise<void> => handleVerificationCode("email")}
+              style={{ margin: "0 4px" }}
+            />
+            <Button
+              intent="warning"
+              text="Verify Later"
+              onClick={closeDialog}
+              style={{ margin: "0 4px" }}
+            />
+          </div>
         </div>
-      </div>
-    </Dialog>
+      </Dialog>
+    )
   );
 };
 
