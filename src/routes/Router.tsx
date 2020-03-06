@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import Landing from "../pages/home/Landing";
@@ -15,8 +15,8 @@ import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
-import Product from "../common/Product";
-import UpdateProduct from "../pages/accounts/components/UpdateProduct";
+import Product from "../common/ProductCard";
+import UpdateProduct from "../pages/accounts/components/EditProduct";
 
 export const history = createBrowserHistory();
 
@@ -127,7 +127,7 @@ class AppRouter extends Component {
       <Router history={history}>
         <div
           className="landing__background"
-          style={{ background: `url(${background}) no-repeat center` }}
+          style={{ background: `url(${background}) no-repeat center fixed` }}
         >
           <NavBar
             signOut={this.handleSignOut}
@@ -143,25 +143,46 @@ class AppRouter extends Component {
           ) : (
             <Switch>
               <Route path="/" exact component={Landing} />
-              <Route path="/creates" user={user} component={CreatesPage} />
-              <Route path="/cakes" exact user={user} component={CakesPage} />
+              <Route
+                path="/creates"
+                user={user}
+                history={history}
+                component={CreatesPage}
+              />
+              <Route
+                path="/cakes"
+                exact
+                user={user}
+                history={history}
+                component={CakesPage}
+              />
               <Route path="/cakes/:id" component={Product} />
               <Route path="/login" history={history} user={user} component={Login} />
               <Route
                 path="/account"
                 exact
                 component={(): JSX.Element =>
-                  user && (
+                  user ? (
                     <AccountsPage
                       user={user}
                       userAttributes={userAttributes}
                       accountsTab={accountsTab}
                       admin={this.admin}
+                      setAccountsTab={(tab): void => {
+                        if (tab !== accountsTab) this.setState({ accountsTab: tab });
+                      }}
                     />
+                  ) : (
+                    <Redirect to="/login" />
                   )
                 }
               />
-              <Route path="/account/:id" component={UpdateProduct} />
+              <Route
+                path="/account/:id"
+                component={(matchParams): JSX.Element => (
+                  <UpdateProduct update history={history} {...matchParams} />
+                )}
+              />
               <Route component={NotFoundPage} />
             </Switch>
           )}

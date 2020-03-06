@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dialog, Classes, Button, Tag, ProgressBar } from "@blueprintjs/core";
-import { S3Image } from "aws-amplify-react";
-import { Carousel, CarouselIndicators, CarouselControl, CarouselItem } from "reactstrap";
 import { ConfirmDialogProps } from "../interfaces/ConfirmDialog.i";
+import ImageCarousel from "../../../common/ImageCarousel";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
@@ -19,22 +18,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   percentUploaded,
   tags,
   image,
-  product,
-  update,
 }): JSX.Element => {
-  const [index, setIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  const handleNextImage = (): void => {
-    if (animating) return;
-    setIndex(index === image.length - 1 ? 0 : index + 1);
-  };
-
-  const handlePreviousImage = (): void => {
-    if (animating) return;
-    setIndex(index === 0 ? image.length - 1 : index - 1);
-  };
-
   return (
     isOpen && (
       <Dialog
@@ -88,58 +72,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </p>
           {imagePreview ? (
             <img src={imagePreview} alt={`${title} Preview`} className="confirm__image" />
-          ) : update && Array.isArray(image) ? (
-            <Carousel
-              activeIndex={index}
-              next={handleNextImage}
-              previous={handlePreviousImage}
-            >
-              <CarouselIndicators
-                items={image}
-                activeIndex={index}
-                onClickHandler={(idx): void => setIndex(idx)}
-              />
-              {image.map((image, i) => (
-                <CarouselItem
-                  onExiting={(): void => setAnimating(true)}
-                  onExited={(): void => setAnimating(false)}
-                  key={i}
-                >
-                  <div className="update__image-container">
-                    <S3Image
-                      imgKey={image.key}
-                      theme={{
-                        photoImg: {
-                          maxWidth: "100%",
-                          maxHeight: "100%",
-                        },
-                      }}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-              <CarouselControl
-                direction="prev"
-                directionText="Previous"
-                onClickHandler={handlePreviousImage}
-              />
-              <CarouselControl
-                direction="next"
-                directionText="Next"
-                onClickHandler={handleNextImage}
-              />
-            </Carousel>
           ) : (
-            <S3Image
-              imgKey={product.image.key}
-              theme={{
-                photoImg: {
-                  display: "block",
-                  width: "340px",
-                  margin: "0 auto",
-                },
-              }}
-            />
+            <ImageCarousel images={image} />
           )}
         </div>
         <div className="new-product__button-container">

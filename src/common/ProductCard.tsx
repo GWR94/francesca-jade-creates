@@ -2,29 +2,18 @@ import React, { useState } from "react";
 import { Card, Button, Alert, Tag } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
 import { S3Image } from "aws-amplify-react";
-import ReactModal from "react-modal";
-import { ProductProps } from "./interfaces/Product.i";
+import { ProductCardProps } from "./interfaces/Product.i";
 import { deleteProduct } from "../graphql/mutations";
 import { Toaster } from "../utils/index";
-import NewProduct from "../pages/accounts/components/NewProduct";
-import useScreenWidth from "../hooks/useScreenWidth";
 
-const Product: React.FC<ProductProps> = (product): JSX.Element => {
-  const {
-    id,
-    image,
-    title,
-    description,
-    price,
-    shippingCost,
-    type,
-    tags,
-    customer,
-    admin,
-  } = product;
+const Product: React.FC<ProductCardProps> = ({
+  product,
+  admin,
+  history,
+}): JSX.Element => {
+  console.log(product);
+  const { id, image, title, description, price, shippingCost, type, tags } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
-  const [editDialogOpen, setEditDialog] = useState(false);
-  const desktop = useScreenWidth(768);
 
   const handleDeleteProduct = async (): Promise<void> => {
     try {
@@ -42,37 +31,6 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         Please try again`,
       });
     }
-  };
-
-  const desktopStyles = {
-    content: {
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      borderRadius: "4px",
-      outline: "none",
-      padding: "20px",
-      overflowY: "scroll",
-      height: "80%",
-      transform: "translate(-50%, -50%)",
-    },
-  };
-
-  const mobileStyles = {
-    content: {
-      margin: "0 auto",
-      width: "90vw",
-      display: "block",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-52%, -50%)",
-      overflowY: "scroll",
-      height: "80%",
-    },
   };
 
   return (
@@ -109,7 +67,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
           />
         </div>
         <div className="new-product__button-container">
-          {customer ? (
+          {!admin ? (
             <Button
               intent="success"
               text={price === 0 ? "Request a quote" : "Pay with Stripe"}
@@ -127,7 +85,7 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
               <Button
                 text="Edit"
                 intent="warning"
-                onClick={(): void => setEditDialog(true)}
+                onClick={(): void => history.push(`/accounts/${product.id}`)}
                 style={{ margin: "8px 4px 0" }}
               />
             </>
@@ -146,20 +104,6 @@ const Product: React.FC<ProductProps> = (product): JSX.Element => {
         <p>Are you sure you want to delete &quot;{title}&quot;?</p>
         <p>This cannot be undone.</p>
       </Alert>
-      <ReactModal
-        isOpen={editDialogOpen}
-        onRequestClose={(): void => setEditDialog(false)}
-        style={desktop ? desktopStyles : mobileStyles}
-        contentLabel="Update Product"
-        appElement={document.getElementById("app")}
-      >
-        <NewProduct
-          update
-          product={product}
-          onCancel={(): void => setEditDialog(false)}
-          admin={admin}
-        />
-      </ReactModal>
     </>
   );
 };

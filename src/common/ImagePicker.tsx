@@ -13,6 +13,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   showPreview,
   update,
   profile,
+  showText,
 }): JSX.Element => {
   const [imagePreview, setPreview] = useState(null);
   const styles = theme || {
@@ -46,16 +47,24 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   return (
     <>
       <FormGroup
-        label={!update && "Display Image:"}
+        label={showText && "Display Image:"}
         className="profile__input"
         labelInfo={(!update || profile) && "(optional)"}
       >
         {imagePreview ? (
-          <div className="image__container">
+          <div
+            className={
+              profile ? "image__profile-container" : "image__placeholder-container"
+            }
+          >
             <img className="image__image" src={imagePreview} alt="Product Preview" />
           </div>
         ) : savedS3Image ? (
-          <div className="image__container">
+          <div
+            className={
+              profile ? "image__profile-container" : "image__placeholder-container"
+            }
+          >
             <S3Image
               imgKey={savedS3Image.key}
               theme={{
@@ -65,7 +74,11 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
           </div>
         ) : (
           savedImage && (
-            <div className="image__container">
+            <div
+              className={
+                profile ? "image__profile-container" : "image__placeholder-container"
+              }
+            >
               <img src={savedImage} alt="Profile" className="image__image" />
             </div>
           )

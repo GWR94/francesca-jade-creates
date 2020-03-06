@@ -16,13 +16,18 @@
   justify-content: center;
   border-bottom: 2px solid transparent;
   width: 160px;
+  margin: 0 2px;
   &:hover {
     border-bottom: 2px solid $light-pink;
   }
   @media screen and (max-width: $s-breakpoint) {
     width: 120px;
+    font-size: 15px;
+    padding: 8px 8px;
+  }
+  @media screen and (max-width: $s-breakpoint) {
+    padding: 8px 4px;
     font-size: 14px;
-    padding: 4px 8px;
   }
 }
 

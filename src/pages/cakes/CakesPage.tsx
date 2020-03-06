@@ -4,16 +4,20 @@ import { H3 } from "@blueprintjs/core";
 import { Row, Col, Container } from "reactstrap";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../../common/Loading";
-import Product from "../../common/Product";
+import Product from "../../common/ProductCard";
 import { ProductProps } from "../../common/interfaces/Product.i";
 
-interface State {
+interface CakeState {
   isLoading: boolean;
   products: ProductProps[];
 }
 
-export default class CakesPage extends Component<{}, State> {
-  public readonly state: State = {
+interface CakesProps {
+  admin: boolean;
+}
+
+export default class CakesPage extends Component<CakesProps, CakeState> {
+  public readonly state: CakeState = {
     isLoading: true,
     products: null,
   };
@@ -39,7 +43,10 @@ export default class CakesPage extends Component<{}, State> {
         authMode: "API_KEY",
       });
 
-      this.setState({ products: data.listProducts.items, isLoading: false });
+      this.setState({
+        products: data.listProducts.items,
+        isLoading: false,
+      });
     } catch (err) {
       console.error("Failed handleGetProducts()");
     }
@@ -47,6 +54,7 @@ export default class CakesPage extends Component<{}, State> {
 
   public render(): JSX.Element {
     const { isLoading, products } = this.state;
+    const { admin } = this.props;
     return isLoading ? (
       <Loading size={100} />
     ) : (
@@ -56,7 +64,7 @@ export default class CakesPage extends Component<{}, State> {
           {products.map(
             (product): JSX.Element => (
               <Col key={product.id} lg={3} md={4} sm={6}>
-                <Product {...product} customer />
+                <Product product={product} admin={admin} />
               </Col>
             ),
           )}

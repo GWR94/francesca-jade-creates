@@ -11,4 +11,5 @@ export interface ImagePickerProps {
   showPreview?: boolean;
   update?: boolean;
   profile?: boolean;
+  showText?: boolean;
 }

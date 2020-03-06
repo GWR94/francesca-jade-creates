@@ -12,6 +12,7 @@ import {
 } from "../../graphql/subscriptions";
 import Loading from "../../common/Loading";
 import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
+import UpdateProduct from "./components/EditProduct";
 
 const initialState: AccountsState = {
   products: [],
@@ -98,7 +99,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
 
   private getCurrentPage = (): JSX.Element => {
     const { products, currentTab } = this.state;
-    const { userAttributes, user, admin } = this.props;
+    const { userAttributes, user, admin, history } = this.props;
     switch (currentTab) {
       case "profile":
         return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
@@ -106,10 +107,11 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
         return <Products products={products} admin={admin} />;
       case "create":
         return (
-          <NewProduct
-            admin={admin}
-            onCancel={(): void => this.setState({ currentTab: "products" })}
-          />
+          // <NewProduct
+          //   admin={admin}
+          //   onCancel={(): void => this.setState({ currentTab: "products" })}
+          // />
+          <UpdateProduct history={history} />
         );
       default:
         return <Profile user={user} userAttributes={userAttributes} admin={admin} />;

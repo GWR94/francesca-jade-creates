@@ -7,6 +7,7 @@ import config from "./aws-exports";
 import AppRouter from "./routes/Router";
 import "./scss/styles.scss";
 import "remove-focus-outline";
+import "animate.css/animate.min.css";
 
 const urlsIn = config.oauth.redirectSignIn.split(",");
 const urlsOut = config.oauth.redirectSignOut.split(",");

@@ -1,31 +1,27 @@
 import { History } from "history";
 import { ProductProps } from "../../../common/interfaces/Product.i";
-import { ImageProps } from "./NewProduct.i";
 
 export interface UpdateProps {
-  match: {
+  match?: {
     params: {
       id: string;
     };
   };
   history: History;
+  update?: boolean;
 }
 
 export interface UpdateState {
   isLoading: boolean;
   product: ProductProps;
-  isAnimating: boolean;
-  currentIndex: number;
   imageConfirmOpen: boolean;
   confirmDialogOpen: boolean;
-  deleteAlertOpen: boolean;
-  imagePreview: string;
-  fileToUpload: ImageProps;
   isUploading: boolean;
   errors: {
     title: string;
     description: string;
+    tags: string;
+    image: string;
   };
   percentUploaded: number;
-  keyToDelete: string;
 }

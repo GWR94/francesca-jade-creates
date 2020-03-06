@@ -26,6 +26,11 @@ import ImagePicker from "../../../common/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
 
+/**
+ * TODO
+ * [ ] Add error if no tags are present / check
+ */
+
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
     username: null,
@@ -358,6 +363,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
                     this.setState({ newDisplayImage })
                   }
                   showPreview
+                  showText
                 />
               </Row>
               <Row className="profile__row">

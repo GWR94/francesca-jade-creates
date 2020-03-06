@@ -1,9 +1,16 @@
-.image__container {
+.image__profile-container {
   display: block;
   margin: 0 auto;
   border-radius: 50%;
   height: 160px;
   width: 160px;
+  overflow: hidden;
+}
+
+.image__placeholder-container {
+  display: block;
+  margin: 0 auto;
+  width: 200px;
   overflow: hidden;
 }
 

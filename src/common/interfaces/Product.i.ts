@@ -1,3 +1,11 @@
+import { History } from "history";
+
+export interface ProductCardProps {
+  product: ProductProps;
+  admin: boolean;
+  history: History;
+}
+
 export interface ProductProps {
   id: string;
   title: string;
@@ -7,10 +15,7 @@ export interface ProductProps {
   shippingCost: number;
   type: string;
   tags: string[];
-  owner: string;
-  customer?: boolean;
-  admin: boolean;
-  setPrice?: boolean;
+  setPrice: boolean;
 }
 
 export interface S3ImageProps {
