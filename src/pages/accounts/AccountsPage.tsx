@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
+import { Container } from "reactstrap";
 import { listProducts } from "../../graphql/queries";
-import NewProduct from "./components/NewProduct";
 import Profile from "./components/Profile";
-import Products from "./components/ProductsList";
+import ProductsList from "./components/ProductsList";
 import background from "../../img/background.jpg";
 import {
   onUpdateProduct,
@@ -29,9 +29,11 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   private createProductListener;
 
   public async componentDidMount(): Promise<void> {
+    const { accountsTab } = this.props;
     await this.handleGetProducts();
     await this.handleSubscriptions();
     this.setState({ isLoading: false });
+    if (accountsTab) this.setState({ currentTab: accountsTab });
   }
 
   public componentWillUnmount(): void {
@@ -41,29 +43,29 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   }
 
   private handleGetProducts = async (): Promise<void> => {
-    const { data } = await API.graphql(graphqlOperation(listProducts));
-    this.setState({ products: data.listProducts.items, isLoading: false });
+    const { data } = await API.graphql(graphqlOperation(listProducts, { limit: 200 }));
+    const products = data.listProducts.items;
+    this.setState({ products, isLoading: false });
+    console.log(products.length);
   };
 
   private handleSubscriptions = async (): Promise<void> => {
-    const { products } = this.state;
-    const { user, accountsTab } = this.props;
+    const { user } = this.props;
     const {
       attributes: { sub },
     } = user;
-
-    if (accountsTab) this.setState({ currentTab: accountsTab });
 
     this.createProductListener = API.graphql(
       graphqlOperation(onCreateProduct, { owner: sub }),
     ).subscribe({
       next: (productData): void => {
+        const { products } = this.state;
         const createdProduct = productData.value.data.onCreateProduct;
         const prevProducts = products
           ? products.filter((item): boolean => item.id !== createdProduct.id)
           : [];
         const updatedProducts = [createdProduct, ...prevProducts];
-        this.setState({ products: updatedProducts });
+        return this.setState({ products: updatedProducts });
       },
     });
 
@@ -71,6 +73,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
       graphqlOperation(onUpdateProduct, { owner: sub }),
     ).subscribe({
       next: (productData): void => {
+        const { products } = this.state;
         const updatedProduct = productData.value.data.onUpdateProduct;
         const updatedProductIdx = products.findIndex(
           (item): boolean => item.id === updatedProduct.id,
@@ -80,7 +83,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
           updatedProduct,
           ...products.slice(updatedProductIdx + 1),
         ];
-        this.setState({ products: updatedProducts });
+        return this.setState({ products: updatedProducts });
       },
     });
 
@@ -88,11 +91,12 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
       graphqlOperation(onDeleteProduct, { owner: sub }),
     ).subscribe({
       next: (productData): void => {
+        const { products } = this.state;
         const deletedProduct = productData.value.data.onDeleteProduct;
         const updatedProducts = products
           ? products.filter((item): boolean => item.id !== deletedProduct.id)
           : [];
-        this.setState({ products: updatedProducts });
+        return this.setState({ products: updatedProducts });
       },
     });
   };
@@ -104,14 +108,13 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
       case "profile":
         return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
       case "products":
-        return <Products products={products} admin={admin} />;
+        return <ProductsList products={products} admin={admin} />;
       case "create":
         return (
-          // <NewProduct
-          //   admin={admin}
-          //   onCancel={(): void => this.setState({ currentTab: "products" })}
-          // />
-          <UpdateProduct history={history} />
+          <UpdateProduct
+            history={history}
+            setCurrentTab={(currentTab): void => this.setState({ currentTab })}
+          />
         );
       default:
         return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
@@ -129,7 +132,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
           background: `url(${background}) no-repeat center center fixed`,
         }}
       >
-        <div className="content-container">
+        <Container className="content-container">
           <div className="accounts__tab-container">
             <div
               className={
@@ -182,7 +185,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
             )}
           </div>
           {this.getCurrentPage()}
-        </div>
+        </Container>
       </div>
     );
   }

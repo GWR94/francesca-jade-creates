@@ -61,11 +61,9 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
       } = user;
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
       let res = null;
-      if (userAttributes.phone_number) {
+      if (userAttributes?.phone_number) {
         res = this.getCountryCode(userAttributes.phone_number);
       }
-
-      console.log("image:", data.getUser.profileImage);
 
       this.setState({
         username: {
@@ -311,7 +309,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
             <Loading size={100} />
           ) : (
             <div className="profile__container">
-              <H3>Profile</H3>
+              <H3 className="accounts__title">Profile</H3>
               <Row className="profile__row">
                 <Col md={6}>
                   <FormGroup label="Username:" className="profile__input">

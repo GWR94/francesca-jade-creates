@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import { Card, Button, Alert, Tag } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
 import { S3Image } from "aws-amplify-react";
+import { useHistory } from "react-router-dom";
 import { ProductCardProps } from "./interfaces/Product.i";
 import { deleteProduct } from "../graphql/mutations";
 import { Toaster } from "../utils/index";
 
-const Product: React.FC<ProductCardProps> = ({
-  product,
-  admin,
-  history,
-}): JSX.Element => {
-  console.log(product);
-  const { id, image, title, description, price, shippingCost, type, tags } = product;
+const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element => {
+  const history = useHistory();
+  const { id, image, title, price, shippingCost, type, tags } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
 
   const handleDeleteProduct = async (): Promise<void> => {
@@ -33,36 +30,53 @@ const Product: React.FC<ProductCardProps> = ({
     }
   };
 
+  const getIcon = (type): JSX.Element => {
+    switch (type) {
+      case "Cake":
+        return <i className="fas fa-birthday-cake" style={{ color: "#fd4ef2" }} />;
+      case "Card":
+        return <i className="fas fa-pencil-alt" style={{ color: "#9370f6" }} />;
+      case "Frame":
+        return <i className="fas fa-palette" style={{ color: "#69abec" }} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <Card elevation={2} interactive className="product__card">
-        <p>
-          <strong>{title}</strong> - <em>{type}</em>
-        </p>
-        <p>
-          <em>{description}</em>
-        </p>
-        <p>
-          {price > 0
-            ? `£${price.toFixed(2)} + £${shippingCost.toFixed(2)} postage`
-            : "No set price"}
-        </p>
-        {tags && (
-          <div>
-            {tags.map(
-              (tag, i): JSX.Element => (
-                <Tag active key={i} style={{ margin: "0px 4px 4px" }}>
-                  {tag}
-                </Tag>
-              ),
-            )}
-          </div>
-        )}
-        <div id="s3Image">
+        <div className="product__text-container">
+          <p>
+            <strong>{title}</strong> - {getIcon(type)}
+          </p>
+          <p>
+            {price > 0
+              ? `£${price.toFixed(2)} + £${shippingCost.toFixed(2)} postage`
+              : "No set price"}
+          </p>
+          {tags && (
+            <div>
+              {tags.map(
+                (tag, i): JSX.Element => (
+                  <Tag active key={i} style={{ margin: "0px 4px 4px" }}>
+                    {tag}
+                  </Tag>
+                ),
+              )}
+            </div>
+          )}
+        </div>
+        <div className="product__image-container">
           <S3Image
             imgKey={image[0]?.key}
             theme={{
-              photoImg: { maxWidth: "100%", maxHeight: "100%" },
+              photoImg: {
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              },
             }}
           />
         </div>
@@ -85,7 +99,7 @@ const Product: React.FC<ProductCardProps> = ({
               <Button
                 text="Edit"
                 intent="warning"
-                onClick={(): void => history.push(`/accounts/${product.id}`)}
+                onClick={(): void => history.push(`/account/${product.id}`)}
                 style={{ margin: "8px 4px 0" }}
               />
             </>

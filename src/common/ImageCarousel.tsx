@@ -12,6 +12,7 @@ interface Props {
   deleteImages?: boolean;
   id?: string;
   handleUpdateImages?: (image: S3ImageProps[]) => void;
+  update?: boolean;
 }
 
 const ImageCarousel: React.FC<Props> = ({
@@ -19,6 +20,7 @@ const ImageCarousel: React.FC<Props> = ({
   images,
   deleteImages = false,
   handleUpdateImages,
+  update = false,
 }) => {
   const [animating, setAnimating] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -45,9 +47,11 @@ const ImageCarousel: React.FC<Props> = ({
       const updatedImages = images.filter((img) => img.key !== keyToDelete);
       setCurrentIndex(0);
       await Storage.remove(keyToDelete);
-      await API.graphql(
-        graphqlOperation(updateProduct, { input: { id, image: updatedImages } }),
-      );
+      if (update) {
+        await API.graphql(
+          graphqlOperation(updateProduct, { input: { id, image: updatedImages } }),
+        );
+      }
       Toaster.show({
         intent: "success",
         message: "Successfully removed image.",

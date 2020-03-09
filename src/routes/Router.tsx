@@ -4,7 +4,7 @@ import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
-import CreatesPage from "../pages/creates/CreatesPage";
+import ProductTypePage from "../common/ProductTypePage";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import NavBar from "../common/NavBar";
 import { getUser } from "../graphql/queries";
@@ -17,6 +17,7 @@ import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
 import Product from "../common/ProductCard";
 import UpdateProduct from "../pages/accounts/components/EditProduct";
+import ProductsList from "../pages/accounts/components/ProductsList";
 
 export const history = createBrowserHistory();
 
@@ -147,14 +148,18 @@ class AppRouter extends Component {
                 path="/creates"
                 user={user}
                 history={history}
-                component={CreatesPage}
+                component={(): JSX.Element => (
+                  <ProductTypePage type="Creates" history={history} />
+                )}
               />
               <Route
                 path="/cakes"
                 exact
                 user={user}
                 history={history}
-                component={CakesPage}
+                component={(): JSX.Element => (
+                  <ProductTypePage type="Cake" history={history} />
+                )}
               />
               <Route path="/cakes/:id" component={Product} />
               <Route path="/login" history={history} user={user} component={Login} />
@@ -168,9 +173,7 @@ class AppRouter extends Component {
                       userAttributes={userAttributes}
                       accountsTab={accountsTab}
                       admin={this.admin}
-                      setAccountsTab={(tab): void => {
-                        if (tab !== accountsTab) this.setState({ accountsTab: tab });
-                      }}
+                      history={history}
                     />
                   ) : (
                     <Redirect to="/login" />
@@ -180,7 +183,15 @@ class AppRouter extends Component {
               <Route
                 path="/account/:id"
                 component={(matchParams): JSX.Element => (
-                  <UpdateProduct update history={history} {...matchParams} />
+                  <UpdateProduct
+                    update
+                    setCurrentTab={(tab): void => {
+                      history.push("/account");
+                      if (tab !== accountsTab) this.setState({ accountsTab: tab });
+                    }}
+                    history={history}
+                    {...matchParams}
+                  />
                 )}
               />
               <Route component={NotFoundPage} />

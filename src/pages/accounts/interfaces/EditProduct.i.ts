@@ -9,6 +9,7 @@ export interface UpdateProps {
   };
   history: History;
   update?: boolean;
+  setCurrentTab: (page) => void;
 }
 
 export interface UpdateState {

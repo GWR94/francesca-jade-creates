@@ -1,4 +1,58 @@
 .filter__container {
   background: #fff;
-  width: 300px;
+  padding: 12px 24px;
+  width: 330px;
+  border: 1px solid $light-pink;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin: -1px auto 10px;
+}
+
+.filter__button-container {
+  margin: 20px auto;
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+
+.filter__hidden {
+  display: none;
+}
+
+.filter__text {
+  font-family: $title-font;
+  font-weight: bold;
+}
+
+.filter__button {
+  width: 80px;
+  margin: 0 auto 10px;
+  display: flex;
+  margin-top: -1px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid $light-pink;
+  background: #fff;
+  z-index: 10;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.filter__icon {
+  padding: 3px;
+  font-size: 22px;
+  margin-top: -8px;
+}
+
+.filter__button-text {
+  font-size: 14px;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.filter__close-icon {
+  position: absolute;
+  top: 5px;
+  right: 8px;
 }

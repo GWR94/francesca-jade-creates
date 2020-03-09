@@ -14,6 +14,7 @@ import {
   TagInput,
   H3,
 } from "@blueprintjs/core";
+import { Col, Row } from "reactstrap";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import ImagePicker from "../../../common/ImagePicker";
@@ -24,14 +25,14 @@ import { Toaster } from "../../../utils";
 import { UpdateProps, UpdateState } from "../interfaces/EditProduct.i";
 import ConfirmDialog from "./ConfirmDialog";
 import ImageCarousel from "../../../common/ImageCarousel";
-import { Col, Row } from "reactstrap";
 
 /**
  * TODO
  * [ ] Test
  * [ ] Create private route for sensitive pages in router
- * [ ] Fix create product
- * [ ] Fix image not removing after clicking x
+ * [ ] Add tag when clicking new radio button to change type.
+ * [x] Fix create product
+ * [x] Fix image not removing after clicking x
  */
 
 export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
@@ -206,7 +207,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
   private handleProductUpdate = async (): Promise<void> => {
     const { product } = this.state;
     const { id, title, description, price, shippingCost, type, tags, setPrice } = product;
-    const { history } = this.props;
+    const { setCurrentTab } = this.props;
     this.setState({ isUploading: true });
     try {
       const input = {
@@ -224,7 +225,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
         message: `Successfully updated ${title}.`,
       });
       this.setState({ isUploading: false, confirmDialogOpen: false });
-      history.push("/account");
+      setCurrentTab("products");
     } catch (err) {
       console.error(err);
       Toaster.show({
@@ -238,7 +239,8 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     const {
       product: { title, description, image, price, shippingCost, type, tags, setPrice },
     } = this.state;
-    const { history } = this.props;
+    const { setCurrentTab, history } = this.props;
+    this.setState({ isUploading: true });
     try {
       await API.graphql(
         graphqlOperation(createProduct, {
@@ -257,6 +259,8 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
         intent: "success",
         message: `${title} has been successfully created!`,
       });
+      this.setState({ isUploading: false, confirmDialogOpen: false });
+      setCurrentTab("products");
       history.push("/account");
     } catch (err) {
       console.error(err);
@@ -300,7 +304,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
       <>
         <div className="content-container">
           <div className="new-product__container">
-            <H3 style={{ padding: "12px 0 5px" }}>
+            <H3 className="accounts__title" style={update && { marginTop: "20px" }}>
               {update ? "Update Product" : "Create Product"}
             </H3>
             <FormGroup
@@ -343,7 +347,6 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 className="new-product__radio"
               >
                 <Radio label="Cake" value="Cake" />
-                <Radio label="Canvas" value="Canvas" />
                 <Radio label="Card" value="Card" />
                 <Radio label="Frame" value="Frame" />
               </RadioGroup>
@@ -370,7 +373,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 <>
                   <FormGroup className="new-product__form" label="Pricing:">
                     <Row>
-                      <Col xs={6}>
+                      <Col sm={6}>
                         <InputGroup
                           leftIcon="euro"
                           placeholder="Product price..."
@@ -379,9 +382,10 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                           value={product.price.toString()}
                           className="new-product__form-item"
                           onChange={(e): void => this.handleFormItem(e, "price")}
+                          style={{ marginBottom: "5px" }}
                         />
                       </Col>
-                      <Col xs={6}>
+                      <Col sm={6}>
                         <InputGroup
                           leftIcon="envelope"
                           placeholder="Shipping cost..."
@@ -420,6 +424,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                     <ImageCarousel
                       images={product.image}
                       deleteImages
+                      update={update}
                       id={product.id}
                       handleUpdateImages={(image): void =>
                         this.setState({ product: { ...product, image } })

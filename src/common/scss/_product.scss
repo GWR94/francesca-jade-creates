@@ -5,3 +5,12 @@
   font-family: $title-font;
   height: 100%;
 }
+
+.product__image-container {
+  height: 250px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
