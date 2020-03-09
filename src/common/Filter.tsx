@@ -6,7 +6,12 @@ interface Props {
   admin?: boolean;
 }
 
-const Filter: React.FC<Props> = ({ handleSearchQuery }) => {
+/**
+ * TODO
+ * [ ] Fix filters button - styling.
+ */
+
+const Filter: React.FC<Props> = ({ handleSearchQuery, admin }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="filter__text">
@@ -22,6 +27,7 @@ const Filter: React.FC<Props> = ({ handleSearchQuery }) => {
         </div>
       ) : (
         <SearchFilter
+          admin={admin}
           setQuery={(query, filters): void => handleSearchQuery(query, filters)}
           onClose={(): void => setOpen(false)}
         />

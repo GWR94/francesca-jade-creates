@@ -34,10 +34,8 @@ const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element =>
     switch (type) {
       case "Cake":
         return <i className="fas fa-birthday-cake" style={{ color: "#fd4ef2" }} />;
-      case "Card":
+      case "Creates":
         return <i className="fas fa-pencil-alt" style={{ color: "#9370f6" }} />;
-      case "Frame":
-        return <i className="fas fa-palette" style={{ color: "#69abec" }} />;
       default:
         return null;
     }

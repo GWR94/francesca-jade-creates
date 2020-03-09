@@ -59,7 +59,7 @@ class SearchFilter extends React.Component<Props, State> {
               }, 800);
             }}
           />
-          <ControlGroup style={{ marginTop: "10px" }}>
+          <ControlGroup style={{ margin: "6px 0" }}>
             <InputGroup
               leftIcon="search"
               onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {

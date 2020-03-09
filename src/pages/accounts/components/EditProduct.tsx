@@ -347,8 +347,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 className="new-product__radio"
               >
                 <Radio label="Cake" value="Cake" />
-                <Radio label="Card" value="Card" />
-                <Radio label="Frame" value="Frame" />
+                <Radio label="Creates" value="Creates" />
               </RadioGroup>
 
               <Callout
