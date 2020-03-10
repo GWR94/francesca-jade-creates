@@ -10,6 +10,7 @@ import ProductsList from "../pages/accounts/components/ProductsList";
 interface ProductTypeState {
   isLoading: boolean;
   products: ProductProps[];
+  queryResults: ProductProps[];
 }
 
 interface ProductTypeProps {
@@ -25,6 +26,7 @@ export default class ProductTypePage extends Component<
   public readonly state: ProductTypeState = {
     isLoading: true,
     products: null,
+    queryResults: null,
   };
 
   public componentDidMount(): void {
@@ -35,7 +37,7 @@ export default class ProductTypePage extends Component<
     const { type } = this.props;
     const filtering = type && {
       type: {
-        eq: type === "Cake" ? "Cake" : "Creates",
+        eq: type,
       },
     };
 

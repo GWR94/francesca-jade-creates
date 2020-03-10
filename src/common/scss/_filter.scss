@@ -56,3 +56,12 @@
   top: 5px;
   right: 8px;
 }
+
+.filter__radio {
+  display: inline-flex;
+  justify-content: space-evenly;
+  margin: 10px 0 0;
+  .bp3-label {
+    margin-right: 10px;
+  }
+}

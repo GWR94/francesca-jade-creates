@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SearchFilter from "./SearchFilter";
 
 interface Props {
-  handleSearchQuery: (query, filter) => void;
+  handleSearchQuery: (query, filter, adminFilter?) => void;
   admin?: boolean;
 }
 
@@ -28,7 +28,9 @@ const Filter: React.FC<Props> = ({ handleSearchQuery, admin }) => {
       ) : (
         <SearchFilter
           admin={admin}
-          setQuery={(query, filters): void => handleSearchQuery(query, filters)}
+          setQuery={(query, filters, adminFilter): void =>
+            handleSearchQuery(query, filters, adminFilter)
+          }
           onClose={(): void => setOpen(false)}
         />
       )}

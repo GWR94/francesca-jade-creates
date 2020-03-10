@@ -1,38 +1,30 @@
-import React, { useState } from "react";
+import React, { FormEvent } from "react";
 import {
   FormGroup,
   InputGroup,
-  Spinner,
-  Button,
   ControlGroup,
   HTMLSelect,
   Checkbox,
+  Radio,
+  RadioGroup,
 } from "@blueprintjs/core";
 
 interface Props {
   type?: string;
-  setQuery: (query, filters) => void;
+  setQuery: (query, searchQuery, filters?) => void;
   onClose: () => void;
   admin?: boolean;
 }
 
 interface State {
-  filters: {
-    cakes: boolean;
-    frames: boolean;
-    cards: boolean;
-  };
+  adminFilters: string;
   searchQuery: string;
   query: string;
 }
 
 class SearchFilter extends React.Component<Props, State> {
   public readonly state = {
-    filters: {
-      cakes: true,
-      frames: true,
-      cards: true,
-    },
+    adminFilters: "all",
     searchQuery: "all",
     query: "",
   };
@@ -40,7 +32,7 @@ class SearchFilter extends React.Component<Props, State> {
   private filterRef = React.createRef<HTMLDivElement>();
 
   public render(): JSX.Element {
-    const { filters, searchQuery, query } = this.state;
+    const { adminFilters, searchQuery, query } = this.state;
     const { setQuery, onClose, admin } = this.props;
 
     return (
@@ -64,7 +56,7 @@ class SearchFilter extends React.Component<Props, State> {
               leftIcon="search"
               onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                 this.setState({ query: e.target.value });
-                setQuery(e.target.value, admin ? filters : searchQuery);
+                setQuery(e.target.value, searchQuery, admin && adminFilters);
               }}
               placeholder="Search query..."
               fill
@@ -72,7 +64,7 @@ class SearchFilter extends React.Component<Props, State> {
             <HTMLSelect
               onChange={(e): void => {
                 this.setState({ searchQuery: e.target.value });
-                setQuery(query, searchQuery);
+                setQuery(query, searchQuery, admin && adminFilters);
               }}
             >
               <option value="all">All</option>
@@ -82,32 +74,20 @@ class SearchFilter extends React.Component<Props, State> {
             </HTMLSelect>
           </ControlGroup>
           {admin && (
-            <FormGroup label="Include:" style={{ margin: "0" }}>
-              <Checkbox
-                checked={filters.cakes}
-                label="Cakes"
-                inline
-                onChange={(): void =>
-                  this.setState({ filters: { ...filters, cakes: !filters.cakes } })
-                }
-              />
-              <Checkbox
-                checked={filters.frames}
-                label="Frames"
-                inline
-                onChange={(): void =>
-                  this.setState({ filters: { ...filters, frames: !filters.frames } })
-                }
-              />
-              <Checkbox
-                checked={filters.cards}
-                label="Cards"
-                inline
-                onChange={(): void =>
-                  this.setState({ filters: { ...filters, cards: !filters.cards } })
-                }
-              />
-            </FormGroup>
+            <RadioGroup
+              label="Include:"
+              inline
+              onChange={(e: FormEvent<HTMLInputElement>): void => {
+                this.setState({ adminFilters: e.currentTarget.value });
+                setQuery(query, searchQuery, e.currentTarget.value);
+              }}
+              selectedValue={adminFilters}
+              className="filter__radio"
+            >
+              <Radio label="All" value="all" />
+              <Radio label="Cakes" value="cakes" />
+              <Radio label="Creations" value="creates" />
+            </RadioGroup>
           )}
         </div>
       </>

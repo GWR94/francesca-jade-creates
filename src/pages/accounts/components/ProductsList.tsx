@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { H3 } from "@blueprintjs/core";
 import { Col, Row, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { useHistory } from "react-router-dom";
+import { API } from "aws-amplify";
 import Product from "../../../common/ProductCard";
 import { ProductProps } from "../../../common/interfaces/Product.i";
-import { API } from "aws-amplify";
 import { searchProducts } from "../../../graphql/queries";
 import Filter from "../../../common/Filter";
 
@@ -13,6 +13,11 @@ interface ProductListProps {
   noTitle?: boolean;
   products: ProductProps[];
   type?: "Cake" | "Creates";
+}
+
+interface FilterProps {
+  or?: any[];
+  and?: any[];
 }
 
 const ProductsList: React.FC<ProductListProps> = ({
@@ -30,46 +35,64 @@ const ProductsList: React.FC<ProductListProps> = ({
   };
   const maxPages = Math.ceil(products.length / 12);
 
-  const handleSearchQuery = async (query, searchTerms): Promise<void> => {
-    if (!query) return setQueryResults(null);
-    let filtering;
+  const handleSearchQuery = async (query, searchTerms, adminFilters?): Promise<void> => {
+    console.log(adminFilters);
+    if (!query && !adminFilters) return setQueryResults(null);
+    let filtering: FilterProps = {};
     if (searchTerms === "all") {
-      filtering = {
-        or: [
-          { tags: { matchPhrasePrefix: query } },
-          { title: { matchPhrasePrefix: query } },
-          { description: { matchPhrasePrefix: query } },
-        ],
-        type: { eq: type === "Cake" ? "Cake" : "Creates" },
-      };
+      if (query.length > 0) {
+        filtering = {
+          or: [
+            { tags: { matchPhrasePrefix: query } },
+            { title: { matchPhrasePrefix: query } },
+            { description: { matchPhrasePrefix: query } },
+          ],
+        };
+      }
     } else {
       filtering = {
         [searchTerms]: {
           matchPhrasePrefix: query,
         },
-        type: { eq: type === "Cake" ? "Cake" : "Creates" },
       };
     }
-    const { data } = await API.graphql({
-      query: searchProducts,
-      variables: {
-        filter: filtering,
-        limit: 100,
-      },
-      // @ts-ignore
-      authMode: "API_KEY",
-    });
-    return setQueryResults(data.searchProducts.items);
+
+    if (adminFilters) {
+      console.log("ADMIN");
+      if (adminFilters === "cakes") {
+        filtering.and = [{ type: { eq: "Cake" } }];
+      } else if (adminFilters === "creates") {
+        filtering.and = [{ type: { eq: "Creates" } }];
+      }
+    } else {
+      filtering.and = [{ type: { eq: type } }];
+    }
+
+    try {
+      const { data } = await API.graphql({
+        query: searchProducts,
+        variables: {
+          filter: filtering,
+          limit: 100,
+        },
+        // @ts-ignore
+        authMode: "API_KEY",
+      });
+      console.log(data);
+      return setQueryResults(data.searchProducts.items);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const results = queryResults || products;
 
   return (
     <>
-      {!noTitle && <H3 className="accounts__title">Products</H3>}
+      {/* {!noTitle && <H3 className="accounts__title">Products</H3>} */}
       <Filter
-        handleSearchQuery={(query, filter): Promise<void> =>
-          handleSearchQuery(query, filter)
+        handleSearchQuery={(query, filter, adminFilter?): Promise<void> =>
+          handleSearchQuery(query, filter, adminFilter)
         }
         admin={admin}
       />
@@ -93,7 +116,7 @@ const ProductsList: React.FC<ProductListProps> = ({
           <div>No Results</div>
         )}
       </Row>
-      {products.length > 12 && (
+      {results.length > 12 && (
         <div className="product-list__pagination">
           <Pagination aria-label="Choose page to view">
             <PaginationItem>
