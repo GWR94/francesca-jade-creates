@@ -3,7 +3,7 @@ import { H3 } from "@blueprintjs/core";
 import { Col, Row, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import { API } from "aws-amplify";
-import Product from "../../../common/ProductCard";
+import Product from "../../../common/product/ProductCard";
 import { ProductProps } from "../../../common/interfaces/Product.i";
 import { searchProducts } from "../../../graphql/queries";
 import Filter from "../../../common/Filter";
@@ -28,7 +28,7 @@ const ProductsList: React.FC<ProductListProps> = ({
 }): JSX.Element => {
   const history = useHistory();
   const [page, setPage] = useState(1);
-  const [queryResults, setQueryResults] = useState(null);
+  const [queryResults, setQueryResults] = useState(products);
   const productRange = {
     min: page === 1 ? 0 : (page - 1) * 12,
     max: page === 1 ? 12 : (page - 1) * 12 + 12,
@@ -36,7 +36,6 @@ const ProductsList: React.FC<ProductListProps> = ({
   const maxPages = Math.ceil(products.length / 12);
 
   const handleSearchQuery = async (query, searchTerms, adminFilters?): Promise<void> => {
-    console.log(adminFilters);
     if (!query && !adminFilters) return setQueryResults(null);
     let filtering: FilterProps = {};
     if (searchTerms === "all") {
@@ -58,7 +57,6 @@ const ProductsList: React.FC<ProductListProps> = ({
     }
 
     if (adminFilters) {
-      console.log("ADMIN");
       if (adminFilters === "cakes") {
         filtering.and = [{ type: { eq: "Cake" } }];
       } else if (adminFilters === "creates") {
@@ -68,6 +66,9 @@ const ProductsList: React.FC<ProductListProps> = ({
       filtering.and = [{ type: { eq: type } }];
     }
 
+    if (Object.keys(filtering).length === 0 && filtering.constructor === Object) {
+      return setQueryResults(null);
+    }
     try {
       const { data } = await API.graphql({
         query: searchProducts,

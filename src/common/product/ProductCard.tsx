@@ -3,9 +3,9 @@ import { Card, Button, Alert, Tag } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
 import { S3Image } from "aws-amplify-react";
 import { useHistory } from "react-router-dom";
-import { ProductCardProps } from "./interfaces/Product.i";
-import { deleteProduct } from "../graphql/mutations";
-import { Toaster } from "../utils/index";
+import { ProductCardProps } from "../interfaces/Product.i";
+import { deleteProduct } from "../../graphql/mutations";
+import { Toaster } from "../../utils/index";
 
 const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element => {
   const history = useHistory();
@@ -43,7 +43,16 @@ const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element =>
 
   return (
     <>
-      <Card elevation={2} interactive className="product__card">
+      <Card
+        elevation={2}
+        interactive
+        className="product__card"
+        onClick={(): void => {
+          admin
+            ? history.push(`/account/${id}`)
+            : history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
+        }}
+      >
         <div className="product__text-container">
           <p>
             <strong>{title}</strong> - {getIcon(type)}
@@ -78,31 +87,28 @@ const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element =>
             }}
           />
         </div>
-        <div className="new-product__button-container">
-          {!admin ? (
+        {admin && (
+          <div className="new-product__button-container">
             <Button
-              intent="success"
-              text={price === 0 ? "Request a quote" : "Pay with Stripe"}
-              icon="credit-card"
+              text="Delete"
+              intent="danger"
+              onClick={(e): void => {
+                e.stopPropagation();
+                setDeleteAlert(true);
+              }}
               style={{ margin: "8px 4px 0" }}
             />
-          ) : (
-            <>
-              <Button
-                text="Delete"
-                intent="danger"
-                onClick={(): void => setDeleteAlert(true)}
-                style={{ margin: "8px 4px 0" }}
-              />
-              <Button
-                text="Edit"
-                intent="warning"
-                onClick={(): void => history.push(`/account/${product.id}`)}
-                style={{ margin: "8px 4px 0" }}
-              />
-            </>
-          )}
-        </div>
+            <Button
+              text="Edit"
+              intent="warning"
+              onClick={(e): void => {
+                e.stopPropagation();
+                history.push(`/account/${product.id}`);
+              }}
+              style={{ margin: "8px 4px 0" }}
+            />
+          </div>
+        )}
       </Card>
       <Alert
         isOpen={deleteAlertOpen}

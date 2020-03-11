@@ -4,20 +4,18 @@ import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
-import ProductTypePage from "../common/ProductTypePage";
+import ProductTypePage from "../common/product/ProductTypePage";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import NavBar from "../common/NavBar";
+import ViewProduct from "../common/product/ViewProduct";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState } from "./interfaces/Router.i";
-import CakesPage from "../pages/cakes/CakesPage";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
-import Product from "../common/ProductCard";
 import UpdateProduct from "../pages/accounts/components/EditProduct";
-import ProductsList from "../pages/accounts/components/ProductsList";
 
 export const history = createBrowserHistory();
 
@@ -146,10 +144,17 @@ class AppRouter extends Component {
               <Route path="/" exact component={Landing} />
               <Route
                 path="/creates"
+                exact
                 user={user}
                 history={history}
                 component={(): JSX.Element => (
                   <ProductTypePage type="Creates" history={history} />
+                )}
+              />
+              <Route
+                path="/creates/:id"
+                component={(matchParams): JSX.Element => (
+                  <ViewProduct history={history} {...matchParams} />
                 )}
               />
               <Route
@@ -161,7 +166,12 @@ class AppRouter extends Component {
                   <ProductTypePage type="Cake" history={history} />
                 )}
               />
-              <Route path="/cakes/:id" component={Product} />
+              <Route
+                path="/cakes/:id"
+                component={(matchParams): JSX.Element => (
+                  <ViewProduct history={history} {...matchParams} />
+                )}
+              />
               <Route path="/login" history={history} user={user} component={Login} />
               <Route
                 path="/account"

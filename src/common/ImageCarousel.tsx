@@ -8,7 +8,7 @@ import { updateProduct } from "../graphql/mutations";
 import { Toaster } from "../utils";
 
 interface Props {
-  images?: S3ImageProps[];
+  images: S3ImageProps[];
   deleteImages?: boolean;
   id?: string;
   handleUpdateImages?: (image: S3ImageProps[]) => void;
@@ -71,57 +71,70 @@ const ImageCarousel: React.FC<Props> = ({
   return (
     <>
       <div className="carousel__container">
-        <Carousel
-          activeIndex={currentIndex}
-          next={handleNextImage}
-          previous={handlePreviousImage}
-        >
-          <CarouselIndicators
-            items={images}
+        {images.length === 1 ? (
+          <div className="update__image-container">
+            <S3Image
+              imgKey={images[0].key}
+              theme={{
+                photoImg: {
+                  width: "100%",
+                },
+              }}
+            />
+          </div>
+        ) : (
+          <Carousel
             activeIndex={currentIndex}
-            onClickHandler={(idx): void => goToIndex(idx)}
-            className="carousel__indicators"
-          />
-          {images.map((image, i) => (
-            <CarouselItem
-              onExiting={(): void => setAnimating(true)}
-              onExited={(): void => setAnimating(false)}
-              key={i}
-            >
-              {deleteImages && (
-                <i
-                  className="fas fa-times carousel__delete-icon animated infinite pulse"
-                  role="button"
-                  tabIndex={0}
-                  onClick={(): void => {
-                    setDialogOpen(true);
-                    setKeyToDelete(image.key);
-                  }}
-                />
-              )}
-              <div className="update__image-container">
-                <S3Image
-                  imgKey={image.key}
-                  theme={{
-                    photoImg: {
-                      width: "100%",
-                    },
-                  }}
-                />
-              </div>
-            </CarouselItem>
-          ))}
-          <CarouselControl
-            direction="prev"
-            directionText="Previous"
-            onClickHandler={handlePreviousImage}
-          />
-          <CarouselControl
-            direction="next"
-            directionText="Next"
-            onClickHandler={handleNextImage}
-          />
-        </Carousel>
+            next={handleNextImage}
+            previous={handlePreviousImage}
+          >
+            <CarouselIndicators
+              items={images}
+              activeIndex={currentIndex}
+              onClickHandler={(idx): void => goToIndex(idx)}
+              className="carousel__indicators"
+            />
+            {images.map((image, i) => (
+              <CarouselItem
+                onExiting={(): void => setAnimating(true)}
+                onExited={(): void => setAnimating(false)}
+                key={i}
+              >
+                {deleteImages && (
+                  <i
+                    className="fas fa-times carousel__delete-icon animated infinite pulse"
+                    role="button"
+                    tabIndex={0}
+                    onClick={(): void => {
+                      setDialogOpen(true);
+                      setKeyToDelete(image.key);
+                    }}
+                  />
+                )}
+                <div className="update__image-container">
+                  <S3Image
+                    imgKey={image.key}
+                    theme={{
+                      photoImg: {
+                        width: "100%",
+                      },
+                    }}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+            <CarouselControl
+              direction="prev"
+              directionText="Previous"
+              onClickHandler={handlePreviousImage}
+            />
+            <CarouselControl
+              direction="next"
+              directionText="Next"
+              onClickHandler={handleNextImage}
+            />
+          </Carousel>
+        )}
       </div>
       <Dialog
         isOpen={dialogOpen}

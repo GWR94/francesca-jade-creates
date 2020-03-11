@@ -1,0 +1,46 @@
+.view__container {
+  font-family: $title-font;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 0 auto;
+  @media screen and (max-width: 520px) {
+    width: 100%;
+  }
+}
+
+.view__title {
+  text-align: center;
+  padding: 16px 0;
+  margin: 0;
+  font-size: 24px;
+}
+
+.view__description {
+  font-style: italic;
+  font-size: 17px;
+  text-align: justify;
+  margin: 0 20px;
+}
+
+.view__tags {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0;
+}
+
+.view__price {
+  text-align: center;
+  margin: 20px;
+}
+
+.view__button-container {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 30px;
+}
+
+.view__icon {
+  margin-right: 5px;
+}

@@ -37,15 +37,15 @@ class SearchFilter extends React.Component<Props, State> {
 
     return (
       <>
-        <div className="filter__container animated slideInDown" ref={this.filterRef}>
+        <div className="filter__container animated fadeInDown" ref={this.filterRef}>
           <i
             className="fas fa-times filter__close-icon"
             role="button"
             tabIndex={0}
             onClick={(): void => {
               const filter = this.filterRef.current;
-              filter.classList.remove("slideInDown");
-              filter.classList.add("slideOutUp");
+              filter.classList.remove("fadeInDown");
+              filter.classList.add("fadeOutUp");
               setTimeout(() => {
                 onClose();
               }, 800);

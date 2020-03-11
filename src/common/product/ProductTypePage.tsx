@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { History } from "history";
 import { Container } from "reactstrap";
-import { listProducts } from "../graphql/queries";
-import Loading from "./Loading";
-import { ProductProps } from "./interfaces/Product.i";
-import ProductsList from "../pages/accounts/components/ProductsList";
+import { listProducts } from "../../graphql/queries";
+import Loading from "../Loading";
+import { ProductProps } from "../interfaces/Product.i";
+import ProductsList from "../../pages/accounts/components/ProductsList";
 
 interface ProductTypeState {
   isLoading: boolean;

@@ -3,9 +3,12 @@
   padding: 12px 24px;
   width: 330px;
   border: 1px solid $light-pink;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  margin: -1px auto 10px;
+  margin: 10px auto;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
 }
 
 .filter__button-container {
@@ -26,17 +29,19 @@
 
 .filter__button {
   width: 80px;
-  margin: 0 auto 10px;
+  margin: 10px auto;
   display: flex;
-  margin-top: -1px;
   align-items: center;
   flex-direction: column;
   justify-content: center;
   border: 1px solid $light-pink;
   background: #fff;
   z-index: 10;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
 }
 
 .filter__icon {
