@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink, useHistory, Redirect } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
 import { Popover, Menu, MenuDivider, MenuItem } from "@blueprintjs/core";
 import Headroom from "react-headroom";
@@ -90,8 +90,8 @@ const NavBar: React.FC<NavBarProps> = ({
                             text="Create Product"
                             onClick={(): void => {
                               setNavOpen(false);
-                              setAccountsTab("create");
                               history.push("/account");
+                              setAccountsTab("create");
                             }}
                           />
                         </>
@@ -101,8 +101,8 @@ const NavBar: React.FC<NavBarProps> = ({
                           text="Orders"
                           onClick={(): void => {
                             setNavOpen(false);
-                            setAccountsTab("orders");
                             history.push("/account");
+                            setAccountsTab("orders");
                           }}
                         />
                       )}

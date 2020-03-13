@@ -26,11 +26,6 @@ import ImagePicker from "../../../common/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
 
-/**
- * TODO
- * [ ] Add error if no tags are present / check
- */
-
 export default class Profile extends Component<ProfileProps, ProfileState> {
   public readonly state: ProfileState = {
     username: null,
@@ -90,11 +85,11 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           postcode: data.getUser?.shippingAddress?.address_postcode ?? "",
           error: "",
         },
-        isLoading: false,
       });
     } catch (err) {
       console.error("Failed handleRetrieveData()", err);
     }
+    this.setState({ isLoading: false });
   };
 
   private checkUpdateCredentials = (): void => {
@@ -210,7 +205,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
 
   private onUpdateProfile = async (): Promise<void> => {
     const { user } = this.props;
-    const { newDisplayImage, shippingAddress, dialogOpen, username } = this.state;
+    const { newDisplayImage, shippingAddress, dialogOpen, username, email } = this.state;
     try {
       let file;
       if (newDisplayImage) {
@@ -231,6 +226,7 @@ export default class Profile extends Component<ProfileProps, ProfileState> {
           input: {
             id: user.attributes.sub,
             profileImage: file,
+            email: email.value,
             username: username.value,
             shippingAddress: shippingAddress.line1.length
               ? {

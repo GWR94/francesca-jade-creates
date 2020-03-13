@@ -17,7 +17,7 @@ const Filter: React.FC<Props> = ({ handleSearchQuery, admin }) => {
     <div className="filter__text">
       {!open ? (
         <div
-          className="filter__button animated slideInDown"
+          className="filter__button animated fadeInDown"
           role="button"
           tabIndex={0}
           onClick={(): void => setOpen(true)}

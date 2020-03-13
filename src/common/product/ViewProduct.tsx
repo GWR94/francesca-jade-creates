@@ -5,6 +5,11 @@ import { H3, Tag, Button } from "@blueprintjs/core";
 import ImageCarousel from "../ImageCarousel";
 import { getProduct } from "../../graphql/queries";
 import Loading from "../Loading";
+import {
+  UserAttributeProps,
+  CognitoUserProps,
+} from "../../pages/accounts/interfaces/Accounts.i";
+import PayButton from "./PayButton";
 
 interface Props {
   match: {
@@ -12,10 +17,15 @@ interface Props {
       id: string;
     };
   };
+  userAttributes: UserAttributeProps;
+  user: CognitoUserProps;
 }
 
-const ViewProducts = ({ match }): JSX.Element => {
+const ViewProducts = ({ match, userAttributes, user }): JSX.Element => {
   const [product, setProduct] = useState(null);
+
+  console.log({ user, userAttributes });
+
   useEffect(() => {
     const { id } = match.params;
     API.graphql(graphqlOperation(getProduct, { id }))
@@ -23,7 +33,6 @@ const ViewProducts = ({ match }): JSX.Element => {
       .catch((err) => console.error(err));
   }, []);
 
-  console.log(product);
   return product ? (
     <Container className="content-container">
       <div className="view__container">
@@ -47,19 +56,16 @@ const ViewProducts = ({ match }): JSX.Element => {
             </p>
           ) : (
             <p>
-              Please send a request with your personalisation prefernces, and I will get
-              back to you as soon as possible wity a quote.
+              Please send a request with your personalisation preferences, and I will get
+              back to you as soon as possible with a quote.
             </p>
           )}
         </div>
         <div className="view__button-container">
           {product.price > 0 ? (
-            <Button intent="success" onClick={(): void => console.log("Pay")}>
-              <i className="fas fa-credit-card view__icon" />
-              Pay with Stripe
-            </Button>
+            <PayButton product={product} userAttributes={userAttributes} />
           ) : (
-            <Button intent="success" onClick={(): void => console.log("quote")}>
+            <Button intent="success">
               <i className="fas fa-credit-card view__icon" />
               Request a Quote
             </Button>

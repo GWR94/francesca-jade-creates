@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { Container } from "reactstrap";
-import { listProducts } from "../../graphql/queries";
+import { listProducts, getUser } from "../../graphql/queries";
 import Profile from "./components/Profile";
 import ProductsList from "./components/ProductsList";
 import background from "../../img/background.jpg";
@@ -32,6 +32,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     const { accountsTab } = this.props;
     await this.handleGetProducts();
     await this.handleSubscriptions();
+    await this.handleGetUserData();
     this.setState({ isLoading: false });
     if (accountsTab) this.setState({ currentTab: accountsTab });
   }
@@ -46,7 +47,6 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     const { data } = await API.graphql(graphqlOperation(listProducts, { limit: 200 }));
     const products = data.listProducts.items;
     this.setState({ products, isLoading: false });
-    console.log(products.length);
   };
 
   private handleSubscriptions = async (): Promise<void> => {
@@ -101,12 +101,32 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     });
   };
 
+  private handleGetUserData = async (): Promise<void> => {
+    const {
+      user: {
+        attributes: { sub },
+      },
+    } = this.props;
+
+    const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+    this.setState({ userData: data.getUser });
+  };
+
   private getCurrentPage = (): JSX.Element => {
-    const { products, currentTab } = this.state;
+    const { products, currentTab, userData } = this.state;
     const { userAttributes, user, admin, history } = this.props;
+
     switch (currentTab) {
-      case "profile":
-        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
+      case "profile": {
+        return (
+          <Profile
+            user={user}
+            userAttributes={userAttributes}
+            userData={userData}
+            admin={admin}
+          />
+        );
+      }
       case "products":
         return <ProductsList products={products} admin={admin} />;
       case "create":
@@ -117,7 +137,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
           />
         );
       default:
-        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
+        return <Loading />;
     }
   };
 

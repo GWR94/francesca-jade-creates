@@ -73,6 +73,17 @@ const ImageCarousel: React.FC<Props> = ({
       <div className="carousel__container">
         {images.length === 1 ? (
           <div className="update__image-container">
+            {deleteImages && (
+              <i
+                className="fas fa-times carousel__delete-icon animated infinite pulse"
+                role="button"
+                tabIndex={0}
+                onClick={(): void => {
+                  setDialogOpen(true);
+                  setKeyToDelete(images[0].key);
+                }}
+              />
+            )}
             <S3Image
               imgKey={images[0].key}
               theme={{

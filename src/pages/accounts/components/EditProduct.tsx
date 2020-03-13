@@ -15,6 +15,7 @@ import {
   H3,
 } from "@blueprintjs/core";
 import { Col, Row } from "reactstrap";
+import Compress from "client-compress";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import ImagePicker from "../../../common/ImagePicker";
@@ -115,6 +116,21 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     });
   };
 
+  private handleImageCompress = (fileToUpload): Blob => {
+    const compressor = new Compress({
+      quality: 0.6,
+      maxHeight: 720,
+    });
+
+    let image: Blob;
+    compressor.compress([fileToUpload.file]).then((conversions) => {
+      const { photo } = conversions[0];
+      fileToUpload.file = photo.data;
+      this.handleImageUpload(fileToUpload);
+    });
+    return image;
+  };
+
   private handleImageUpload = async (fileToUpload): Promise<void> => {
     const { product } = this.state;
     const { update } = this.props;
@@ -123,7 +139,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
       const { identityId } = await Auth.currentCredentials();
       const filename = `/public/${identityId}/${Date.now()}-${fileToUpload.name}`;
       const uploadedImage = await Storage.put(filename, fileToUpload.file, {
-        contentType: fileToUpload.type,
+        contentType: fileToUpload.file.type,
       });
       const { key } = uploadedImage as UploadedFile;
       const file = {
@@ -302,167 +318,165 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
       <Loading size={100} />
     ) : (
       <>
-        <div className="content-container">
-          <div className="new-product__container">
-            <H3 className="accounts__title" style={update && { marginTop: "20px" }}>
-              {update ? "Update Product" : "Create Product"}
-            </H3>
-            <FormGroup
-              helperText={errors.title}
-              label="Title:"
+        <div className="new-product__container">
+          <H3 className="accounts__title" style={update && { marginTop: "20px" }}>
+            {update ? "Update Product" : "Create Product"}
+          </H3>
+          <FormGroup
+            helperText={errors.title}
+            label="Title:"
+            intent={errors.title ? "danger" : "none"}
+            className="new-product__input"
+          >
+            <InputGroup
+              className="new-product__title"
+              placeholder="Enter a product title..."
+              onChange={(e): void => this.handleFormItem(e, "title")}
+              value={product.title}
               intent={errors.title ? "danger" : "none"}
-              className="new-product__input"
+            />
+          </FormGroup>
+          <FormGroup
+            helperText={errors.description}
+            label="Description:"
+            intent={errors.description ? "danger" : "none"}
+            className="new-product__input"
+          >
+            <TextArea
+              className="new-product__description"
+              intent={errors.description ? "danger" : "none"}
+              placeholder="Enter a product description..."
+              onChange={(e): void => this.handleFormItem(e, "description")}
+              value={product.description}
+              rows={5}
+            />
+          </FormGroup>
+          <div className="new-product__input">
+            <Label style={{ marginBottom: "5px" }}>Product Type:</Label>
+            <RadioGroup
+              inline
+              onChange={(e): void => {
+                this.handleFormItem(e, "type");
+              }}
+              selectedValue={product.type}
+              className="new-product__radio"
             >
-              <InputGroup
-                className="new-product__title"
-                placeholder="Enter a product title..."
-                onChange={(e): void => this.handleFormItem(e, "title")}
-                value={product.title}
-                intent={errors.title ? "danger" : "none"}
+              <Radio label="Cake" value="Cake" />
+              <Radio label="Creates" value="Creates" />
+            </RadioGroup>
+
+            <Callout
+              title="Is there a set price?"
+              intent="primary"
+              className="new-product__callout"
+            >
+              You can set a price if there is one set, or turn the switch off to set no
+              price, where the customer can contact you for an estimated price.
+              <Switch
+                checked={product.setPrice}
+                large
+                className="text-center"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                  this.setState({
+                    product: { ...product, setPrice: e.target.checked },
+                  })
+                }
+              />
+            </Callout>
+            {product.setPrice && (
+              <>
+                <FormGroup className="new-product__form" label="Pricing:">
+                  <Row>
+                    <Col sm={6}>
+                      <InputGroup
+                        leftIcon="euro"
+                        placeholder="Product price..."
+                        min={0.5}
+                        type="number"
+                        value={product.price.toString()}
+                        className="new-product__form-item"
+                        onChange={(e): void => this.handleFormItem(e, "price")}
+                        style={{ marginBottom: "5px" }}
+                      />
+                    </Col>
+                    <Col sm={6}>
+                      <InputGroup
+                        leftIcon="envelope"
+                        placeholder="Shipping cost..."
+                        min={0.5}
+                        type="number"
+                        className="new-product__form-item"
+                        value={product.shippingCost.toString()}
+                        onChange={(e): void => this.handleFormItem(e, "shippingCost")}
+                      />
+                    </Col>
+                  </Row>
+                </FormGroup>
+              </>
+            )}
+            <FormGroup
+              label="Tags:"
+              className="new-product__form"
+              helperText={errors.tags}
+              intent={errors.tags ? "danger" : "none"}
+            >
+              <TagInput
+                leftIcon="tag"
+                onChange={this.handleTagChange}
+                intent={errors.tags ? "danger" : "none"}
+                rightElement={clearButton}
+                placeholder="Add tags by clicking enter..."
+                values={product.tags || []}
               />
             </FormGroup>
             <FormGroup
-              helperText={errors.description}
-              label="Description:"
-              intent={errors.description ? "danger" : "none"}
-              className="new-product__input"
+              label={product.image.length === 1 ? "Display Image:" : "Display Images:"}
+              className="new-product__form"
             >
-              <TextArea
-                className="new-product__description"
-                intent={errors.description ? "danger" : "none"}
-                placeholder="Enter a product description..."
-                onChange={(e): void => this.handleFormItem(e, "description")}
-                value={product.description}
-                rows={5}
-              />
-            </FormGroup>
-            <div className="new-product__input">
-              <Label style={{ marginBottom: "5px" }}>Product Type:</Label>
-              <RadioGroup
-                inline
-                onChange={(e): void => {
-                  this.handleFormItem(e, "type");
-                }}
-                selectedValue={product.type}
-                className="new-product__radio"
-              >
-                <Radio label="Cake" value="Cake" />
-                <Radio label="Creates" value="Creates" />
-              </RadioGroup>
-
-              <Callout
-                title="Is there a set price?"
-                intent="primary"
-                className="new-product__callout"
-              >
-                You can set a price if there is one set, or turn the switch off to set no
-                price, where the customer can contact you for an estimated price.
-                <Switch
-                  checked={product.setPrice}
-                  large
-                  className="text-center"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    this.setState({
-                      product: { ...product, setPrice: e.target.checked },
-                    })
-                  }
-                />
-              </Callout>
-              {product.setPrice && (
-                <>
-                  <FormGroup className="new-product__form" label="Pricing:">
-                    <Row>
-                      <Col sm={6}>
-                        <InputGroup
-                          leftIcon="euro"
-                          placeholder="Product price..."
-                          min={0.5}
-                          type="number"
-                          value={product.price.toString()}
-                          className="new-product__form-item"
-                          onChange={(e): void => this.handleFormItem(e, "price")}
-                          style={{ marginBottom: "5px" }}
-                        />
-                      </Col>
-                      <Col sm={6}>
-                        <InputGroup
-                          leftIcon="envelope"
-                          placeholder="Shipping cost..."
-                          min={0.5}
-                          type="number"
-                          className="new-product__form-item"
-                          value={product.shippingCost.toString()}
-                          onChange={(e): void => this.handleFormItem(e, "shippingCost")}
-                        />
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                </>
-              )}
-              <FormGroup
-                label="Tags:"
-                className="new-product__form"
-                helperText={errors.tags}
-                intent={errors.tags ? "danger" : "none"}
-              >
-                <TagInput
-                  leftIcon="tag"
-                  onChange={this.handleTagChange}
-                  intent={errors.tags ? "danger" : "none"}
-                  rightElement={clearButton}
-                  placeholder="Add tags by clicking enter..."
-                  values={product.tags || []}
-                />
-              </FormGroup>
-              <FormGroup
-                label={product.image.length === 1 ? "Display Image:" : "Display Images:"}
-                className="new-product__form"
-              >
-                {product.image.length > 0 && (
-                  <div className="update__carousel-container">
-                    <ImageCarousel
-                      images={product.image}
-                      deleteImages
-                      update={update}
-                      id={product.id}
-                      handleUpdateImages={(image): void =>
-                        this.setState({ product: { ...product, image } })
-                      }
-                    />
-                  </div>
-                )}
-                {errors.image && (
-                  <p className="password__error text-center">{errors.image}</p>
-                )}
-                <ImagePicker
-                  disabled={false}
-                  setImageFile={(file): void => {
-                    this.handleImageUpload(file);
-                    this.setState({ errors: { ...errors, image: null } });
-                  }}
-                  update={update}
-                />
-                <div
-                  className="dialog__button-container"
-                  style={{ marginBottom: "40px" }}
-                >
-                  <Button
-                    text="Cancel"
-                    onClick={(): void => history.push("/")}
-                    intent="danger"
-                    style={{ margin: "0 10px" }}
-                    large
-                  />
-                  <Button
-                    text="Confirm"
-                    onClick={this.handleProductErrors}
-                    intent="success"
-                    style={{ margin: "0 10px" }}
-                    large
+              {product.image.length > 0 && (
+                <div className="update__carousel-container">
+                  <ImageCarousel
+                    images={product.image}
+                    deleteImages
+                    update={update}
+                    id={product.id}
+                    handleUpdateImages={(image): void =>
+                      this.setState({ product: { ...product, image } })
+                    }
                   />
                 </div>
-              </FormGroup>
-            </div>
+              )}
+              {errors.image && (
+                <p className="password__error text-center">{errors.image}</p>
+              )}
+              <ImagePicker
+                disabled={false}
+                setImageFile={(file): void => {
+                  console.log("original:", file);
+                  const image = this.handleImageCompress(file);
+                  console.log(image);
+                  // this.handleImageUpload(file);
+                  this.setState({ errors: { ...errors, image: null } });
+                }}
+                update={update}
+              />
+              <div className="dialog__button-container" style={{ marginBottom: "40px" }}>
+                <Button
+                  text="Cancel"
+                  onClick={(): void => history.push("/")}
+                  intent="danger"
+                  style={{ margin: "0 10px" }}
+                  large
+                />
+                <Button
+                  text="Confirm"
+                  onClick={this.handleProductErrors}
+                  intent="success"
+                  style={{ margin: "0 10px" }}
+                  large
+                />
+              </div>
+            </FormGroup>
           </div>
         </div>
         {/* <Dialog

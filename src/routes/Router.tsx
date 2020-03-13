@@ -19,6 +19,11 @@ import UpdateProduct from "../pages/accounts/components/EditProduct";
 
 export const history = createBrowserHistory();
 
+/**
+ * TODO
+ * [ ] Check redirects work when not admin.
+ */
+
 class AppRouter extends Component {
   public readonly state: RouterState = {
     user: null,
@@ -154,7 +159,12 @@ class AppRouter extends Component {
               <Route
                 path="/creates/:id"
                 component={(matchParams): JSX.Element => (
-                  <ViewProduct history={history} {...matchParams} />
+                  <ViewProduct
+                    history={history}
+                    {...matchParams}
+                    user={user}
+                    userAttributes={userAttributes}
+                  />
                 )}
               />
               <Route
@@ -192,17 +202,23 @@ class AppRouter extends Component {
               />
               <Route
                 path="/account/:id"
-                component={(matchParams): JSX.Element => (
-                  <UpdateProduct
-                    update
-                    setCurrentTab={(tab): void => {
-                      history.push("/account");
-                      if (tab !== accountsTab) this.setState({ accountsTab: tab });
-                    }}
-                    history={history}
-                    {...matchParams}
-                  />
-                )}
+                component={(matchParams): JSX.Element =>
+                  this.admin ? (
+                    <div className="content-container">
+                      <UpdateProduct
+                        update
+                        setCurrentTab={(tab): void => {
+                          history.push("/account");
+                          if (tab !== accountsTab) this.setState({ accountsTab: tab });
+                        }}
+                        history={history}
+                        {...matchParams}
+                      />
+                    </div>
+                  ) : (
+                    <Redirect to="/" />
+                  )
+                }
               />
               <Route component={NotFoundPage} />
             </Switch>

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { H3 } from "@blueprintjs/core";
+import React, { useState, useEffect } from "react";
 import { Col, Row, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import { useHistory } from "react-router-dom";
-import { API } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import Product from "../../../common/product/ProductCard";
 import { ProductProps } from "../../../common/interfaces/Product.i";
-import { searchProducts } from "../../../graphql/queries";
+import { searchProducts, listProducts } from "../../../graphql/queries";
 import Filter from "../../../common/Filter";
+import Loading from "../../../common/Loading";
 
 interface ProductListProps {
   admin: boolean;
@@ -22,7 +22,6 @@ interface FilterProps {
 
 const ProductsList: React.FC<ProductListProps> = ({
   admin,
-  noTitle,
   products,
   type,
 }): JSX.Element => {
@@ -82,12 +81,11 @@ const ProductsList: React.FC<ProductListProps> = ({
       console.log(data);
       return setQueryResults(data.searchProducts.items);
     } catch (err) {
-      console.error(err);
+      return console.error(err);
     }
   };
 
   const results = queryResults || products;
-
   return (
     <>
       {/* {!noTitle && <H3 className="accounts__title">Products</H3>} */}
