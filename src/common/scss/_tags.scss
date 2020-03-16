@@ -1,0 +1,21 @@
+.tags__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 10px 10px;
+}
+
+.tags__tag--creates {
+  @extend .tags__tag;
+  background: $purple;
+}
+
+.tags__tag {
+  margin: 0 4px 4px;
+}
+
+.tags__tag--cake {
+  @extend .tags__tag;
+  background: $dark-pink;
+}

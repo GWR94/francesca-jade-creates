@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { API, graphqlOperation } from "aws-amplify";
+import { API } from "aws-amplify";
 import { Container } from "reactstrap";
 import { H3, Tag, Button } from "@blueprintjs/core";
 import ImageCarousel from "../ImageCarousel";
@@ -21,14 +21,20 @@ interface Props {
   user: CognitoUserProps;
 }
 
-const ViewProducts = ({ match, userAttributes, user }): JSX.Element => {
+const ViewProducts = ({ match, userAttributes }): JSX.Element => {
   const [product, setProduct] = useState(null);
-
-  console.log({ user, userAttributes });
 
   useEffect(() => {
     const { id } = match.params;
-    API.graphql(graphqlOperation(getProduct, { id }))
+    API.graphql({
+      query: getProduct,
+      variables: {
+        id,
+        limit: 100,
+      },
+      // @ts-ignore
+      authMode: "API_KEY",
+    })
       .then((prod) => setProduct(prod.data.getProduct))
       .catch((err) => console.error(err));
   }, []);

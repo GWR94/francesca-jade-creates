@@ -3,14 +3,38 @@
   flex-direction: column;
   justify-content: space-between;
   font-family: $title-font;
+  min-height: 420px;
   height: 100%;
 }
 
-.product__image-container {
-  height: 250px;
-  width: 100%;
-  overflow: hidden;
+.product__title {
+  margin: 0 20px;
+  text-align: center;
+  font-size: 16px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.product__image-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product__price {
+  text-align: center;
+  margin: 10px 5px;
+  font-style: italic;
+}
+
+.product__icon {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  font-size: 20px;
+  cursor: help;
 }

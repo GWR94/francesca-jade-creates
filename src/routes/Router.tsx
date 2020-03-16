@@ -146,7 +146,11 @@ class AppRouter extends Component {
             <Loading size={100} />
           ) : (
             <Switch>
-              <Route path="/" exact component={Landing} />
+              <Route
+                path="/"
+                exact
+                component={(): JSX.Element => <Landing history={history} />}
+              />
               <Route
                 path="/creates"
                 exact

@@ -1,4 +1,8 @@
-.product-list__pagination {
+.product-list__no-result-container {
+  width: 80%;
+  height: 100%;
+  border: 1px solid $dark-pink;
   display: flex;
+  align-items: center;
   justify-content: center;
 }

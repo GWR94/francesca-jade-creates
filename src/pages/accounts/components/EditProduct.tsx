@@ -117,6 +117,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
   };
 
   private handleImageCompress = (fileToUpload): Blob => {
+    console.log("OPEN");
     const compressor = new Compress({
       quality: 0.6,
       maxHeight: 720,
@@ -452,9 +453,8 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
               <ImagePicker
                 disabled={false}
                 setImageFile={(file): void => {
-                  console.log("original:", file);
+                  console.log(file);
                   const image = this.handleImageCompress(file);
-                  console.log(image);
                   // this.handleImageUpload(file);
                   this.setState({ errors: { ...errors, image: null } });
                 }}

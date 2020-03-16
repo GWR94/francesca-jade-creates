@@ -1,11 +1,16 @@
 import React from "react";
 import { Button } from "@blueprintjs/core";
+import { History } from "history";
 import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import header from "../../img/header.png";
 import logo from "../../img/logo.png";
 
-const Landing: React.FC = (): JSX.Element => {
+interface LandingProps {
+  history: History;
+}
+
+const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
   return (
     <>
       <div className="landing__image-container">
@@ -20,7 +25,11 @@ const Landing: React.FC = (): JSX.Element => {
                 Delicious fully customisable cakes for every occasion. All created from
                 scratch with love and care - perfect for a gift/celebration to remember.
               </p>
-              <Button text="Explore Cakes" className="landing__cakes-button" />
+              <Button
+                text="Explore Cakes"
+                className="landing__cakes-button"
+                onClick={(): void => history.push("/cakes")}
+              />
             </div>
           </Col>
           <Col xs={6}>
@@ -39,7 +48,10 @@ const Landing: React.FC = (): JSX.Element => {
                 <i className="fas fa-quote-right landing__quote-icon--right" />
                 <p className="landing__review-text">
                   Olivia Churcher - on{" "}
-                  <Link to="cake/:FIXME" className="landing__review-link">
+                  <Link
+                    to="/cakes/104e6cd9-8e43-41ab-865d-1a367233ab43"
+                    className="landing__review-link"
+                  >
                     Reeses cake
                   </Link>
                 </p>
@@ -58,7 +70,11 @@ const Landing: React.FC = (): JSX.Element => {
                 Personalised Prints, Frames and Cards. All handmade with love and a little
                 bit of sparkle, to capture moments, share memories & celebrate loved ones{" "}
               </p>
-              <Button text="Explore Creations" className="landing__creations-button" />
+              <Button
+                text="Explore Creations"
+                className="landing__creations-button"
+                onClick={(): void => history.push("/creates")}
+              />
             </div>
           </Col>
           <Col xs={6} style={{ marginBottom: "60px" }}>
@@ -71,7 +87,7 @@ const Landing: React.FC = (): JSX.Element => {
               </div>
               <p className="landing__review-text">
                 Placeholder - on{" "}
-                <Link to="cake/:FIXME" className="landing__review-link">
+                <Link to="" className="landing__review-link">
                   Placeholder
                 </Link>
               </p>

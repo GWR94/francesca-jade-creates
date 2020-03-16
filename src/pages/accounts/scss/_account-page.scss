@@ -8,7 +8,7 @@
 }
 
 .accounts__tab {
-  font-size: 16px;
+  font-size: 17px;
   padding: 6px 12px;
   align-items: center;
   cursor: pointer;
@@ -22,12 +22,12 @@
   }
   @media screen and (max-width: $s-breakpoint) {
     width: 120px;
-    font-size: 15px;
+    font-size: 16px;
     padding: 8px 8px;
   }
-  @media screen and (max-width: $s-breakpoint) {
+  @media screen and (max-width: $xs-breakpoint) {
     padding: 8px 4px;
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 

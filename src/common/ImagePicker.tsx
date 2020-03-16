@@ -3,6 +3,11 @@ import { FormGroup } from "@blueprintjs/core";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
 import { ImagePickerProps } from "./interfaces/ImagePicker.i";
 
+/**
+ * TODO
+ * [ ] Fix onPick not working when removing and adding an image
+ */
+
 const ImagePicker: React.FC<ImagePickerProps> = ({
   savedS3Image,
   disabled,
@@ -93,7 +98,10 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
               showPreview && setPreview(url);
               setImagePreview && setImagePreview(url);
             }}
-            onPick={(file): void => setImageFile(file)}
+            onPick={(file): void => {
+              console.log("picked");
+              setImageFile(file);
+            }}
             theme={styles}
           />
         )}

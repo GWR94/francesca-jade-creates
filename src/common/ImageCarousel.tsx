@@ -57,7 +57,7 @@ const ImageCarousel: React.FC<Props> = ({
         message: "Successfully removed image.",
       });
       handleUpdateImages(updatedImages);
-      setDialogOpen(false);
+      // setDialogOpen(false);
       setAnimating(false);
     } catch (err) {
       console.error(err);

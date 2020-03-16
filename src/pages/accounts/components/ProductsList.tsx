@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Col, Row, Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import React, { useState } from "react";
+import { Col, Row } from "reactstrap";
 import { useHistory } from "react-router-dom";
-import { API, graphqlOperation } from "aws-amplify";
-import Product from "../../../common/product/ProductCard";
+import { API } from "aws-amplify";
+import ProductCard from "../../../common/product/ProductCard";
 import { ProductProps } from "../../../common/interfaces/Product.i";
-import { searchProducts, listProducts } from "../../../graphql/queries";
-import Filter from "../../../common/Filter";
-import Loading from "../../../common/Loading";
+import { searchProducts } from "../../../graphql/queries";
+import Pagination from "../../../common/Pagination";
+import SearchFilter from "../../../common/SearchFilter";
 
 interface ProductListProps {
   admin: boolean;
@@ -37,6 +37,7 @@ const ProductsList: React.FC<ProductListProps> = ({
   const handleSearchQuery = async (query, searchTerms, adminFilters?): Promise<void> => {
     if (!query && !adminFilters) return setQueryResults(null);
     let filtering: FilterProps = {};
+
     if (searchTerms === "all") {
       if (query.length > 0) {
         filtering = {
@@ -68,6 +69,7 @@ const ProductsList: React.FC<ProductListProps> = ({
     if (Object.keys(filtering).length === 0 && filtering.constructor === Object) {
       return setQueryResults(null);
     }
+
     try {
       const { data } = await API.graphql({
         query: searchProducts,
@@ -78,7 +80,6 @@ const ProductsList: React.FC<ProductListProps> = ({
         // @ts-ignore
         authMode: "API_KEY",
       });
-      console.log(data);
       return setQueryResults(data.searchProducts.items);
     } catch (err) {
       return console.error(err);
@@ -88,67 +89,37 @@ const ProductsList: React.FC<ProductListProps> = ({
   const results = queryResults || products;
   return (
     <>
-      {/* {!noTitle && <H3 className="accounts__title">Products</H3>} */}
-      <Filter
-        handleSearchQuery={(query, filter, adminFilter?): Promise<void> =>
-          handleSearchQuery(query, filter, adminFilter)
-        }
+      <SearchFilter
         admin={admin}
+        setQuery={(query, filters, adminFilter): Promise<void> =>
+          handleSearchQuery(query, filters, adminFilter)
+        }
       />
       <Row>
         {results.length ? (
           results.slice(productRange.min, productRange.max).map(
             (product: ProductProps): JSX.Element => (
               <Col
-                lg={3}
-                md={4}
+                lg={4}
                 sm={6}
                 xs={12}
                 key={product.id}
                 style={{ marginBottom: "30px" }}
               >
-                <Product admin={admin} product={product} history={history} />
+                <ProductCard admin={admin} product={product} history={history} />
               </Col>
             ),
           )
         ) : (
-          <div>No Results</div>
+          <div className="product-list__no-result-container">No Results</div>
         )}
       </Row>
       {results.length > 12 && (
-        <div className="product-list__pagination">
-          <Pagination aria-label="Choose page to view">
-            <PaginationItem>
-              <PaginationLink first onClick={(): void => setPage(1)} />
-            </PaginationItem>
-            <PaginationItem disabled={page === 1}>
-              <PaginationLink previous onClick={(): void => setPage(page - 1)} />
-            </PaginationItem>
-            <PaginationItem active={page === 1}>
-              <PaginationLink onClick={(): void => setPage(page === 1 ? 1 : page - 1)}>
-                {page === 1 ? 1 : page - 1}
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem active={page >= 2}>
-              <PaginationLink onClick={(): void => setPage(page === 1 ? 2 : page)}>
-                {page === 1 ? 2 : page}
-              </PaginationLink>
-            </PaginationItem>
-            {page < maxPages && maxPages >= 3 && (
-              <PaginationItem active={page === maxPages}>
-                <PaginationLink onClick={(): void => setPage(page === 1 ? 3 : page + 1)}>
-                  {page === 1 ? 3 : page + 1}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-            <PaginationItem>
-              <PaginationLink next onClick={(): void => setPage(page + 1)} />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink last onClick={(): void => setPage(maxPages)} />
-            </PaginationItem>
-          </Pagination>
-        </div>
+        <Pagination
+          maxPages={maxPages}
+          setPage={(page): void => setPage(page)}
+          page={page}
+        />
       )}
     </>
   );

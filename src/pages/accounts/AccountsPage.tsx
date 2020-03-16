@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { Container } from "reactstrap";
-import { listProducts, getUser } from "../../graphql/queries";
+import { listProducts } from "../../graphql/queries";
 import Profile from "./components/Profile";
 import ProductsList from "./components/ProductsList";
 import background from "../../img/background.jpg";
@@ -32,7 +32,6 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     const { accountsTab } = this.props;
     await this.handleGetProducts();
     await this.handleSubscriptions();
-    await this.handleGetUserData();
     this.setState({ isLoading: false });
     if (accountsTab) this.setState({ currentTab: accountsTab });
   }
@@ -101,31 +100,13 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     });
   };
 
-  private handleGetUserData = async (): Promise<void> => {
-    const {
-      user: {
-        attributes: { sub },
-      },
-    } = this.props;
-
-    const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-    this.setState({ userData: data.getUser });
-  };
-
   private getCurrentPage = (): JSX.Element => {
-    const { products, currentTab, userData } = this.state;
+    const { products, currentTab } = this.state;
     const { userAttributes, user, admin, history } = this.props;
 
     switch (currentTab) {
       case "profile": {
-        return (
-          <Profile
-            user={user}
-            userAttributes={userAttributes}
-            userData={userData}
-            admin={admin}
-          />
-        );
+        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
       }
       case "products":
         return <ProductsList products={products} admin={admin} />;
@@ -187,7 +168,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
                   tabIndex={0}
                 >
                   <i className="fas fa-plus-circle" />
-                  <span style={{ marginLeft: "5px" }}>Create Product</span>
+                  <span style={{ marginLeft: "5px" }}>Create</span>
                 </div>
               </>
             ) : (

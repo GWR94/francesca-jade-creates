@@ -1,10 +1,8 @@
 import React, { FormEvent } from "react";
 import {
-  FormGroup,
   InputGroup,
   ControlGroup,
   HTMLSelect,
-  Checkbox,
   Radio,
   RadioGroup,
 } from "@blueprintjs/core";
@@ -12,7 +10,6 @@ import {
 interface Props {
   type?: string;
   setQuery: (query, searchQuery, filters?) => void;
-  onClose: () => void;
   admin?: boolean;
 }
 
@@ -21,6 +18,12 @@ interface State {
   searchQuery: string;
   query: string;
 }
+
+/**
+ * TODO
+ * [ ] Fix radio buttons on smaller devices (don't do inline)
+ * [ ] Set filter to sort by created date
+ */
 
 class SearchFilter extends React.Component<Props, State> {
   public readonly state = {
@@ -33,24 +36,11 @@ class SearchFilter extends React.Component<Props, State> {
 
   public render(): JSX.Element {
     const { adminFilters, searchQuery, query } = this.state;
-    const { setQuery, onClose, admin } = this.props;
+    const { setQuery, admin } = this.props;
 
     return (
       <>
-        <div className="filter__container animated fadeInDown" ref={this.filterRef}>
-          <i
-            className="fas fa-times filter__close-icon"
-            role="button"
-            tabIndex={0}
-            onClick={(): void => {
-              const filter = this.filterRef.current;
-              filter.classList.remove("fadeInDown");
-              filter.classList.add("fadeOutUp");
-              setTimeout(() => {
-                onClose();
-              }, 800);
-            }}
-          />
+        <div className="filter__container animated slideInLeft" ref={this.filterRef}>
           <ControlGroup style={{ margin: "6px 0" }}>
             <InputGroup
               leftIcon="search"
@@ -76,7 +66,6 @@ class SearchFilter extends React.Component<Props, State> {
           {admin && (
             <RadioGroup
               label="Include:"
-              inline
               onChange={(e: FormEvent<HTMLInputElement>): void => {
                 this.setState({ adminFilters: e.currentTarget.value });
                 setQuery(query, searchQuery, e.currentTarget.value);

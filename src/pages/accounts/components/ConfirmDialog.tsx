@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, Classes, Button, Tag, ProgressBar } from "@blueprintjs/core";
 import { ConfirmDialogProps } from "../interfaces/ConfirmDialog.i";
 import ImageCarousel from "../../../common/ImageCarousel";
+import TagsInput from "../../../common/TagsInput";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
@@ -57,15 +58,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           )}
           <p>
             <strong>Tags: </strong>
-            {tags?.length > 0
-              ? tags.map(
-                  (tag, i): JSX.Element => (
-                    <Tag active key={i} style={{ marginRight: "4px" }}>
-                      {tag}
-                    </Tag>
-                  ),
-                )
-              : "No tags"}
+            {tags?.length > 0 ? <TagsInput tags={tags} /> : "No tags"}
           </p>
           <p>
             <strong>Cover image:</strong>

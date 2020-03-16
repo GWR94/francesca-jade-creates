@@ -10,7 +10,6 @@ export interface AccountsState {
   products: ProductProps[];
   isLoading: boolean;
   currentTab: "profile" | "products" | "create" | "orders";
-  userData: CognitoUserProps;
 }
 
 export interface AccountsProps {

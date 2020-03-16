@@ -1,14 +1,17 @@
 .filter__container {
   background: #fff;
   padding: 12px 24px;
-  width: 330px;
-  border: 1px solid $light-pink;
+  width: 400px;
+  border: 1px solid rgb(209, 209, 209);
   margin: 10px auto;
   border-radius: 6px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
+  @media screen and (max-width: $xs-breakpoint) {
+    width: 100%;
+  }
 }
 
 .filter__button-container {
@@ -44,27 +47,16 @@
   -o-border-radius: 6px;
 }
 
-.filter__icon {
-  padding: 3px;
-  font-size: 22px;
-  margin-top: -8px;
-}
-
 .filter__button-text {
   font-size: 14px;
   margin: 4px 0 0;
   padding: 0;
 }
 
-.filter__close-icon {
-  position: absolute;
-  top: 5px;
-  right: 8px;
-}
-
 .filter__radio {
   display: inline-flex;
   justify-content: space-evenly;
+  width: 100%;
   margin: 10px 0 0;
   .bp3-label {
     margin-right: 10px;
