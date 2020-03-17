@@ -2,8 +2,8 @@
   background: #fff;
   padding: 12px 24px;
   width: 400px;
-  border: 1px solid rgb(209, 209, 209);
-  margin: 10px auto;
+  margin: 0 auto;
+  font-family: $title-font;
   border-radius: 6px;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -57,8 +57,17 @@
   display: inline-flex;
   justify-content: space-evenly;
   width: 100%;
-  margin: 10px 0 0;
-  .bp3-label {
-    margin-right: 10px;
+  margin: 0;
+}
+
+.filter__label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.bp3-alert {
+  @media screen and (max-width: $xs-breakpoint) {
+    width: 90%;
+    // margin: 0 auto;
   }
 }

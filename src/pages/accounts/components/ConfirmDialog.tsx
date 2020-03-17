@@ -58,8 +58,9 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           )}
           <p>
             <strong>Tags: </strong>
-            {tags?.length > 0 ? <TagsInput tags={tags} /> : "No tags"}
           </p>
+          {tags?.length > 0 ? <TagsInput tags={tags} type={type} /> : "No tags"}
+
           <p>
             <strong>Cover image:</strong>
           </p>

@@ -19,6 +19,8 @@ export const createProduct = /* GraphQL */ `
       shippingCost
       type
       tags
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -40,6 +42,8 @@ export const updateProduct = /* GraphQL */ `
       shippingCost
       type
       tags
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -61,6 +65,8 @@ export const deleteProduct = /* GraphQL */ `
       shippingCost
       type
       tags
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -184,6 +190,8 @@ export const createOrder = /* GraphQL */ `
         shippingCost
         type
         tags
+        createdAt
+        updatedAt
       }
     }
   }

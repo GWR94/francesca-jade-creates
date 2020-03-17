@@ -180,6 +180,7 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     let anyErrors = false;
     const error = {
       title: false,
+      invalidTitle: false,
       description: false,
       image: false,
       tags: false,
@@ -188,6 +189,10 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     if (title.length < 5) {
       anyErrors = true;
       error.title = true;
+    }
+    if (title.length > 20 && !title.includes(" ")) {
+      anyErrors = true;
+      error.invalidTitle = true;
     }
     if (description.length <= 20) {
       anyErrors = true;
@@ -204,7 +209,9 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
     if (anyErrors) {
       this.setState({
         errors: {
-          title: error.title && "Please enter a longer title (Minimum 5 characters).",
+          title:
+            (error.invalidTitle && "Please don't add excessively long words to title") ||
+            (error.title && "Please enter a valid title (Minimum 5 characters)."),
           description:
             error.description &&
             "Please enter a detailed description (Minimum 20 characters).",
@@ -453,9 +460,8 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
               <ImagePicker
                 disabled={false}
                 setImageFile={(file): void => {
-                  console.log(file);
-                  const image = this.handleImageCompress(file);
-                  // this.handleImageUpload(file);
+                  console.log(file.size);
+                  if (file.size > 500000) this.handleImageCompress(file);
                   this.setState({ errors: { ...errors, image: null } });
                 }}
                 update={update}

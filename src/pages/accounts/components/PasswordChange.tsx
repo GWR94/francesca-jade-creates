@@ -86,7 +86,7 @@ class PasswordChange extends React.Component<PasswordProps, PasswordState> {
       >
         <Row className="password__dialog">
           <p>Please enter your old password, and set a new password below.</p>
-          <Col xs={4} className="profile__title">
+          <Col xs={4} className="password__label">
             Old Password:
           </Col>
           <Col xs={8}>
@@ -97,7 +97,7 @@ class PasswordChange extends React.Component<PasswordProps, PasswordState> {
               setValue={(oldPassword): void => this.setState({ oldPassword, error: "" })}
             />
           </Col>
-          <Col xs={4} className="profile__title">
+          <Col xs={4} className="password__label">
             New Password:
           </Col>
           <Col xs={8}>
@@ -108,7 +108,7 @@ class PasswordChange extends React.Component<PasswordProps, PasswordState> {
               setValue={(newPassword): void => this.setState({ newPassword, error: "" })}
             />
           </Col>
-          <Col xs={4} className="profile__title">
+          <Col xs={4} className="password__label">
             Repeat Password:
           </Col>
           <Col xs={8}>

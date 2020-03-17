@@ -9,7 +9,7 @@ import {
 
 interface Props {
   type?: string;
-  setQuery: (query, searchQuery, filters?) => void;
+  setQuery: (query, filters) => void;
   admin?: boolean;
 }
 
@@ -17,12 +17,12 @@ interface State {
   adminFilters: string;
   searchQuery: string;
   query: string;
+  sortBy: string;
 }
 
 /**
  * TODO
  * [ ] Fix radio buttons on smaller devices (don't do inline)
- * [ ] Set filter to sort by created date
  */
 
 class SearchFilter extends React.Component<Props, State> {
@@ -30,23 +30,28 @@ class SearchFilter extends React.Component<Props, State> {
     adminFilters: "all",
     searchQuery: "all",
     query: "",
+    sortBy: "createdAt",
   };
 
   private filterRef = React.createRef<HTMLDivElement>();
 
   public render(): JSX.Element {
-    const { adminFilters, searchQuery, query } = this.state;
+    const { adminFilters, searchQuery, query, sortBy } = this.state;
     const { setQuery, admin } = this.props;
 
     return (
       <>
-        <div className="filter__container animated slideInLeft" ref={this.filterRef}>
+        <div className="filter__container animated fadeIn" ref={this.filterRef}>
           <ControlGroup style={{ margin: "6px 0" }}>
             <InputGroup
               leftIcon="search"
               onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                 this.setState({ query: e.target.value });
-                setQuery(e.target.value, searchQuery, admin && adminFilters);
+                setQuery(e.target.value, {
+                  searchQuery,
+                  adminFilters: admin && adminFilters,
+                  sortBy,
+                });
               }}
               placeholder="Search query..."
               fill
@@ -54,7 +59,11 @@ class SearchFilter extends React.Component<Props, State> {
             <HTMLSelect
               onChange={(e): void => {
                 this.setState({ searchQuery: e.target.value });
-                setQuery(query, searchQuery, admin && adminFilters);
+                setQuery(query, {
+                  searchQuery,
+                  adminFilters: admin && adminFilters,
+                  sortBy,
+                });
               }}
             >
               <option value="all">All</option>
@@ -64,19 +73,39 @@ class SearchFilter extends React.Component<Props, State> {
             </HTMLSelect>
           </ControlGroup>
           {admin && (
-            <RadioGroup
-              label="Include:"
-              onChange={(e: FormEvent<HTMLInputElement>): void => {
-                this.setState({ adminFilters: e.currentTarget.value });
-                setQuery(query, searchQuery, e.currentTarget.value);
-              }}
-              selectedValue={adminFilters}
-              className="filter__radio"
-            >
-              <Radio label="All" value="all" />
-              <Radio label="Cakes" value="cakes" />
-              <Radio label="Creations" value="creates" />
-            </RadioGroup>
+            <>
+              <p className="filter__label">Include:</p>
+              <RadioGroup
+                onChange={(e: FormEvent<HTMLInputElement>): void => {
+                  const adminFilters = e.currentTarget.value;
+                  this.setState({ adminFilters });
+                  setQuery(query, {
+                    searchQuery,
+                    adminFilters: admin && adminFilters,
+                    sortBy,
+                  });
+                }}
+                selectedValue={adminFilters}
+                className="filter__radio"
+              >
+                <Radio inline label="All" value="all" />
+                <Radio inline label="Cakes" value="cakes" />
+                <Radio inline label="Creations" value="creates" />
+              </RadioGroup>
+              <p className="filter__label">Sort By:</p>
+              <RadioGroup
+                onChange={(e: FormEvent<HTMLInputElement>): void => {
+                  const sortBy = e.currentTarget.value;
+                  this.setState({ sortBy });
+                  setQuery(query, { searchQuery, adminFilters, sortBy });
+                }}
+                selectedValue={sortBy}
+                className="filter__radio"
+              >
+                <Radio inline label="Last Created" value="createdAt" />
+                <Radio inline label="Last Updated" value="updatedAt" />
+              </RadioGroup>
+            </>
           )}
         </div>
       </>

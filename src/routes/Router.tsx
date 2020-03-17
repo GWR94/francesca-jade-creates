@@ -157,18 +157,22 @@ class AppRouter extends Component {
                 user={user}
                 history={history}
                 component={(): JSX.Element => (
-                  <ProductTypePage type="Creates" history={history} />
+                  <div className="content-container">
+                    <ProductTypePage type="Creates" history={history} />
+                  </div>
                 )}
               />
               <Route
                 path="/creates/:id"
                 component={(matchParams): JSX.Element => (
-                  <ViewProduct
-                    history={history}
-                    {...matchParams}
-                    user={user}
-                    userAttributes={userAttributes}
-                  />
+                  <div className="content-container">
+                    <ViewProduct
+                      history={history}
+                      {...matchParams}
+                      user={user}
+                      userAttributes={userAttributes}
+                    />
+                  </div>
                 )}
               />
               <Route
@@ -177,13 +181,17 @@ class AppRouter extends Component {
                 user={user}
                 history={history}
                 component={(): JSX.Element => (
-                  <ProductTypePage type="Cake" history={history} />
+                  <div className="content-container">
+                    <ProductTypePage type="Cake" history={history} />
+                  </div>
                 )}
               />
               <Route
                 path="/cakes/:id"
                 component={(matchParams): JSX.Element => (
-                  <ViewProduct history={history} {...matchParams} />
+                  <div className="content-container">
+                    <ViewProduct history={history} {...matchParams} />
+                  </div>
                 )}
               />
               <Route path="/login" history={history} user={user} component={Login} />
@@ -208,17 +216,15 @@ class AppRouter extends Component {
                 path="/account/:id"
                 component={(matchParams): JSX.Element =>
                   this.admin ? (
-                    <div className="content-container">
-                      <UpdateProduct
-                        update
-                        setCurrentTab={(tab): void => {
-                          history.push("/account");
-                          if (tab !== accountsTab) this.setState({ accountsTab: tab });
-                        }}
-                        history={history}
-                        {...matchParams}
-                      />
-                    </div>
+                    <UpdateProduct
+                      update
+                      setCurrentTab={(tab): void => {
+                        history.push("/account");
+                        if (tab !== accountsTab) this.setState({ accountsTab: tab });
+                      }}
+                      history={history}
+                      {...matchParams}
+                    />
                   ) : (
                     <Redirect to="/" />
                   )

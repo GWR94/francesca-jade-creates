@@ -52,6 +52,8 @@ export const listProducts = /* GraphQL */ `
         shippingCost
         type
         tags
+        createdAt
+        updatedAt
       }
       nextToken
     }
@@ -72,6 +74,8 @@ export const getProduct = /* GraphQL */ `
       shippingCost
       type
       tags
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -101,6 +105,8 @@ export const searchProducts = /* GraphQL */ `
         shippingCost
         type
         tags
+        createdAt
+        updatedAt
       }
       nextToken
       total

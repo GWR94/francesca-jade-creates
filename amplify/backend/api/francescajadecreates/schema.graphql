@@ -16,6 +16,8 @@ type Product
   shippingCost: Float!
   type: String!
   tags: [String]!
+  createdAt: String
+  updatedAt: String
 }
 
 type User

@@ -6,6 +6,7 @@ import { listProducts } from "../../graphql/queries";
 import Loading from "../Loading";
 import { ProductProps } from "../interfaces/Product.i";
 import ProductsList from "../../pages/accounts/components/ProductsList";
+import { H3 } from "@blueprintjs/core";
 
 interface ProductTypeState {
   isLoading: boolean;
@@ -55,13 +56,19 @@ export default class ProductTypePage extends Component<
 
   public render(): JSX.Element {
     const { isLoading, products, queryResults } = this.state;
-    const { admin, type } = this.props;
+    const { type } = this.props;
     const results = queryResults || products;
     return isLoading ? (
       <Loading size={100} />
     ) : (
       <Container>
-        <ProductsList products={results} admin={admin} noTitle type={type} />
+        <H3 className="product-type__title">{type === "Cake" ? "Cakes" : "Creations"}</H3>
+        <p className="product-type__description">-- Placeholder --</p>
+        <p className="product-type__filter">
+          To filter the products please click the pink button on the left hand side, and
+          filter the results to your preferences.
+        </p>
+        <ProductsList products={results} noTitle type={type} />
       </Container>
     );
   }

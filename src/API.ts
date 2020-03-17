@@ -11,6 +11,8 @@ export type CreateProductInput = {
   shippingCost: number,
   type: string,
   tags: Array< string | null >,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
 export type S3ObjectInput = {
@@ -26,6 +28,8 @@ export type ModelProductConditionInput = {
   shippingCost?: ModelFloatInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelProductConditionInput | null > | null,
   or?: Array< ModelProductConditionInput | null > | null,
   not?: ModelProductConditionInput | null,
@@ -92,6 +96,8 @@ export type UpdateProductInput = {
   shippingCost?: number | null,
   type?: string | null,
   tags?: Array< string | null > | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
 export type DeleteProductInput = {
@@ -167,6 +173,8 @@ export type ModelProductFilterInput = {
   shippingCost?: ModelFloatInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelProductFilterInput | null > | null,
   or?: Array< ModelProductFilterInput | null > | null,
   not?: ModelProductFilterInput | null,
@@ -180,6 +188,8 @@ export type SearchableProductFilterInput = {
   shippingCost?: SearchableFloatFilterInput | null,
   type?: SearchableStringFilterInput | null,
   tags?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
   and?: Array< SearchableProductFilterInput | null > | null,
   or?: Array< SearchableProductFilterInput | null > | null,
   not?: SearchableProductFilterInput | null,
@@ -224,6 +234,8 @@ export enum SearchableProductSortableFields {
   shippingCost = "shippingCost",
   type = "type",
   tags = "tags",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
 }
 
 
@@ -254,6 +266,8 @@ export type CreateProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -278,6 +292,8 @@ export type UpdateProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -302,6 +318,8 @@ export type DeleteProductMutation = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -446,6 +464,8 @@ export type CreateOrderMutation = {
       shippingCost: number,
       type: string,
       tags: Array< string | null >,
+      createdAt: string | null,
+      updatedAt: string | null,
     } | null,
   } | null,
 };
@@ -513,6 +533,8 @@ export type ListProductsQuery = {
       shippingCost: number,
       type: string,
       tags: Array< string | null >,
+      createdAt: string | null,
+      updatedAt: string | null,
     } | null > | null,
     nextToken: string | null,
   } | null,
@@ -538,6 +560,8 @@ export type GetProductQuery = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -566,6 +590,8 @@ export type SearchProductsQuery = {
       shippingCost: number,
       type: string,
       tags: Array< string | null >,
+      createdAt: string | null,
+      updatedAt: string | null,
     } | null > | null,
     nextToken: string | null,
     total: number | null,
@@ -588,6 +614,8 @@ export type OnCreateProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -607,6 +635,8 @@ export type OnUpdateProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
 
@@ -626,5 +656,7 @@ export type OnDeleteProductSubscription = {
     shippingCost: number,
     type: string,
     tags: Array< string | null >,
+    createdAt: string | null,
+    updatedAt: string | null,
   } | null,
 };
