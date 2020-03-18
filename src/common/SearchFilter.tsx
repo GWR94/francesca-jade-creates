@@ -33,15 +33,13 @@ class SearchFilter extends React.Component<Props, State> {
     sortBy: "createdAt",
   };
 
-  private filterRef = React.createRef<HTMLDivElement>();
-
   public render(): JSX.Element {
     const { adminFilters, searchQuery, query, sortBy } = this.state;
     const { setQuery, admin } = this.props;
 
     return (
       <>
-        <div className="filter__container animated fadeIn" ref={this.filterRef}>
+        <div className="filter__container animated fadeIn">
           <ControlGroup style={{ margin: "6px 0" }}>
             <InputGroup
               leftIcon="search"
