@@ -36,13 +36,6 @@ module.exports = () => {
       new Dotenv(),
     ],
     optimization: {
-      moduleIds: "hashed",
-      minimizer: [
-        new TerserPlugin({
-          extractComments: true,
-        }),
-        new OptimizeCSSAssetsPlugin({}),
-      ],
       runtimeChunk: "single",
       splitChunks: {
         chunks: "all",
