@@ -1,13 +1,15 @@
+/* eslint-disable consistent-return */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 
 module.exports = () => {
+  require("dotenv").config();
   const isProduction = process.env.NODE_ENV === "production";
   return {
     entry: ["./src/index.tsx"],
@@ -22,42 +24,24 @@ module.exports = () => {
     node: {
       fs: "empty",
     },
+    optimization: {
+      runtimeChunk: "single",
+      splitChunks: {
+        chunks: "all",
+      },
+    },
     plugins: [
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: "[name].css",
         chunkFilename: "[id].css",
       }),
-      new webpack.HashedModuleIdsPlugin(),
+      new Dotenv(),
       new HtmlWebpackPlugin({
         template: "./public/index.html",
         favicon: "./public/favicon.ico",
       }),
-      new Dotenv(),
     ],
-    optimization: {
-      runtimeChunk: "single",
-      splitChunks: {
-        chunks: "all",
-        maxInitialRequests: Infinity,
-        minSize: 0,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              // get the name. E.g. node_modules/packageName/not/this/part.js
-              // or node_modules/packageName
-              const packageName = module.context.match(
-                /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
-              )[1];
-
-              // npm package names are URL-safe, but some servers don't like @ symbols
-              return `npm.${packageName.replace("@", "")}`;
-            },
-          },
-        },
-      },
-    },
     module: {
       rules: [
         {
@@ -84,7 +68,7 @@ module.exports = () => {
           ],
         },
         {
-          test: /\.(jpg|jpeg|png|gif|svg|pdf|ico|eot|woff|ttf)$/i,
+          test: /\.(jpg|jpeg|png|gif|svg|pdf|ico|eot|woff|woff2|ttf)$/i,
           loader: "file-loader?name=[path][hash].[ext]",
         },
         {
