@@ -42,13 +42,13 @@ module.exports = () => {
         template: "./public/index.html",
         favicon: "./public/favicon.ico",
       }),
-      new webpack.EnvironmentPlugin({
-        "process.env.ACCESS_KEY_AWS": JSON.stringify(process.env.ACCESS_KEY_AWS),
-        "process.env.SECRET_KEY_AWS": JSON.stringify(process.env.SECRET_KEY_AWS),
-        "process.env.BUCKET_REGION": JSON.stringify(process.env.BUCKET_REGION),
-        "process.env.BUCKET_NAME": JSON.stringify(process.env.BUCKET_NAME),
-        "process.env.STRIPE_SECRET_KEY": JSON.stringify(process.env.STRIPE_SECRET_KEY),
-      }),
+      new webpack.EnvironmentPlugin([
+        "ACCESS_KEY_AWS",
+        "SECRET_KEY_AWS",
+        "BUCKET_REGION",
+        "BUCKET_NAME",
+        "STRIPE_SECRET_KEY",
+      ]),
       //   new CompressionPlugin({
       //     test: /\.(js|css)$/,
       //     filename: "[path].gz[query]",
