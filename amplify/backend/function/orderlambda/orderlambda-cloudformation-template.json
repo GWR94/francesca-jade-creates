@@ -4,14 +4,6 @@
 	"Parameters": {
 		"env": {
 			"Type": "String"
-		},
-		"apifrancescajadecreatesGraphQLAPIIdOutput": {
-			"Type": "String",
-			"Default": "apifrancescajadecreatesGraphQLAPIIdOutput"
-		},
-		"apifrancescajadecreatesGraphQLAPIEndpointOutput": {
-			"Type": "String",
-			"Default": "apifrancescajadecreatesGraphQLAPIEndpointOutput"
 		}
 	},
 	"Conditions": {
@@ -36,12 +28,12 @@
 				"FunctionName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"order",
+						"orderlambda",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"order",
+									"orderlambda",
 									"-",
 									{
 										"Ref": "env"
@@ -58,12 +50,6 @@
 						},
 						"REGION": {
 							"Ref": "AWS::Region"
-						},
-						"API_FRANCESCAJADECREATES_GRAPHQLAPIIDOUTPUT": {
-							"Ref": "apifrancescajadecreatesGraphQLAPIIdOutput"
-						},
-						"API_FRANCESCAJADECREATES_GRAPHQLAPIENDPOINTOUTPUT": {
-							"Ref": "apifrancescajadecreatesGraphQLAPIEndpointOutput"
 						}
 					}
 				},
@@ -77,7 +63,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "amplify-francescajadecreates-production-121747-deployment",
-					"S3Key": "amplify-builds/order-4e52424652767932767a-build.zip"
+					"S3Key": "amplify-builds/orderlambda-7262444878624e697532-build.zip"
 				}
 			}
 		},
@@ -87,12 +73,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"francescajadecreatesLambdaRole040319cf",
+						"francescajadecreatesLambdaRole02db4832",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"francescajadecreatesLambdaRole040319cf",
+									"francescajadecreatesLambdaRole02db4832",
 									"-",
 									{
 										"Ref": "env"
@@ -158,54 +144,6 @@
 									}
 								]
 							}
-						}
-					]
-				}
-			}
-		},
-		"AmplifyResourcesPolicy": {
-			"DependsOn": [
-				"LambdaExecutionRole"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": "amplify-lambda-execution-policy",
-				"Roles": [
-					{
-						"Ref": "LambdaExecutionRole"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"appsync:Get*",
-								"appsync:List*"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:appsync:",
-											{
-												"Ref": "AWS::Region"
-											},
-											":",
-											{
-												"Ref": "AWS::AccountId"
-											},
-											":apis/",
-											{
-												"Ref": "apifrancescajadecreatesGraphQLAPIIdOutput"
-											},
-											"/*"
-										]
-									]
-								}
-							]
 						}
 					]
 				}

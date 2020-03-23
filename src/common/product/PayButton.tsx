@@ -34,7 +34,7 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
 
   const handleCharge = async (token): Promise<void> => {
     try {
-      const res = await API.post("order", "/charge", {
+      const res = await API.post("orderlambda", "/charge", {
         body: {
           token,
           charge: {

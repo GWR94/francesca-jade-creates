@@ -1,11 +1,3 @@
-/* Amplify Params - DO NOT EDIT
-You can access the following resource attributes as environment variables from your Lambda function
-var environment = process.env.ENV
-var region = process.env.REGION
-var apiFrancescajadecreatesGraphQLAPIIdOutput = process.env.API_FRANCESCAJADECREATES_GRAPHQLAPIIDOUTPUT
-var apiFrancescajadecreatesGraphQLAPIEndpointOutput = process.env.API_FRANCESCAJADECREATES_GRAPHQLAPIENDPOINTOUTPUT
-
-Amplify Params - DO NOT EDIT *
 /* eslint-disable func-names */
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -17,7 +9,7 @@ const AWS = require("aws-sdk");
 const config = {
   accessKeyId: process.env.ACCESS_KEY_AWS,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: "eu-west-2",
+  region: "eu-west-1",
   adminEmail: "jamesgower1994@gmail.com",
 };
 
