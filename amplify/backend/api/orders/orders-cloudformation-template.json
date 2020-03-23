@@ -14,15 +14,15 @@
         },
     
     
-          "functionorderlamdaName": {
+          "functionordersName": {
             "Type": "String",
-            "Default": "functionorderlamdaName"
+            "Default": "functionordersName"
           },
         
           
-          "functionorderlamdaArn": {
+          "functionordersArn": {
             "Type": "String",
-            "Default": "functionorderlamdaArn"
+            "Default": "functionordersArn"
           }
         
           
@@ -41,13 +41,13 @@
     },
     "Resources": {
         
-        "PolicyAPIGWorderlambdaauth": {
+        "PolicyAPIGWordersauth": {
             "DependsOn": [
-              "orderlambda"
+              "orders"
             ],
             "Type": "AWS::IAM::Policy",
             "Properties": {
-              "PolicyName": "PolicyAPIGWorderlambdaauth",
+              "PolicyName": "PolicyAPIGWordersauth",
               "Roles": [
                 {"Ref": "authRoleName"}
               ],
@@ -77,7 +77,7 @@
                             },
                             ":",
                             {
-                              "Ref": "orderlambda"
+                              "Ref": "orders"
                             },
                             "/",
                             {
@@ -108,7 +108,7 @@
                             },
                             ":",
                             {
-                              "Ref": "orderlambda"
+                              "Ref": "orders"
                             },
                             "/",
                             {
@@ -143,7 +143,7 @@
                             },
                             ":",
                             {
-                              "Ref": "orderlambda"
+                              "Ref": "orders"
                             },
                             "/",
                             {
@@ -155,7 +155,7 @@
                                 } 
                               ]
                             },
-                              "/GET",
+                              "/PUT",
                             "/charge/*"
                           ]
                         ]
@@ -174,7 +174,7 @@
                             },
                             ":",
                             {
-                              "Ref": "orderlambda"
+                              "Ref": "orders"
                             },
                             "/",
                             {
@@ -186,7 +186,73 @@
                                 } 
                               ]
                             },
-                              "/GET",
+                              "/PUT",
+                            "/charge"
+                          ]
+                        ]
+                      }
+                    
+                      ,
+                    
+                    
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orders"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/PATCH",
+                            "/charge/*"
+                          ]
+                        ]
+                      },
+                                            {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orders"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/PATCH",
                             "/charge"
                           ]
                         ]
@@ -207,16 +273,16 @@
         
         
         
-      "orderlambda": {
+      "orders": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
           "Description": "",
-          "Name": "orderlambda",
+          "Name": "orders",
           "Body": {
             "swagger": "2.0",
             "info": {
               "version": "2018-05-24T17:52:00Z",
-              "title": "orderlambda"
+              "title": "orders"
             },
             "host": {
                 "Fn::Join": [
@@ -344,7 +410,7 @@
                             
                             {
                                 
-                                "Ref": "functionorderlamdaArn"
+                                "Ref": "functionordersArn"
                             },
                             
                             "/invocations"
@@ -449,7 +515,7 @@
                           
                           {
                             
-                            "Ref": "functionorderlamdaArn"
+                            "Ref": "functionordersArn"
                           },
                           
                           "/invocations"
@@ -506,12 +572,12 @@
                   
         
         
-        "functionorderlamdaPermissionorderlambda": {
+        "functionordersPermissionorders": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
                     {
-                        "Ref":  "functionorderlamdaName"
+                        "Ref":  "functionordersName"
                     },
                     
                     "Action": "lambda:InvokeFunction",
@@ -530,7 +596,7 @@
                             },
                             ":",
                             {
-                                "Ref": "orderlambda"
+                                "Ref": "orders"
                             },
                             "/*/*/*"
                         ]
@@ -541,7 +607,7 @@
         
         
         
-      "DeploymentAPIGWorderlambda": {
+      "DeploymentAPIGWorders": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "Description": "The Development stage deployment of your API.",
@@ -555,7 +621,7 @@
             ]
           },
           "RestApiId": {
-            "Ref": "orderlambda"
+            "Ref": "orders"
           }
         }
       }
@@ -563,15 +629,15 @@
     "Outputs": {
         "RootUrl": {
             "Description": "Root URL of the API gateway",
-            "Value": {"Fn::Join": ["", ["https://", {"Ref": "orderlambda"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "orders"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
         },
         "ApiName": {
           "Description": "API Friendly name",
-          "Value": "orderlambda"
+          "Value": "orders"
         },
         "ApiId": {
           "Description": "API ID (prefix of API URL)",
-          "Value": {"Ref": "orderlambda"}
+          "Value": {"Ref": "orders"}
         }
     }
   }

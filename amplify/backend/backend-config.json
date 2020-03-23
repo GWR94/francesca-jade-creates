@@ -30,13 +30,13 @@
 				}
 			}
 		},
-		"orderlambda": {
+		"orders": {
 			"service": "API Gateway",
 			"providerPlugin": "awscloudformation",
 			"dependsOn": [
 				{
 					"category": "function",
-					"resourceName": "orderlamda",
+					"resourceName": "orders",
 					"attributes": [
 						"Name",
 						"Arn"
@@ -46,19 +46,10 @@
 		}
 	},
 	"function": {
-		"orderlamda": {
+		"orders": {
 			"service": "Lambda",
 			"providerPlugin": "awscloudformation",
-			"build": true,
-			"dependsOn": [
-				{
-					"category": "auth",
-					"resourceName": "francescajadecreates65e4759c",
-					"attributes": [
-						"UserPoolId"
-					]
-				}
-			]
+			"build": true
 		}
 	},
 	"storage": {

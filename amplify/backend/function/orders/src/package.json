@@ -1,5 +1,5 @@
 {
-  "name": "orderlamda",
+  "name": "orders",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,10 +7,9 @@
     "aws-serverless-express": "^3.3.5",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "aws-sdk": "2.643.0",
-    "stripe": "8.33.0",
     "dotenv": "8.2.0",
-    "cors": "2.8.5"
+    "aws-sdk": "2.643.0",
+    "stripe": "8.33.0"
   },
   "devDependencies": {},
   "scripts": {

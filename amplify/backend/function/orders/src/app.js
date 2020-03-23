@@ -1,11 +1,14 @@
-/* eslint-disable func-names */
-const express = require("express");
+/* Amplify Params - DO NOT EDIT
+You can access the following resource attributes as environment variables from your Lambda function
+var environment = process.env.ENV
+var region = process.env.REGION
+
+Amplify Params - DO NOT EDIT */ const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 require("dotenv").config("./.env");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const AWS = require("aws-sdk");
-const cors = require("cors");
 
 const config = {
   accessKeyId: process.env.ACCESS_KEY_AWS,
@@ -16,14 +19,19 @@ const config = {
 
 const ses = AWS.SES(config);
 
-console.log(process.env);
-
 // declare a new express app
 const app = express();
 app.use(bodyParser.json());
 app.use(awsServerlessExpressMiddleware.eventContext());
 
-app.use(cors());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept",
+  );
+  next();
+});
 
 const chargeHandler = async (req, res, next) => {
   const { token, product, email } = req.body;
