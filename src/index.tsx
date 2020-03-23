@@ -9,6 +9,8 @@ import "./scss/styles.scss";
 import "remove-focus-outline";
 import "animate.css/animate.min.css";
 
+require("dotenv").config();
+
 const urlsIn = config.oauth.redirectSignIn.split(",");
 const urlsOut = config.oauth.redirectSignOut.split(",");
 

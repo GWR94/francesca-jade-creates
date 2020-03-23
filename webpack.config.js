@@ -41,37 +41,35 @@ module.exports = () => {
         template: "./public/index.html",
         favicon: "./public/favicon.ico",
       }),
-      new CompressionPlugin({
-        test: /\.(js|css)$/,
-        filename: "[path].gz[query]",
-        algorithm: "gzip",
-        // deleteOriginalAssets: true,
-      }),
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.ACCESS_KEY_AWS, // Your AWS access key
-          secretAccessKey: process.env.SECRET_KEY_AWS, // Your AWS secret key
-          region: process.env.BUCKET_REGION, // The region of your S3 bucket
-        },
-        s3UploadOptions: {
-          Bucket: process.env.BUCKET_NAME, // Your bucket name
-          // Here we set the Content-Encoding header for all the gzipped files to 'gzip'
-          ContentEncoding(fileName) {
-            if (/\.gz/.test(fileName)) {
-              return "gzip";
-            }
-          },
-          // Here we set the Content-Type header for the gzipped files to their appropriate values, so the browser can interpret them properly
-          ContentType(fileName) {
-            if (/\.css/.test(fileName)) {
-              return "text/css";
-            }
-            if (/\.js/.test(fileName)) {
-              return "text/javascript";
-            }
-          },
-        },
-      }),
+      //   new CompressionPlugin({
+      //     test: /\.(js|css)$/,
+      //     filename: "[path].gz[query]",
+      //     algorithm: "gzip",
+      //     // deleteOriginalAssets: true,
+      //   }),
+      //   new S3Plugin({
+      //     s3Options: {
+      //       accessKeyId: process.env.ACCESS_KEY_AWS, // Your AWS access key
+      //       secretAccessKey: process.env.SECRET_KEY_AWS, // Your AWS secret key
+      //       region: process.env.BUCKET_REGION, // The region of your S3 bucket
+      //     },
+      //     s3UploadOptions: {
+      //       Bucket: process.env.BUCKET_NAME, // Your bucket name
+      //       ContentEncoding(fileName) {
+      //         if (/\.gz/.test(fileName)) {
+      //           return "gzip";
+      //         }
+      //       },
+      //       ContentType(fileName) {
+      //         if (/\.css/.test(fileName)) {
+      //           return "text/css";
+      //         }
+      //         if (/\.js/.test(fileName)) {
+      //           return "application/javascript";
+      //         }
+      //       },
+      //     },
+      //   }),
     ],
     module: {
       rules: [

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
+import { Container } from "reactstrap";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProductTypePage from "../common/product/ProductTypePage";
@@ -216,15 +217,17 @@ class AppRouter extends Component {
                 path="/account/:id"
                 component={(matchParams): JSX.Element =>
                   this.admin ? (
-                    <UpdateProduct
-                      update
-                      setCurrentTab={(tab): void => {
-                        history.push("/account");
-                        if (tab !== accountsTab) this.setState({ accountsTab: tab });
-                      }}
-                      history={history}
-                      {...matchParams}
-                    />
+                    <Container className="content-container">
+                      <UpdateProduct
+                        update
+                        setCurrentTab={(tab): void => {
+                          history.push("/account");
+                          if (tab !== accountsTab) this.setState({ accountsTab: tab });
+                        }}
+                        history={history}
+                        {...matchParams}
+                      />
+                    </Container>
                   ) : (
                     <Redirect to="/" />
                   )

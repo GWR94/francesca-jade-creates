@@ -89,6 +89,7 @@
     "client-compress": "^2.1.2",
     "core-js": "^3.6.4",
     "dayjs": "^1.8.23",
+    "dotenv": "^8.2.0",
     "dotenv-webpack": "^1.7.0",
     "express": "^4.17.1",
     "history": "^4.10.1",

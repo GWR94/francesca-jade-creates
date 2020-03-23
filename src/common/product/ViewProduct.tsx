@@ -69,7 +69,9 @@ const ViewProducts = ({ match, userAttributes }): JSX.Element => {
         </div>
         <div className="view__button-container">
           {product.price > 0 ? (
-            <PayButton product={product} userAttributes={userAttributes} />
+            userAttributes && (
+              <PayButton product={product} userAttributes={userAttributes} />
+            )
           ) : (
             <Button intent="success">
               <i className="fas fa-credit-card view__icon" />
