@@ -75,7 +75,7 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
         }, 3000);
       }
     } catch (err) {
-      console.error(err);
+      console.error("error", err);
     }
   };
 
