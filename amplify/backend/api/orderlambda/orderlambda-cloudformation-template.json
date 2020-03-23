@@ -14,15 +14,15 @@
         },
     
     
-          "functionorderlambdaName": {
+          "functionorderlamdaName": {
             "Type": "String",
-            "Default": "functionorderlambdaName"
+            "Default": "functionorderlamdaName"
           },
         
           
-          "functionorderlambdaArn": {
+          "functionorderlamdaArn": {
             "Type": "String",
-            "Default": "functionorderlambdaArn"
+            "Default": "functionorderlamdaArn"
           }
         
           
@@ -40,6 +40,168 @@
         }
     },
     "Resources": {
+        
+        "PolicyAPIGWorderlambdaauth": {
+            "DependsOn": [
+              "orderlambda"
+            ],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": "PolicyAPIGWorderlambdaauth",
+              "Roles": [
+                {"Ref": "authRoleName"}
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "execute-api:Invoke"
+                    ],
+                    "Resource": [
+                    
+                    
+                    
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orderlambda"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/POST",
+                            "/charge/*"
+                          ]
+                        ]
+                      },
+                                            {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orderlambda"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/POST",
+                            "/charge"
+                          ]
+                        ]
+                      }
+                    
+                      ,
+                    
+                    
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orderlambda"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/GET",
+                            "/charge/*"
+                          ]
+                        ]
+                      },
+                                            {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "orderlambda"
+                            },
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                              "/GET",
+                            "/charge"
+                          ]
+                        ]
+                      }
+                    
+                    
+                    
+                    
+                    
+                    ]
+                  }
+                ]
+              }
+            }
+          },
         
         
         
@@ -157,6 +319,12 @@
                       }
                     }
                   },
+                          
+                    "security": [
+                        {
+                          "sigv4": []
+                        }
+                      ],
                   
                   "x-amazon-apigateway-integration": {
                     "responses": {
@@ -176,7 +344,7 @@
                             
                             {
                                 
-                                "Ref": "functionorderlambdaArn"
+                                "Ref": "functionorderlamdaArn"
                             },
                             
                             "/invocations"
@@ -256,6 +424,12 @@
                       }
                     }
                   },
+                          
+                    "security": [
+                        {
+                          "sigv4": []
+                        }
+                      ],
                   
                   "x-amazon-apigateway-integration": {
                     "responses": {
@@ -275,7 +449,7 @@
                           
                           {
                             
-                            "Ref": "functionorderlambdaArn"
+                            "Ref": "functionorderlamdaArn"
                           },
                           
                           "/invocations"
@@ -332,12 +506,12 @@
                   
         
         
-        "functionorderlambdaPermissionorderlambda": {
+        "functionorderlamdaPermissionorderlambda": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": 
                     {
-                        "Ref":  "functionorderlambdaName"
+                        "Ref":  "functionorderlamdaName"
                     },
                     
                     "Action": "lambda:InvokeFunction",

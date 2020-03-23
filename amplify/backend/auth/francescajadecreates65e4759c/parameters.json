@@ -60,6 +60,5 @@
     },
     "permissions": [],
     "dependsOn": [],
-    "adminQueryGroup": "Admin",
     "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"]}"
 }

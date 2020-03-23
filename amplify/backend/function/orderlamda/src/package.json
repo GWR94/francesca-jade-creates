@@ -1,5 +1,5 @@
 {
-  "name": "orderlambda",
+  "name": "orderlamda",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,8 +8,8 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "aws-sdk": "2.643.0",
-    "dotenv": "8.2.0",
-    "stripe": "8.33.0"
+    "stripe": "8.33.0",
+    "dotenv": "8.2.0"
   },
   "devDependencies": {},
   "scripts": {

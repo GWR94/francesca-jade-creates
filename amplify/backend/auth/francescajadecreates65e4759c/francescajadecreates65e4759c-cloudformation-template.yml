@@ -109,10 +109,7 @@ Parameters:
               
   dependsOn:
     Type: CommaDelimitedList
-      
-  adminQueryGroup:
-    Type: String
-              
+                  
   hostedUIProviderCreds:
     Type: String
               

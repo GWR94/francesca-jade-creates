@@ -2,9 +2,13 @@
     "paths": [
         {
             "name": "/charge",
-            "lambdaFunction": "orderlambda",
+            "lambdaFunction": "orderlamda",
             "privacy": {
-                "open": true
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET"
+                ]
             }
         }
     ],
@@ -12,11 +16,11 @@
     "apiName": "orderlambda",
     "functionArns": [
         {
-            "lambdaFunction": "orderlambda"
+            "lambdaFunction": "orderlamda"
         }
     ],
     "privacy": {
-        "auth": 0,
+        "auth": 1,
         "unauth": 0,
         "authRoleName": "amplify-francescajadecreates-production-121747-authRole",
         "unAuthRoleName": "amplify-francescajadecreates-production-121747-unauthRole"
@@ -24,7 +28,7 @@
     "dependsOn": [
         {
             "category": "function",
-            "resourceName": "orderlambda",
+            "resourceName": "orderlamda",
             "attributes": [
                 "Name",
                 "Arn"

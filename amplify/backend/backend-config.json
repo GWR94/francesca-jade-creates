@@ -36,7 +36,7 @@
 			"dependsOn": [
 				{
 					"category": "function",
-					"resourceName": "orderlambda",
+					"resourceName": "orderlamda",
 					"attributes": [
 						"Name",
 						"Arn"
@@ -46,10 +46,19 @@
 		}
 	},
 	"function": {
-		"orderlambda": {
+		"orderlamda": {
 			"service": "Lambda",
 			"providerPlugin": "awscloudformation",
-			"build": true
+			"build": true,
+			"dependsOn": [
+				{
+					"category": "auth",
+					"resourceName": "francescajadecreates65e4759c",
+					"attributes": [
+						"UserPoolId"
+					]
+				}
+			]
 		}
 	},
 	"storage": {
