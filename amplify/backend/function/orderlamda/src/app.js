@@ -2,36 +2,31 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
-require("dotenv").config();
+require("dotenv").config("./.env");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const AWS = require("aws-sdk");
+const cors = require("cors");
 
 const config = {
   accessKeyId: process.env.ACCESS_KEY_AWS,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
   region: "eu-west-2",
-  adminEmail: "jamesgower1994@gmail.com",
+  adminEmail: "contact@francescajadecreates.co.uk",
 };
 
 const ses = AWS.SES(config);
+
+console.log(process.env);
 
 // declare a new express app
 const app = express();
 app.use(bodyParser.json());
 app.use(awsServerlessExpressMiddleware.eventContext());
 
-// Enable CORS for all methods
-app.use(function(_req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept",
-  );
-  next();
-});
+app.use(cors());
 
 const chargeHandler = async (req, res, next) => {
-  const { token, product } = req.body;
+  const { token, product, email } = req.body;
   const { currency, amount, description } = req.body.charge;
   try {
     const charge = await stripe.charges.create({
@@ -40,14 +35,16 @@ const chargeHandler = async (req, res, next) => {
       currency,
       description,
     });
+    console.log(charge);
     if (charge.status === "succeeded") {
       req.charge = charge;
       req.description = description;
-      req.email = req.body.email;
+      req.email = email;
       req.product = product;
       next();
     }
   } catch (err) {
+    console.error(err);
     res.status(500).json({ err });
   }
 };
@@ -92,12 +89,14 @@ const emailHandler = (req, res) => {
       },
     },
     (err, data) => {
-      if (err) return res.status(500).json({ error: err });
-      res.json({
-        message: "Order processed successfully",
-        charge,
-        data,
-      });
+      if (err) res.status(500).json({ error: err });
+      else {
+        res.json({
+          message: "Order processed successfully",
+          charge,
+          data,
+        });
+      }
     },
   );
 };

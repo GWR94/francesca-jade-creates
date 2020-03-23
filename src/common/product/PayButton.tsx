@@ -79,6 +79,8 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
     }
   };
 
+  console.log(process.env.STRIPE_SECRET_KEY);
+
   return (
     <StripeCheckout
       token={handleCharge}
@@ -89,7 +91,7 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
       billingAddress
       shippingAddress
       currency="GBP"
-      stripeKey={process.env.STRIPE_KEY}
+      stripeKey={process.env.STRIPE_SECRET_KEY}
       locale="en"
     >
       <Button
