@@ -9,7 +9,7 @@ const AWS = require("aws-sdk");
 const config = {
   accessKeyId: process.env.ACCESS_KEY_AWS,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: "eu-west-1",
+  region: "eu-west-2",
   adminEmail: "jamesgower1994@gmail.com",
 };
 
