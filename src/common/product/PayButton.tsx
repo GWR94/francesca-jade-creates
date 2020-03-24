@@ -17,8 +17,9 @@ interface AddressProps {
   city: string;
   country: string;
   address_line1: string;
-  address_state: string;
-  address_zip: string;
+  address_line2?: string;
+  address_county: string;
+  address_postcode: string;
 }
 
 const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element => {
@@ -28,8 +29,9 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
     city: source.address_city,
     country: source.address_country,
     address_line1: source.address_line1,
-    address_state: source.address_state,
-    address_zip: source.address_zip,
+    address_line2: source.address_line2 || undefined,
+    address_county: source.address_state,
+    address_postcode: source.address_zip,
   });
 
   const handleCharge = async (token): Promise<void> => {

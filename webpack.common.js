@@ -19,6 +19,13 @@ module.exports = {
       favicon: "./public/favicon.ico",
     }),
     new webpack.HashedModuleIdsPlugin(),
+    new webpack.EnvironmentPlugin([
+      "ACCESS_KEY_AWS",
+      "SECRET_KEY_AWS",
+      "BUCKET_REGION",
+      "BUCKET_NAME",
+      "STRIPE_PUBLIC_KEY",
+    ]),
   ],
   output: {
     path: path.join(__dirname, "dist"),

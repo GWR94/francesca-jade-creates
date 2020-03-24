@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const webpack = require("webpack");
 const path = require("path");
 const merge = require("webpack-merge");
 const common = require("./webpack.common");
@@ -8,15 +7,6 @@ require("dotenv").config();
 
 module.exports = merge(common, {
   mode: "development",
-  plugins: [
-    new webpack.EnvironmentPlugin([
-      "ACCESS_KEY_AWS",
-      "SECRET_KEY_AWS",
-      "BUCKET_REGION",
-      "BUCKET_NAME",
-      "STRIPE_PUBLIC_KEY",
-    ]),
-  ],
   devtool: "inline-source-map",
   module: {
     rules: [

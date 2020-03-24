@@ -82,20 +82,38 @@ const emailHandler = (req, res) => {
           Html: {
             Charset: "UTF-8",
             Data: `
-          <h3>Order Processed</h3>
-          <p>Your order of "${title}" has been processed.</p>
-
-          <p>You will receive a follow-up email when your order has been dispatched.</p>
-
-          <h4 style="text-decoration: underline">Order Details</h4>
-          <p><span style={{Product Cost: £${price}</p>
-          <p>Shipping Cost: £${shippingCost}</p>
-
-          <h4 style="text-decoration: underline">Mailing Address</h4>
-          <p>${charge.source.name}</p>
-          <p>${charge.source.address_line1}</p>
-          <p>${charge.source.address_city}, ${charge.source.address_state}, ${charge.source.address_zip}</p>
-          `,
+            <div style="margin-bottom: 16px">
+              <h3>Order Processed</h3>
+              <p style="margin: 0">Thank you for your purchase! Your order of "${title}" has been processed.</p>
+              <p style="margin: 0">
+                You will receive a follow-up email when your order has been dispatched.
+              </p>
+            </div>
+            <div style="margin-bottom: 16px">
+              <h4 style="text-decoration: underline">Order Details</h4>
+              <p style="margin: 0">
+                <span style="font-weight: bold"">Product Cost</span>: £${price.toFixed(2)}
+                </p>
+              <p style="margin: 0">
+                <span style="font-weight: bold">Shipping Cost</span>: £${shippingCost.toFixed(
+                  2,
+                )}
+                </p>
+            </div>
+            <div style="margin-bottom: 16px">
+              <h4 style="text-decoration: underline">Mailing Address</h4>
+              <p style="margin: 0">${charge.source.name}</p>
+              <p style="margin: 0">${charge.source.address_line1}</p>
+              <p style="margin: 0">${charge.source.address_city}, ${
+              charge.source.address_state
+            }, ${charge.source.address_zip}</p>
+            </div>
+            <p style="margin: 0">
+              If any of this information is incorrect please contact me{" "}
+              <a href="mailto:contact@francescajadecreates.co.uk?subject=Order details update">
+                here
+              </a>
+            </p>`,
           },
         },
       },
