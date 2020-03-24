@@ -1,14 +1,17 @@
 import React from "react";
 import { Col, Row } from "reactstrap";
 import { Auth } from "aws-amplify";
-import { CognitoHostedUIIdentityProvider as Provider } from "@aws-amplify/auth/lib/types";
-import { ICredentials } from "@aws-amplify/core";
 import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import PasswordInput from "../../common/PasswordInput";
-import { LoginProps, LoginState } from "./interfaces/Login.i";
+import {
+  LoginProps,
+  LoginState,
+  ICredentials,
+  CognitoHostedUIIdentityProvider as Provider,
+} from "./interfaces/Login.i";
 
 class Login extends React.Component<LoginProps, LoginState> {
   public readonly state: LoginState = {

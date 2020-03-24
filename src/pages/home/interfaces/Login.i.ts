@@ -10,3 +10,19 @@ export interface LoginState {
   passwordDialogOpen: boolean;
   accountDialogOpen: boolean;
 }
+
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface ICredentials {
+  accessKeyId: string;
+  sessionToken: string;
+  secretAccessKey: string;
+  identityId: string;
+  authenticated: boolean;
+}
+
+export declare enum CognitoHostedUIIdentityProvider {
+  Cognito = "COGNITO",
+  Google = "Google",
+  Facebook = "Facebook",
+  Amazon = "LoginWithAmazon",
+}

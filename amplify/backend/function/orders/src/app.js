@@ -3,21 +3,25 @@ You can access the following resource attributes as environment variables from y
 var environment = process.env.ENV
 var region = process.env.REGION
 
-Amplify Params - DO NOT EDIT */ const express = require("express");
+Amplify Params - DO NOT EDIT */
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config("./.env");
+}
+
+const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
-require("dotenv").config("./.env");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const AWS = require("aws-sdk");
 
 const config = {
   accessKeyId: process.env.ACCESS_KEY_AWS,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: "eu-west-2",
+  region: "eu-west-1",
   adminEmail: "contact@francescajadecreates.co.uk",
 };
 
-const ses = AWS.SES(config);
+const ses = new AWS.SES(config);
 
 // declare a new express app
 const app = express();
@@ -63,7 +67,7 @@ const emailHandler = (req, res) => {
     email: { customerEmail },
     product: { title, price, shippingCost },
   } = req;
-  ses.sendMail(
+  ses.sendEmail(
     {
       Source: config.adminEmail,
       ReturnPath: config.adminEmail,
