@@ -109,8 +109,7 @@ const emailHandler = (req, res) => {
             }, ${charge.source.address_zip}</p>
             </div>
             <p style="margin: 0">
-              If any of this information is incorrect please contact me{" "}
-              <a href="mailto:contact@francescajadecreates.co.uk?subject=Order details update">
+              If any of this information is incorrect please contact me <a href="mailto:contact@francescajadecreates.co.uk?subject=Order details update">
                 here
               </a>
             </p>`,
