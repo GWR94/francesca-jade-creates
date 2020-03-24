@@ -19,10 +19,3 @@ export interface ICredentials {
   identityId: string;
   authenticated: boolean;
 }
-
-export declare enum CognitoHostedUIIdentityProvider {
-  Cognito = "COGNITO",
-  Google = "Google",
-  Facebook = "Facebook",
-  Amazon = "LoginWithAmazon",
-}

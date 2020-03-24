@@ -8,7 +8,6 @@ require("dotenv").config();
 
 module.exports = merge(common, {
   mode: "development",
-  devtool: "inline-source-map",
   plugins: [
     new webpack.EnvironmentPlugin([
       "ACCESS_KEY_AWS",
@@ -18,6 +17,7 @@ module.exports = merge(common, {
       "STRIPE_PUBLIC_KEY",
     ]),
   ],
+  devtool: "inline-source-map",
   module: {
     rules: [
       {

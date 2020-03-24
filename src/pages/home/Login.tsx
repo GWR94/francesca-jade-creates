@@ -6,13 +6,14 @@ import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import PasswordInput from "../../common/PasswordInput";
-import {
-  LoginProps,
-  LoginState,
-  ICredentials,
-  CognitoHostedUIIdentityProvider as Provider,
-} from "./interfaces/Login.i";
+import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
 
+declare enum CognitoHostedUIIdentityProvider {
+  Cognito = "COGNITO",
+  Google = "Google",
+  Facebook = "Facebook",
+  Amazon = "LoginWithAmazon",
+}
 class Login extends React.Component<LoginProps, LoginState> {
   public readonly state: LoginState = {
     username: "",
@@ -52,7 +53,10 @@ class Login extends React.Component<LoginProps, LoginState> {
                   large
                   icon={<i className="fab fa-google" />}
                   onClick={async (): Promise<ICredentials> =>
-                    Auth.federatedSignIn({ provider: Provider.Google })
+                    // @ts-ignore
+                    Auth.federatedSignIn({
+                      provider: "Google",
+                    })
                   }
                   text="Continue with Google"
                 />
@@ -61,7 +65,10 @@ class Login extends React.Component<LoginProps, LoginState> {
                   large
                   icon={<i className="fab fa-facebook-f" />}
                   onClick={async (): Promise<ICredentials> =>
-                    Auth.federatedSignIn({ provider: Provider.Facebook })
+                    // @ts-ignore
+                    Auth.federatedSignIn({
+                      provider: "Facebook",
+                    })
                   }
                   text="Continue with Facebook"
                 />
@@ -70,7 +77,10 @@ class Login extends React.Component<LoginProps, LoginState> {
                   large
                   icon={<i className="fab fa-amazon" />}
                   onClick={async (): Promise<ICredentials> =>
-                    Auth.federatedSignIn({ provider: Provider.Amazon })
+                    // @ts-ignore
+                    Auth.federatedSignIn({
+                      provider: "LoginWithAmazon",
+                    })
                   }
                   text="Continue with Amazon"
                 />
