@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+const webpack = require("webpack");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -7,11 +8,6 @@ module.exports = {
   entry: ["./src/index.tsx"],
   resolve: {
     extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx"],
-  },
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: "[name].bundle.js",
-    publicPath: "/",
   },
   node: {
     fs: "empty",
@@ -22,7 +18,13 @@ module.exports = {
       template: "./public/index.html",
       favicon: "./public/favicon.ico",
     }),
+    new webpack.HashedModuleIdsPlugin(),
   ],
+  output: {
+    path: path.join(__dirname, "dist"),
+    filename: "[name].[contenthash].js",
+    publicPath: "/",
+  },
   module: {
     rules: [
       {
