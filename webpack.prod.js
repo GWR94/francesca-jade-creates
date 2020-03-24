@@ -1,9 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const merge = require("webpack-merge");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const PurgecssPlugin = require("purgecss-webpack-plugin");
-const glob = require("glob");
-const path = require("path");
 const common = require("./webpack.common");
 
 module.exports = merge(common, {
@@ -12,9 +9,6 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: "[name].[hash].css",
       chunkFilename: "[id].[hash].css",
-    }),
-    new PurgecssPlugin({
-      paths: glob.sync(path.join(__dirname, ""), { nodir: true }),
     }),
   ],
   optimization: {
