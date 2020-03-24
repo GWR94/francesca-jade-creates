@@ -5,11 +5,16 @@ import ReactDOM from "react-dom";
 import Amplify from "aws-amplify";
 import config from "./aws-exports";
 import AppRouter from "./routes/Router";
-import "./scss/styles.scss";
 import "remove-focus-outline";
 import "animate.css/animate.min.css";
+import "bootstrap-css-only/css/bootstrap.min.css";
+import "normalize.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+import "./scss/styles.scss";
 
 if (process.env.NODE_ENV === "development") {
+  // eslint-disable-next-line global-require
   require("dotenv").config();
 }
 
