@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: ["./src/index.tsx"],
@@ -26,6 +27,7 @@ module.exports = {
       "BUCKET_NAME",
       "STRIPE_PUBLIC_KEY",
     ]),
+    new CopyWebpackPlugin([{ from: ".well-known", to: ".well-known/" }]),
   ],
   output: {
     path: path.join(__dirname, "dist"),
