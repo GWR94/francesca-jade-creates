@@ -1,8 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable react/style-prop-object */
-/* eslint-disable react/jsx-filename-extension */
-/* eslint-disable react/react-in-jsx-scope */
-
 /* Amplify Params - DO NOT EDIT
 You can access the following resource attributes as environment variables from your Lambda function
 var environment = process.env.ENV
@@ -62,7 +57,7 @@ const chargeHandler = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ err });
+    res.status(500).json({ err, key: process.env.STRIPE_SECRET_KEY });
   }
 };
 
@@ -109,13 +104,9 @@ const emailHandler = (req, res) => {
               <h4 style="text-decoration: underline">Mailing Address</h4>
               <p style="margin: 0">${charge.source.name}</p>
               <p style="margin: 0">${charge.source.address_line1}</p>
-              ${charge.source.address_line2 && (
-                <p style="margin: 0">${charge.source.address_line2}</p>
-              )}
-              <p style="margin: 0">${charge.source.address_city}, ${charge.source
-              ?.address_state ?? charge.source.address_country}, ${
-              charge.source.address_zip
-            }</p>
+              <p style="margin: 0">${charge.source.address_city}, ${
+              charge.source.address_country
+            }, ${charge.source.address_zip}</p>
             </div>
             <p style="margin: 0">
               If any of this information is incorrect please contact me <a href="mailto:contact@francescajadecreates.co.uk?subject=Order details update">

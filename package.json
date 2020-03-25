@@ -80,6 +80,8 @@
   "dependencies": {
     "@blueprintjs/core": "^3.23.1",
     "@blueprintjs/icons": "^3.14.0",
+    "@stripe/react-stripe-js": "^1.1.0",
+    "@stripe/stripe-js": "^1.2.0",
     "amazon-cognito-identity-js": "^3.2.4",
     "animate.css": "^3.7.2",
     "aws-amplify": "^2.2.5",
