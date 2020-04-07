@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
     "build": "webpack -p --config webpack.prod.js",
-    "test": "jest --watch --verbose",
+    "test": "jest --watch --verbose --silent",
     "t": "jest --watch --silent"
   },
   "repository": {

@@ -26,7 +26,6 @@ interface ViewProps {
 
 interface ViewState {
   product: ProductProps;
-  isLoading: boolean;
 }
 
 interface ViewDispatchProps {
@@ -36,7 +35,6 @@ interface ViewDispatchProps {
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state = {
     product: null,
-    isLoading: false,
   };
 
   public componentDidMount(): void {
@@ -67,14 +65,12 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   // const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
 
   public render(): JSX.Element {
-    const { product, isLoading } = this.state;
+    const { product } = this.state;
     const { userAttributes, addToBasket } = this.props;
-    return isLoading ? (
-      <Loading />
-    ) : (
+    return product ? (
       <Container className="content-container">
         <div className="view__container">
-          <H3 className="view__title">{product.title}</H3>
+          <h3 className="view__title">{product.title}</h3>
           <p className="view__description">{product.description}</p>
           <div className="view__tags">
             {product.tags.map(
@@ -89,8 +85,8 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
           <div className="view__price">
             {product.price > 0 ? (
               <p>
-                The cost for {product.title.toLowerCase()} is £{product.price.toFixed(2)}{" "}
-                + £{product.shippingCost.toFixed(2)} postage and packaging
+                The cost for {product.title} is £{product.price.toFixed(2)} + £
+                {product.shippingCost.toFixed(2)} postage and packaging
               </p>
             ) : (
               <p>
@@ -124,17 +120,20 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
                   });
                 }}
                 text="Add to Basket"
-                icon={<i className="fas fa-shopping-cart" />}
+                icon={<i className="fas fa-shopping-cart view__icon" />}
               />
             )
           ) : (
-            <Button intent="success">
-              <i className="fas fa-credit-card view__icon" />
-              Request a Quote
-            </Button>
+            <Button
+              intent="success"
+              text="Request a Quote"
+              icon={<i className="fas fa-credit-card view__icon" />}
+            />
           )}
         </div>
       </Container>
+    ) : (
+      <Loading />
     );
   }
 }
