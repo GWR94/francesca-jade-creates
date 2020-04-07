@@ -112,6 +112,7 @@ export type CreateUserInput = {
   registered?: boolean | null,
   profileImage?: S3ObjectInput | null,
   shippingAddress?: ShippingAddressInput | null,
+  savedProducts?: Array< SavedProductInput | null > | null,
 };
 
 export type ShippingAddressInput = {
@@ -121,6 +122,16 @@ export type ShippingAddressInput = {
   address_line2?: string | null,
   address_county: string,
   address_postcode: string,
+};
+
+export type SavedProductInput = {
+  id: string,
+  title: string,
+  description: string,
+  image: Array< S3ObjectInput | null >,
+  price: number,
+  shippingCost: number,
+  type: string,
 };
 
 export type ModelUserConditionInput = {
@@ -148,6 +159,7 @@ export type UpdateUserInput = {
   registered?: boolean | null,
   profileImage?: S3ObjectInput | null,
   shippingAddress?: ShippingAddressInput | null,
+  savedProducts?: Array< SavedProductInput | null > | null,
 };
 
 export type CreateOrderInput = {
@@ -360,6 +372,21 @@ export type RegisterUserMutation = {
       address_county: string,
       address_postcode: string,
     } | null,
+    savedProducts:  Array< {
+      __typename: "SavedProduct",
+      id: string,
+      title: string,
+      description: string,
+      image:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null >,
+      price: number,
+      shippingCost: number,
+      type: string,
+    } | null > | null,
   } | null,
 };
 
@@ -400,6 +427,21 @@ export type UpdateUserMutation = {
       address_county: string,
       address_postcode: string,
     } | null,
+    savedProducts:  Array< {
+      __typename: "SavedProduct",
+      id: string,
+      title: string,
+      description: string,
+      image:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null >,
+      price: number,
+      shippingCost: number,
+      type: string,
+    } | null > | null,
   } | null,
 };
 
@@ -438,6 +480,15 @@ export type CreateOrderMutation = {
         address_county: string,
         address_postcode: string,
       } | null,
+      savedProducts:  Array< {
+        __typename: "SavedProduct",
+        id: string,
+        title: string,
+        description: string,
+        price: number,
+        shippingCost: number,
+        type: string,
+      } | null > | null,
     } | null,
     shippingAddress:  {
       __typename: "ShippingAddress",
@@ -506,6 +557,21 @@ export type GetUserQuery = {
       address_county: string,
       address_postcode: string,
     } | null,
+    savedProducts:  Array< {
+      __typename: "SavedProduct",
+      id: string,
+      title: string,
+      description: string,
+      image:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null >,
+      price: number,
+      shippingCost: number,
+      type: string,
+    } | null > | null,
   } | null,
 };
 

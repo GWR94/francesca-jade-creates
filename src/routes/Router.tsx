@@ -3,6 +3,7 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import { Container } from "reactstrap";
+import { connect } from "react-redux";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProductTypePage from "../common/product/ProductTypePage";
@@ -11,21 +12,27 @@ import NavBar from "../common/NavBar";
 import ViewProduct from "../common/product/ViewProduct";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
-import { RouterState } from "./interfaces/Router.i";
+import { RouterState, RouterDispatchProps } from "./interfaces/Router.i";
 import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
 import UpdateProduct from "../pages/accounts/components/EditProduct";
+import Basket from "../pages/payment/Basket";
+import { ClearBasketAction } from "../interfaces/basket.redux.i";
+import * as basketActions from "../actions/basket.actions";
+import * as userActions from "../actions/user.actions";
+import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
 
 export const history = createBrowserHistory();
 
 /**
  * TODO
  * [ ] Check redirects work when not admin.
+ * [ ] Clear basket on logout
  */
 
-class AppRouter extends Component {
+class AppRouter extends Component<RouterDispatchProps, RouterState> {
   public readonly state: RouterState = {
     user: null,
     userAttributes: null,
@@ -59,8 +66,11 @@ class AppRouter extends Component {
   };
 
   private handleSignOut = async (): Promise<void> => {
+    const { clearBasket, clearUser } = this.props;
     try {
       await Auth.signOut();
+      clearBasket();
+      clearUser();
       Toaster.show({
         intent: "success",
         message: "Successfully signed out.",
@@ -75,9 +85,11 @@ class AppRouter extends Component {
   };
 
   private getUserAttributes = async (authUserData): Promise<void> => {
+    const { setUser } = this.props;
     try {
       const attributesArr = await Auth.userAttributes(authUserData);
       const userAttributes = attributesToObject(attributesArr);
+      setUser(userAttributes.sub);
       this.setState({ userAttributes, isLoading: false });
     } catch (err) {
       this.setState({ isLoading: false, userAttributes: null });
@@ -139,6 +151,7 @@ class AppRouter extends Component {
             user={user}
             admin={this.admin}
             userAttributes={userAttributes}
+            history={history}
             setAccountsTab={(tab): void => {
               if (tab !== accountsTab) this.setState({ accountsTab: tab });
             }}
@@ -160,6 +173,16 @@ class AppRouter extends Component {
                 component={(): JSX.Element => (
                   <div className="content-container">
                     <ProductTypePage type="Creates" history={history} />
+                  </div>
+                )}
+              />
+              <Route
+                path="/basket"
+                user={user}
+                history={history}
+                component={(): JSX.Element => (
+                  <div className="content-container">
+                    <Basket userAttributes={userAttributes} />
                   </div>
                 )}
               />
@@ -191,7 +214,7 @@ class AppRouter extends Component {
                 path="/cakes/:id"
                 component={(matchParams): JSX.Element => (
                   <div className="content-container">
-                    <ViewProduct history={history} {...matchParams} />
+                    <ViewProduct history={history} id={matchParams.match.params.id} />
                   </div>
                 )}
               />
@@ -242,4 +265,10 @@ class AppRouter extends Component {
   }
 }
 
-export default AppRouter;
+const mapDispatchToProps = (dispatch): RouterDispatchProps => ({
+  clearBasket: (): ClearBasketAction => dispatch(basketActions.clearBasket()),
+  setUser: (id): SetUserAction => dispatch(userActions.setUser(id)),
+  clearUser: (): ClearUserAction => dispatch(userActions.clearUser()),
+});
+
+export default connect(null, mapDispatchToProps)(AppRouter);

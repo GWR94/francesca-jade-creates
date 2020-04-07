@@ -1,0 +1,391 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ProductCard /> should render correctly when the user is NOT admin and product type is 'Creates' 1`] = `
+<Fragment>
+  <Blueprint3.Card
+    className="product__card animate fadeIn"
+    elevation={2}
+    interactive={true}
+    onClick={[Function]}
+  >
+    <i
+      className="fas fa-pencil-alt product__icon"
+      onClick={[Function]}
+      role="button"
+      style={
+        Object {
+          "color": "#9370f6",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="product__text-container"
+    >
+      <div
+        className="product__title"
+      >
+        <strong>
+          Name Frame
+        </strong>
+      </div>
+      <p
+        className="product__price"
+      >
+        £14.50 + £4.50 postage
+      </p>
+      <TagsInput
+        tags={
+          Array [
+            "Personalised",
+            "Name",
+            "Frame",
+          ]
+        }
+        type="Creates"
+      />
+    </div>
+    <div
+      className="product__image-container"
+    >
+      <S3Image
+        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
+        theme={
+          Object {
+            "photoImg": Object {
+              "alignItems": "center",
+              "display": "flex",
+              "justifyContent": "center",
+              "width": "100%",
+            },
+          }
+        }
+      />
+    </div>
+  </Blueprint3.Card>
+  <Blueprint3.Alert
+    canEscapeKeyCancel={false}
+    canOutsideClickCancel={false}
+    cancelButtonText="Cancel"
+    confirmButtonText="Delete"
+    icon="trash"
+    intent="danger"
+    isOpen={false}
+    onCancel={[Function]}
+    onConfirm={[Function]}
+  >
+    <p>
+      Are you sure you want to delete "
+      Name Frame
+      "?
+    </p>
+    <p>
+      This cannot be undone.
+    </p>
+  </Blueprint3.Alert>
+</Fragment>
+`;
+
+exports[`<ProductCard /> should render correctly when the user is NOT an admin and the product is of type 'Cake' 1`] = `
+<Fragment>
+  <Blueprint3.Card
+    className="product__card animate fadeIn"
+    elevation={2}
+    interactive={true}
+    onClick={[Function]}
+  >
+    <i
+      className="fas fa-birthday-cake product__icon"
+      onClick={[Function]}
+      role="button"
+      style={
+        Object {
+          "color": "#fd4ef2",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="product__text-container"
+    >
+      <div
+        className="product__title"
+      >
+        <strong>
+          Racing Cake
+        </strong>
+      </div>
+      <p
+        className="product__price"
+      >
+        Customer requests quote
+      </p>
+      <TagsInput
+        tags={
+          Array [
+            "Cake",
+            "Racing",
+          ]
+        }
+        type="Cake"
+      />
+    </div>
+    <div
+      className="product__image-container"
+    >
+      <S3Image
+        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357819265-racecarcrop.jpg"
+        theme={
+          Object {
+            "photoImg": Object {
+              "alignItems": "center",
+              "display": "flex",
+              "justifyContent": "center",
+              "width": "100%",
+            },
+          }
+        }
+      />
+    </div>
+  </Blueprint3.Card>
+  <Blueprint3.Alert
+    canEscapeKeyCancel={false}
+    canOutsideClickCancel={false}
+    cancelButtonText="Cancel"
+    confirmButtonText="Delete"
+    icon="trash"
+    intent="danger"
+    isOpen={false}
+    onCancel={[Function]}
+    onConfirm={[Function]}
+  >
+    <p>
+      Are you sure you want to delete "
+      Racing Cake
+      "?
+    </p>
+    <p>
+      This cannot be undone.
+    </p>
+  </Blueprint3.Alert>
+</Fragment>
+`;
+
+exports[`<ProductCard /> should render correctly when user IS admin and the product is of type "Cake" 1`] = `
+<Fragment>
+  <Blueprint3.Card
+    className="product__card animate fadeIn"
+    elevation={2}
+    interactive={true}
+    onClick={[Function]}
+  >
+    <i
+      className="fas fa-birthday-cake product__icon"
+      onClick={[Function]}
+      role="button"
+      style={
+        Object {
+          "color": "#fd4ef2",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="product__text-container"
+    >
+      <div
+        className="product__title"
+      >
+        <strong>
+          Racing Cake
+        </strong>
+      </div>
+      <p
+        className="product__price"
+      >
+        Customer requests quote
+      </p>
+      <TagsInput
+        tags={
+          Array [
+            "Cake",
+            "Racing",
+          ]
+        }
+        type="Cake"
+      />
+    </div>
+    <div
+      className="product__image-container"
+    >
+      <S3Image
+        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357819265-racecarcrop.jpg"
+        theme={
+          Object {
+            "photoImg": Object {
+              "alignItems": "center",
+              "display": "flex",
+              "justifyContent": "center",
+              "width": "100%",
+            },
+          }
+        }
+      />
+    </div>
+    <div
+      className="new-product__button-container"
+    >
+      <Blueprint3.Button
+        intent="danger"
+        onClick={[Function]}
+        style={
+          Object {
+            "margin": "8px 4px 0",
+          }
+        }
+        text="Delete"
+      />
+      <Blueprint3.Button
+        intent="warning"
+        onClick={[Function]}
+        style={
+          Object {
+            "margin": "8px 4px 0",
+          }
+        }
+        text="Edit"
+      />
+    </div>
+  </Blueprint3.Card>
+  <Blueprint3.Alert
+    canEscapeKeyCancel={false}
+    canOutsideClickCancel={false}
+    cancelButtonText="Cancel"
+    confirmButtonText="Delete"
+    icon="trash"
+    intent="danger"
+    isOpen={false}
+    onCancel={[Function]}
+    onConfirm={[Function]}
+  >
+    <p>
+      Are you sure you want to delete "
+      Racing Cake
+      "?
+    </p>
+    <p>
+      This cannot be undone.
+    </p>
+  </Blueprint3.Alert>
+</Fragment>
+`;
+
+exports[`<ProductCard /> should render correctly when user IS admin and the product is of type "Creates" 1`] = `
+<Fragment>
+  <Blueprint3.Card
+    className="product__card animate fadeIn"
+    elevation={2}
+    interactive={true}
+    onClick={[Function]}
+  >
+    <i
+      className="fas fa-pencil-alt product__icon"
+      onClick={[Function]}
+      role="button"
+      style={
+        Object {
+          "color": "#9370f6",
+        }
+      }
+      tabIndex={0}
+    />
+    <div
+      className="product__text-container"
+    >
+      <div
+        className="product__title"
+      >
+        <strong>
+          Name Frame
+        </strong>
+      </div>
+      <p
+        className="product__price"
+      >
+        £14.50 + £4.50 postage
+      </p>
+      <TagsInput
+        tags={
+          Array [
+            "Personalised",
+            "Name",
+            "Frame",
+          ]
+        }
+        type="Creates"
+      />
+    </div>
+    <div
+      className="product__image-container"
+    >
+      <S3Image
+        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
+        theme={
+          Object {
+            "photoImg": Object {
+              "alignItems": "center",
+              "display": "flex",
+              "justifyContent": "center",
+              "width": "100%",
+            },
+          }
+        }
+      />
+    </div>
+    <div
+      className="new-product__button-container"
+    >
+      <Blueprint3.Button
+        intent="danger"
+        onClick={[Function]}
+        style={
+          Object {
+            "margin": "8px 4px 0",
+          }
+        }
+        text="Delete"
+      />
+      <Blueprint3.Button
+        intent="warning"
+        onClick={[Function]}
+        style={
+          Object {
+            "margin": "8px 4px 0",
+          }
+        }
+        text="Edit"
+      />
+    </div>
+  </Blueprint3.Card>
+  <Blueprint3.Alert
+    canEscapeKeyCancel={false}
+    canOutsideClickCancel={false}
+    cancelButtonText="Cancel"
+    confirmButtonText="Delete"
+    icon="trash"
+    intent="danger"
+    isOpen={false}
+    onCancel={[Function]}
+    onConfirm={[Function]}
+  >
+    <p>
+      Are you sure you want to delete "
+      Name Frame
+      "?
+    </p>
+    <p>
+      This cannot be undone.
+    </p>
+  </Blueprint3.Alert>
+</Fragment>
+`;

@@ -40,6 +40,7 @@ type User
   orders: [Order] @connection(name: "UserOrders")
   profileImage: S3Object
   shippingAddress: ShippingAddress
+  savedProducts: [SavedProduct]
 }
 
 type Order
@@ -64,4 +65,13 @@ type ShippingAddress {
   address_line2: String
   address_county: String!
   address_postcode: String!
+}
+
+type SavedProduct {
+  id: String!
+  title: String!
+  description: String!
+  image: [S3Object]!
+  price: Float!
+  shippingCost: Float!
 }

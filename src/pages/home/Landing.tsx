@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import header from "../../img/header.png";
 import logo from "../../img/logo.png";
+import Loading from "../../common/Loading";
 
 interface LandingProps {
   history: History;

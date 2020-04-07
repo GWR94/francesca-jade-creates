@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { Card, Button, Alert } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
 import { S3Image } from "aws-amplify-react";
-import { useHistory } from "react-router-dom";
 import { ProductCardProps } from "../interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
 import { Toaster } from "../../utils/index";
 import TagsInput from "../TagsInput";
 
-const Product: React.FC<ProductCardProps> = ({ product, admin }): JSX.Element => {
-  const history = useHistory();
+const Product: React.FC<ProductCardProps> = ({
+  product,
+  admin = false,
+  history,
+}): JSX.Element => {
   const { id, image, title, price, shippingCost, type, tags } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
 

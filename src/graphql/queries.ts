@@ -29,6 +29,19 @@ export const getUser = /* GraphQL */ `
         address_county
         address_postcode
       }
+      savedProducts {
+        id
+        title
+        description
+        image {
+          bucket
+          region
+          key
+        }
+        price
+        shippingCost
+        type
+      }
     }
   }
 `;

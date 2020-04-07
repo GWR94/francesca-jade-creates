@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Carousel, CarouselIndicators, CarouselItem, CarouselControl } from "reactstrap";
 import { S3Image } from "aws-amplify-react";
 import { API, Storage, graphqlOperation } from "aws-amplify";
@@ -15,37 +15,51 @@ interface Props {
   update?: boolean;
 }
 
-const ImageCarousel: React.FC<Props> = ({
-  id,
-  images,
-  deleteImages = false,
-  handleUpdateImages,
-  update = false,
-}) => {
-  const [animating, setAnimating] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [keyToDelete, setKeyToDelete] = useState(null);
+interface State {
+  animating: boolean;
+  currentIndex: number;
+  dialogOpen: boolean;
+  keyToDelete: string;
+}
 
-  const handleNextImage = (): void => {
-    if (animating) return;
-    setCurrentIndex(currentIndex === images.length - 1 ? 0 : currentIndex + 1);
+class ImageCarousel extends React.Component<Props, State> {
+  public readonly state: State = {
+    animating: false,
+    currentIndex: 0,
+    dialogOpen: false,
+    keyToDelete: null,
   };
 
-  const handlePreviousImage = (): void => {
+  public handleNextImage = (): void => {
+    const { animating, currentIndex } = this.state;
+    const { images } = this.props;
     if (animating) return;
-    setCurrentIndex(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
+    this.setState({
+      currentIndex: currentIndex === images.length - 1 ? 0 : currentIndex + 1,
+    });
   };
 
-  const goToIndex = (idx: number): void => {
+  public handlePreviousImage = (): void => {
+    const { animating, currentIndex } = this.state;
+    const { images } = this.props;
     if (animating) return;
-    setCurrentIndex(idx);
+    this.setState({
+      currentIndex: currentIndex === 0 ? images.length - 1 : currentIndex - 1,
+    });
   };
 
-  const handleDeleteImage = async (): Promise<void> => {
+  public goToIndex = (idx: number): void => {
+    const { animating } = this.state;
+    if (animating) return;
+    this.setState({ currentIndex: idx });
+  };
+
+  public handleDeleteImage = async (): Promise<void> => {
+    const { keyToDelete } = this.state;
+    const { images, update, id, handleUpdateImages } = this.props;
     try {
       const updatedImages = images.filter((img) => img.key !== keyToDelete);
-      setCurrentIndex(0);
+      this.setState({ currentIndex: 0 });
       await Storage.remove(keyToDelete);
       if (update) {
         await API.graphql(
@@ -58,7 +72,7 @@ const ImageCarousel: React.FC<Props> = ({
       });
       handleUpdateImages(updatedImages);
       // setDialogOpen(false);
-      setAnimating(false);
+      this.setState({ animating: false });
     } catch (err) {
       console.error(err);
       Toaster.show({
@@ -68,119 +82,127 @@ const ImageCarousel: React.FC<Props> = ({
     }
   };
 
-  return (
-    <>
-      <div className="carousel__container">
-        {images.length === 1 ? (
-          <div className="update__image-container">
-            {deleteImages && (
-              <i
-                className="fas fa-times carousel__delete-icon animated infinite pulse"
-                role="button"
-                tabIndex={0}
-                onClick={(): void => {
-                  setDialogOpen(true);
-                  setKeyToDelete(images[0].key);
+  public render(): JSX.Element {
+    const { images, deleteImages } = this.props;
+    const { currentIndex, dialogOpen, keyToDelete } = this.state;
+    return (
+      <>
+        <div className="carousel__container">
+          {images.length === 1 ? (
+            <div className="update__image-container">
+              {deleteImages && (
+                <i
+                  className="fas fa-times carousel__delete-icon animated infinite pulse"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(): void => {
+                    this.setState({
+                      dialogOpen: false,
+                      keyToDelete: images[0].key,
+                    });
+                  }}
+                />
+              )}
+              <S3Image
+                imgKey={images[0].key}
+                theme={{
+                  photoImg: {
+                    width: "100%",
+                  },
                 }}
               />
-            )}
+            </div>
+          ) : (
+            <Carousel
+              activeIndex={currentIndex}
+              next={this.handleNextImage}
+              previous={this.handlePreviousImage}
+            >
+              <CarouselIndicators
+                items={images}
+                activeIndex={currentIndex}
+                onClickHandler={(idx): void => this.setState({ currentIndex: idx })}
+                className="carousel__indicators"
+              />
+              {images.map((image, i) => (
+                <CarouselItem
+                  onExiting={(): void => this.setState({ animating: true })}
+                  onExited={(): void => this.setState({ animating: false })}
+                  key={i}
+                >
+                  {deleteImages && (
+                    <i
+                      className="fas fa-times carousel__delete-icon animated infinite pulse"
+                      role="button"
+                      tabIndex={0}
+                      onClick={(): void => {
+                        this.setState({
+                          dialogOpen: true,
+                          keyToDelete: image.key,
+                        });
+                      }}
+                    />
+                  )}
+                  <div className="update__image-container">
+                    <S3Image
+                      imgKey={image.key}
+                      theme={{
+                        photoImg: {
+                          width: "100%",
+                        },
+                      }}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+              <CarouselControl
+                direction="prev"
+                directionText="Previous"
+                onClickHandler={this.handlePreviousImage}
+              />
+              <CarouselControl
+                direction="next"
+                directionText="Next"
+                onClickHandler={this.handleNextImage}
+              />
+            </Carousel>
+          )}
+        </div>
+        <Dialog
+          isOpen={dialogOpen}
+          icon="trash"
+          onClose={(): void => this.setState({ dialogOpen: false })}
+          title="Are you sure?"
+        >
+          <div className="update__alert-container">
+            <p className="text-center">Are you sure you want to delete this image?</p>
+            <p className="text-center">Other images can be added at a later date.</p>
+
             <S3Image
-              imgKey={images[0].key}
+              imgKey={keyToDelete}
               theme={{
-                photoImg: {
-                  width: "100%",
-                },
+                photoImg: { maxWidth: "100%", marginBottom: "20px" },
               }}
             />
+            <div className="dialog__button-container">
+              <Button
+                intent="danger"
+                text="Cancel"
+                onClick={(): void => this.setState({ dialogOpen: false })}
+                style={{ margin: "0 5px" }}
+              />
+              <Button
+                intent="success"
+                text="Confirm"
+                onClick={this.handleDeleteImage}
+                style={{ margin: "0 5px" }}
+              />
+            </div>
           </div>
-        ) : (
-          <Carousel
-            activeIndex={currentIndex}
-            next={handleNextImage}
-            previous={handlePreviousImage}
-          >
-            <CarouselIndicators
-              items={images}
-              activeIndex={currentIndex}
-              onClickHandler={(idx): void => goToIndex(idx)}
-              className="carousel__indicators"
-            />
-            {images.map((image, i) => (
-              <CarouselItem
-                onExiting={(): void => setAnimating(true)}
-                onExited={(): void => setAnimating(false)}
-                key={i}
-              >
-                {deleteImages && (
-                  <i
-                    className="fas fa-times carousel__delete-icon animated infinite pulse"
-                    role="button"
-                    tabIndex={0}
-                    onClick={(): void => {
-                      setDialogOpen(true);
-                      setKeyToDelete(image.key);
-                    }}
-                  />
-                )}
-                <div className="update__image-container">
-                  <S3Image
-                    imgKey={image.key}
-                    theme={{
-                      photoImg: {
-                        width: "100%",
-                      },
-                    }}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-            <CarouselControl
-              direction="prev"
-              directionText="Previous"
-              onClickHandler={handlePreviousImage}
-            />
-            <CarouselControl
-              direction="next"
-              directionText="Next"
-              onClickHandler={handleNextImage}
-            />
-          </Carousel>
-        )}
-      </div>
-      <Dialog
-        isOpen={dialogOpen}
-        icon="trash"
-        onClose={(): void => setDialogOpen(false)}
-        title="Are you sure?"
-      >
-        <div className="update__alert-container">
-          <p className="text-center">Are you sure you want to delete this image?</p>
-          <p className="text-center">Other images can be added at a later date.</p>
-
-          <S3Image
-            imgKey={keyToDelete}
-            theme={{
-              photoImg: { maxWidth: "100%", marginBottom: "20px" },
-            }}
-          />
-          <div className="dialog__button-container">
-            <Button
-              intent="danger"
-              text="Cancel"
-              onClick={(): void => setDialogOpen(false)}
-              style={{ margin: "0 5px" }}
-            />
-            <Button
-              intent="success"
-              text="Confirm"
-              onClick={handleDeleteImage}
-              style={{ margin: "0 5px" }}
-            />
-          </div>
-        </div>
-      </Dialog>
-    </>
-  );
-};
+        </Dialog>
+      </>
+    );
+  }
+}
 
 export default ImageCarousel;

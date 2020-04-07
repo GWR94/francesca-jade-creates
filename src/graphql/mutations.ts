@@ -101,6 +101,19 @@ export const registerUser = /* GraphQL */ `
         address_county
         address_postcode
       }
+      savedProducts {
+        id
+        title
+        description
+        image {
+          bucket
+          region
+          key
+        }
+        price
+        shippingCost
+        type
+      }
     }
   }
 `;
@@ -135,6 +148,19 @@ export const updateUser = /* GraphQL */ `
         address_county
         address_postcode
       }
+      savedProducts {
+        id
+        title
+        description
+        image {
+          bucket
+          region
+          key
+        }
+        price
+        shippingCost
+        type
+      }
     }
   }
 `;
@@ -166,6 +192,14 @@ export const createOrder = /* GraphQL */ `
           address_line2
           address_county
           address_postcode
+        }
+        savedProducts {
+          id
+          title
+          description
+          price
+          shippingCost
+          type
         }
       }
       shippingAddress {

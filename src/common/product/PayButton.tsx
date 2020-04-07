@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StripeCheckout from "react-stripe-checkout";
 import { useHistory } from "react-router-dom";
 import { API, graphqlOperation } from "aws-amplify";
 import { Button } from "@blueprintjs/core";
+import { loadStripe } from "@stripe/stripe-js";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { Toaster } from "../../utils";
 import { ProductProps } from "../interfaces/Product.i";
 import { UserAttributeProps } from "../../pages/accounts/interfaces/Accounts.i";
 import { createOrder } from "../../graphql/mutations";
+import Loading from "../Loading";
+import Stripe from "@stripe/stripe-js";
 
 interface PayProps {
   product: ProductProps;
@@ -24,6 +28,18 @@ interface AddressProps {
 
 const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element => {
   const history = useHistory();
+  const stripe = useStripe();
+
+  const elements = useElements();
+  const [isLoading, setLoading] = useState(true);
+
+  const handleSubmit = async (e): Promise<void> => {
+    e.preventDefault();
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: "card",
+      card: elements.getElement(CardElement),
+    });
+  };
 
   const createShippingAddress = (source): AddressProps => ({
     city: source.address_city,
@@ -82,25 +98,12 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
   };
 
   return (
-    <StripeCheckout
-      token={handleCharge}
-      email={userAttributes.email}
-      name={product.title}
-      amount={(product.price + product.shippingCost) * 100}
-      description={product.description}
-      billingAddress
-      shippingAddress
-      currency="GBP"
-      stripeKey={process.env.STRIPE_PUBLIC_KEY}
-      locale="en"
-    >
-      <Button
-        text="Pay with Stripe"
-        intent="success"
-        large
-        icon={<i className="fas fa-credit-card" />}
-      />
-    </StripeCheckout>
+    <form onSubmit={handleSubmit}>
+      <CardElement />
+      <button type="submit" disabled={!stripe}>
+        Pay
+      </button>
+    </form>
   );
 };
 

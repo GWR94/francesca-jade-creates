@@ -1,0 +1,163 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ImagePicker /> should render correctly with no savedS3Image prop 1`] = `
+<Fragment>
+  <Blueprint3.FormGroup
+    className="profile__input"
+    labelInfo="(optional)"
+  >
+    <div
+      className="image__placeholder-container"
+    />
+    <PhotoPicker
+      headerHint="This can be changed anytime."
+      headerText="Add a display image"
+      onLoad={[Function]}
+      onPick={[Function]}
+      preview="hidden"
+      theme={
+        Object {
+          "formContainer": Object {
+            "margin": 0,
+            "padding": "5px",
+          },
+          "formSection": Object {
+            "boxShadow": "none",
+            "minWidth": "200px",
+            "padding": 0,
+            "width": "200px",
+          },
+          "photoPickerButton": Object {
+            "background": "#ff80f7",
+            "border": "1px solid #ff52f4",
+            "borderRadius": "5px",
+            "fontSize": "16px",
+            "marginTop": "10px",
+            "padding": "8px",
+            "textTransform": "none",
+          },
+          "sectionBody": Object {
+            "display": "none",
+          },
+          "sectionHeader": Object {
+            "display": "none",
+          },
+        }
+      }
+      title="Select an image"
+    />
+  </Blueprint3.FormGroup>
+</Fragment>
+`;
+
+exports[`<ImagePicker /> should render correctly with savedS3Image prop 1`] = `
+<Fragment>
+  <Blueprint3.FormGroup
+    className="profile__input"
+    labelInfo="(optional)"
+  >
+    <div
+      className="image__placeholder-container"
+    >
+      <S3Image
+        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
+        theme={
+          Object {
+            "photoImg": Object {
+              "maxWidth": "100%",
+            },
+          }
+        }
+      />
+    </div>
+    <PhotoPicker
+      headerHint="This can be changed anytime."
+      headerText="Add a display image"
+      onLoad={[Function]}
+      onPick={[Function]}
+      preview="hidden"
+      theme={
+        Object {
+          "formContainer": Object {
+            "margin": 0,
+            "padding": "5px",
+          },
+          "formSection": Object {
+            "boxShadow": "none",
+            "minWidth": "200px",
+            "padding": 0,
+            "width": "200px",
+          },
+          "photoPickerButton": Object {
+            "background": "#ff80f7",
+            "border": "1px solid #ff52f4",
+            "borderRadius": "5px",
+            "fontSize": "16px",
+            "marginTop": "10px",
+            "padding": "8px",
+            "textTransform": "none",
+          },
+          "sectionBody": Object {
+            "display": "none",
+          },
+          "sectionHeader": Object {
+            "display": "none",
+          },
+        }
+      }
+      title="Select an image"
+    />
+  </Blueprint3.FormGroup>
+</Fragment>
+`;
+
+exports[`<ImagePicker /> should render text when the showText prop is true 1`] = `
+<Fragment>
+  <Blueprint3.FormGroup
+    className="profile__input"
+    label="Display Image:"
+    labelInfo="(optional)"
+  >
+    <div
+      className="image__placeholder-container"
+    />
+    <PhotoPicker
+      headerHint="This can be changed anytime."
+      headerText="Add a display image"
+      onLoad={[Function]}
+      onPick={[Function]}
+      preview="hidden"
+      theme={
+        Object {
+          "formContainer": Object {
+            "margin": 0,
+            "padding": "5px",
+          },
+          "formSection": Object {
+            "boxShadow": "none",
+            "minWidth": "200px",
+            "padding": 0,
+            "width": "200px",
+          },
+          "photoPickerButton": Object {
+            "background": "#ff80f7",
+            "border": "1px solid #ff52f4",
+            "borderRadius": "5px",
+            "fontSize": "16px",
+            "marginTop": "10px",
+            "padding": "8px",
+            "textTransform": "none",
+          },
+          "sectionBody": Object {
+            "display": "none",
+          },
+          "sectionHeader": Object {
+            "display": "none",
+          },
+        }
+      }
+      title="Select an image"
+    />
+  </Blueprint3.FormGroup>
+</Fragment>
+`;

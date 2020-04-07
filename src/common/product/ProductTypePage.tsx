@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { History } from "history";
 import { Container } from "reactstrap";
+import { H3 } from "@blueprintjs/core";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../Loading";
 import { ProductProps } from "../interfaces/Product.i";
 import ProductsList from "../../pages/accounts/components/ProductsList";
-import { H3 } from "@blueprintjs/core";
 
 interface ProductTypeState {
   isLoading: boolean;
@@ -34,7 +34,7 @@ export default class ProductTypePage extends Component<
     this.handleGetProducts();
   }
 
-  private handleGetProducts = async (): Promise<void> => {
+  public handleGetProducts = async (): Promise<void> => {
     const { type } = this.props;
     const filtering = type && {
       type: {
@@ -56,19 +56,19 @@ export default class ProductTypePage extends Component<
 
   public render(): JSX.Element {
     const { isLoading, products, queryResults } = this.state;
-    const { type } = this.props;
+    const { type, history } = this.props;
     const results = queryResults || products;
     return isLoading ? (
       <Loading size={100} />
     ) : (
       <Container>
-        <H3 className="product-type__title">{type === "Cake" ? "Cakes" : "Creations"}</H3>
+        <h3 className="product-type__title">{type === "Cake" ? "Cakes" : "Creations"}</h3>
         <p className="product-type__description">-- Placeholder --</p>
         <p className="product-type__filter">
           To filter the products please click the pink button on the left hand side, and
           filter the results to your preferences.
         </p>
-        <ProductsList products={results} noTitle type={type} />
+        <ProductsList products={results} noTitle type={type} history={history} />
       </Container>
     );
   }

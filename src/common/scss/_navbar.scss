@@ -112,3 +112,41 @@ span.bp3-popover-target {
   justify-content: center;
   align-items: center;
 }
+
+.nav__basket {
+  padding: 8px 12px;
+  min-width: 220px;
+  font-family: $title-font;
+  position: relative;
+}
+
+.nav__basket-title {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.nav__basket-item {
+  margin: 0 0 2px;
+  display: flex;
+}
+
+.nav__basket-number {
+  width: 20px;
+  text-align: center;
+  margin: 0 5px 0 0;
+}
+
+.nav__basket-details {
+  margin: 0 20px 0 0;
+}
+
+.nav__basket-delete {
+  color: $dark-pink;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  right: 15px;
+  margin-top: 3px;
+}

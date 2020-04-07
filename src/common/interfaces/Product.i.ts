@@ -2,7 +2,7 @@ import { History } from "history";
 
 export interface ProductCardProps {
   product: ProductProps;
-  admin: boolean;
+  admin?: boolean;
   history: History;
 }
 

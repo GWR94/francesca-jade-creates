@@ -9,3 +9,9 @@ export interface RouterState {
   isLoading: boolean;
   accountsTab: "profile" | "products" | "create" | "orders";
 }
+
+export interface RouterDispatchProps {
+  clearBasket: () => void;
+  setUser: (id) => void;
+  clearUser: () => void;
+}

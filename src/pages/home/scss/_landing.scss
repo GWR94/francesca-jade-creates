@@ -39,12 +39,12 @@
   position: absolute;
   left: calc(50% - 45px);
   z-index: 10;
-  margin-top: 65px;
+  margin-top: 80px;
   @media screen and (max-width: $s-breakpoint) {
     width: 70px;
     height: 70px;
     left: calc(50% - 35px);
-    margin-top: 95px;
+    margin-top: 120px;
   }
 }
 

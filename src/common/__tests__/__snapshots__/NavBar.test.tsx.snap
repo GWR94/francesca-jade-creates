@@ -1,0 +1,924 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<NavBar /> test cases for UNCONNECTED component's rendering and snapshots should render correctly when user IS admin 1`] = `
+<Fragment>
+  <Headroom
+    calcHeightOnResize={true}
+    disable={false}
+    disableInlineStyles={false}
+    downTolerance={0}
+    onPin={[Function]}
+    onUnfix={[Function]}
+    onUnpin={[Function]}
+    parent={[Function]}
+    pinStart={0}
+    upTolerance={5}
+    wrapperStyle={
+      Object {
+        "height": "50px",
+        "position": "relative",
+        "zIndex": 3,
+      }
+    }
+  >
+    <Navbar
+      className="nav__bar animated slideInDown"
+      expand="md"
+      light={true}
+      tag="nav"
+    >
+      <img
+        alt="Francesca Jade Creates"
+        className="navbar__logo"
+        src=""
+      />
+      <NavbarToggler
+        onClick={[Function]}
+        tag="button"
+        type="button"
+      />
+      <Collapse
+        appear={false}
+        enter={true}
+        exit={true}
+        in={false}
+        isOpen={false}
+        mountOnEnter={false}
+        navbar={true}
+        onEnter={[Function]}
+        onEntered={[Function]}
+        onEntering={[Function]}
+        onExit={[Function]}
+        onExited={[Function]}
+        onExiting={[Function]}
+        tag="div"
+        timeout={350}
+        unmountOnExit={false}
+      >
+        <Nav
+          className="mr-auto"
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            exact={true}
+            onClick={[Function]}
+            to="/"
+          >
+            <i
+              className="fas fa-home nav__icon"
+            />
+            Home
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/cakes"
+          >
+            <i
+              className="fas fa-birthday-cake nav__icon"
+            />
+            Cakes
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/creates"
+          >
+            <i
+              className="fas fa-camera nav__icon"
+            />
+            Creates
+          </NavLink>
+        </Nav>
+        <Nav
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom-right"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              onClick={[Function]}
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-user nav__icon"
+              />
+              Account
+            </div>
+            <Blueprint3.Menu
+              className="nav__menu"
+            >
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-id-badge nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Profile"
+              />
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-shopping-basket nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Products"
+              />
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-plus-square nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Create Product"
+              />
+              <Blueprint3.MenuDivider />
+              <Blueprint3.MenuItem
+                className="nav__logout"
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-sign-out-alt nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Logout"
+              />
+            </Blueprint3.Menu>
+          </Blueprint3.Popover>
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-shopping-basket nav__icon"
+              />
+              Basket (
+              0
+              )
+            </div>
+            <div
+              className="nav__basket"
+            >
+              <h5
+                className="nav__basket-title"
+              >
+                Basket
+              </h5>
+              <p>
+                Basket is empty.
+              </p>
+              <div
+                style={
+                  Object {
+                    "display": "flex",
+                    "justifyContent": "space-around",
+                    "marginTop": 8,
+                  }
+                }
+              >
+                <Blueprint3.Button
+                  intent="primary"
+                  minimal={true}
+                  onClick={[Function]}
+                  small={true}
+                  text="View Basket"
+                />
+                <Blueprint3.Button
+                  intent="success"
+                  small={true}
+                  text="Checkout"
+                />
+              </div>
+            </div>
+          </Blueprint3.Popover>
+        </Nav>
+      </Collapse>
+    </Navbar>
+  </Headroom>
+</Fragment>
+`;
+
+exports[`<NavBar /> test cases for UNCONNECTED component's rendering and snapshots should render correctly when user is NOT admin 1`] = `
+<Fragment>
+  <Headroom
+    calcHeightOnResize={true}
+    disable={false}
+    disableInlineStyles={false}
+    downTolerance={0}
+    onPin={[Function]}
+    onUnfix={[Function]}
+    onUnpin={[Function]}
+    parent={[Function]}
+    pinStart={0}
+    upTolerance={5}
+    wrapperStyle={
+      Object {
+        "height": "50px",
+        "position": "relative",
+        "zIndex": 3,
+      }
+    }
+  >
+    <Navbar
+      className="nav__bar animated slideInDown"
+      expand="md"
+      light={true}
+      tag="nav"
+    >
+      <img
+        alt="Francesca Jade Creates"
+        className="navbar__logo"
+        src=""
+      />
+      <NavbarToggler
+        onClick={[Function]}
+        tag="button"
+        type="button"
+      />
+      <Collapse
+        appear={false}
+        enter={true}
+        exit={true}
+        in={false}
+        isOpen={false}
+        mountOnEnter={false}
+        navbar={true}
+        onEnter={[Function]}
+        onEntered={[Function]}
+        onEntering={[Function]}
+        onExit={[Function]}
+        onExited={[Function]}
+        onExiting={[Function]}
+        tag="div"
+        timeout={350}
+        unmountOnExit={false}
+      >
+        <Nav
+          className="mr-auto"
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            exact={true}
+            onClick={[Function]}
+            to="/"
+          >
+            <i
+              className="fas fa-home nav__icon"
+            />
+            Home
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/cakes"
+          >
+            <i
+              className="fas fa-birthday-cake nav__icon"
+            />
+            Cakes
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/creates"
+          >
+            <i
+              className="fas fa-camera nav__icon"
+            />
+            Creates
+          </NavLink>
+        </Nav>
+        <Nav
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom-right"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              onClick={[Function]}
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-user nav__icon"
+              />
+              Account
+            </div>
+            <Blueprint3.Menu
+              className="nav__menu"
+            >
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-id-badge nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Profile"
+              />
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-envelope-open nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Orders"
+              />
+              <Blueprint3.MenuDivider />
+              <Blueprint3.MenuItem
+                className="nav__logout"
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-sign-out-alt nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Logout"
+              />
+            </Blueprint3.Menu>
+          </Blueprint3.Popover>
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-shopping-basket nav__icon"
+              />
+              Basket (
+              0
+              )
+            </div>
+            <div
+              className="nav__basket"
+            >
+              <h5
+                className="nav__basket-title"
+              >
+                Basket
+              </h5>
+              <p>
+                Basket is empty.
+              </p>
+              <div
+                style={
+                  Object {
+                    "display": "flex",
+                    "justifyContent": "space-around",
+                    "marginTop": 8,
+                  }
+                }
+              >
+                <Blueprint3.Button
+                  intent="primary"
+                  minimal={true}
+                  onClick={[Function]}
+                  small={true}
+                  text="View Basket"
+                />
+                <Blueprint3.Button
+                  intent="success"
+                  small={true}
+                  text="Checkout"
+                />
+              </div>
+            </div>
+          </Blueprint3.Popover>
+        </Nav>
+      </Collapse>
+    </Navbar>
+  </Headroom>
+</Fragment>
+`;
+
+exports[`<NavBar /> test cases for UNCONNECTED component's rendering and snapshots should show items in basket NavLink text when they are present in props, and show up in the popover 1`] = `
+<Fragment>
+  <Headroom
+    calcHeightOnResize={true}
+    disable={false}
+    disableInlineStyles={false}
+    downTolerance={0}
+    onPin={[Function]}
+    onUnfix={[Function]}
+    onUnpin={[Function]}
+    parent={[Function]}
+    pinStart={0}
+    upTolerance={5}
+    wrapperStyle={
+      Object {
+        "height": "50px",
+        "position": "relative",
+        "zIndex": 3,
+      }
+    }
+  >
+    <Navbar
+      className="nav__bar animated slideInDown"
+      expand="md"
+      light={true}
+      tag="nav"
+    >
+      <img
+        alt="Francesca Jade Creates"
+        className="navbar__logo"
+        src=""
+      />
+      <NavbarToggler
+        onClick={[Function]}
+        tag="button"
+        type="button"
+      />
+      <Collapse
+        appear={false}
+        enter={true}
+        exit={true}
+        in={false}
+        isOpen={false}
+        mountOnEnter={false}
+        navbar={true}
+        onEnter={[Function]}
+        onEntered={[Function]}
+        onEntering={[Function]}
+        onExit={[Function]}
+        onExited={[Function]}
+        onExiting={[Function]}
+        tag="div"
+        timeout={350}
+        unmountOnExit={false}
+      >
+        <Nav
+          className="mr-auto"
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            exact={true}
+            onClick={[Function]}
+            to="/"
+          >
+            <i
+              className="fas fa-home nav__icon"
+            />
+            Home
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/cakes"
+          >
+            <i
+              className="fas fa-birthday-cake nav__icon"
+            />
+            Cakes
+          </NavLink>
+          <NavLink
+            activeClassName="nav__link--active"
+            className="nav__link"
+            onClick={[Function]}
+            to="/creates"
+          >
+            <i
+              className="fas fa-camera nav__icon"
+            />
+            Creates
+          </NavLink>
+        </Nav>
+        <Nav
+          navbar={true}
+          tag="ul"
+          vertical={false}
+        >
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom-right"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              onClick={[Function]}
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-user nav__icon"
+              />
+              Account
+            </div>
+            <Blueprint3.Menu
+              className="nav__menu"
+            >
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-id-badge nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Profile"
+              />
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-shopping-basket nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Products"
+              />
+              <Blueprint3.MenuItem
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-plus-square nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Create Product"
+              />
+              <Blueprint3.MenuDivider />
+              <Blueprint3.MenuItem
+                className="nav__logout"
+                disabled={false}
+                icon={
+                  <i
+                    className="fas fa-sign-out-alt nav__dropdown-icon"
+                  />
+                }
+                multiline={false}
+                onClick={[Function]}
+                popoverProps={Object {}}
+                shouldDismissPopover={true}
+                text="Logout"
+              />
+            </Blueprint3.Menu>
+          </Blueprint3.Popover>
+          <Blueprint3.Popover
+            boundary="scrollParent"
+            captureDismiss={false}
+            defaultIsOpen={false}
+            disabled={false}
+            fill={false}
+            hasBackdrop={false}
+            hoverCloseDelay={300}
+            hoverOpenDelay={150}
+            inheritDarkTheme={true}
+            interactionKind="click"
+            minimal={false}
+            modifiers={Object {}}
+            openOnTargetFocus={true}
+            position="bottom"
+            targetTagName="span"
+            transitionDuration={300}
+            usePortal={true}
+            wrapperTagName="span"
+          >
+            <div
+              className="nav__link"
+              role="button"
+              tabIndex={0}
+            >
+              <i
+                className="fas fa-shopping-basket nav__icon"
+              />
+              Basket (
+              2
+              )
+            </div>
+            <div
+              className="nav__basket"
+            >
+              <h5
+                className="nav__basket-title"
+              >
+                Basket
+              </h5>
+              <div
+                className="nav__basket-item"
+                key="0"
+              >
+                <p
+                  className="nav__basket-number"
+                >
+                  1
+                  .
+                </p>
+                <p
+                  className="nav__basket-details"
+                >
+                  first
+                   - £
+                  6.00
+                   + £
+                  4.00
+                </p>
+                <i
+                  className="fas fa-times nav__basket-delete"
+                  onClick={[Function]}
+                  role="button"
+                  tabIndex={0}
+                />
+              </div>
+              <div
+                className="nav__basket-item"
+                key="1"
+              >
+                <p
+                  className="nav__basket-number"
+                >
+                  2
+                  .
+                </p>
+                <p
+                  className="nav__basket-details"
+                >
+                  second
+                   - £
+                  6.00
+                   + £
+                  4.00
+                </p>
+                <i
+                  className="fas fa-times nav__basket-delete"
+                  onClick={[Function]}
+                  role="button"
+                  tabIndex={0}
+                />
+              </div>
+              <div
+                style={
+                  Object {
+                    "display": "flex",
+                    "justifyContent": "space-around",
+                    "marginTop": 8,
+                  }
+                }
+              >
+                <Blueprint3.Button
+                  intent="primary"
+                  minimal={true}
+                  onClick={[Function]}
+                  small={true}
+                  text="View Basket"
+                />
+                <Blueprint3.Button
+                  intent="success"
+                  small={true}
+                  text="Checkout"
+                />
+              </div>
+            </div>
+          </Blueprint3.Popover>
+        </Nav>
+      </Collapse>
+    </Navbar>
+  </Headroom>
+</Fragment>
+`;
+
+exports[`<NavBar /> test suite for actions, snapshots and state changes when dispatching actions in CONNECTED component should dispatch actions to mock store and update state when ADDING to basket 1`] = `
+<ContextProvider
+  value={null}
+>
+  <NavBar
+    admin={true}
+    items={Array []}
+    removeFromBasket={[Function]}
+    setAccountsTab={[MockFunction]}
+    signOut={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
+    user={
+      Object {
+        "username": "test",
+      }
+    }
+    userAttributes={
+      Object {
+        "sub": "123",
+      }
+    }
+  />
+</ContextProvider>
+`;
+
+exports[`<NavBar /> test suite for actions, snapshots and state changes when dispatching actions in CONNECTED component should render the connected NavBar component properly 1`] = `
+<ContextProvider
+  value={null}
+>
+  <NavBar
+    admin={true}
+    items={Array []}
+    removeFromBasket={[Function]}
+    setAccountsTab={[MockFunction]}
+    signOut={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
+    user={
+      Object {
+        "username": "test",
+      }
+    }
+    userAttributes={
+      Object {
+        "sub": "123",
+      }
+    }
+  />
+</ContextProvider>
+`;

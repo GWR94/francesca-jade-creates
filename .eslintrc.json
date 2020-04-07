@@ -1,11 +1,12 @@
 {
   "extends": [
-    "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
     "airbnb",
     "airbnb-typescript",
+    "eslint:recommended",
     "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
     "prettier/@typescript-eslint"
   ],
   "plugins": ["react", "@typescript-eslint", "prettier"],
@@ -13,7 +14,8 @@
     "browser": true,
     "es6": true,
     "node": true,
-    "commonjs": true
+    "commonjs": true,
+    "jest": true
   },
   "rules": {
     "@typescript-eslint/no-var-requires": "off",
@@ -31,7 +33,8 @@
     "react/jsx-wrap-multilines": "off",
     "@typescript-eslint/ban-ts-ignore": "off",
     "jsx-a11y/img-redundant-alt": "off",
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "no-return-assign": "off"
   },
   "overrides": [
     {

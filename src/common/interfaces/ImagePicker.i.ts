@@ -2,7 +2,7 @@ import { S3ObjectInput } from "../../API";
 
 export interface ImagePickerProps {
   savedS3Image?: S3ObjectInput;
-  disabled: boolean;
+  disabled?: boolean;
   setImageFile: (image) => void;
   savedImage?: string;
   theme?: object;

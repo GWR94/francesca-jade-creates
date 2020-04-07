@@ -457,7 +457,6 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 <p className="password__error text-center">{errors.image}</p>
               )}
               <ImagePicker
-                disabled={false}
                 setImageFile={(file): void => {
                   console.log(file.size);
                   if (file.size > 500000) this.handleImageCompress(file);

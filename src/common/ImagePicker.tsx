@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { FormGroup } from "@blueprintjs/core";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
 import { ImagePickerProps } from "./interfaces/ImagePicker.i";
@@ -10,7 +10,7 @@ import { ImagePickerProps } from "./interfaces/ImagePicker.i";
 
 const ImagePicker: React.FC<ImagePickerProps> = ({
   savedS3Image,
-  disabled,
+  disabled = false,
   setImageFile,
   savedImage,
   theme,
@@ -20,7 +20,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
   profile,
   showText,
 }): JSX.Element => {
-  const [imagePreview, setPreview] = useState(null);
+  const [imagePreview, setPreview] = React.useState(null);
   const styles = theme || {
     formContainer: {
       margin: 0,
@@ -56,38 +56,28 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
         className="profile__input"
         labelInfo={(!update || profile) && "(optional)"}
       >
-        {imagePreview ? (
-          <div
-            className={
-              profile ? "image__profile-container" : "image__placeholder-container"
-            }
-          >
+        <div
+          className={
+            profile ? "image__profile-container" : "image__placeholder-container"
+          }
+        >
+          {/* Show image preview if one exists */}
+          {imagePreview ? (
             <img className="image__image" src={imagePreview} alt="Product Preview" />
-          </div>
-        ) : savedS3Image ? (
-          <div
-            className={
-              profile ? "image__profile-container" : "image__placeholder-container"
-            }
-          >
+          ) : // Show saved S3 image if passed through via props
+          savedS3Image ? (
             <S3Image
               imgKey={savedS3Image.key}
               theme={{
                 photoImg: { maxWidth: "100%" },
               }}
             />
-          </div>
-        ) : (
-          savedImage && (
-            <div
-              className={
-                profile ? "image__profile-container" : "image__placeholder-container"
-              }
-            >
-              <img src={savedImage} alt="Profile" className="image__image" />
-            </div>
-          )
-        )}
+          ) : (
+            // else show the placeholder/savedImage if profile boolean prop is true.
+            profile && <img src={savedImage} alt="Profile" className="image__image" />
+          )}
+        </div>
+        {/* only show PhotoPicker if the disabled prop is not true/defined */}
         {!disabled && (
           <PhotoPicker
             title={update ? "Add another image" : "Select an image"}

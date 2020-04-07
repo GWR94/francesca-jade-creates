@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ViewProduct /> should render correctly when rendering a product of type 'Cake' 1`] = `<Loading />`;
+
+exports[`<ViewProduct /> should render the loading component when there is no product 1`] = `<Loading />`;

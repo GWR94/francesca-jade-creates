@@ -1,5 +1,8 @@
+/* eslint-disable import/prefer-default-export */
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import Amplify from "aws-amplify";
@@ -11,11 +14,15 @@ import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "./scss/styles.scss";
+import "@stripe/stripe-js";
+import configureStore from "./store/store";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
   require("dotenv").config();
 }
+
+const persist = configureStore();
 
 const urlsIn = config.oauth.redirectSignIn.split(",");
 const urlsOut = config.oauth.redirectSignOut.split(",");
@@ -71,10 +78,14 @@ Amplify.configure({
   },
 });
 
-const App: FC = (): JSX.Element => (
-  <div id="app">
-    <AppRouter />
-  </div>
+export const App: FC = (): JSX.Element => (
+  <Provider store={persist.store}>
+    <PersistGate loading={null} persistor={persist.persistor}>
+      <div id="app">
+        <AppRouter />
+      </div>
+    </PersistGate>
+  </Provider>
 );
 
 ReactDOM.render(<App />, document.getElementById("app"));

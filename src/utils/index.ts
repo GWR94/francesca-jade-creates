@@ -5,11 +5,11 @@ export const Toaster = AppToaster.create({
 });
 
 export const convertPoundsToPence = (price): number => {
-  return parseInt((price / 100).toFixed(2), 10);
+  return parseInt((price * 100).toFixed(2), 10);
 };
 
 export const convertPenceToPounds = (price): number => {
-  return parseInt((price * 100).toFixed(0), 10);
+  return parseInt((price / 100).toFixed(0), 10);
 };
 
 export const attributesToObject = (attributes): any => {
