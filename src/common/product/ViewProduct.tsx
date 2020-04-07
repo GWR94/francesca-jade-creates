@@ -26,6 +26,7 @@ interface ViewProps {
 
 interface ViewState {
   product: ProductProps;
+  isLoading: boolean;
 }
 
 interface ViewDispatchProps {
@@ -35,6 +36,7 @@ interface ViewDispatchProps {
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state = {
     product: null,
+    isLoading: false,
   };
 
   public componentDidMount(): void {
@@ -55,6 +57,7 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
       });
       this.setState({
         product: data.getProduct,
+        isLoading: false,
       });
     } catch (err) {
       throw new Error("Unable to fetch product");
@@ -64,9 +67,11 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   // const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
 
   public render(): JSX.Element {
-    const { product } = this.state;
+    const { product, isLoading } = this.state;
     const { userAttributes, addToBasket } = this.props;
-    return product ? (
+    return isLoading ? (
+      <Loading />
+    ) : (
       <Container className="content-container">
         <div className="view__container">
           <H3 className="view__title">{product.title}</H3>
@@ -130,8 +135,6 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
           )}
         </div>
       </Container>
-    ) : (
-      <Loading />
     );
   }
 }

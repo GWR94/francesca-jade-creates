@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
@@ -202,7 +201,7 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                         text="View Basket"
                         onClick={(): void => history.push("/basket")}
                       />
-                      {/* FIXME */}
+                      {/* // FIXME */}
                       <Button small intent="success" text="Checkout" />
                     </div>
                   </div>

@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState as useStateMock } from "react";
 import { shallow } from "enzyme";
-import { ViewProduct } from "../product/ViewProduct";
+import ConnectedViewProduct, { ViewProduct } from "../product/ViewProduct";
 import Loading from "../Loading";
-
-jest.mock("react-redux", () => ({
-  useDispatch: (): void => {},
-}));
 
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
@@ -15,9 +11,10 @@ jest.mock("react", () => ({
 
 describe("<ViewProduct />", () => {
   it("should render the loading component when there is no product", () => {
-    const wrapper = shallow(
+    const wrapper = shallow<ViewProduct>(
       <ViewProduct id="123" userAttributes={{ username: "123" }} />,
     );
+    wrapper.instance().getProducts = jest.fn();
     expect(wrapper.find(Loading).length).toBe(1);
     expect(wrapper).toMatchSnapshot();
   });
