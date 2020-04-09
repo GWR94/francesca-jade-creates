@@ -10,13 +10,14 @@ import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
 import { getUser } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import { useHistory } from "react-router-dom";
+import { BasketState } from "../../reducers/basket.reducer";
 
 interface Props {
   userAttributes: UserAttributeProps;
 }
 
 const Basket: React.FC<Props> = () => {
-  const items = useSelector(({ basket }: AppState): BasketItemProps[] => basket.items);
+  const { items, cost } = useSelector(({ basket }: AppState): BasketState => basket);
   const id = useSelector(({ user }: AppState): string => user.id);
 
   const [isLoading, setLoading] = useState(true);
@@ -67,6 +68,12 @@ const Basket: React.FC<Props> = () => {
           }
         />
       )}
+      <Button
+        text="Checkout"
+        icon={<i className="fas fa-shopping-cart" />}
+        onClick={(): void => history.push("/checkout")}
+      />
+
       <h3 className="basket__title">Saved For Later</h3>
       {savedProducts?.length > 0 ? (
         <>

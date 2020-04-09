@@ -23,6 +23,7 @@ import { ClearBasketAction } from "../interfaces/basket.redux.i";
 import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
+import Checkout from "../pages/payment/components/Checkout";
 
 export const history = createBrowserHistory();
 
@@ -85,8 +86,8 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
   };
 
   private getUserAttributes = async (authUserData): Promise<void> => {
-    const { setUser } = this.props;
     try {
+      const { setUser } = this.props;
       const attributesArr = await Auth.userAttributes(authUserData);
       const userAttributes = attributesToObject(attributesArr);
       setUser(userAttributes.sub);
@@ -188,14 +189,9 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
               />
               <Route
                 path="/creates/:id"
-                component={(matchParams): JSX.Element => (
+                component={(_): JSX.Element => (
                   <div className="content-container">
-                    <ViewProduct
-                      history={history}
-                      {...matchParams}
-                      user={user}
-                      userAttributes={userAttributes}
-                    />
+                    <ViewProduct id={_.match.params.id} userAttributes={userAttributes} />
                   </div>
                 )}
               />
@@ -212,9 +208,9 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
               />
               <Route
                 path="/cakes/:id"
-                component={(matchParams): JSX.Element => (
+                component={(_): JSX.Element => (
                   <div className="content-container">
-                    <ViewProduct history={history} id={matchParams.match.params.id} />
+                    <ViewProduct userAttributes={userAttributes} id={_.match.params.id} />
                   </div>
                 )}
               />
@@ -255,6 +251,14 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                     <Redirect to="/" />
                   )
                 }
+              />
+              <Route
+                path="/checkout"
+                component={(): JSX.Element => (
+                  <Container className="content-container">
+                    <Checkout />
+                  </Container>
+                )}
               />
               <Route component={NotFoundPage} />
             </Switch>

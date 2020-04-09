@@ -1,36 +1,14 @@
 import React from "react";
 import { API } from "aws-amplify";
 import { Container } from "reactstrap";
-import { H3, Tag, Button } from "@blueprintjs/core";
+import { Tag, Button } from "@blueprintjs/core";
 import { connect } from "react-redux";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import ImageCarousel from "../ImageCarousel";
 import { getProduct } from "../../graphql/queries";
 import Loading from "../Loading";
-import {
-  UserAttributeProps,
-  CognitoUserProps,
-} from "../../pages/accounts/interfaces/Accounts.i";
-import PayButton from "./PayButton";
 import * as actions from "../../actions/basket.actions";
 import { AddItemAction } from "../../interfaces/basket.redux.i";
-import { ProductProps } from "../interfaces/Product.i";
-
-interface ViewProps {
-  id: string;
-  userAttributes: UserAttributeProps;
-  user: CognitoUserProps;
-  addToBasket?: (product) => AddItemAction;
-}
-
-interface ViewState {
-  product: ProductProps;
-}
-
-interface ViewDispatchProps {
-  addToBasket: (product) => AddItemAction;
-}
+import { ViewProps, ViewState, ViewDispatchProps } from "../interfaces/ViewProduct.i";
 
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state = {
@@ -55,18 +33,16 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
       });
       this.setState({
         product: data.getProduct,
-        isLoading: false,
       });
     } catch (err) {
-      throw new Error("Unable to fetch product");
+      console.error(err);
     }
   };
-
-  // const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
 
   public render(): JSX.Element {
     const { product } = this.state;
     const { userAttributes, addToBasket } = this.props;
+    console.log(userAttributes);
     return product ? (
       <Container className="content-container">
         <div className="view__container">

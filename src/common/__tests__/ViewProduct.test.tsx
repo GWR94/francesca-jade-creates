@@ -4,17 +4,16 @@ import { Tag, Button } from "@blueprintjs/core";
 import configureStore from "redux-mock-store";
 import ConnectedViewProduct, { ViewProduct } from "../product/ViewProduct";
 import Loading from "../Loading";
-import { cakeProduct, createsProduct } from "../../__mocks__/products";
+import { cakeProduct, createsProduct, userAttributes } from "../../__mocks__/products";
 import ImageCarousel from "../ImageCarousel";
 import { AppState } from "../../store/store";
-import * as actions from "../../actions/basket.actions";
 import * as types from "../../interfaces/basket.redux.i";
 
 describe("<ViewProduct />", () => {
   describe("test cases for unconnected ViewProduct component", () => {
     it("should render the loading component when there is no product", () => {
       const wrapper = shallow<ViewProduct>(
-        <ViewProduct id="123" userAttributes={{ username: "123" }} />,
+        <ViewProduct id="123" userAttributes={userAttributes} />,
       );
       expect(wrapper.find(Loading).length).toBe(1);
       expect(wrapper).toMatchSnapshot();
@@ -22,7 +21,7 @@ describe("<ViewProduct />", () => {
 
     it("should render correctly when injecting product with no set price into state", () => {
       const wrapper = shallow<ViewProduct>(
-        <ViewProduct id={cakeProduct.id} userAttributes={{ username: "123" }} />,
+        <ViewProduct id={cakeProduct.id} userAttributes={userAttributes} />,
       );
       // inject product into state
       wrapper.setState({ product: cakeProduct });
@@ -60,7 +59,7 @@ describe("<ViewProduct />", () => {
 
     it("should render correctly when injecting product with set price into state", () => {
       const wrapper = shallow<ViewProduct>(
-        <ViewProduct id={createsProduct.id} userAttributes={{ username: "123" }} />,
+        <ViewProduct id={createsProduct.id} userAttributes={userAttributes} />,
       );
       // inject product into state
       wrapper.setState({ product: createsProduct });
@@ -113,7 +112,7 @@ describe("<ViewProduct />", () => {
     beforeEach(() => {
       store = mockStore(initialState);
       wrapper = shallow(
-        <ConnectedViewProduct userAttributes={{ username: "123" }} store={store} />,
+        <ConnectedViewProduct id="123" userAttributes={userAttributes} store={store} />,
       );
     });
 

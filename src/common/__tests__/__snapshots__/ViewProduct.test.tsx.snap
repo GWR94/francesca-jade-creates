@@ -118,7 +118,13 @@ exports[`<ViewProduct /> test cases for connected ViewProduct component should r
   }
   userAttributes={
     Object {
-      "username": "123",
+      "email": "test@test.com",
+      "email_verified": true,
+      "identities": null,
+      "name": "James Gower",
+      "phone_number": "+12345678910",
+      "phone_number_verified": false,
+      "sub": "testsub123123abc",
     }
   }
 />

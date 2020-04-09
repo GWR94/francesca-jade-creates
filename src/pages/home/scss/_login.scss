@@ -19,16 +19,13 @@
   @media screen and (max-width: $md-breakpoint) {
     width: 90vw;
   }
+  min-height: 400px;
 }
 
 .login__federated-container {
   height: 100%;
-  width: 70%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  margin-right: 10px;
   @media screen and (max-width: $s-breakpoint) {
     width: 95%;
   }
@@ -82,11 +79,11 @@
 }
 
 .login__cognito-container {
-  margin: 0 auto;
   flex-direction: column;
   display: flex;
   height: 100%;
-  width: 70%;
+  width: 100%;
+  margin-left: 10px;
   @media screen and (max-width: $s-breakpoint) {
     width: 95%;
   }

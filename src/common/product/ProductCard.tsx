@@ -14,7 +14,6 @@ const Product: React.FC<ProductCardProps> = ({
 }): JSX.Element => {
   const { id, image, title, price, shippingCost, type, tags } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
-
   const handleDeleteProduct = async (): Promise<void> => {
     try {
       await API.graphql(graphqlOperation(deleteProduct, { input: { id } }));

@@ -63,3 +63,13 @@ export const createsProduct = {
   updatedAt: "2020-03-20T14:24:14.718Z",
   setPrice: true,
 };
+
+export const userAttributes = {
+  sub: "testsub123123abc",
+  identities: null,
+  email_verified: true,
+  name: "James Gower",
+  phone_number_verified: false,
+  phone_number: "+12345678910",
+  email: "test@test.com",
+};

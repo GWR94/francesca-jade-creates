@@ -1,7 +1,8 @@
 import React from "react";
 import { Col, Row } from "reactstrap";
 import { Auth } from "aws-amplify";
-import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
+import { Button, Grid, Container } from "@material-ui/core";
+import { FormGroup, InputGroup } from "@blueprintjs/core";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
@@ -38,103 +39,111 @@ class Login extends React.Component<LoginProps, LoginState> {
 
   public render(): JSX.Element {
     const { username, password, passwordDialogOpen, accountDialogOpen } = this.state;
+
+    const section = {
+      height: "100%",
+    };
     return (
       <>
         <div className="login__background">
-          <Row className="login__container">
-            <Col sm={6} className="login__federated-container">
-              <div className="login__text" style={{ marginBottom: "30px" }}>
-                <h3 className="login__title">Login with Social Media</h3>
-                <p>We will never post to any of your accounts.</p>
-              </div>
-              <div className="login__federated-buttons">
-                <Button
-                  className="login__google"
-                  large
-                  icon={<i className="fab fa-google" />}
-                  onClick={async (): Promise<ICredentials> =>
-                    // @ts-ignore
-                    Auth.federatedSignIn({
-                      provider: "Google",
-                    })
-                  }
-                  text="Continue with Google"
-                />
-                <Button
-                  className="login__facebook"
-                  large
-                  icon={<i className="fab fa-facebook-f" />}
-                  onClick={async (): Promise<ICredentials> =>
-                    // @ts-ignore
-                    Auth.federatedSignIn({
-                      provider: "Facebook",
-                    })
-                  }
-                  text="Continue with Facebook"
-                />
-                <Button
-                  className="login__amazon"
-                  large
-                  icon={<i className="fab fa-amazon" />}
-                  onClick={async (): Promise<ICredentials> =>
-                    // @ts-ignore
-                    Auth.federatedSignIn({
-                      provider: "LoginWithAmazon",
-                    })
-                  }
-                  text="Continue with Amazon"
-                />
-              </div>
-            </Col>
-            <Col sm={6} className="login__cognito-container">
-              <div className="login__text">
-                <h3 className="login__title">Login with your account</h3>
-                <p>Please login with your user credentials, or create a new account.</p>
-              </div>
-              <div className="login__cognito">
-                <FormGroup label="Username:">
-                  <InputGroup
-                    value={username}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                      this.setState({ username: e.target.value })
+          <div className="login__container">
+            <Grid container sm={6}>
+              <div className="login__federated-container">
+                <div className="login__text" style={{ marginBottom: "30px" }}>
+                  <h3 className="login__title">Login with Social Media</h3>
+                  <p>We will never post to any of your accounts.</p>
+                </div>
+                <div className="login__federated-buttons">
+                  <Button
+                    className="login__google"
+                    size="large"
+                    startIcon={<i className="fab fa-google" />}
+                    onClick={async (): Promise<ICredentials> =>
+                      // @ts-ignore
+                      Auth.federatedSignIn({
+                        provider: "Google",
+                      })
                     }
-                  />
-                </FormGroup>
-                <FormGroup
-                  label="Password:"
-                  helperText={
-                    <div
-                      className="login__forgot"
-                      tabIndex={0}
-                      role="button"
-                      onClick={(): void => this.setState({ passwordDialogOpen: true })}
-                    >
-                      Forgot your password?
-                    </div>
-                  }
-                >
-                  <PasswordInput
-                    value={password}
-                    setValue={(password): void => this.setState({ password })}
-                  />
-                </FormGroup>
-                <Button
-                  intent="success"
-                  onClick={(): Promise<void> => this.handleSignIn()}
-                >
-                  Login
-                </Button>
-                <div
-                  className="login__create"
-                  tabIndex={0}
-                  role="button"
-                  onClick={(): void => this.setState({ accountDialogOpen: true })}
-                >
-                  Not got an account? Create one here.
+                  >
+                    Continue with Google
+                  </Button>
+                  <Button
+                    className="login__facebook"
+                    size="large"
+                    startIcon={<i className="fab fa-facebook-f" />}
+                    onClick={async (): Promise<ICredentials> =>
+                      // @ts-ignore
+                      Auth.federatedSignIn({
+                        provider: "Facebook",
+                      })
+                    }
+                  >
+                    Continue with Facebook
+                  </Button>
+                  <Button
+                    className="login__amazon"
+                    size="large"
+                    startIcon={<i className="fab fa-amazon" />}
+                    onClick={async (): Promise<ICredentials> =>
+                      // @ts-ignore
+                      Auth.federatedSignIn({
+                        provider: "LoginWithAmazon",
+                      })
+                    }
+                  >
+                    Continue with Amazon
+                  </Button>
                 </div>
               </div>
-            </Col>
-          </Row>
+            </Grid>
+            <Grid container item sm={6}>
+              <div className="login__cognito-container">
+                <div className="login__text">
+                  <h3 className="login__title">Login with your account</h3>
+                  <p>Please login with your user credentials, or create a new account.</p>
+                </div>
+                <div className="login__cognito">
+                  <FormGroup label="Username:">
+                    <InputGroup
+                      value={username}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                        this.setState({ username: e.target.value })
+                      }
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    label="Password:"
+                    helperText={
+                      <div
+                        className="login__forgot"
+                        tabIndex={0}
+                        role="button"
+                        onClick={(): void => this.setState({ passwordDialogOpen: true })}
+                      >
+                        Forgot your password?
+                      </div>
+                    }
+                  >
+                    <PasswordInput
+                      value={password}
+                      setValue={(password): void => this.setState({ password })}
+                    />
+                  </FormGroup>
+                  <Button variant="contained" color="primary" onClick={this.handleSignIn}>
+                    Login
+                  </Button>
+                  <div
+                    className="login__create"
+                    tabIndex={0}
+                    role="button"
+                    onClick={(): void => this.setState({ accountDialogOpen: true })}
+                  >
+                    Not got an account? Create one here.
+                  </div>
+                </div>
+              </div>
+            </Grid>
+          </div>
         </div>
         <ChangePasswordDialog
           isOpen={passwordDialogOpen}

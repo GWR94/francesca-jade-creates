@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@blueprintjs/core";
+import { Button, makeStyles, Grid } from "@material-ui/core";
 import { History } from "history";
 import { Link } from "react-router-dom";
 import { Col, Row } from "reactstrap";
@@ -12,14 +12,25 @@ interface LandingProps {
 }
 
 const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      flexGrow: 1,
+    },
+  }));
   return (
     <>
       <div className="landing__image-container">
         <img src={header} className="landing__image" alt="hand crafted mum name frame" />
       </div>
       <div className="landing__container">
-        <Row className="landing__show" noGutters>
-          <Col xs={6}>
+        <Grid
+          container
+          spacing={2}
+          className="landing__show"
+          justify="center"
+          alignItems="center"
+        >
+          <Grid container item xs={6}>
             <div className="landing__top-left-box">
               <i className="fas fa-birthday-cake landing__icon" />
               <p className="landing__text">
@@ -27,13 +38,14 @@ const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
                 scratch with love and care - perfect for a gift/celebration to remember.
               </p>
               <Button
-                text="Explore Cakes"
                 className="landing__cakes-button"
                 onClick={(): void => history.push("/cakes")}
-              />
+              >
+                Explore Cakes
+              </Button>
             </div>
-          </Col>
-          <Col xs={6}>
+          </Grid>
+          <Grid container item xs={6}>
             <div className="landing__dark-box">
               <div className="landing__review landing__text">
                 <i className="fas fa-quote-left landing__quote-icon--left" />
@@ -58,13 +70,19 @@ const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
                 </p>
               </div>
             </div>
-          </Col>
-        </Row>
+          </Grid>
+        </Grid>
         <div className="landing__logo-container">
           <img src={logo} alt="Francesca Jade Creates Logo" className="landing__logo" />
         </div>
-        <Row className="landing__show" style={{ marginTop: "10px" }} noGutters>
-          <Col xs={6}>
+        <Grid
+          container
+          spacing={1}
+          justify="center"
+          alignItems="center"
+          className="landing__show"
+        >
+          <Grid container item xs={6}>
             <div className="landing__dark-box-alt">
               <i className="fas fa-star landing__icon" />
               <p className="landing__text">
@@ -72,13 +90,14 @@ const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
                 bit of sparkle, to capture moments, share memories & celebrate loved ones{" "}
               </p>
               <Button
-                text="Explore Creations"
                 className="landing__creations-button"
                 onClick={(): void => history.push("/creates")}
-              />
+              >
+                Explore Creations
+              </Button>
             </div>
-          </Col>
-          <Col xs={6} style={{ marginBottom: "60px" }}>
+          </Grid>
+          <Grid container item xs={6}>
             <div className="landing__review-alt">
               <div>
                 <i className="fas fa-quote-left landing__quote-icon--left" />
@@ -93,8 +112,8 @@ const Landing: React.SFC<LandingProps> = ({ history }): JSX.Element => {
                 </Link>
               </p>
             </div>
-          </Col>
-        </Row>
+          </Grid>
+        </Grid>
       </div>
     </>
   );
