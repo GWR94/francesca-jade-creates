@@ -1,8 +1,14 @@
 import React from "react";
 import { API } from "aws-amplify";
-import { Container } from "reactstrap";
-import { Tag, Button } from "@blueprintjs/core";
+import {
+  Container,
+  Button,
+  createMuiTheme,
+  ThemeProvider,
+  Chip,
+} from "@material-ui/core";
 import { connect } from "react-redux";
+import { green } from "@material-ui/core/colors";
 import ImageCarousel from "../ImageCarousel";
 import { getProduct } from "../../graphql/queries";
 import Loading from "../Loading";
@@ -10,6 +16,22 @@ import * as actions from "../../actions/basket.actions";
 import { AddItemAction } from "../../interfaces/basket.redux.i";
 import { ViewProps, ViewState, ViewDispatchProps } from "../interfaces/ViewProduct.i";
 
+const buttonTheme = createMuiTheme({
+  palette: {
+    primary: green,
+  },
+});
+
+const chipTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#9370f6",
+    },
+    secondary: {
+      main: "#ff80f7",
+    },
+  },
+});
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state = {
     product: null,
@@ -18,6 +40,26 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public componentDidMount(): void {
     this.getProducts();
   }
+
+  public handleAddToBasket = (): AddItemAction => {
+    const { product } = this.state;
+    const { addToBasket } = this.props;
+    const { id, title, price, shippingCost, description, image, type } = product;
+    return addToBasket({
+      id,
+      title,
+      description,
+      price,
+      shippingCost,
+      image,
+      type,
+    });
+  };
+
+  public handleQuoteQuery = (): void => {
+    // TODO
+    console.log("todo");
+  };
 
   public getProducts = async (): Promise<void> => {
     const { id } = this.props;
@@ -41,22 +83,27 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
 
   public render(): JSX.Element {
     const { product } = this.state;
-    const { userAttributes, addToBasket } = this.props;
-    console.log(userAttributes);
+    const { userAttributes } = this.props;
     return product ? (
       <Container className="content-container">
         <div className="view__container">
           <h3 className="view__title">{product.title}</h3>
           <p className="view__description">{product.description}</p>
-          <div className="view__tags">
-            {product.tags.map(
-              (tag, i): JSX.Element => (
-                <Tag active key={i} style={{ margin: "0px 4px 4px" }}>
-                  {tag}
-                </Tag>
-              ),
-            )}
-          </div>
+          <ThemeProvider theme={chipTheme}>
+            <div className="view__tags">
+              {product.tags.map(
+                (tag, i): JSX.Element => (
+                  <Chip
+                    key={i}
+                    size="small"
+                    color={product.type === "Cake" ? "primary" : "secondary"}
+                    style={{ margin: "0px 4px 4px", color: "#fff" }}
+                    label={tag}
+                  />
+                ),
+              )}
+            </div>
+          </ThemeProvider>
           <ImageCarousel images={product.image} />
           <div className="view__price">
             {product.price > 0 ? (
@@ -71,41 +118,31 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
               </p>
             )}
           </div>
-          {product.price > 0 ? (
-            userAttributes && (
+          <ThemeProvider theme={buttonTheme}>
+            {product.price > 0 ? (
+              userAttributes && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ color: "#fff" }}
+                  onClick={this.handleAddToBasket}
+                  startIcon={<i className="fas fa-shopping-cart view__icon" />}
+                >
+                  Add to Basket
+                </Button>
+              )
+            ) : (
               <Button
-                intent="primary"
-                onClick={(): AddItemAction => {
-                  const {
-                    id,
-                    title,
-                    price,
-                    shippingCost,
-                    description,
-                    image,
-                    type,
-                  } = product;
-                  return addToBasket({
-                    id,
-                    title,
-                    description,
-                    price,
-                    shippingCost,
-                    image,
-                    type,
-                  });
-                }}
-                text="Add to Basket"
-                icon={<i className="fas fa-shopping-cart view__icon" />}
-              />
-            )
-          ) : (
-            <Button
-              intent="success"
-              text="Request a Quote"
-              icon={<i className="fas fa-credit-card view__icon" />}
-            />
-          )}
+                color="primary"
+                variant="contained"
+                style={{ color: "#fff" }}
+                onClick={this.handleQuoteQuery}
+                startIcon={<i className="fas fa-credit-card view__icon" />}
+              >
+                Request a Quote
+              </Button>
+            )}
+          </ThemeProvider>
         </div>
       </Container>
     ) : (

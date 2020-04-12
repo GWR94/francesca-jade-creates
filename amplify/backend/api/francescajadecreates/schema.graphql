@@ -74,4 +74,5 @@ type SavedProduct {
   image: [S3Object]!
   price: Float!
   shippingCost: Float!
+  type: String!
 }

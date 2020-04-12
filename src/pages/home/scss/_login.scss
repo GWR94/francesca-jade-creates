@@ -57,7 +57,6 @@
   font-size: 18px;
   font-weight: bold;
   width: 100%;
-  margin: 0 auto 20px;
 }
 
 .login__google {
@@ -103,7 +102,8 @@
   &:hover {
     text-decoration: underline;
   }
-  width: 120px;
+  width: 160px;
+  margin-bottom: 10px;
 }
 
 .login__create {

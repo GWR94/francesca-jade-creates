@@ -43,8 +43,8 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
       marginTop: "10px",
       borderRadius: "5px",
       border: "1px solid #ff52f4",
-      textTransform: "none",
-      fontSize: "16px",
+      textTransform: "uppercase",
+      fontSize: "14px",
       padding: "8px",
     },
   };

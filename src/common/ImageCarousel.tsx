@@ -2,28 +2,26 @@ import React from "react";
 import { Carousel, CarouselIndicators, CarouselItem, CarouselControl } from "reactstrap";
 import { S3Image } from "aws-amplify-react";
 import { API, Storage, graphqlOperation } from "aws-amplify";
-import { Button, Dialog } from "@blueprintjs/core";
-import { S3ImageProps } from "./interfaces/Product.i";
+import {
+  Button,
+  Dialog,
+  createMuiTheme,
+  DialogTitle,
+  ThemeProvider,
+} from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
 import { updateProduct } from "../graphql/mutations";
 import { Toaster } from "../utils";
+import { ImageCarouselProps, ImageCarouselState } from "./interfaces/ImageCarousel.i";
 
-interface Props {
-  images: S3ImageProps[];
-  deleteImages?: boolean;
-  id?: string;
-  handleUpdateImages?: (image: S3ImageProps[]) => void;
-  update?: boolean;
-}
+const theme = createMuiTheme({
+  palette: {
+    primary: green,
+  },
+});
 
-interface State {
-  animating: boolean;
-  currentIndex: number;
-  dialogOpen: boolean;
-  keyToDelete: string;
-}
-
-class ImageCarousel extends React.Component<Props, State> {
-  public readonly state: State = {
+class ImageCarousel extends React.Component<ImageCarouselProps, ImageCarouselState> {
+  public readonly state: ImageCarouselState = {
     animating: false,
     currentIndex: 0,
     dialogOpen: false,
@@ -169,35 +167,43 @@ class ImageCarousel extends React.Component<Props, State> {
           )}
         </div>
         <Dialog
-          isOpen={dialogOpen}
-          icon="trash"
+          open={dialogOpen}
           onClose={(): void => this.setState({ dialogOpen: false })}
-          title="Are you sure?"
         >
+          <DialogTitle style={{ padding: "12px", textAlign: "center" }}>
+            Delete this image?
+          </DialogTitle>
           <div className="update__alert-container">
-            <p className="text-center">Are you sure you want to delete this image?</p>
-            <p className="text-center">Other images can be added at a later date.</p>
-
+            <p>
+              Are you sure you want to delete this image? Other images can be added at a
+              later date.
+            </p>
             <S3Image
               imgKey={keyToDelete}
               theme={{
                 photoImg: { maxWidth: "100%", marginBottom: "20px" },
               }}
             />
-            <div className="dialog__button-container">
-              <Button
-                intent="danger"
-                text="Cancel"
-                onClick={(): void => this.setState({ dialogOpen: false })}
-                style={{ margin: "0 5px" }}
-              />
-              <Button
-                intent="success"
-                text="Confirm"
-                onClick={this.handleDeleteImage}
-                style={{ margin: "0 5px" }}
-              />
-            </div>
+            <ThemeProvider theme={theme}>
+              <div className="dialog__button-container">
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={(): void => this.setState({ dialogOpen: false })}
+                  style={{ margin: "0 5px" }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={this.handleDeleteImage}
+                  style={{ margin: "0 5px", color: "#fff" }}
+                >
+                  Confirm
+                </Button>
+              </div>
+            </ThemeProvider>
           </div>
         </Dialog>
       </>

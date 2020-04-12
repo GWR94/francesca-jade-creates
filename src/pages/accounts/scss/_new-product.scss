@@ -37,6 +37,17 @@
   @extend .new-product__input;
 }
 
+.new-product__switch {
+  margin: 0 auto !important;
+}
+
+.new-product__radio-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
 .new-product__callout {
   margin: 12px 0;
   width: 100%;

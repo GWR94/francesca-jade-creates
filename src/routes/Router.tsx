@@ -173,7 +173,11 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 history={history}
                 component={(): JSX.Element => (
                   <div className="content-container">
-                    <ProductTypePage type="Creates" history={history} />
+                    <ProductTypePage
+                      type="Creates"
+                      history={history}
+                      admin={this.admin}
+                    />
                   </div>
                 )}
               />
@@ -202,7 +206,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 history={history}
                 component={(): JSX.Element => (
                   <div className="content-container">
-                    <ProductTypePage type="Cake" history={history} />
+                    <ProductTypePage type="Cake" history={history} admin={this.admin} />
                   </div>
                 )}
               />

@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { History } from "history";
-import { Container } from "reactstrap";
-import { H3 } from "@blueprintjs/core";
+import { Container } from "@material-ui/core";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../Loading";
 import { ProductProps } from "../interfaces/Product.i";
@@ -56,7 +55,7 @@ export default class ProductTypePage extends Component<
 
   public render(): JSX.Element {
     const { isLoading, products, queryResults } = this.state;
-    const { type, history } = this.props;
+    const { type, history, admin } = this.props;
     const results = queryResults || products;
     return isLoading ? (
       <Loading size={100} />
@@ -68,7 +67,13 @@ export default class ProductTypePage extends Component<
           To filter the products please click the pink button on the left hand side, and
           filter the results to your preferences.
         </p>
-        <ProductsList products={results} noTitle type={type} history={history} />
+        <ProductsList
+          products={results}
+          noTitle
+          type={type}
+          history={history}
+          admin={admin}
+        />
       </Container>
     );
   }

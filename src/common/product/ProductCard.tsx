@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Card, Button, Alert } from "@blueprintjs/core";
 import { API, graphqlOperation } from "aws-amplify";
+import {
+  Card,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+} from "@material-ui/core";
 import { S3Image } from "aws-amplify-react";
 import { ProductCardProps } from "../interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
@@ -14,6 +21,7 @@ const Product: React.FC<ProductCardProps> = ({
 }): JSX.Element => {
   const { id, image, title, price, shippingCost, type, tags } = product;
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
+
   const handleDeleteProduct = async (): Promise<void> => {
     try {
       await API.graphql(graphqlOperation(deleteProduct, { input: { id } }));
@@ -69,13 +77,11 @@ const Product: React.FC<ProductCardProps> = ({
     <>
       <Card
         elevation={2}
-        interactive
+        style={{ padding: "20px" }}
         className="product__card animate fadeIn"
-        onClick={(): void => {
-          admin
-            ? history.push(`/account/${id}`)
-            : history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
-        }}
+        onClick={(): void =>
+          history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`)
+        }
       >
         {getIcon(type)}
         <div className="product__text-container">
@@ -105,38 +111,41 @@ const Product: React.FC<ProductCardProps> = ({
         {admin && (
           <div className="new-product__button-container">
             <Button
-              text="Delete"
-              intent="danger"
               onClick={(e): void => {
                 e.stopPropagation();
                 setDeleteAlert(true);
               }}
-              style={{ margin: "8px 4px 0" }}
-            />
+              style={{ margin: "8px 4px 0", background: "#fd4ef2", color: "#fff" }}
+            >
+              Delete
+            </Button>
             <Button
-              text="Edit"
-              intent="warning"
               onClick={(e): void => {
                 e.stopPropagation();
                 history.push(`/account/${product.id}`);
               }}
-              style={{ margin: "8px 4px 0" }}
-            />
+              style={{ margin: "8px 4px 0", background: "#ff80f7", color: "#fff" }}
+            >
+              Edit
+            </Button>
           </div>
         )}
       </Card>
-      <Alert
-        isOpen={deleteAlertOpen}
-        cancelButtonText="Cancel"
-        confirmButtonText="Delete"
-        icon="trash"
-        intent="danger"
-        onCancel={(): void => setDeleteAlert(false)}
-        onConfirm={handleDeleteProduct}
-      >
-        <p>Are you sure you want to delete &quot;{title}&quot;?</p>
-        <p>This cannot be undone.</p>
-      </Alert>
+      <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
+        <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete &quot;{title}&quot;?</p>
+          <p>This cannot be undone.</p>
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary" onClick={(): void => setDeleteAlert(false)}>
+            Cancel
+          </Button>
+          <Button color="secondary" onClick={handleDeleteProduct}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
