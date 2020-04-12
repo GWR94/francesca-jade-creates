@@ -9,6 +9,7 @@ export interface LoginState {
   password: string;
   passwordDialogOpen: boolean;
   accountDialogOpen: boolean;
+  loggingIn: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix

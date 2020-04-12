@@ -5,7 +5,7 @@ import {
   Grid,
   TextField,
   createMuiTheme,
-  ThemeProvider,
+  CircularProgress,
 } from "@material-ui/core";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
@@ -33,11 +33,13 @@ class Login extends React.Component<LoginProps, LoginState> {
     password: "",
     passwordDialogOpen: false,
     accountDialogOpen: false,
+    loggingIn: false,
   };
 
   private handleSignIn = async (): Promise<void> => {
     const { username, password } = this.state;
     const { history } = this.props;
+    this.setState({ loggingIn: true });
     try {
       await Auth.signIn(username, password);
       history.push("/");
@@ -47,10 +49,17 @@ class Login extends React.Component<LoginProps, LoginState> {
         message: "Failed to sign in. Please check your username and password.",
       });
     }
+    this.setState({ loggingIn: false });
   };
 
   public render(): JSX.Element {
-    const { username, password, passwordDialogOpen, accountDialogOpen } = this.state;
+    const {
+      username,
+      password,
+      passwordDialogOpen,
+      accountDialogOpen,
+      loggingIn,
+    } = this.state;
     return (
       <>
         <div className="login__background">
@@ -134,7 +143,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                     Forgot your password?
                   </div>
                   <Button variant="contained" color="primary" onClick={this.handleSignIn}>
-                    { loLogin
+                    {loggingIn ? <CircularProgress color="inherit" size={20} /> : "Login"}
                   </Button>
                   <div
                     className="login__create"
