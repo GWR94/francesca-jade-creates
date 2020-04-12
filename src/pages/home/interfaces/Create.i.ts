@@ -1,6 +1,9 @@
+import { Theme } from "@material-ui/core";
+
 export interface CreateProps {
   isOpen: boolean;
   onClose: () => void;
+  theme?: Theme;
 }
 
 export interface CreateState {

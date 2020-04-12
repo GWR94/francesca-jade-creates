@@ -1,15 +1,21 @@
 /* eslint-disable prefer-destructuring */
-import React from "react";
+import React, { ChangeEvent } from "react";
 import {
   Dialog,
-  FormGroup,
-  InputGroup,
-  ControlGroup,
-  HTMLSelect,
   Button,
-} from "@blueprintjs/core";
+  TextField,
+  Grid,
+  DialogTitle,
+  DialogContent,
+  CircularProgress,
+  createMuiTheme,
+  ThemeProvider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@material-ui/core";
 import validate from "validate.js";
-import { Row, Col } from "reactstrap";
 import { Auth } from "aws-amplify";
 import euroNumbers from "../../../utils/europeanCodes";
 import { Toaster } from "../../../utils";
@@ -34,7 +40,7 @@ const initialState = {
     number: "",
     error: null,
   },
-  codeSent: false,
+  codeSent: true,
   destination: null,
   code: "",
   codeLoading: false,
@@ -135,6 +141,22 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
     }
   };
 
+  private handleResendVerificationCode = async (): Promise<void> => {
+    const { username } = this.state;
+    try {
+      await Auth.resendSignUp(username.value);
+      Toaster.show({
+        intent: "success",
+        message: "Verification code resent.",
+      });
+    } catch (err) {
+      Toaster.show({
+        intent: "danger",
+        message: "Failed to send email. Please try again.",
+      });
+    }
+  };
+
   private handleVerifyCode = async (): Promise<void> => {
     const { onClose } = this.props;
     const { username, code } = this.state;
@@ -192,107 +214,104 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
       codeLoading,
       createLoading,
     } = this.state;
-
+    const { theme } = this.props;
     return (
       <Dialog
-        title="Create a new account"
-        isOpen={isOpen}
+        open={isOpen}
         onClose={(): void => {
           this.setState({ ...initialState });
           onClose();
         }}
         className="dialog__container"
       >
-        <div className="dialog__inner-container">
-          {codeSent ? (
-            <>
-              <p>
-                A verification code has been sent to {destination}. Please enter this code
-                below to verify your identity.
-              </p>
-              <Row>
-                <Col sm={6}>
-                  <FormGroup label="Username:">
-                    <InputGroup defaultValue={username.value} disabled />
-                  </FormGroup>
-                </Col>
-                <Col sm={6}>
-                  <FormGroup
-                    label="Verification Code:"
-                    helperText={
-                      <div
-                        className="login__forgot"
-                        tabIndex={0}
-                        role="button"
-                        style={{ width: "170px" }}
-                        onClick={async (): Promise<void> => {
-                          try {
-                            await Auth.resendSignUp(username.value);
-                            Toaster.show({
-                              intent: "success",
-                              message: "Verification code resent.",
-                            });
-                          } catch (err) {
-                            Toaster.show({
-                              intent: "danger",
-                              message: "Failed to send email. Please try again.",
-                            });
-                          }
-                        }}
-                      >
-                        Not got a code? Resend code here.
-                      </div>
-                    }
-                  >
-                    <InputGroup
+        <DialogTitle>Create a new account</DialogTitle>
+        <DialogContent>
+          <ThemeProvider theme={theme}>
+            {codeSent ? (
+              <>
+                <p>
+                  A verification code has been sent to {destination}. Please enter this
+                  code below to verify your identity.
+                </p>
+                <Grid container spacing={1} direction="row">
+                  <Grid item sm={6} xs={12}>
+                    <TextField
+                      defaultValue={username.value}
+                      disabled
+                      fullWidth
+                      label="Username"
+                      variant="filled"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Verification Code"
+                      variant="outlined"
+                      fullWidth
                       value={code}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                         this.setState({
                           code: e.target.value,
                         })
                       }
+                      helperText={
+                        <div
+                          className="login__forgot"
+                          tabIndex={0}
+                          role="button"
+                          style={{ width: "170px" }}
+                          onClick={this.handleResendVerificationCode}
+                        >
+                          Not got a code? Resend code here.
+                        </div>
+                      }
                     />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <div className="dialog__button-container">
-                <Button
-                  className="dialog__button"
-                  intent="danger"
-                  onClick={(): void => {
-                    this.setState({ ...initialState });
-                    onClose();
-                  }}
-                  text="Cancel"
-                />
-                <Button
-                  className="dialog__button"
-                  intent="success"
-                  text="Create Account"
-                  onClick={(): void => {
-                    this.setState({ codeLoading: true });
-                    this.handleVerifyCode();
-                  }}
-                  loading={codeLoading}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <p>
-                Please fill out all of the fields below to create an account. All fields
-                are mandatory unless stated.
-              </p>
-              <Row>
-                <Col sm={6}>
-                  <FormGroup
-                    label="Username:"
-                    intent={username.error ? "danger" : "none"}
-                    helperText={username.error}
+                  </Grid>
+                </Grid>
+                <div className="dialog__button-container">
+                  <Button
+                    className="dialog__button"
+                    color="secondary"
+                    onClick={(): void => {
+                      this.setState({ ...initialState });
+                      onClose();
+                    }}
                   >
-                    <InputGroup
+                    Cancel
+                  </Button>
+                  <Button
+                    className="dialog__button"
+                    color="primary"
+                    onClick={(): void => {
+                      this.setState({ codeLoading: true });
+                      this.handleVerifyCode();
+                    }}
+                  >
+                    {codeLoading ? <CircularProgress size={20} /> : "Create Account"}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>
+                  Please fill out all of the fields below to create an account. All fields
+                  are mandatory unless stated.
+                </p>
+                <Grid
+                  container
+                  spacing={1}
+                  direction="row"
+                  style={{ marginBottom: "10px" }}
+                >
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Username"
+                      helperText={username.error}
+                      error={!!username.error}
+                      variant="outlined"
+                      fullWidth
                       value={username.value}
-                      intent={username.error ? "danger" : "none"}
+                      color={username.error ? "secondary" : "primary"}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                         this.setState({
                           username: {
@@ -302,33 +321,27 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                         })
                       }
                     />
-                  </FormGroup>
-                </Col>
-                <Col sm={6}>
-                  <FormGroup
-                    label="Password:"
-                    intent={password.error ? "danger" : "none"}
-                    helperText={password.error}
-                  >
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
                     <PasswordInput
                       value={password.value}
                       error={password.error}
                       setValue={(value): void => {
                         this.setState({ password: { value, error: "" } });
                       }}
+                      theme={theme}
                     />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <FormGroup
-                label="Email:"
-                intent={email.error ? "danger" : "none"}
-                helperText={email.error}
-              >
-                <InputGroup
+                  </Grid>
+                </Grid>
+                <TextField
+                  label="Email"
+                  color={email.error ? "secondary" : "primary"}
+                  helperText={email.error}
                   value={email.value}
+                  error={!!email.error}
+                  variant="outlined"
                   type="email"
-                  intent={email.error ? "danger" : "none"}
+                  fullWidth
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                     this.setState({
                       email: {
@@ -337,29 +350,35 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                       },
                     })
                   }
+                  style={{ marginBottom: "10px" }}
                 />
-              </FormGroup>
-              <FormGroup
-                label="Phone Number:"
-                labelInfo="(optional)"
-                className="profile__input"
-                intent={phoneNumber.error ? "danger" : "none"}
-                helperText={phoneNumber.error}
-              >
-                <ControlGroup className="profile__input" fill>
-                  <HTMLSelect
+                <FormControl
+                  fullWidth
+                  variant="outlined"
+                  error={!!phoneNumber.error}
+                  style={{ flexDirection: "row" }}
+                >
+                  <InputLabel>Phone Area Code</InputLabel>
+                  <Select
                     value={phoneNumber.code}
-                    options={euroNumbers}
-                    className="dialog__select"
-                    onChange={(e): void =>
+                    labelWidth={114}
+                    onChange={(e: any): void =>
                       this.setState({
                         phoneNumber: { ...phoneNumber, code: e.target.value },
                       })
                     }
-                  />
-                  <InputGroup
-                    intent={phoneNumber.error ? "danger" : "none"}
+                    style={{ maxWidth: "150px" }}
+                  >
+                    {euroNumbers.map((num, i) => (
+                      <MenuItem key={i} value={num.value}>
+                        {num.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <TextField
+                    variant="outlined"
                     value={phoneNumber.number}
+                    label="Phone Number"
                     onChange={(e): void =>
                       this.setState({
                         phoneNumber: {
@@ -369,33 +388,37 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                         },
                       })
                     }
+                    color={phoneNumber.error ? "secondary" : "primary"}
+                    fullWidth
+                    style={{ marginLeft: "5px" }}
                   />
-                </ControlGroup>
-              </FormGroup>
-              <div className="dialog__button-container">
-                <Button
-                  className="dialog__button"
-                  intent="danger"
-                  onClick={(): void => {
-                    this.setState({ ...initialState });
-                    onClose();
-                  }}
-                  text="Cancel"
-                />
-                <Button
-                  className="dialog__button"
-                  intent="success"
-                  onClick={(): void => {
-                    this.setState({ createLoading: true });
-                    this.handleErrorCheck();
-                  }}
-                  text="Create Account"
-                  loading={createLoading}
-                />
-              </div>
-            </>
-          )}
-        </div>
+                </FormControl>
+                <div className="dialog__button-container">
+                  <Button
+                    className="dialog__button"
+                    color="secondary"
+                    onClick={(): void => {
+                      this.setState({ ...initialState });
+                      onClose();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="dialog__button"
+                    color="primary"
+                    onClick={(): void => {
+                      this.setState({ createLoading: true });
+                      this.handleErrorCheck();
+                    }}
+                  >
+                    {createLoading ? <CircularProgress size={20} /> : "Create Account"}
+                  </Button>
+                </div>
+              </>
+            )}
+          </ThemeProvider>
+        </DialogContent>
       </Dialog>
     );
   }

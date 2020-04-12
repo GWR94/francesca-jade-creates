@@ -1,13 +1,31 @@
 import React from "react";
-import { Col, Row } from "reactstrap";
 import { Auth } from "aws-amplify";
-import { Button, Grid, TextField } from "@material-ui/core";
-import { FormGroup, InputGroup } from "@blueprintjs/core";
+import {
+  Button,
+  Grid,
+  TextField,
+  createMuiTheme,
+  ThemeProvider,
+} from "@material-ui/core";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { Toaster } from "../../utils";
 import CreateAccountDialog from "./components/CreateAccountDialog";
-import PasswordInput from "../../common/PasswordInput";
 import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
+import PasswordInput from "../../common/PasswordInput";
+
+const formTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#fd4ef2",
+    },
+    secondary: {
+      main: "#D9534F",
+    },
+  },
+});
+
+// TODO
+// [ ] Add loading for login button (HOC?)
 
 class Login extends React.Component<LoginProps, LoginState> {
   public readonly state: LoginState = {
@@ -37,7 +55,7 @@ class Login extends React.Component<LoginProps, LoginState> {
       <>
         <div className="login__background">
           <div className="login__container">
-            <Grid container sm={6}>
+            <Grid item sm={6}>
               <div className="login__federated-container">
                 <div className="login__text" style={{ marginBottom: "30px" }}>
                   <h3 className="login__title">Login with Social Media</h3>
@@ -89,7 +107,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                 </div>
               </div>
             </Grid>
-            <Grid container item sm={6}>
+            <Grid item sm={6}>
               <div className="login__cognito-container">
                 <div className="login__text">
                   <h3 className="login__title">Login with your account</h3>
@@ -101,14 +119,11 @@ class Login extends React.Component<LoginProps, LoginState> {
                     value={username}
                     onChange={(e): void => this.setState({ username: e.target.value })}
                     label="Username"
+                    style={{ marginBottom: "10px" }}
                   />
-                  <TextField
-                    type="password"
+                  <PasswordInput
                     value={password}
-                    variant="outlined"
-                    label="Password"
-                    style={{ margin: "10px 0" }}
-                    onChange={(e): void => this.setState({ password: e.target.value })}
+                    setValue={(password): void => this.setState({ password })}
                   />
                   <div
                     className="login__forgot"
@@ -119,7 +134,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                     Forgot your password?
                   </div>
                   <Button variant="contained" color="primary" onClick={this.handleSignIn}>
-                    Login
+                    { loLogin
                   </Button>
                   <div
                     className="login__create"
@@ -141,6 +156,7 @@ class Login extends React.Component<LoginProps, LoginState> {
         <CreateAccountDialog
           isOpen={accountDialogOpen}
           onClose={(): void => this.setState({ accountDialogOpen: false })}
+          theme={formTheme}
         />
       </>
     );
