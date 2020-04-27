@@ -1,14 +1,15 @@
 import React from "react";
-import { Spinner } from "@blueprintjs/core";
+import { CircularProgress } from "@material-ui/core";
 
 interface Props {
   size?: number;
+  color?: "inherit" | "primary" | "secondary";
 }
 
-const Loading: React.FC<Props> = ({ size = 100 }): JSX.Element => {
+const Loading: React.FC<Props> = ({ size = 100, color = "inherit" }): JSX.Element => {
   return (
     <div className="loading__container">
-      <Spinner size={size} className="loading__spinner" />
+      <CircularProgress size={size} color={color} className="loading__spinner" />
     </div>
   );
 };

@@ -36,6 +36,8 @@ import ImageCarousel from "../../../common/ImageCarousel";
  * [ ] Test
  * [ ] Create private route for sensitive pages in router
  * [ ] Add tag when clicking new radio button to change type.
+ *![ ] Fix tag input
+ *![ ] Fix scrollbar on delete confirm dialog
  * [x] Fix create product
  * [x] Fix image not removing after clicking x
  */
@@ -121,15 +123,16 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
   };
 
   private handleImageCompress = (fileToUpload): Blob => {
+    console.log(fileToUpload);
     const compressor = new Compress({
-      quality: 0.6,
-      maxHeight: 720,
+      targetSize: 0.5,
     });
 
     let image: Blob;
-    compressor.compress([fileToUpload.file]).then((conversions) => {
+    compressor.compress([fileToUpload]).then((conversions) => {
       const { photo } = conversions[0];
       fileToUpload.file = photo.data;
+      console.log(photo, fileToUpload);
       this.handleImageUpload(fileToUpload);
     });
     return image;
@@ -341,190 +344,159 @@ export default class UpdateProduct extends Component<UpdateProps, UpdateState> {
             placeholder="Enter a product description"
             style={{ marginBottom: "10px" }}
           />
-          <div className="new-product__input">
-            <FormControl component="fieldset" className="new-product__radio-container">
-              <FormLabel component="legend" style={{ margin: 0 }}>
-                Product Type
-              </FormLabel>
-              <RadioGroup
-                aria-label="Product Type"
-                name="ProductType"
-                value={product.type}
-                onChange={(e): void => this.handleFormItem(e, "type")}
-                row
-                style={{ justifyContent: "space-around" }}
-              >
-                <FormControlLabel value="Cake" control={<Radio />} label="Cake" />
-                <FormControlLabel value="Creates" control={<Radio />} label="Creates" />
-              </RadioGroup>
-            </FormControl>
-            <Alert severity="info" className="new-product__callout">
-              <AlertTitle>Is there a set price?</AlertTitle>
-              You can set a price if there is one set, or turn the switch off to set no
-              price, where the customer can contact you for an estimated price.
-              <Switch
-                checked={product.setPrice}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  this.setState({
-                    product: { ...product, setPrice: e.target.checked },
-                  })
-                }
-                color="primary"
-                name="setPrice"
-                inputProps={{ "aria-label": "primary checkbox" }}
-                className="new-product__switch"
-              />
-            </Alert>
-            {product.setPrice && (
-              <>
-                <Grid
-                  container
-                  direction="row"
-                  spacing={1}
-                  style={{ marginBottom: "10px" }}
-                >
-                  <Grid item sm={6} xs={12}>
-                    <FormControl fullWidth variant="outlined">
-                      <InputLabel htmlFor="outlined-adornment-amount">
-                        Product Cost
-                      </InputLabel>
-                      <OutlinedInput
-                        id="outlined-adornment-amount"
-                        value={product.price}
-                        onChange={(e): void => this.handleFormItem(e, "price")}
-                        startAdornment={
-                          <InputAdornment position="start">£</InputAdornment>
-                        }
-                        labelWidth={90}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item sm={6} xs={12}>
-                    <FormControl fullWidth variant="outlined">
-                      <InputLabel htmlFor="outlined-adornment-amount">
-                        Shipping Cost
-                      </InputLabel>
-                      <OutlinedInput
-                        id="outlined-adornment-shipping"
-                        value={product.shippingCost}
-                        onChange={(e): void => this.handleFormItem(e, "shippingCost")}
-                        startAdornment={
-                          <InputAdornment position="start">£</InputAdornment>
-                        }
-                        labelWidth={95}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-              </>
-            )}
-            <ChipInput
-              value={product.tags || []}
-              fullWidth
-              variant="outlined"
-              label="Tags"
-              placeholder="Add tags by clicking enter..."
-              onAdd={(chip): void =>
-                this.setState({ product: { ...product, tags: [...product.tags, chip] } })
-              }
-              onDelete={(chip): void => {
-                const idx = product.tags.findIndex(chip);
-                const newTags = [
-                  ...product.tags.slice(0, idx),
-                  ...product.tags.slice(idx + 1),
-                ];
+          <FormControl component="fieldset" className="new-product__radio-container">
+            <FormLabel component="legend" style={{ margin: 0 }}>
+              Product Type
+            </FormLabel>
+            <RadioGroup
+              aria-label="Product Type"
+              name="ProductType"
+              value={product.type}
+              onChange={(e): void => this.handleFormItem(e, "type")}
+              row
+              style={{ justifyContent: "space-around" }}
+            >
+              <FormControlLabel value="Cake" control={<Radio />} label="Cake" />
+              <FormControlLabel value="Creates" control={<Radio />} label="Creates" />
+            </RadioGroup>
+          </FormControl>
+          <Alert
+            severity="info"
+            className="new-product__callout"
+            style={{ marginTop: "-5px" }}
+          >
+            <AlertTitle>Is there a set price?</AlertTitle>
+            You can set a price if there is one set, or turn the switch off to set no
+            price, where the customer can contact you for an estimated price.
+            <Switch
+              checked={product.setPrice}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                 this.setState({
-                  product: { ...product, tags: newTags },
-                });
-              }}
+                  product: { ...product, setPrice: e.target.checked },
+                })
+              }
+              color="primary"
+              name="setPrice"
+              inputProps={{ "aria-label": "primary checkbox" }}
+              className="new-product__switch"
             />
-            <div className="new-product__form">
-              <FormLabel component="legend" style={{ margin: 0 }}>
-                {product.image.length <= 1 ? "Product Image:" : "Product Images:"}
-              </FormLabel>
-              {product.image.length > 0 && (
-                <div className="update__carousel-container">
-                  <ImageCarousel
-                    images={product.image}
-                    deleteImages
-                    update={update}
-                    id={product.id}
-                    handleUpdateImages={(image): void =>
-                      this.setState({ product: { ...product, image } })
-                    }
-                  />
-                </div>
-              )}
-              {errors.image && (
-                <p className="password__error text-center">{errors.image}</p>
-              )}
-              <ImagePicker
-                setImageFile={(file): void => {
-                  this.handleImageCompress(file);
-                  this.setState({ errors: { ...errors, image: null } });
-                }}
-                update={update}
-              />
-            </div>
-            <div className="dialog__button-container" style={{ marginBottom: "40px" }}>
-              <ThemeProvider
-                theme={createMuiTheme({
-                  palette: {
-                    primary: green,
-                  },
-                })}
+          </Alert>
+          {product.setPrice && (
+            <>
+              <Grid
+                container
+                direction="row"
+                spacing={1}
+                style={{ marginBottom: "10px" }}
               >
-                <Button
-                  onClick={(): void => history.push("/")}
-                  style={{ margin: "0 10px" }}
-                  size="large"
-                  color="secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={this.handleProductErrors}
-                  color="primary"
-                  style={{ margin: "0 10px" }}
-                  size="large"
-                >
-                  Confirm
-                </Button>
-              </ThemeProvider>
-            </div>
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Product Cost
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-amount"
+                      value={product.price}
+                      onChange={(e): void => this.handleFormItem(e, "price")}
+                      startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                      labelWidth={90}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Shipping Cost
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-shipping"
+                      value={product.shippingCost}
+                      onChange={(e): void => this.handleFormItem(e, "shippingCost")}
+                      startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                      labelWidth={95}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </>
+          )}
+          <ChipInput
+            value={product.tags || []}
+            fullWidth
+            variant="outlined"
+            label="Tags"
+            placeholder="Add tags by clicking enter..."
+            onAdd={(chip): void =>
+              this.setState({ product: { ...product, tags: [...product.tags, chip] } })
+            }
+            onDelete={(chip): void => {
+              const idx = product.tags.findIndex(chip);
+              const newTags = [
+                ...product.tags.slice(0, idx),
+                ...product.tags.slice(idx + 1),
+              ];
+              this.setState({
+                product: { ...product, tags: newTags },
+              });
+            }}
+          />
+          <div className="new-product__form" style={{ marginTop: "10px" }}>
+            <FormLabel component="legend" style={{ margin: 0 }}>
+              {product.image.length <= 1 ? "Product Image:" : "Product Images:"}
+            </FormLabel>
+            {product.image.length > 0 && (
+              <div className="update__carousel-container">
+                <ImageCarousel
+                  images={product.image}
+                  deleteImages
+                  update={update}
+                  id={product.id}
+                  handleUpdateImages={(image): void =>
+                    this.setState({ product: { ...product, image } })
+                  }
+                />
+              </div>
+            )}
+            {errors.image && (
+              <p className="password__error text-center">{errors.image}</p>
+            )}
+            <ImagePicker
+              setImageFile={(file): void => {
+                this.handleImageCompress(file);
+                this.setState({ errors: { ...errors, image: null } });
+              }}
+              update={update}
+            />
+          </div>
+          <div className="dialog__button-container" style={{ marginBottom: "40px" }}>
+            <ThemeProvider
+              theme={createMuiTheme({
+                palette: {
+                  primary: green,
+                },
+              })}
+            >
+              <Button
+                onClick={(): void => history.push("/")}
+                style={{ margin: "0 10px" }}
+                size="large"
+                variant="contained"
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={this.handleProductErrors}
+                color="primary"
+                variant="contained"
+                style={{ margin: "0 10px", color: "#fff" }}
+                size="large"
+              >
+                Confirm
+              </Button>
+            </ThemeProvider>
           </div>
         </div>
-        {/* <Dialog
-          isOpen={imageConfirmOpen}
-          icon="info-sign"
-          title="Are you sure this is correct?"
-          onClose={(): void => this.setState({ imageConfirmOpen: false })}
-        >
-          <div style={{ padding: "8px 12px" }}>
-            <p className="text-center">Are you sure you want to add this image?</p>
-          </div>
-          <img
-            src={imagePreviews[imagePreviews.length - 1]}
-            className="confirm__image"
-            alt="Image upload preview"
-            style={{ marginBottom: "20px" }}
-          />
-          <div className="dialog__button-container">
-            <Button
-              intent="danger"
-              text="Cancel"
-              onClick={(): void => this.setState({ imageConfirmOpen: false })}
-              style={{ margin: "0 5px" }}
-            />
-            <Button
-              intent="success"
-              text="Confirm"
-              onClick={this.handleImageUpload}
-              style={{ margin: "0 5px" }}
-              loading={isUploading}
-            />
-          </div>
-        </Dialog> */}
         <ConfirmDialog
           isOpen={confirmDialogOpen}
           {...product}

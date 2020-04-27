@@ -7,33 +7,37 @@ import {
   IconButton,
   OutlinedInput,
   ThemeProvider,
-  Theme,
+  FormHelperText,
 } from "@material-ui/core";
-import clsx from "clsx";
+import { PasswordInputProps } from "./interfaces/PasswordInput.i";
 
-interface Props {
-  value: string;
-  setValue: (e) => void;
-  error?: string;
-  theme?: Theme;
-}
-
-const PasswordInput: React.FC<Props> = ({ value, setValue, error, theme }) => {
+const PasswordInput: React.FC<PasswordInputProps> = ({
+  value,
+  setValue,
+  error,
+  theme,
+  small = false,
+  label = "Password",
+  labelWidth = 60,
+  placeholder = "Enter your password...",
+}) => {
   const [show, setShow] = useState(false);
 
   return (
     <ThemeProvider theme={theme}>
-      <FormControl fullWidth variant="outlined" error={!!error}>
-        <InputLabel htmlFor="standard-adornment-password" error={!!error}>
-          Password
-        </InputLabel>
+      <FormControl
+        fullWidth
+        variant="outlined"
+        error={!!error}
+        size={small ? "small" : "medium"}
+      >
+        <InputLabel error={!!error}>{label}</InputLabel>
         <OutlinedInput
-          id="standard-adornment-password"
           fullWidth
-          label="Password"
-          labelWidth={60}
+          labelWidth={labelWidth}
           type={show ? "text" : "password"}
           value={value}
+          placeholder={placeholder}
           error={!!error}
           color={error ? "secondary" : "primary"}
           onChange={(e): void => setValue(e.target.value)}
@@ -49,6 +53,7 @@ const PasswordInput: React.FC<Props> = ({ value, setValue, error, theme }) => {
             </InputAdornment>
           }
         />
+        <FormHelperText error={!!error}>{error}</FormHelperText>
       </FormControl>
     </ThemeProvider>
   );

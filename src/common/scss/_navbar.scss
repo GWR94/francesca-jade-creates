@@ -107,10 +107,11 @@ span.bp3-popover-target {
 
 .nav__dropdown-icon {
   height: 22px;
-  width: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 22px;
+  margin-right: 3px;
 }
 
 .nav__basket {
@@ -118,6 +119,10 @@ span.bp3-popover-target {
   min-width: 220px;
   font-family: $title-font;
   position: relative;
+}
+
+.nav__menu {
+  padding: 4px 8px;
 }
 
 .nav__basket-title {

@@ -1,23 +1,39 @@
 import React from "react";
-import { Tag } from "@blueprintjs/core";
+import { Chip, ThemeProvider, createMuiTheme } from "@material-ui/core";
 
 interface Props {
   tags: string[];
   type: "Cake" | "Creates";
 }
 
-const TagsInput = ({ tags, type }): JSX.Element => {
-  return (
-    <div className="tags__container">
+const chipTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#9370f6",
+    },
+    secondary: {
+      main: "#ff80f7",
+    },
+  },
+});
+
+const TagsInput = ({ tags, type }): JSX.Element => (
+  <div className="tags__container">
+    <ThemeProvider theme={chipTheme}>
       {tags.map(
         (tag, i): JSX.Element => (
-          <Tag active key={i} className={`tags__tag${type && `--${type.toLowerCase()}`}`}>
-            {tag}
-          </Tag>
+          <Chip
+            key={i}
+            className="tags__tag"
+            label={tag}
+            size="small"
+            color={type === "Cake" ? "secondary" : "primary"}
+            style={{ color: "#fff", borderRadius: "3px", alignItems: "center" }}
+          />
         ),
       )}
-    </div>
-  );
-};
+    </ThemeProvider>
+  </div>
+);
 
 export default TagsInput;

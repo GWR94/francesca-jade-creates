@@ -4,6 +4,8 @@ import { S3Image } from "aws-amplify-react";
 import _ from "underscore";
 import { useDispatch } from "react-redux";
 import { API, graphqlOperation } from "aws-amplify";
+import { makeStyles } from "@material-ui/core";
+import { BrushOutlined, CakeOutlined } from "@material-ui/icons";
 import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction } from "../../../interfaces/basket.redux.i";
 import { updateUser } from "../../../graphql/mutations";
@@ -17,6 +19,13 @@ interface Props {
   updateSavedProducts?: (products) => void;
 }
 
+const useStyles = makeStyles({
+  icon: {
+    position: "absolute",
+    top: 8,
+    right: 0,
+  },
+});
 const BasketItem: React.FC<Props> = ({
   item,
   sub,
@@ -24,6 +33,7 @@ const BasketItem: React.FC<Props> = ({
   updateSavedProducts,
   saved,
 }): JSX.Element => {
+  const classes = useStyles();
   const { title, price, shippingCost, id, image } = item;
   const dispatch = useDispatch();
   const basket = useRef(null);
@@ -38,6 +48,11 @@ const BasketItem: React.FC<Props> = ({
   return (
     <>
       <div ref={basket} className="basket-item__container animated">
+        {item.type === "Cake" ? (
+          <CakeOutlined className={classes.icon} />
+        ) : (
+          <BrushOutlined className={classes.icon} />
+        )}
         <S3Image
           imgKey={image[0].key}
           theme={{

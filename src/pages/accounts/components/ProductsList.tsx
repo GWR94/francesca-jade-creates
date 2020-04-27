@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Row } from "reactstrap";
-import { Drawer } from "@blueprintjs/core";
+import { Drawer, ClickAwayListener } from "@material-ui/core";
 import { API } from "aws-amplify";
 import ProductCard from "../../../common/product/ProductCard";
 import { ProductProps } from "../../../common/interfaces/Product.i";
@@ -97,7 +97,10 @@ class ProductsList extends React.Component<ProductListProps, ProductListState> {
       <>
         <div
           className="product-list__filter-container"
-          onClick={(): void => this.setState({ filterOpen: true })}
+          onClick={(e): void => {
+            e.stopPropagation();
+            this.setState({ filterOpen: true });
+          }}
           role="button"
           tabIndex={0}
         >
@@ -133,16 +136,11 @@ class ProductsList extends React.Component<ProductListProps, ProductListState> {
           />
         )}
         <Drawer
-          isOpen={filterOpen}
-          hasBackdrop={false}
-          onClose={(): void => this.setState({ filterOpen: false })}
-          position="top"
-          size="auto"
-          style={{
-            margin: "0 auto",
-            maxWidth: "400px",
-            borderBottomLeftRadius: "8px",
-            borderBottomRightRadius: "8px",
+          open={filterOpen}
+          anchor="top"
+          ModalProps={{
+            onBackdropClick: (): void => this.setState({ filterOpen: false }),
+            disableScrollLock: true,
           }}
         >
           <SearchFilter

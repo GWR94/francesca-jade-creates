@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Dialog, InputGroup, Button } from "@blueprintjs/core";
+import {
+  Dialog,
+  TextField,
+  Button,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import { Toaster } from "../../../utils";
 
@@ -39,35 +46,36 @@ const VerificationDialog: React.FC<Props> = ({
     open && (
       <Dialog
         className="verify__container"
-        isOpen={open}
+        open={open}
         onClose={closeDialog}
         title="Verify your email address"
       >
-        <div className="verify__dialog">
+        <DialogTitle>Enter Verification Code</DialogTitle>
+        <DialogContent>
           <p className="verify__text">
             Please enter the verification code sent to {email.value}
           </p>
-          <InputGroup
+          <TextField
             type="text"
             value={code}
-            placeholder="Enter the verification code..."
+            variant="outlined"
+            fullWidth
+            placeholder="Enter the verification code"
             onChange={(e): void => setCode(e.target.value)}
           />
-          <div className="verify__button-container">
+          <DialogActions>
             <Button
-              intent="success"
-              text="Verify Email"
+              color="primary"
               onClick={(): Promise<void> => handleVerificationCode("email")}
               style={{ margin: "0 4px" }}
-            />
-            <Button
-              intent="warning"
-              text="Verify Later"
-              onClick={closeDialog}
-              style={{ margin: "0 4px" }}
-            />
-          </div>
-        </div>
+            >
+              Verify Email
+            </Button>
+            <Button color="secondary" onClick={closeDialog} style={{ margin: "0 4px" }}>
+              Verify Later
+            </Button>
+          </DialogActions>
+        </DialogContent>
       </Dialog>
     )
   );

@@ -1,8 +1,17 @@
 /* eslint-disable prefer-destructuring */
 import React from "react";
-import { Dialog, FormGroup, InputGroup, Button } from "@blueprintjs/core";
+import {
+  DialogTitle,
+  Dialog,
+  TextField,
+  Button,
+  Grid,
+  CircularProgress,
+  DialogActions,
+  DialogContentText,
+  DialogContent,
+} from "@material-ui/core";
 import { Auth } from "aws-amplify";
-import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
 import PasswordInput from "../../../common/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/Password.i";
@@ -108,82 +117,87 @@ class ChangePasswordDialog extends React.Component<PasswordProps, PasswordState>
       verifyLoading,
     } = this.state;
     return (
-      <Dialog
-        title="Reset your password"
-        isOpen={isOpen}
-        onClose={onClose}
-        className="dialog__container"
-      >
-        <div className="dialog__inner-container">
-          {codeSent ? (
-            <>
-              <p>
+      <Dialog open={isOpen} onClose={onClose} className="dialog__container">
+        <DialogTitle>Reset Your Password</DialogTitle>
+        {codeSent ? (
+          <>
+            <DialogContent>
+              <DialogContentText>
                 A code has been sent to {destination}. Please enter it into the input
                 below and create a new password.
-              </p>
-              <Row>
-                <Col sm={6}>
-                  <FormGroup label="Code:">
-                    <InputGroup
-                      value={code}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({ code: e.target.value })
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={6}>
-                  <FormGroup label="New Password:">
-                    <PasswordInput
-                      value={newPassword}
-                      setValue={(newPassword): void => this.setState({ newPassword })}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <div className="dialog__button-container">
-                <Button
-                  intent="success"
-                  onClick={(): void => {
-                    this.setState({ verifyLoading: true });
-                    this.handleCodeVerify();
-                  }}
-                  className="dialog__button"
-                  loading={verifyLoading}
-                >
-                  Update Password
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <p>
-                Please enter the username associated with your account. You will be
-                emailed a code which will let you change your password.
-              </p>
-              <FormGroup label="Username:">
-                <InputGroup
-                  value={username}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    this.setState({ username: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <div className="dialog__button-container">
-                <Button
-                  intent="success"
-                  onClick={(): void => {
-                    this.setState({ codeLoading: true });
-                    this.handleForgottenPassword();
-                  }}
-                  className="dialog__button"
-                  text="Send Code"
-                  loading={codeLoading}
-                />
-              </div>
-            </>
-          )}
-        </div>
+              </DialogContentText>
+              <Grid container spacing={1} direction="row">
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Code"
+                    variant="outlined"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                      this.setState({ code: e.target.value })
+                    }
+                    value={code}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <PasswordInput
+                    value={newPassword}
+                    setValue={(newPassword): void => this.setState({ newPassword })}
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions className="dialog__button-container">
+              <Button
+                color="primary"
+                onClick={(): void => {
+                  this.setState({ verifyLoading: true });
+                  this.handleCodeVerify();
+                }}
+                className="dialog__button"
+              >
+                {verifyLoading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  "Update Password"
+                )}
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+          <DialogContent>
+            <DialogContentText>
+              Please enter the username associated with your account. You will be emailed
+              a code which will let you change your password.
+            </DialogContentText>
+            <TextField
+              label="Username"
+              value={username}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                this.setState({ username: e.target.value })
+              }
+              variant="outlined"
+              fullWidth
+            />
+            <DialogActions>
+              <Button color="secondary" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                onClick={(): void => {
+                  this.setState({ codeLoading: true });
+                  this.handleForgottenPassword();
+                }}
+                className="dialog__button"
+              >
+                {codeLoading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  "Send Code"
+                )}
+              </Button>
+            </DialogActions>
+          </DialogContent>
+        )}
       </Dialog>
     );
   }

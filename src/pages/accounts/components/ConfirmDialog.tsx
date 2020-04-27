@@ -1,5 +1,15 @@
 import React from "react";
-import { Dialog, Classes, Button, Tag, ProgressBar } from "@blueprintjs/core";
+import {
+  Dialog,
+  Button,
+  LinearProgress,
+  DialogTitle,
+  DialogContent,
+  CircularProgress,
+  DialogActions,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import { ConfirmDialogProps } from "../interfaces/ConfirmDialog.i";
 import ImageCarousel from "../../../common/ImageCarousel";
 import TagsInput from "../../../common/TagsInput";
@@ -20,15 +30,13 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   tags,
   image,
 }): JSX.Element => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     isOpen && (
-      <Dialog
-        isOpen={isOpen}
-        icon="info-sign"
-        title="Are you sure this is correct?"
-        onClose={closeModal}
-      >
-        <div className={Classes.DIALOG_BODY}>
+      <Dialog open={isOpen} onClose={closeModal} scroll="body" fullScreen={fullScreen}>
+        <DialogTitle>Confirm your product is correct</DialogTitle>
+        <DialogContent>
           <p>
             <strong>Title: </strong>
             {title}
@@ -69,23 +77,20 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           ) : (
             <ImageCarousel images={image} />
           )}
-        </div>
-        <div className="new-product__button-container">
-          <Button
-            text="Edit"
-            intent="warning"
-            onClick={closeModal}
-            style={{ margin: "6px 4px" }}
-          />
-          <Button
-            text="Looks good!"
-            intent="success"
-            loading={isUploading}
-            onClick={onProductCreate}
-            style={{ margin: "6px 4px" }}
-          />
-        </div>
-        {isUploading && <ProgressBar intent="primary" value={percentUploaded} />}
+          <DialogActions>
+            <Button color="secondary" onClick={closeModal} style={{ margin: "6px 4px" }}>
+              Edit
+            </Button>
+            <Button
+              color="primary"
+              onClick={onProductCreate}
+              style={{ margin: "6px 4px" }}
+            >
+              {isUploading ? <CircularProgress /> : "Looks good!"}
+            </Button>
+          </DialogActions>
+          {isUploading && <LinearProgress color="primary" value={percentUploaded} />}
+        </DialogContent>
       </Dialog>
     )
   );

@@ -14,6 +14,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  DialogActions,
 } from "@material-ui/core";
 import validate from "validate.js";
 import { Auth } from "aws-amplify";
@@ -36,11 +37,11 @@ const initialState = {
     error: null,
   },
   phoneNumber: {
-    code: "+44",
+    code: "",
     number: "",
     error: null,
   },
-  codeSent: true,
+  codeSent: false,
   destination: null,
   code: "",
   codeLoading: false,
@@ -226,198 +227,194 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
       >
         <DialogTitle>Create a new account</DialogTitle>
         <DialogContent>
-          <ThemeProvider theme={theme}>
-            {codeSent ? (
-              <>
-                <p>
-                  A verification code has been sent to {destination}. Please enter this
-                  code below to verify your identity.
-                </p>
-                <Grid container spacing={1} direction="row">
-                  <Grid item sm={6} xs={12}>
-                    <TextField
-                      defaultValue={username.value}
-                      disabled
-                      fullWidth
-                      label="Username"
-                      variant="filled"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Verification Code"
-                      variant="outlined"
-                      fullWidth
-                      value={code}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({
-                          code: e.target.value,
-                        })
-                      }
-                      helperText={
-                        <div
-                          className="login__forgot"
-                          tabIndex={0}
-                          role="button"
-                          style={{ width: "170px" }}
-                          onClick={this.handleResendVerificationCode}
-                        >
-                          Not got a code? Resend code here.
-                        </div>
-                      }
-                    />
-                  </Grid>
+          {codeSent ? (
+            <>
+              <p>
+                A verification code has been sent to {destination}. Please enter this code
+                below to verify your identity.
+              </p>
+              <Grid container direction="row" spacing={1}>
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    defaultValue={username.value}
+                    disabled
+                    fullWidth
+                    label="Username"
+                    variant="filled"
+                  />
                 </Grid>
-                <div className="dialog__button-container">
-                  <Button
-                    className="dialog__button"
-                    color="secondary"
-                    onClick={(): void => {
-                      this.setState({ ...initialState });
-                      onClose();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className="dialog__button"
-                    color="primary"
-                    onClick={(): void => {
-                      this.setState({ codeLoading: true });
-                      this.handleVerifyCode();
-                    }}
-                  >
-                    {codeLoading ? <CircularProgress size={20} /> : "Create Account"}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>
-                  Please fill out all of the fields below to create an account. All fields
-                  are mandatory unless stated.
-                </p>
-                <Grid
-                  container
-                  spacing={1}
-                  direction="row"
-                  style={{ marginBottom: "10px" }}
-                >
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Username"
-                      helperText={username.error}
-                      error={!!username.error}
-                      variant="outlined"
-                      fullWidth
-                      value={username.value}
-                      color={username.error ? "secondary" : "primary"}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                        this.setState({
-                          username: {
-                            value: e.target.value,
-                            error: "",
-                          },
-                        })
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <PasswordInput
-                      value={password.value}
-                      error={password.error}
-                      setValue={(value): void => {
-                        this.setState({ password: { value, error: "" } });
-                      }}
-                      theme={theme}
-                    />
-                  </Grid>
-                </Grid>
-                <TextField
-                  label="Email"
-                  color={email.error ? "secondary" : "primary"}
-                  helperText={email.error}
-                  value={email.value}
-                  error={!!email.error}
-                  variant="outlined"
-                  type="email"
-                  fullWidth
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    this.setState({
-                      email: {
-                        value: e.target.value,
-                        error: "",
-                      },
-                    })
-                  }
-                  style={{ marginBottom: "10px" }}
-                />
-                <FormControl
-                  fullWidth
-                  variant="outlined"
-                  error={!!phoneNumber.error}
-                  style={{ flexDirection: "row" }}
-                >
-                  <InputLabel>Phone Area Code</InputLabel>
-                  <Select
-                    value={phoneNumber.code}
-                    labelWidth={114}
-                    onChange={(e: any): void =>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Verification Code"
+                    variant="outlined"
+                    fullWidth
+                    value={code}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                       this.setState({
-                        phoneNumber: { ...phoneNumber, code: e.target.value },
+                        code: e.target.value,
                       })
                     }
-                    style={{ maxWidth: "150px" }}
-                  >
-                    {euroNumbers.map((num, i) => (
-                      <MenuItem key={i} value={num.value}>
-                        {num.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    helperText={
+                      <div
+                        className="login__forgot"
+                        tabIndex={0}
+                        role="button"
+                        style={{ width: "170px" }}
+                        onClick={this.handleResendVerificationCode}
+                      >
+                        Not got a code? Resend code here.
+                      </div>
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <div className="dialog__button-container">
+                <Button
+                  className="dialog__button"
+                  color="secondary"
+                  onClick={(): void => {
+                    this.setState({ ...initialState });
+                    onClose();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="dialog__button"
+                  color="primary"
+                  onClick={(): void => {
+                    this.setState({ codeLoading: true });
+                    this.handleVerifyCode();
+                  }}
+                >
+                  {codeLoading ? <CircularProgress size={20} /> : "Create Account"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>
+                Please fill out all of the fields below to create an account. All fields
+                are mandatory unless stated.
+              </p>
+              <Grid container direction="row" spacing={1} style={{ marginBottom: "2px" }}>
+                <Grid item xs={12} sm={6}>
                   <TextField
+                    label="Username"
+                    helperText={username.error}
+                    error={!!username.error}
                     variant="outlined"
-                    value={phoneNumber.number}
-                    label="Phone Number"
-                    onChange={(e): void =>
+                    fullWidth
+                    value={username.value}
+                    color={username.error ? "secondary" : "primary"}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                       this.setState({
-                        phoneNumber: {
-                          ...phoneNumber,
-                          number: e.target.value,
+                        username: {
+                          value: e.target.value,
                           error: "",
                         },
                       })
                     }
-                    color={phoneNumber.error ? "secondary" : "primary"}
-                    fullWidth
-                    style={{ marginLeft: "5px" }}
+                    style={{ marginRight: "8px" }}
                   />
-                </FormControl>
-                <div className="dialog__button-container">
-                  <Button
-                    className="dialog__button"
-                    color="secondary"
-                    onClick={(): void => {
-                      this.setState({ ...initialState });
-                      onClose();
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <PasswordInput
+                    value={password.value}
+                    error={password.error}
+                    setValue={(value): void => {
+                      this.setState({ password: { value, error: "" } });
                     }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className="dialog__button"
-                    color="primary"
-                    onClick={(): void => {
-                      this.setState({ createLoading: true });
-                      this.handleErrorCheck();
-                    }}
-                  >
-                    {createLoading ? <CircularProgress size={20} /> : "Create Account"}
-                  </Button>
-                </div>
-              </>
-            )}
-          </ThemeProvider>
+                    theme={theme}
+                  />
+                </Grid>
+              </Grid>
+              <TextField
+                label="Email"
+                color={email.error ? "secondary" : "primary"}
+                helperText={email.error}
+                value={email.value}
+                error={!!email.error}
+                variant="outlined"
+                type="email"
+                fullWidth
+                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                  this.setState({
+                    email: {
+                      value: e.target.value,
+                      error: "",
+                    },
+                  })
+                }
+                style={{ marginBottom: "10px" }}
+              />
+              <FormControl
+                fullWidth
+                variant="outlined"
+                error={!!phoneNumber.error}
+                style={{ flexDirection: "row" }}
+              >
+                <InputLabel>Country Code</InputLabel>
+                <Select
+                  value={phoneNumber.code}
+                  labelWidth={114}
+                  onChange={(e: any): void =>
+                    this.setState({
+                      phoneNumber: { ...phoneNumber, code: e.target.value },
+                    })
+                  }
+                  style={{ width: "200px" }}
+                >
+                  {euroNumbers.map((num, i) => (
+                    <MenuItem key={i} value={num.value}>
+                      {num.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <TextField
+                  variant="outlined"
+                  value={phoneNumber.number}
+                  label="Phone Number"
+                  onChange={(e): void =>
+                    this.setState({
+                      phoneNumber: {
+                        ...phoneNumber,
+                        number: e.target.value,
+                        error: "",
+                      },
+                    })
+                  }
+                  color={phoneNumber.error ? "secondary" : "primary"}
+                  fullWidth
+                  style={{ marginLeft: "8px" }}
+                />
+              </FormControl>
+              <DialogActions>
+                <Button
+                  className="dialog__button"
+                  color="secondary"
+                  onClick={(): void => {
+                    this.setState({ ...initialState });
+                    onClose();
+                  }}
+                  style={{ marginRight: "5px" }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="dialog__button"
+                  color="primary"
+                  onClick={(): void => {
+                    this.setState({ createLoading: true });
+                    this.handleErrorCheck();
+                  }}
+                  style={{ marginLeft: "5px" }}
+                >
+                  {createLoading ? <CircularProgress size={20} /> : "Create Account"}
+                </Button>
+              </DialogActions>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     );

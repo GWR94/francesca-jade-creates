@@ -16,6 +16,8 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "./scss/styles.scss";
 import "@stripe/stripe-js";
 import configureStore from "./store/store";
+import { ThemeProvider } from "@material-ui/core";
+import { rootTheme } from "./themes";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
@@ -81,9 +83,11 @@ Amplify.configure({
 export const App: FC = (): JSX.Element => (
   <Provider store={persist.store}>
     <PersistGate loading={null} persistor={persist.persistor}>
-      <div id="app">
-        <AppRouter />
-      </div>
+      <ThemeProvider theme={rootTheme}>
+        <div id="app">
+          <AppRouter />
+        </div>
+      </ThemeProvider>
     </PersistGate>
   </Provider>
 );

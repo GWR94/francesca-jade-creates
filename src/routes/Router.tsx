@@ -17,7 +17,7 @@ import { attributesToObject, Toaster } from "../utils/index";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import background from "../img/background.jpg";
-import UpdateProduct from "../pages/accounts/components/EditProduct";
+import UpdateProduct from "../pages/accounts/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import { ClearBasketAction } from "../interfaces/basket.redux.i";
 import * as basketActions from "../actions/basket.actions";

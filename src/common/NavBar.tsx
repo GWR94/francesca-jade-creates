@@ -1,9 +1,18 @@
-import React from "react";
+import React, { createRef } from "react";
 import { NavLink } from "react-router-dom";
 import { Navbar, NavbarToggler, Collapse, Nav } from "reactstrap";
-import { Popover, Menu, MenuDivider, MenuItem, Button } from "@blueprintjs/core";
+import { Popover, Menu, MenuItem, Divider, Button, Badge } from "@material-ui/core";
 import Headroom from "react-headroom";
 import { connect } from "react-redux";
+import {
+  AccountBoxRounded,
+  FaceRounded,
+  AddShoppingCartRounded,
+  ShoppingCartRounded,
+  MailOutlineRounded,
+  ExitToAppOutlined,
+  ShoppingBasket,
+} from "@material-ui/icons";
 import logo from "../img/logo.png";
 import {
   NavBarProps,
@@ -19,15 +28,27 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
   public readonly state: NavBarState = {
     navOpen: false,
     menuOpen: false,
-    accountOpen: false,
+    basketOpen: false,
+    mobile: null,
   };
 
+  private accountRef = createRef<HTMLDivElement>();
+  private basketRef = createRef<HTMLDivElement>();
+
   public componentDidMount(): void {
-    this.setState({ accountOpen: window.location.href.split("/").includes("account") });
+    window.addEventListener("resize", (e: Event): void => {
+      this.setState({ mobile: (e.target as Window).innerWidth < 768 });
+    });
+  }
+
+  public componentWillUnmount(): void {
+    window.removeEventListener("resize", (e: Event): void => {
+      this.setState({ mobile: (e.target as Window).innerWidth < 768 });
+    });
   }
 
   public render(): JSX.Element {
-    const { navOpen, menuOpen, accountOpen } = this.state;
+    const { navOpen, menuOpen, basketOpen, mobile } = this.state;
     const {
       user,
       admin,
@@ -37,12 +58,21 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
       signOut,
       removeFromBasket,
     } = this.props;
+
     return (
       <>
         <Headroom wrapperStyle={{ position: "relative", zIndex: 3, height: "50px" }}>
           <Navbar className="nav__bar animated slideInDown" light expand="md">
             <img src={logo} alt="Francesca Jade Creates" className="navbar__logo" />
-            <NavbarToggler onClick={(): void => this.setState({ navOpen: !navOpen })} />
+            {!navOpen && mobile ? (
+              <Badge badgeContent={items.length} color="primary">
+                <NavbarToggler
+                  onClick={(): void => this.setState({ navOpen: !navOpen })}
+                />
+              </Badge>
+            ) : (
+              <NavbarToggler onClick={(): void => this.setState({ navOpen: !navOpen })} />
+            )}
             <Collapse isOpen={navOpen} navbar>
               <Nav className="mr-auto" navbar>
                 <NavLink
@@ -76,96 +106,137 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
               </Nav>
               <Nav navbar>
                 {user ? (
-                  <Popover position="bottom-right">
+                  <>
                     <div
                       onClick={(): void => this.setState({ menuOpen: !menuOpen })}
                       role="button"
                       tabIndex={0}
-                      className={accountOpen ? "nav__link--active" : "nav__link"}
+                      ref={this.accountRef}
+                      className={
+                        window.location.href.split("/").includes("account")
+                          ? "nav__link--active"
+                          : "nav__link"
+                      }
                     >
-                      <i className="fas fa-user nav__icon" />
+                      <AccountBoxRounded />
                       Account
                     </div>
-                    <Menu className="nav__menu">
-                      <MenuItem
-                        icon={<i className="fas fa-id-badge nav__dropdown-icon" />}
-                        text="Profile"
-                        onClick={(): void => {
-                          this.setState({ navOpen: false });
-                          setAccountsTab("profile");
-                          history.push("/account");
-                        }}
-                      />
-                      {admin ? (
-                        <>
-                          <MenuItem
-                            icon={
-                              <i className="fas fa-shopping-basket nav__dropdown-icon" />
-                            }
-                            text="Products"
-                            onClick={(): void => {
-                              this.setState({ navOpen: false });
-                              setAccountsTab("products");
-                              history.push("/account");
-                            }}
-                          />
-                          <MenuItem
-                            icon={<i className="fas fa-plus-square nav__dropdown-icon" />}
-                            text="Create Product"
-                            onClick={(): void => {
-                              this.setState({ navOpen: false });
-                              history.push("/account");
-                              setAccountsTab("create");
-                            }}
-                          />
-                        </>
-                      ) : (
+                    <Menu
+                      open={menuOpen}
+                      getContentAnchorEl={null}
+                      anchorEl={this.accountRef.current}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      onClose={(): void => this.setState({ menuOpen: false })}
+                    >
+                      <div className="nav__menu">
                         <MenuItem
-                          icon={<i className="fas fa-envelope-open nav__dropdown-icon" />}
-                          text="Orders"
                           onClick={(): void => {
-                            this.setState({ navOpen: false });
+                            this.setState({ navOpen: false, menuOpen: false });
+                            setAccountsTab("profile");
                             history.push("/account");
-                            setAccountsTab("orders");
                           }}
-                        />
-                      )}
-                      <MenuDivider />
-                      <MenuItem
-                        icon={<i className="fas fa-sign-out-alt nav__dropdown-icon" />}
-                        text="Logout"
-                        className="nav__logout"
-                        onClick={(): void => {
-                          this.setState({ navOpen: false });
-                          signOut();
-                        }}
-                      />
+                        >
+                          <FaceRounded style={{ marginRight: 8 }} /> Profile
+                        </MenuItem>
+                        {admin ? (
+                          <>
+                            <MenuItem
+                              onClick={(): void => {
+                                this.setState({ navOpen: false, menuOpen: false });
+                                setAccountsTab("products");
+                                history.push("/account");
+                              }}
+                            >
+                              <ShoppingCartRounded style={{ marginRight: 8 }} /> Products
+                            </MenuItem>
+                            <MenuItem
+                              onClick={(): void => {
+                                this.setState({ navOpen: false, menuOpen: false });
+                                history.push("/account");
+                                setAccountsTab("create");
+                              }}
+                            >
+                              <AddShoppingCartRounded style={{ marginRight: 8 }} /> Create
+                              Product
+                            </MenuItem>
+                          </>
+                        ) : (
+                          <MenuItem
+                            onClick={(): void => {
+                              this.setState({ navOpen: false, menuOpen: false });
+                              history.push("/account");
+                              setAccountsTab("orders");
+                            }}
+                          >
+                            <MailOutlineRounded style={{ marginRight: 8 }} />
+                            Orders
+                          </MenuItem>
+                        )}
+                        <Divider />
+                        <MenuItem
+                          className="nav__logout"
+                          onClick={(): void => {
+                            this.setState({ navOpen: false, menuOpen: false });
+                            signOut();
+                          }}
+                        >
+                          <ExitToAppOutlined style={{ marginRight: 8 }} /> Logout
+                        </MenuItem>
+                      </div>
                     </Menu>
-                  </Popover>
+                  </>
                 ) : (
                   <NavLink
                     to="/login"
                     onClick={(): void => this.setState({ navOpen: false })}
                     activeClassName="/login"
-                    className={accountOpen ? "nav__link--active" : "nav__link"}
-                  >
-                    <i className="fas fa-user nav__icon" />
-                    Account
-                  </NavLink>
-                )}
-                <Popover interactionKind="click" position="bottom">
-                  <div
-                    role="button"
-                    tabIndex={0}
                     className={
-                      window.location.href.includes("basket")
+                      window.location.href.split("/").includes("account")
                         ? "nav__link--active"
                         : "nav__link"
                     }
                   >
-                    <i className="fas fa-shopping-basket nav__icon" />
-                    Basket ({items.length})
-                  </div>
+                    <AccountBoxRounded />
+                    Account
+                  </NavLink>
+                )}
+                <div
+                  role="button"
+                  tabIndex={0}
+                  ref={this.basketRef}
+                  onClick={(): void => this.setState({ basketOpen: !basketOpen })}
+                  className={
+                    window.location.href.includes("basket")
+                      ? "nav__link--active"
+                      : "nav__link"
+                  }
+                >
+                  <Badge badgeContent={items.length} color="primary" showZero>
+                    <ShoppingBasket style={{ marginRight: 8 }} />
+                  </Badge>
+                  Basket
+                </div>
+                <Popover
+                  open={basketOpen}
+                  getContentAnchorEl={null}
+                  anchorEl={this.basketRef.current}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  onClose={(): void => this.setState({ basketOpen: false })}
+                >
                   <div className="nav__basket">
                     <h5 className="nav__basket-title">Basket</h5>
                     {items.length > 0 ? (
@@ -195,14 +266,19 @@ export class NavBar extends React.Component<NavBarProps, NavBarState> {
                       }}
                     >
                       <Button
-                        minimal
-                        small
-                        intent="primary"
-                        text="View Basket"
-                        onClick={(): void => history.push("/basket")}
-                      />
+                        size="small"
+                        color="secondary"
+                        onClick={(): void => {
+                          history.push("/basket");
+                          this.setState({ basketOpen: false, navOpen: false });
+                        }}
+                      >
+                        View Basket
+                      </Button>
                       {/* // FIXME */}
-                      <Button small intent="success" text="Checkout" />
+                      <Button size="small" color="primary">
+                        Checkout
+                      </Button>
                     </div>
                   </div>
                 </Popover>

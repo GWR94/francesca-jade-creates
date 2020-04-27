@@ -19,7 +19,8 @@ export interface NavBarProps {
 export interface NavBarState {
   navOpen: boolean;
   menuOpen: boolean;
-  accountOpen: boolean;
+  basketOpen: boolean;
+  mobile: boolean;
 }
 
 export interface NavBarDispatchProps {

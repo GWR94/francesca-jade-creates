@@ -69,8 +69,7 @@ class ImageCarousel extends React.Component<ImageCarouselProps, ImageCarouselSta
         message: "Successfully removed image.",
       });
       handleUpdateImages(updatedImages);
-      // setDialogOpen(false);
-      this.setState({ animating: false });
+      this.setState({ animating: false, dialogOpen: false });
     } catch (err) {
       console.error(err);
       Toaster.show({
@@ -95,7 +94,7 @@ class ImageCarousel extends React.Component<ImageCarouselProps, ImageCarouselSta
                   tabIndex={0}
                   onClick={(): void => {
                     this.setState({
-                      dialogOpen: false,
+                      dialogOpen: true,
                       keyToDelete: images[0].key,
                     });
                   }}

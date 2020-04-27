@@ -1,3 +1,4 @@
+import { Crop } from "react-image-crop";
 import { S3ObjectInput } from "../../API";
 
 export interface ImagePickerProps {
@@ -12,4 +13,12 @@ export interface ImagePickerProps {
   update?: boolean;
   profile?: boolean;
   showText?: boolean;
+}
+
+export interface ImagePickerState {
+  imagePreview: string;
+  src: string;
+  crop: Crop;
+  croppedImage: File;
+  cropperOpen: boolean;
 }

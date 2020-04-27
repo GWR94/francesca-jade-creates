@@ -6,6 +6,10 @@ export interface ProfileProps {
   userAttributes: UserAttributeProps;
   user: CognitoUserProps;
   admin: boolean;
+  classes: {
+    noLeftBorderInput: string;
+    buttonBottom: string;
+  };
 }
 
 export interface ProfileState {

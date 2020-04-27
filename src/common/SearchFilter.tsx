@@ -1,11 +1,27 @@
 import React, { FormEvent } from "react";
+
 import {
-  InputGroup,
-  ControlGroup,
-  HTMLSelect,
+  Select,
   Radio,
+  FormControl,
   RadioGroup,
-} from "@blueprintjs/core";
+  FormControlLabel,
+  FormLabel,
+  TextField,
+  InputAdornment,
+  Grid,
+  MenuItem,
+  ClickAwayListener,
+  withStyles,
+  ThemeProvider,
+  FormGroup,
+  Checkbox,
+  FormHelperText,
+  InputLabel,
+} from "@material-ui/core";
+import { SearchRounded } from "@material-ui/icons";
+import { ControlGroup } from "@blueprintjs/core";
+import { styles, searchFilterTheme } from "../themes";
 
 interface Props {
   type?: string;
@@ -14,7 +30,10 @@ interface Props {
 }
 
 interface State {
-  adminFilters: string;
+  adminFilters: {
+    cake: boolean;
+    creates: boolean;
+  };
   searchQuery: string;
   query: string;
   sortBy: string;
@@ -27,10 +46,19 @@ interface State {
 
 class SearchFilter extends React.Component<Props, State> {
   public readonly state = {
-    adminFilters: "all",
+    adminFilters: {
+      cake: true,
+      creates: true,
+    },
     searchQuery: "all",
     query: "",
     sortBy: "createdAt",
+  };
+
+  private handleSelect = (e: React.ChangeEvent<{ value: unknown }>): void => {
+    this.setState({
+      searchQuery: e.target.value as string,
+    });
   };
 
   public render(): JSX.Element {
@@ -39,73 +67,133 @@ class SearchFilter extends React.Component<Props, State> {
 
     return (
       <>
-        <div className="filter__container animated fadeIn">
-          <ControlGroup style={{ margin: "6px 0" }}>
-            <InputGroup
-              leftIcon="search"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                this.setState({ query: e.target.value });
-                setQuery(e.target.value, {
-                  searchQuery,
-                  adminFilters: admin && adminFilters,
-                  sortBy,
-                });
-              }}
-              placeholder="Search query..."
-              fill
-            />
-            <HTMLSelect
-              onChange={(e): void => {
-                this.setState({ searchQuery: e.target.value });
-                setQuery(query, {
-                  searchQuery,
-                  adminFilters: admin && adminFilters,
-                  sortBy,
-                });
-              }}
-            >
-              <option value="all">All</option>
-              <option value="title">Title</option>
-              <option value="description">Description</option>
-              <option value="tags">Tags</option>
-            </HTMLSelect>
-          </ControlGroup>
-          {admin && (
-            <>
-              <p className="filter__label">Include:</p>
-              <RadioGroup
-                onChange={(e: FormEvent<HTMLInputElement>): void => {
-                  const adminFilters = e.currentTarget.value;
-                  this.setState({ adminFilters });
-                  setQuery(query, {
-                    searchQuery,
-                    adminFilters: admin && adminFilters,
-                    sortBy,
-                  });
-                }}
-                selectedValue={adminFilters}
-                className="filter__radio"
-              >
-                <Radio inline label="All" value="all" />
-                <Radio inline label="Cakes" value="cakes" />
-                <Radio inline label="Creations" value="creates" />
-              </RadioGroup>
-              <p className="filter__label">Sort By:</p>
-              <RadioGroup
-                onChange={(e: FormEvent<HTMLInputElement>): void => {
-                  const sortBy = e.currentTarget.value;
-                  this.setState({ sortBy });
-                  setQuery(query, { searchQuery, adminFilters, sortBy });
-                }}
-                selectedValue={sortBy}
-                className="filter__radio"
-              >
-                <Radio inline label="Last Created" value="createdAt" />
-                <Radio inline label="Last Updated" value="updatedAt" />
-              </RadioGroup>
-            </>
-          )}
-        </div>
+        <ThemeProvider theme={searchFilterTheme}>
+          <div className="filter__container">
+            <Grid container spacing={0}>
+              <Grid item xs={7}>
+                <TextField
+                  type="text"
+                  value={query}
+                  label="Search Query"
+                  placeholder="Enter a search query..."
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchRounded />
+                      </InputAdornment>
+                    ),
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    this.setState({ query: e.target.value })
+                  }
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel>From</InputLabel>
+                  <Select
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={this.handleSelect}
+                    fullWidth
+                    margin="dense"
+                    label="From"
+                    style={{
+                      borderTopLeftRadius: 0,
+                      borderBottomLeftRadius: 0,
+                      borderLeft: "none",
+                      borderTopRightRadius: 4,
+                      borderBottomRightRadius: 4,
+                      marginLeft: -1,
+                    }}
+                  >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="title">Title</MenuItem>
+                    <MenuItem value="description">Description</MenuItem>
+                    <MenuItem value="tags">Tags</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+            {admin && (
+              <>
+                <Grid container spacing={1}>
+                  <Grid item xs={6}>
+                    <FormControl fullWidth>
+                      <FormLabel style={{ marginTop: 12 }}>Include</FormLabel>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={adminFilters.cake}
+                              onChange={(): void =>
+                                this.setState({
+                                  adminFilters: {
+                                    ...adminFilters,
+                                    cake: !adminFilters.cake,
+                                  },
+                                })
+                              }
+                              name="Cakes"
+                            />
+                          }
+                          label="Cakes"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={adminFilters.creates}
+                              onChange={(): void =>
+                                this.setState({
+                                  adminFilters: {
+                                    ...adminFilters,
+                                    creates: !adminFilters.creates,
+                                  },
+                                })
+                              }
+                              name="Creations"
+                            />
+                          }
+                          label="Creations"
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormControl
+                      component="fieldset"
+                      className="new-product__radio-container"
+                    >
+                      <FormLabel style={{ marginTop: 12 }}>Sorting Method</FormLabel>
+                      <RadioGroup
+                        aria-label="Sort by filters"
+                        name="Sort By"
+                        value={sortBy}
+                        onChange={(e): void =>
+                          this.setState({ sortBy: e.currentTarget.value })
+                        }
+                      >
+                        <FormControlLabel
+                          value="createdAt"
+                          control={<Radio />}
+                          label="Last Created"
+                        />
+                        <FormControlLabel
+                          value="updatedAt"
+                          control={<Radio />}
+                          label="Last Updated"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </div>
+        </ThemeProvider>
       </>
     );
   }

@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
-import { Container } from "reactstrap";
+import { Container, Tabs, Tab } from "@material-ui/core";
+import {
+  AccountCircleTwoTone,
+  ShoppingCartTwoTone,
+  CreateTwoTone,
+} from "@material-ui/icons";
 import { listProducts } from "../../graphql/queries";
 import Profile from "./components/Profile";
 import ProductsList from "./components/ProductsList";
@@ -12,7 +17,7 @@ import {
 } from "../../graphql/subscriptions";
 import Loading from "../../common/Loading";
 import { AccountsProps, AccountsState } from "./interfaces/Accounts.i";
-import UpdateProduct from "./components/EditProduct";
+import UpdateProduct from "./components/UpdateProduct";
 
 const initialState: AccountsState = {
   products: [],
@@ -23,15 +28,15 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
   public readonly state = initialState;
 
   private updateProductListener;
-
   private deleteProductListener;
-
   private createProductListener;
 
   public async componentDidMount(): Promise<void> {
-    const { accountsTab } = this.props;
+    const { accountsTab, admin } = this.props;
     await this.handleGetProducts();
-    await this.handleSubscriptions();
+    if (admin) {
+      await this.handleSubscriptions();
+    }
     this.setState({ isLoading: false });
     if (accountsTab) this.setState({ currentTab: accountsTab });
   }
@@ -100,31 +105,9 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     });
   };
 
-  private getCurrentPage = (): JSX.Element => {
-    const { products, currentTab } = this.state;
-    const { userAttributes, user, admin, history } = this.props;
-
-    switch (currentTab) {
-      case "profile": {
-        return <Profile user={user} userAttributes={userAttributes} admin={admin} />;
-      }
-      case "products":
-        return <ProductsList products={products} admin={admin} />;
-      case "create":
-        return (
-          <UpdateProduct
-            history={history}
-            setCurrentTab={(currentTab): void => this.setState({ currentTab })}
-          />
-        );
-      default:
-        return <Loading />;
-    }
-  };
-
   public render(): JSX.Element {
-    const { isLoading, currentTab } = this.state;
-    const { admin } = this.props;
+    const { isLoading, currentTab, products } = this.state;
+    const { admin, history, user, userAttributes } = this.props;
     return isLoading ? (
       <Loading size={100} />
     ) : (
@@ -133,60 +116,46 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
           background: `url(${background}) no-repeat center center fixed`,
         }}
       >
-        <Container className="content-container">
-          <div className="accounts__tab-container">
-            <div
-              className={
-                currentTab === "profile" ? "accounts__tab--active" : "accounts__tab"
-              }
-              onClick={(): void => this.setState({ currentTab: "profile" })}
-              role="button"
-              tabIndex={0}
+        <div className="content-container">
+          <Container>
+            <Tabs
+              value={currentTab}
+              onChange={(e, newValue): void => {
+                this.setState({ currentTab: newValue });
+              }}
+              indicatorColor="primary"
+              textColor="primary"
+              centered
             >
-              <i className="fas fa-user-circle" />
-              <span style={{ marginLeft: "5px" }}>Profile</span>
-            </div>
-            {admin ? (
-              <>
-                <div
-                  className={
-                    currentTab === "products" ? "accounts__tab--active" : "accounts__tab"
-                  }
-                  onClick={(): void => this.setState({ currentTab: "products" })}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <i className="fas fa-clipboard" />
-                  <span style={{ marginLeft: "5px" }}>Products</span>
-                </div>
-                <div
-                  className={
-                    currentTab === "create" ? "accounts__tab--active" : "accounts__tab"
-                  }
-                  onClick={(): void => this.setState({ currentTab: "create" })}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <i className="fas fa-plus-circle" />
-                  <span style={{ marginLeft: "5px" }}>Create</span>
-                </div>
-              </>
-            ) : (
-              <div
-                className={
-                  currentTab === "create" ? "accounts__tab--active" : "accounts__tab"
-                }
-                onClick={(): void => this.setState({ currentTab: "orders" })}
-                role="button"
-                tabIndex={0}
-              >
-                <i className="fas fa-shopping-basket" />
-                <span style={{ marginLeft: "5px" }}>My Orders</span>
-              </div>
+              <Tab icon={<AccountCircleTwoTone />} label="Profile" value="profile" />
+              {admin ? (
+                [
+                  <Tab
+                    icon={<ShoppingCartTwoTone />}
+                    label="Products"
+                    key={1}
+                    value="products"
+                  />,
+                  <Tab icon={<CreateTwoTone />} label="Create" key={2} value="create" />,
+                ]
+              ) : (
+                <Tab icon={<ShoppingCartTwoTone />} label="My Orders" value="orders" />
+              )}
+            </Tabs>
+            {currentTab === "profile" && (
+              <Profile user={user} userAttributes={userAttributes} admin={admin} />
             )}
-          </div>
-          {this.getCurrentPage()}
-        </Container>
+            {currentTab === "products" && (
+              <ProductsList history={history} products={products} admin={admin} />
+            )}
+            {currentTab === "create" && (
+              <UpdateProduct
+                history={history}
+                setCurrentTab={(currentTab): void => this.setState({ currentTab })}
+              />
+            )}
+          </Container>
+        </div>
       </div>
     );
   }

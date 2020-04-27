@@ -1,7 +1,15 @@
 import React from "react";
-import { Dialog, InputGroup, Button } from "@blueprintjs/core";
+import {
+  Dialog,
+  TextField,
+  Button,
+  Grid,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@material-ui/core";
 import { Auth } from "aws-amplify";
-import { Row, Col } from "reactstrap";
 import { Toaster } from "../../../utils";
 import PasswordInput from "../../../common/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/PasswordChange.i";
@@ -77,70 +85,65 @@ class PasswordChange extends React.Component<PasswordProps, PasswordState> {
     const { open, closeDialog } = this.props;
 
     return (
-      <Dialog
-        className="password__container"
-        isOpen={open}
-        onClose={closeDialog}
-        title="Change your password"
-        icon="key"
-      >
-        <Row className="password__dialog">
-          <p>Please enter your old password, and set a new password below.</p>
-          <Col xs={4} className="password__label">
-            Old Password:
-          </Col>
-          <Col xs={8}>
-            <PasswordInput
-              className="profile__input"
-              value={oldPassword}
-              error={oldPasswordError}
-              setValue={(oldPassword): void => this.setState({ oldPassword, error: "" })}
-            />
-          </Col>
-          <Col xs={4} className="password__label">
-            New Password:
-          </Col>
-          <Col xs={8}>
-            <PasswordInput
-              className="profile__input"
-              value={newPassword}
-              error={error || newPasswordError}
-              setValue={(newPassword): void => this.setState({ newPassword, error: "" })}
-            />
-          </Col>
-          <Col xs={4} className="password__label">
-            Repeat Password:
-          </Col>
-          <Col xs={8}>
-            <InputGroup
-              className="profile__input"
-              intent={error ? "danger" : "none"}
-              value={repeatPassword}
-              onChange={(e): void =>
-                this.setState({
-                  repeatPassword: e.target.value,
-                  error: null,
-                })
-              }
-              type="password"
-            />
-          </Col>
+      <Dialog className="password__container" open={open} onClose={closeDialog}>
+        <DialogTitle>Change your Password</DialogTitle>
+        <DialogContent>
+          <Typography variant="subtitle1">
+            Please enter your old password, and set a new password below.
+          </Typography>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={6}>
+              <PasswordInput
+                value={oldPassword}
+                error={oldPasswordError}
+                setValue={(oldPassword): void =>
+                  this.setState({ oldPassword, error: "" })
+                }
+                label="Old Password"
+                labelWidth={90}
+                placeholder="Enter old password..."
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <PasswordInput
+                value={newPassword}
+                error={error || newPasswordError}
+                setValue={(newPassword): void =>
+                  this.setState({ newPassword, error: "" })
+                }
+                label="New Password"
+                labelWidth={95}
+                placeholder="Enter new password..."
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                className="profile__input"
+                value={repeatPassword}
+                label="Repeat Password"
+                placeholder="Repeat new password..."
+                onChange={(e): void =>
+                  this.setState({
+                    repeatPassword: e.target.value,
+                    error: null,
+                  })
+                }
+                variant="outlined"
+                type="password"
+              />
+            </Grid>
+          </Grid>
+
           <span className="password__error">{error}</span>
-        </Row>
-        <div className="password__dialog-buttons">
-          <Button
-            text="Cancel"
-            intent="danger"
-            onClick={closeDialog}
-            style={{ margin: "0 4px" }}
-          />
-          <Button
-            text="Change Password"
-            intent="success"
-            onClick={this.handlePasswordUpdate}
-            style={{ margin: "0 4px" }}
-          />
-        </div>
+          <DialogActions>
+            <Button color="secondary" onClick={closeDialog}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={this.handlePasswordUpdate}>
+              Change Password
+            </Button>
+          </DialogActions>
+        </DialogContent>
       </Dialog>
     );
   }

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { API } from "aws-amplify";
 import { History } from "history";
-import { Container } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../Loading";
 import { ProductProps } from "../interfaces/Product.i";
@@ -61,12 +61,14 @@ export default class ProductTypePage extends Component<
       <Loading size={100} />
     ) : (
       <Container>
-        <h3 className="product-type__title">{type === "Cake" ? "Cakes" : "Creations"}</h3>
-        <p className="product-type__description">-- Placeholder --</p>
-        <p className="product-type__filter">
+        <Typography variant="h4" style={{ paddingTop: 12 }}>
+          {type === "Cake" ? "Cakes" : "Creations"}
+        </Typography>
+        <Typography variant="subtitle1">-- Placeholder --</Typography>
+        <Typography variant="subtitle2">
           To filter the products please click the pink button on the left hand side, and
           filter the results to your preferences.
-        </p>
+        </Typography>
         <ProductsList
           products={results}
           noTitle

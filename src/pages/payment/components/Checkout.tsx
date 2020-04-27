@@ -13,6 +13,7 @@ import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction, ClearBasketAction } from "../../../interfaces/basket.redux.i";
 import { connect } from "react-redux";
 import { Col, Row } from "reactstrap";
+import { Container } from "@material-ui/core";
 
 interface Props {
   paymentProps?: {
@@ -76,7 +77,7 @@ class Checkout extends React.Component<Props, State> {
     } = this.state;
     const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
     return (
-      <div>
+      <Container>
         <Callout
           className="basket__info"
           intent="warning"
@@ -143,7 +144,7 @@ class Checkout extends React.Component<Props, State> {
             <CardElement />
           </Elements>
         </div>
-      </div>
+      </Container>
     );
   }
 }

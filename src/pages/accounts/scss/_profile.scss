@@ -1,10 +1,16 @@
 .profile__container {
-  width: 90%;
   margin: 0 auto;
   font-family: $title-font;
   font-weight: bold;
+  width: 800px;
+  @media screen and (max-width: $l-breakpoint) {
+    width: 620px;
+  }
+  @media screen and (max-width: $md-breakpoint) {
+    width: 80%;
+  }
   @media screen and (max-width: $s-breakpoint) {
-    width: 94%;
+    width: 95%;
   }
 }
 
@@ -84,4 +90,10 @@
 .profile__tooltip-text {
   font-size: 12px;
   padding: 3px 6px;
+}
+
+.profile__verified-tag {
+  position: absolute;
+  right: 14px;
+  top: -6px;
 }

@@ -1,15 +1,12 @@
 .new-product__container {
   margin: 0 auto;
-  width: 40vw;
+  width: 640px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: white;
   font-family: $title-font;
-  @media screen and (max-width: $md-breakpoint) {
-    width: 60vw;
-  }
   @media screen and (max-width: $s-breakpoint) {
     width: 100%;
   }
@@ -54,7 +51,8 @@
 }
 
 .new-product__form {
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   justify-content: space-evenly;
   width: 100%;
 }
