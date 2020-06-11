@@ -34,7 +34,7 @@ exports[`<ProductCard /> should render correctly when the user is NOT admin and 
       >
         £14.50 + £4.50 postage
       </p>
-      <TagsInput
+      <ChipContainer
         tags={
           Array [
             "Personalised",
@@ -120,7 +120,7 @@ exports[`<ProductCard /> should render correctly when the user is NOT an admin a
       >
         Customer requests quote
       </p>
-      <TagsInput
+      <ChipContainer
         tags={
           Array [
             "Cake",
@@ -205,7 +205,7 @@ exports[`<ProductCard /> should render correctly when user IS admin and the prod
       >
         Customer requests quote
       </p>
-      <TagsInput
+      <ChipContainer
         tags={
           Array [
             "Cake",
@@ -314,7 +314,7 @@ exports[`<ProductCard /> should render correctly when user IS admin and the prod
       >
         £14.50 + £4.50 postage
       </p>
-      <TagsInput
+      <ChipContainer
         tags={
           Array [
             "Personalised",

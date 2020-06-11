@@ -1,11 +1,19 @@
 import React from "react";
-import { FormLabel, Dialog, DialogTitle, DialogActions, Button } from "@material-ui/core";
+import {
+  FormLabel,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  Button,
+  withStyles,
+} from "@material-ui/core";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
 import ReactCrop, { Crop } from "react-image-crop";
 import { ImagePickerProps, ImagePickerState } from "./interfaces/ImagePicker.i";
 import "react-image-crop/dist/ReactCrop.css";
-import { Toaster } from "../utils";
-
+import { openSnackbar } from "../utils/Notifier";
+import { COLORS } from "../themes";
+import styles from "./styles/imagePicker.style";
 /**
  * TODO
  * [ ] Fix onPick not working when removing and adding an image
@@ -24,23 +32,28 @@ const initialState: ImagePickerState = {
   cropperOpen: false,
 };
 
+/**
+ * Image Picker class which allows the user to pick an image from their system, and
+ * upload it to S3, which will then be shown in either the ImageCarousel component, or
+ * be their profile image in Profile
+ */
 class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
   public readonly state = initialState;
 
-  public imageRef;
-  public fileUrl;
+  public imageRef: HTMLImageElement | undefined;
 
   // set the props to be the style if they are present, or use the default theme
-  private styles = this.props.theme || {
+  public styles = {
     formContainer: {
       margin: 0,
-      padding: "5px",
+      paddingBottom: 10,
     },
     formSection: {
       width: "200px",
       minWidth: "200px",
       boxShadow: "none",
       padding: 0,
+      margin: 0,
     },
     sectionBody: {
       display: "none",
@@ -49,20 +62,29 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
       display: "none",
     },
     photoPickerButton: {
-      background: "#ff80f7",
-      marginTop: "10px",
-      borderRadius: "5px",
-      border: "1px solid #ff52f4",
-      textTransform: "uppercase",
+      background: null,
+      boxShadow:
+        "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
       display: "block",
-      fontSize: "14px",
-      padding: "8px",
+      padding: "6px 16px",
+      minWidth: "64px",
+      boxSizing: "border-box",
+      fontSize: "0.9375rem",
+      transition:
+        "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontWeight: 500,
+      lineHeight: 1.75,
+      borderRadius: "4px",
+      letterSpacing: "0.02857em",
+      textTransform: "uppercase",
+      marginTop: 10,
     },
   };
 
   /**
    * Set the image to be the imageRef when it first loads
-   * @param {HTMLImageElement}
+   * @param {HTMLImageElement} image
    */
   public onImageLoaded = (image: HTMLImageElement): void => {
     this.imageRef = image;
@@ -72,29 +94,21 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
    * Function to run when the cropping is completed by the user
    * @param {Crop} crop - The dimensions of the cropped image
    */
-  public onCropComplete = (crop): void => {
+  public onCropComplete = (crop: Crop): void => {
     this.makeClientCrop(crop);
   };
 
   /**
    * Save the dimensions of the cropped image to state when they are changed by the user
    * @param {Crop} crop - the dimensions of the cropped image
-   * @param {Crop} percentCrop - the optional smaller percentage of the dimensions of the cropped image.
    */
-  public onCropChange = (
-    crop: Crop,
-    // percentCrop
-  ): void => {
-    // this.setState({ crop: percentCrop });
-    this.setState({ crop });
-  };
+  public onCropChange = (crop: Crop): void => this.setState({ crop });
 
   /**
    * Creates a file from the dimensions of crop which were created by the user initiating image cropping.
    * @param {Crop} crop - the dimensions of the desired area.
    */
-  public makeClientCrop = async (crop): Promise<void> => {
-    console.log(this.imageRef);
+  public makeClientCrop = async (crop: Crop): Promise<void> => {
     if (this.imageRef && crop.width && crop.height) {
       // get the blob data
       const croppedImage: Blob = await this.getCroppedImg(
@@ -123,37 +137,42 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
     crop: Crop,
     fileName: string,
   ): Promise<Blob> => {
-    console.log(image);
     // create the canvas to place the cropped image in
     const canvas = document.createElement("canvas");
     // set the scale for the image
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     // set the dimensions for the image
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    if (canvas.width && crop.width && canvas.height && crop.height) {
+      canvas.width = crop.width;
+      canvas.height = crop.height;
+    }
     const ctx = canvas.getContext("2d");
     // draw the cropped image onto the canvas
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width,
-      crop.height,
-    );
-
+    if (ctx && crop.x && scaleX && crop.y && scaleY && crop.width && crop.height) {
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height,
+      );
+    }
     return new Promise((resolve, reject) => {
-      canvas.toBlob((blob: any) => {
+      canvas.toBlob((blob: Blob | null) => {
         if (!blob) {
           reject(new Error("Canvas is empty"));
           console.error("Canvas is empty");
           return;
         }
-        blob.name = fileName;
+        Object.defineProperty(blob, "name", {
+          writable: true,
+          value: fileName,
+        });
         resolve(blob);
       }, "image/jpeg");
     });
@@ -171,39 +190,37 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
       update,
       profile,
       showText,
+      cropImage,
+      type,
+      classes,
     } = this.props;
     const { imagePreview, src, crop, cropperOpen, croppedImage } = this.state;
 
     return (
       <>
         <FormLabel className="profile__input">{showText && "Display Image:"}</FormLabel>
-        <div
-          className={
-            profile ? "image__profile-container" : "image__placeholder-container"
-          }
-        >
-          {/* Show image preview if one exists */}
-          {imagePreview ? (
-            <div
-              className={
-                profile ? "image__profile-container" : "image__placeholder-container"
-              }
-            >
-              <img className="image__image" src={imagePreview} alt="Product Preview" />
-            </div>
-          ) : // Show saved S3 image if passed through via props
-          savedS3Image ? (
+        {/* Show image preview if one exists */}
+        {imagePreview ? (
+          <div className={classes.imageContainer}>
+            <img className={classes.image} src={imagePreview} alt="Image Preview" />
+          </div>
+        ) : savedS3Image ? (
+          // Show saved S3 image if passed through via props
+          <div className={classes.imageContainer}>
             <S3Image
               imgKey={savedS3Image.key}
               theme={{
                 photoImg: { maxWidth: "100%" },
               }}
             />
-          ) : (
-            // else show the placeholder/savedImage if profile boolean prop is true.
-            profile && <img src={savedImage} alt="Profile" className="image__image" />
-          )}
-        </div>
+          </div>
+        ) : (
+          profile && (
+            <div className={classes.imageContainer}>
+              <img src={savedImage} alt="Profile" className={classes.image} />
+            </div>
+          )
+        )}
         {/* only show PhotoPicker if the disabled prop is not true/defined */}
         {!disabled && (
           <PhotoPicker
@@ -212,11 +229,24 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
             headerHint="This can be changed anytime."
             headerText="Add a display image"
             onLoad={(url): void => {
+              // if there is no need to crop the image, then set url to imagePreview to show preview in component
+              if (!cropImage) {
+                return this.setState({ imagePreview: url });
+              }
+              // set src to url, so it can be used for cropping, and open the crop dialog by setting cropperOpen.
               this.setState({ src: url, cropperOpen: true });
               setImagePreview && setImagePreview(url);
             }}
-            // onPick={(file): void => setImageFile(file)}
-            theme={this.styles}
+            onPick={(file): void => {
+              !cropImage && setImageFile(file);
+            }}
+            theme={{
+              ...this.styles,
+              photoPickerButton: {
+                ...this.styles.photoPickerButton,
+                background: type === "Cake" ? COLORS.Pink : COLORS.Purple,
+              },
+            }}
           />
         )}
         <Dialog open={cropperOpen}>
@@ -244,10 +274,12 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
               color="primary"
               onClick={(): void => {
                 try {
-                  setImageFile(croppedImage);
+                  if (croppedImage) {
+                    setImageFile(croppedImage);
+                  }
                 } catch (err) {
-                  Toaster.show({
-                    intent: "danger",
+                  openSnackbar({
+                    severity: "error",
                     message: "Unable to parse image, please try again.",
                   });
                 }
@@ -263,4 +295,4 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
   }
 }
 
-export default ImagePicker;
+export default withStyles(styles)(ImagePicker);

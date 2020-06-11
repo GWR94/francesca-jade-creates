@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
-import { Container, Tabs, Tab } from "@material-ui/core";
+import { Container, Tabs, Tab, Typography } from "@material-ui/core";
 import {
   AccountCircleTwoTone,
   ShoppingCartTwoTone,
@@ -8,8 +8,7 @@ import {
 } from "@material-ui/icons";
 import { listProducts } from "../../graphql/queries";
 import Profile from "./components/Profile";
-import ProductsList from "./components/ProductsList";
-import background from "../../img/background.jpg";
+import ProductsList from "../../common/ProductsList";
 import {
   onUpdateProduct,
   onCreateProduct,
@@ -111,51 +110,58 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
     return isLoading ? (
       <Loading size={100} />
     ) : (
-      <div
-        style={{
-          background: `url(${background}) no-repeat center center fixed`,
-        }}
-      >
-        <div className="content-container">
-          <Container>
-            <Tabs
-              value={currentTab}
-              onChange={(e, newValue): void => {
-                this.setState({ currentTab: newValue });
-              }}
-              indicatorColor="primary"
-              textColor="primary"
-              centered
-            >
-              <Tab icon={<AccountCircleTwoTone />} label="Profile" value="profile" />
-              {admin ? (
-                [
-                  <Tab
-                    icon={<ShoppingCartTwoTone />}
-                    label="Products"
-                    key={1}
-                    value="products"
-                  />,
-                  <Tab icon={<CreateTwoTone />} label="Create" key={2} value="create" />,
-                ]
-              ) : (
-                <Tab icon={<ShoppingCartTwoTone />} label="My Orders" value="orders" />
-              )}
-            </Tabs>
-            {currentTab === "profile" && (
-              <Profile user={user} userAttributes={userAttributes} admin={admin} />
+      <div className="content-container">
+        <Container>
+          <Tabs
+            value={currentTab}
+            onChange={(e, newValue): void => {
+              this.setState({ currentTab: newValue });
+            }}
+            indicatorColor="primary"
+            textColor="primary"
+            centered
+          >
+            <Tab icon={<AccountCircleTwoTone />} label="Profile" value="profile" />
+            {admin ? (
+              [
+                <Tab
+                  icon={<ShoppingCartTwoTone />}
+                  label="Products"
+                  key={1}
+                  value="products"
+                />,
+                <Tab icon={<CreateTwoTone />} label="Create" key={2} value="create" />,
+              ]
+            ) : (
+              <Tab icon={<ShoppingCartTwoTone />} label="My Orders" value="orders" />
             )}
-            {currentTab === "products" && (
+          </Tabs>
+          {currentTab === "profile" && (
+            <Profile user={user} userAttributes={userAttributes} admin={admin} />
+          )}
+          {currentTab === "products" && (
+            <>
+              <div className="profile__container">
+                <Typography variant="h4">Current Products</Typography>
+                <Typography style={{ textAlign: "center", margin: "5px 0" }}>
+                  Here are a list of all of the products that customers can see when
+                  browsing the site.
+                </Typography>
+                <Typography style={{ textAlign: "center", margin: "5px 0 20px" }}>
+                  To edit or delete products, click the 3 dots on the item you wish to
+                  change and click the relevant choice.
+                </Typography>
+              </div>
               <ProductsList history={history} products={products} admin={admin} />
-            )}
-            {currentTab === "create" && (
-              <UpdateProduct
-                history={history}
-                setCurrentTab={(currentTab): void => this.setState({ currentTab })}
-              />
-            )}
-          </Container>
-        </div>
+            </>
+          )}
+          {currentTab === "create" && (
+            <UpdateProduct
+              history={history}
+              setCurrentTab={(currentTab): void => this.setState({ currentTab })}
+            />
+          )}
+        </Container>
       </div>
     );
   }

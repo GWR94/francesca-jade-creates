@@ -1,9 +1,3 @@
-import { Toaster as AppToaster } from "@blueprintjs/core";
-
-export const Toaster = AppToaster.create({
-  position: "top",
-});
-
 export const convertPoundsToPence = (price): number => {
   return parseInt((price * 100).toFixed(2), 10);
 };

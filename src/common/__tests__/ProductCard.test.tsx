@@ -4,7 +4,7 @@ import { Card, Button } from "@blueprintjs/core";
 import { S3Image } from "aws-amplify-react";
 import ProductCard from "../product/ProductCard";
 import { history } from "../../routes/Router";
-import TagsInput from "../TagsInput";
+import ChipContainer from "../ChipContainer";
 import { cakeProduct, createsProduct } from "../../__mocks__/products";
 
 jest.mock("react", () => ({
@@ -44,7 +44,7 @@ describe("<ProductCard />", () => {
     expect(wrapper.find(S3Image).length).toBe(1);
     expect(wrapper.find(S3Image).prop("imgKey")).toBe(cakeProduct.image[0].key);
     // expect the tags to be correct for the current product
-    expect(wrapper.find(TagsInput).prop("tags")).toStrictEqual(["Cake", "Racing"]);
+    expect(wrapper.find(ChipContainer).prop("tags")).toStrictEqual(["Cake", "Racing"]);
     // expect there to be two children in the button container
     expect(wrapper.find(".new-product__button-container").children().length).toBe(2);
     // expect both children to be of type Button.
@@ -88,7 +88,7 @@ describe("<ProductCard />", () => {
     expect(wrapper.find(S3Image).length).toBe(1);
     expect(wrapper.find(S3Image).prop("imgKey")).toBe(createsProduct.image[0].key);
     // expect the tags to be correct for the current product
-    expect(wrapper.find(TagsInput).prop("tags")).toStrictEqual([
+    expect(wrapper.find(ChipContainer).prop("tags")).toStrictEqual([
       "Personalised",
       "Name",
       "Frame",
@@ -134,7 +134,7 @@ describe("<ProductCard />", () => {
     expect(wrapper.find(S3Image).length).toBe(1);
     expect(wrapper.find(S3Image).prop("imgKey")).toBe(cakeProduct.image[0].key);
     // expect the tags to be correct for the current product
-    expect(wrapper.find(TagsInput).prop("tags")).toStrictEqual(["Cake", "Racing"]);
+    expect(wrapper.find(ChipContainer).prop("tags")).toStrictEqual(["Cake", "Racing"]);
   });
 
   it("should render correctly when the user is NOT admin and product type is 'Creates'", () => {
@@ -158,7 +158,7 @@ describe("<ProductCard />", () => {
     expect(wrapper.find(S3Image).length).toBe(1);
     expect(wrapper.find(S3Image).prop("imgKey")).toBe(createsProduct.image[0].key);
     // expect the tags to be correct for the current product
-    expect(wrapper.find(TagsInput).prop("tags")).toStrictEqual([
+    expect(wrapper.find(ChipContainer).prop("tags")).toStrictEqual([
       "Personalised",
       "Name",
       "Frame",

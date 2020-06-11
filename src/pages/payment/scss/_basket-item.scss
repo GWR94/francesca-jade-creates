@@ -1,5 +1,5 @@
 .basket__container {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   padding-top: 10px;
   font-family: $title-font;
@@ -14,31 +14,6 @@
 
 .basket__info {
   margin: 10px 0;
-}
-
-.basket-item__container {
-  width: 100%;
-  display: inline-flex;
-  margin: 0 0 20px 0;
-  min-height: 100px;
-  background: #fff;
-  border: 1px solid rgb(218, 218, 218);
-  padding: 12px 20px;
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -o-border-radius: 8px;
-  position: relative;
-  align-items: center;
-  &:hover {
-    background: rgb(247, 247, 247);
-    transition: background 0.5s;
-    -webkit-transition: background 0.5s;
-    -moz-transition: background 0.5s;
-    -ms-transition: background 0.5s;
-    -o-transition: background 0.5s;
-  }
 }
 
 .basket-item__delete-icon {
@@ -60,7 +35,8 @@
 
 .basket-item__title {
   font-size: 17px;
-  margin-bottom: 4px;
+  margin: 0 12px 4px 12px;
+  text-align: center;
 }
 
 .basket-item__costs {
@@ -70,8 +46,11 @@
 
 .basket-item__controls {
   display: inline-flex;
-  justify-content: space-around;
-  width: 100%;
+  justify-content: space-between;
+  width: 70px;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
 }
 
 .basket-item__remove {

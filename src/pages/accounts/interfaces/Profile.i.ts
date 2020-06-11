@@ -3,18 +3,24 @@ import { S3ObjectInput } from "../../../API";
 import { ImageProps } from "./NewProduct.i";
 
 export interface ProfileProps {
-  userAttributes: UserAttributeProps;
-  user: CognitoUserProps;
-  admin: boolean;
+  userAttributes: UserAttributeProps; //object container user attributes
+  user: CognitoUserProps; // user attributes saved in cognito
+  admin: boolean; // boolean to check if user is admin
+  // styles object containing classNames.
   classes: {
     noLeftBorderInput: string;
     buttonBottom: string;
   };
 }
 
+export interface PhoneNumber {
+  code?: string | null;
+  value: string;
+}
+
 export interface ProfileState {
-  isLoading: boolean;
-  isEditing: boolean;
+  isLoading: boolean; // boolean which shows/hides loading ui effects
+  isEditing: boolean; // boolean which allows/disallows editing of components
   username: {
     value: string;
     error: string;
@@ -28,7 +34,7 @@ export interface ProfileState {
     value: string;
     verified: boolean;
     error: string;
-    code: string;
+    code?: string;
   };
   shippingAddress: {
     city: string;
@@ -38,8 +44,8 @@ export interface ProfileState {
     postcode: string;
     error: string;
   };
-  displayImage: S3ObjectInput;
-  newDisplayImage: ImageProps;
+  displayImage: S3ObjectInput | null;
+  newDisplayImage: ImageProps | null;
   dialogOpen: {
     password: boolean;
     email: boolean;

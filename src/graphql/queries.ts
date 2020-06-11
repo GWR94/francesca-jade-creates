@@ -56,6 +56,7 @@ export const listProducts = /* GraphQL */ `
         id
         title
         description
+        tagline
         image {
           bucket
           region
@@ -67,6 +68,11 @@ export const listProducts = /* GraphQL */ `
         tags
         createdAt
         updatedAt
+        customFeatures {
+          expectedImages
+          text
+          expectedText
+        }
       }
       nextToken
     }
@@ -78,6 +84,7 @@ export const getProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -89,6 +96,16 @@ export const getProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -109,6 +126,7 @@ export const searchProducts = /* GraphQL */ `
         id
         title
         description
+        tagline
         image {
           bucket
           region
@@ -120,6 +138,11 @@ export const searchProducts = /* GraphQL */ `
         tags
         createdAt
         updatedAt
+        customFeatures {
+          expectedImages
+          text
+          expectedText
+        }
       }
       nextToken
       total

@@ -1,10 +1,10 @@
-import { Theme } from "@material-ui/core";
+import { Theme, ThemeProviderProps, ThemeOptions } from "@material-ui/core";
 
 export interface PasswordInputProps {
   value: string;
-  setValue: (e) => void;
+  setValue: (value: string) => void;
   error?: string;
-  theme?: Theme;
+  theme?: any;
   small?: boolean;
   label?: string;
   labelWidth?: number;

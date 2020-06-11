@@ -1,19 +1,19 @@
 import React from "react";
-import { Callout, InputGroup, FormGroup, Label } from "@blueprintjs/core";
+import { TextField, Grid, Container, Typography } from "@material-ui/core";
 import {
   Elements,
   CardElement,
   PaymentRequestButtonElement,
 } from "@stripe/react-stripe-js";
+import { connect } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { BasketItemProps } from "../interfaces/Basket.i";
 import { AppState } from "../../../store/store";
 import { BasketState } from "../../../reducers/basket.reducer";
 import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction, ClearBasketAction } from "../../../interfaces/basket.redux.i";
-import { connect } from "react-redux";
-import { Col, Row } from "reactstrap";
-import { Container } from "@material-ui/core";
+import NonIdealState from "../../../common/NonIdealState";
+import { ShoppingBasket } from "@material-ui/icons";
 
 interface Props {
   paymentProps?: {
@@ -77,74 +77,23 @@ class Checkout extends React.Component<Props, State> {
     } = this.state;
     const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
     return (
-      <Container>
-        <Callout
-          className="basket__info"
-          intent="warning"
-          title="COVID-19 Update"
-          icon="info-sign"
-        >
-          <p className="basket__info-text">
-            Due to the COVID-19 pandemic there may be minor delays in production of
-            Francesca Jade Creates products, however the products are still going to be
-            processed and delivered as soon as possible.
-          </p>
-        </Callout>
-        <div className="checkout__card-payment-container">
-          <h3>SHIPPING & PAYMENT INFORMATION</h3>
-          <Label>Name</Label>
-          <InputGroup
-            value={name}
-            onChange={(e): void => this.setState({ name: e.target.value })}
-          />
-          <FormGroup label="Email" inline>
-            <InputGroup
-              value={email}
-              onChange={(e): void => this.setState({ email: e.target.value })}
+      <Grid container spacing={1}>
+        <Grid item sm={7} xs={12}>
+          <Typography variant="h5">Your Basket ({items.length})</Typography>
+          {items.length ? (
+            items.map((item): void => {
+              console.log(item);
+            })
+          ) : (
+            <NonIdealState
+              title="Shopping Basket Empty"
+              Icon={<ShoppingBasket />}
+              subtext="Please add items to your shopping basket to view them"
             />
-          </FormGroup>
-          <FormGroup label="Address Line 1" inline>
-            <InputGroup
-              value={addressLine1}
-              onChange={(e): void => this.setState({ addressLine1: e.target.value })}
-            />
-          </FormGroup>
-          <FormGroup label="Address Line 2" labelInfo="(optional)" inline>
-            <InputGroup
-              value={addressLine2}
-              onChange={(e): void => this.setState({ addressLine2: e.target.value })}
-            />
-          </FormGroup>
-          <FormGroup label="City" inline>
-            <InputGroup
-              value={city}
-              onChange={(e): void => this.setState({ city: e.target.value })}
-            />
-          </FormGroup>
-          <Row>
-            <Col sm={8}>
-              <FormGroup label="County" inline>
-                <InputGroup
-                  value={county}
-                  onChange={(e): void => this.setState({ county: e.target.value })}
-                />
-              </FormGroup>
-            </Col>
-            <Col sm={4}>
-              <FormGroup label="PostCode" inline>
-                <InputGroup
-                  value={postCode}
-                  onChange={(e): void => this.setState({ postCode: e.target.value })}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          <h3>PAYMENT INFORMATION</h3>
-          <Elements stripe={stripePromise}>
-            <CardElement />
-          </Elements>
-        </div>
-      </Container>
+          )}
+        </Grid>
+        <Grid item sm={5} xs={12}></Grid>
+      </Grid>
     );
   }
 }

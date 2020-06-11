@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import {
   Card,
@@ -8,31 +8,45 @@ import {
   DialogActions,
   DialogContent,
   CardHeader,
-  Avatar,
   IconButton,
   makeStyles,
   CardMedia,
   CardContent,
-  IconButtonTypeMap,
-  MenuList,
   MenuItem,
   Menu,
+  Fab,
+  Tooltip,
 } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
-import { MoreVert, BrushOutlined, CakeOutlined } from "@material-ui/icons";
+import {
+  MoreVert,
+  BrushOutlined,
+  CakeOutlined,
+  AddShoppingCartOutlined,
+} from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
-import { Amplify } from "@aws-amplify/ui-react";
+import { openSnackbar } from "../../utils/Notifier";
+import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
-import { Toaster } from "../../utils/index";
-import TagsInput from "../TagsInput";
+import ChipContainer from "../ChipContainer";
+import { INTENT } from "../../themes";
 
+/**
+ * TODO
+ * [ ] Find out why Creates cards have broken tooltip
+ * [x] Change Carousel/Reactstrap components
+ **/
+
+// create styles for component
 const useStyles = makeStyles({
   card: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    position: "relative",
   },
   media: {
     overflow: "hidden",
@@ -46,26 +60,39 @@ const Product: React.FC<ProductCardProps> = ({
   history,
 }): JSX.Element => {
   const classes = useStyles();
-  const { id, image, title, price, shippingCost, type, tags } = product;
-
+  // destructure product for ease of variable use
+  const { id, image, title, price, shippingCost, type, tags, tagline } = product;
+  // boolean which shows/hides delete alert visibility
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
+  // boolean which opens dropdown menu for admin options
   const [menuOpen, setMenuOpen] = useState(false);
+  // boolean which shows/hides loading UI effects
   const [isLoading, setLoading] = useState(true);
 
+  // create anchorRef to allow a point to fit the anchor point for the menu
   const anchorRef = React.useRef<SVGSVGElement>(null);
+  // connect with redux via hook.
+  const dispatch = useDispatch();
 
+  /**
+   * Function to delete the current product from the database, using the deleteProduct
+   * graphQL mutation.
+   */
   const handleDeleteProduct = async (): Promise<void> => {
     try {
+      // use the id of the current product as the input for deleteProduct
       await API.graphql(graphqlOperation(deleteProduct, { input: { id } }));
+      // close the confirm delete dialog
       setDeleteAlert(false);
-      Toaster.show({
-        intent: "success",
+      // notify the user of success using a success snackbar with a relevant title.
+      openSnackbar({
+        severity: INTENT.Success,
         message: `${title} has been successfully removed.`,
       });
     } catch (err) {
-      console.error(err);
-      Toaster.show({
-        intent: "danger",
+      // if there are any errors, notify the user with a danger snackbar.
+      openSnackbar({
+        severity: INTENT.Danger,
         message: `${title} could not be removed.
         Please try again`,
       });
@@ -83,6 +110,7 @@ const Product: React.FC<ProductCardProps> = ({
       >
         <CardHeader
           avatar={
+            // if loading return a skeleton of the potential product
             isLoading ? (
               <Skeleton
                 animation="wave"
@@ -98,6 +126,7 @@ const Product: React.FC<ProductCardProps> = ({
             )
           }
           action={
+            // if loading return a skeleton of the potential product
             !isLoading &&
             admin && (
               <IconButton
@@ -112,10 +141,14 @@ const Product: React.FC<ProductCardProps> = ({
             )
           }
           title={
+            // if loading return a skeleton of the potential product
             isLoading ? <Skeleton animation="wave" style={{ marginRight: 14 }} /> : title
           }
+          subheader={isLoading ? <Skeleton animation="wave" /> : tagline || ""}
+          style={{ textAlign: "center" }}
         />
         <CardContent>
+          {/* if loading return a skeleton of the potential product */}
           {isLoading ? (
             <div style={{ margin: "30px 0" }}>
               <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
@@ -133,7 +166,7 @@ const Product: React.FC<ProductCardProps> = ({
                   ? `£${price.toFixed(2)} + £${shippingCost.toFixed(2)} postage`
                   : "Variable price - request a quote."}
               </p>
-              {tags && <TagsInput type={type} tags={tags} />}
+              {tags && <ChipContainer type={type} tags={tags} />}
             </>
           )}
         </CardContent>
@@ -152,6 +185,7 @@ const Product: React.FC<ProductCardProps> = ({
             }}
             onLoad={(): void => setLoading(false)}
           />
+          {/* if loading return a skeleton of the potential product */}
           {isLoading && (
             <Skeleton
               animation="wave"
@@ -160,70 +194,85 @@ const Product: React.FC<ProductCardProps> = ({
             />
           )}
         </CardMedia>
-        {/* {admin && (
-          <div className="new-product__button-container">
-            <Button
-              onClick={(e): void => {
-                e.stopPropagation();
-                setDeleteAlert(true);
-              }}
-              style={{ margin: "8px 4px 0", background: "#fd4ef2", color: "#fff" }}
-            >
-              Delete
-            </Button>
-            <Button
+        <Tooltip title="Add to Shopping Basket" arrow placement="top">
+          <Fab
+            aria-label="Add to shopping basket"
+            onClick={(e): void => {
+              e.stopPropagation();
+              try {
+                dispatch(
+                  actions.addToBasket({
+                    ...product,
+                    image: image[0],
+                  }),
+                );
+                openSnackbar({
+                  message: `Added ${product.title} to basket.`,
+                  severity: "success",
+                });
+              } catch (err) {
+                openSnackbar({
+                  message: `Unable to add ${product.title} to basket. Please try again.`,
+                  severity: "error",
+                });
+              }
+            }}
+            style={{
+              position: "absolute",
+              bottom: 4,
+              right: 4,
+            }}
+          >
+            <AddShoppingCartOutlined />
+          </Fab>
+        </Tooltip>
+      </Card>
+      {admin && (
+        <>
+          <Menu
+            open={menuOpen}
+            anchorEl={anchorRef.current}
+            onClose={(): void => setMenuOpen(false)}
+            transformOrigin={{
+              vertical: -32,
+              horizontal: -20,
+            }}
+          >
+            <MenuItem
               onClick={(e): void => {
                 e.stopPropagation();
                 history.push(`/account/${product.id}`);
               }}
-              style={{ margin: "8px 4px 0", background: "#ff80f7", color: "#fff" }}
             >
-              Edit
-            </Button>
-          </div>
-        )} */}
-      </Card>
-      <Menu
-        open={menuOpen}
-        anchorEl={anchorRef.current}
-        onClose={(): void => setMenuOpen(false)}
-        transformOrigin={{
-          vertical: -32,
-          horizontal: -20,
-        }}
-      >
-        <MenuItem
-          onClick={(e): void => {
-            e.stopPropagation();
-            history.push(`/account/${product.id}`);
-          }}
-        >
-          Edit Product
-        </MenuItem>
-        <MenuItem
-          onClick={(e): void => {
-            e.stopPropagation();
-            setDeleteAlert(true);
-          }}
-        >
-          Delete Product
-        </MenuItem>
-      </Menu>
-      <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
-        <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
-        <DialogContent>
-          <p>Are you sure you want to delete &quot;{title}&quot;?</p>
-          <p>This cannot be undone.</p>
-        </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={(): void => setDeleteAlert(false)}>
-            Cancel
-          </Button>
-          <Button color="secondary" onClick={handleDeleteProduct}>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+              Edit Product
+            </MenuItem>
+            <MenuItem
+              onClick={(e): void => {
+                e.stopPropagation();
+                setMenuOpen(false);
+                setDeleteAlert(true);
+              }}
+            >
+              Delete Product
+            </MenuItem>
+          </Menu>
+          <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
+            <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
+            <DialogContent>
+              <p>Are you sure you want to delete &quot;{title}&quot;?</p>
+              <p>This cannot be undone.</p>
+            </DialogContent>
+            <DialogActions>
+              <Button color="primary" onClick={(): void => setDeleteAlert(false)}>
+                Cancel
+              </Button>
+              <Button color="secondary" onClick={handleDeleteProduct}>
+                Confirm
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   );
 };

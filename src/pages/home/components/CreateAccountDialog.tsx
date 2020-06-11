@@ -19,7 +19,7 @@ import {
 import validate from "validate.js";
 import { Auth } from "aws-amplify";
 import euroNumbers from "../../../utils/europeanCodes";
-import { Toaster } from "../../../utils";
+import { openSnackbar } from "../../../utils/Notifier";
 import PasswordInput from "../../../common/PasswordInput";
 import { CreateProps, CreateState } from "../interfaces/Create.i";
 
@@ -106,8 +106,8 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
 
     if (errors) {
       this.setState({ createLoading: false });
-      Toaster.show({
-        intent: "danger",
+      openSnackbar({
+        severity: "error",
         message: "Please check the highlighted fields.",
       });
       return;
@@ -135,8 +135,8 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
       });
     } catch (err) {
       this.setState({ createLoading: false });
-      Toaster.show({
-        intent: "danger",
+      openSnackbar({
+        severity: "error",
         message: err.message,
       });
     }
@@ -146,13 +146,13 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
     const { username } = this.state;
     try {
       await Auth.resendSignUp(username.value);
-      Toaster.show({
-        intent: "success",
+      openSnackbar({
+        severity: "success",
         message: "Verification code resent.",
       });
     } catch (err) {
-      Toaster.show({
-        intent: "danger",
+      openSnackbar({
+        severity: "error",
         message: "Failed to send email. Please try again.",
       });
     }
@@ -167,8 +167,8 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
       this.setState({
         codeLoading: false,
       });
-      Toaster.show({
-        intent: "success",
+      openSnackbar({
+        severity: "success",
         message: "Account successfully created.",
       });
       onClose();
@@ -195,8 +195,8 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
         default:
           message = err.message;
       }
-      Toaster.show({
-        intent: "danger",
+      openSnackbar({
+        severity: "error",
         message,
       });
     }
@@ -325,7 +325,6 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                     setValue={(value): void => {
                       this.setState({ password: { value, error: "" } });
                     }}
-                    theme={theme}
                   />
                 </Grid>
               </Grid>

@@ -4,13 +4,62 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 const breakpoints = createBreakpoints({});
 
+export enum COLORS {
+  LightPink = "#efb0c9",
+  Pink = "#ff80f7",
+  DarkPink = "#fd4ef2",
+  Purple = "#9370f6",
+  PaleBlue = "#b9d6f3",
+  SkyBlue = "#69abec",
+  LightGray = "#d3d3d3",
+  OffWhite = "#ebe9e9",
+  ErrorRed = "#f44336",
+  BorderGray = "#C4C4C4",
+  DisabledGray = "#BABABA",
+  AltBorderGray = "#dadada",
+  TextGray = "#828282",
+}
+
+export enum BREAKPOINTS {
+  XL = "1690px",
+  LG = "1280px",
+  MD = "980px",
+  SM = "740px",
+  XS = "480px",
+}
+
+export enum PLACEHOLDERS {
+  DisplayImage = "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png",
+}
+
+export enum FONTS {
+  Header = "Lobster Two, cursive",
+  Text = "Neucha, sans-serif",
+  Title = "Roboto, sans-serif",
+}
+
+export enum INTENT {
+  Success = "success",
+  Danger = "error",
+  Info = "info",
+  Warning = "warning",
+}
+
+export const defaultStyles = createStyles({
+  buttonContainer: {
+    display: "inline-flex",
+    width: "100%",
+    justifyContent: "center",
+  },
+});
+
 export const nonIdealStateTheme = createMuiTheme({
   palette: {
     primary: {
-      main: "#fd4ef2",
+      main: COLORS.DarkPink,
     },
     secondary: {
-      main: "#9370f6",
+      main: COLORS.Purple,
     },
   },
   overrides: {
@@ -86,6 +135,10 @@ export const rootTheme = createMuiTheme({
       },
       label: {
         color: "#fff",
+        [breakpoints.down("md")]: {
+          paddingLeft: 8,
+          paddingRight: 8,
+        },
       },
     },
     MuiSelect: {
@@ -100,7 +153,7 @@ export const rootTheme = createMuiTheme({
         marginRight: 4,
       },
       colorPrimary: {
-        backgroundColor: "#fd4ef2",
+        backgroundColor: COLORS.DarkPink,
       },
       badge: {
         height: 15,
@@ -116,11 +169,55 @@ export const rootTheme = createMuiTheme({
         margin: "6px 0",
       },
     },
+    MuiPopover: {
+      paper: {
+        overflowX: "initial",
+        overflowY: "initial",
+      },
+    },
+    MuiCardContent: {
+      root: {
+        padding: "8px 12px",
+      },
+    },
     MuiCardHeader: {
       title: {
+        [breakpoints.down("md")]: {
+          fontSize: "1.1rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1rem",
+        },
         fontSize: "1.2rem",
         fontWeight: "bold",
         textAlign: "center",
+      },
+      root: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      },
+    },
+    MuiFab: {
+      root: {
+        background: "rgba(248, 6, 240, 0.4) !important",
+        transition: "background 0.8s",
+        color: "#fff",
+        "&:hover": {
+          background: "rgba(248, 6, 240, 0.65) !important",
+        },
+      },
+    },
+    // @ts-ignore
+    MuiPaginationItem: {
+      page: {
+        "&$selected": {
+          backgroundColor: COLORS.DarkPink,
+          color: "#fff",
+          "&:hover": {
+            backgroundColor: COLORS.LightPink,
+          },
+        },
       },
     },
     MuiTypography: {
@@ -160,6 +257,17 @@ export const rootTheme = createMuiTheme({
     MuiTabs: {
       root: {
         marginBottom: 12,
+      },
+      indicator: {
+        backgroundColor: COLORS.DarkPink,
+      },
+    },
+
+    MuiTab: {
+      textColorPrimary: {
+        "&$selected": {
+          color: COLORS.DarkPink,
+        },
       },
     },
     MuiCard: {

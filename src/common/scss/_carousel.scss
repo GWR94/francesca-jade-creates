@@ -16,6 +16,41 @@
   }
 }
 
+%carousel__button {
+  background: none;
+  border: none;
+  position: absolute;
+  top: calc(50% - 30px);
+  height: 60px;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel__svg {
+  font-size: 50px !important;
+  color: $pink;
+  transition: 5s font-size, color 1s !important;
+  -webkit-transition: 5s font-size, color 1s !important;
+  -moz-transition: 5s font-size, color 1s !important;
+  -ms-transition: 5s font-size, color 1s !important;
+  -o-transition: 5s font-size, color 1s !important;
+  &:hover {
+      font-size: 60px !important;
+      color: $dark-pink;
+  }
+}
+
+.carousel__back {
+  @extend %carousel__button;
+  left: 0;
+}
+
+.carousel__forward {
+  @extend %carousel__button;
+  right: 0;
+}
 .carousel__container {
   max-width: 400px;
   margin: 0 auto;

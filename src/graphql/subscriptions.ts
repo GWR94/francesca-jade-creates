@@ -7,6 +7,7 @@ export const onCreateProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -18,6 +19,16 @@ export const onCreateProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -27,6 +38,7 @@ export const onUpdateProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -38,6 +50,16 @@ export const onUpdateProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -47,6 +69,7 @@ export const onDeleteProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -58,6 +81,16 @@ export const onDeleteProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;

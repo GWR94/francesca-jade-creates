@@ -10,12 +10,18 @@ export interface ProductProps {
   id: string;
   title: string;
   description: string;
+  tagline: string;
   image: S3ImageProps[];
   price: number;
   shippingCost: number;
-  type: string;
+  type: "Cake" | "Creates";
   tags: string[];
   setPrice: boolean;
+  customisedOptions: {
+    images: number;
+    text: number;
+    colorScheme: boolean;
+  };
 }
 
 export interface S3ImageProps {

@@ -6,18 +6,17 @@ import { PersistGate } from "redux-persist/integration/react";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import Amplify from "aws-amplify";
+import { ThemeProvider } from "@material-ui/core";
 import config from "./aws-exports";
 import AppRouter from "./routes/Router";
 import "remove-focus-outline";
 import "animate.css/animate.min.css";
 import "normalize.css";
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "./scss/styles.scss";
 import "@stripe/stripe-js";
 import configureStore from "./store/store";
-import { ThemeProvider } from "@material-ui/core";
 import { rootTheme } from "./themes";
+import Notifier from "./utils/Notifier";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
@@ -81,15 +80,18 @@ Amplify.configure({
 });
 
 export const App: FC = (): JSX.Element => (
-  <Provider store={persist.store}>
-    <PersistGate loading={null} persistor={persist.persistor}>
-      <ThemeProvider theme={rootTheme}>
-        <div id="app">
-          <AppRouter />
-        </div>
-      </ThemeProvider>
-    </PersistGate>
-  </Provider>
+  <>
+    <Notifier />
+    <Provider store={persist.store}>
+      <PersistGate loading={null} persistor={persist.persistor}>
+        <ThemeProvider theme={rootTheme}>
+          <div id="app">
+            <AppRouter />
+          </div>
+        </ThemeProvider>
+      </PersistGate>
+    </Provider>
+  </>
 );
 
 ReactDOM.render(<App />, document.getElementById("app"));

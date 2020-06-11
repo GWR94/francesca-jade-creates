@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 import ProductTypePage from "../product/ProductTypePage";
 import { history } from "../../routes/Router";
 import { createsProduct, cakeProduct } from "../../__mocks__/products";
-import ProductsList from "../../pages/accounts/components/ProductsList";
+import ProductsList from "../ProductsList";
 import Loading from "../Loading";
 
 describe("<ProductTypePage />", () => {

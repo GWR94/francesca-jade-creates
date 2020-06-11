@@ -8,4 +8,5 @@ export interface BasketItemProps {
   shippingCost: number;
   image: S3ImageProps;
   type: string;
+  tagline: string;
 }

@@ -5,12 +5,12 @@ import { Container, Typography } from "@material-ui/core";
 import { listProducts } from "../../graphql/queries";
 import Loading from "../Loading";
 import { ProductProps } from "../interfaces/Product.i";
-import ProductsList from "../../pages/accounts/components/ProductsList";
+import ProductsList from "../ProductsList";
 
 interface ProductTypeState {
   isLoading: boolean;
   products: ProductProps[];
-  queryResults: ProductProps[];
+  queryResults: ProductProps[] | null;
 }
 
 interface ProductTypeProps {
@@ -25,7 +25,7 @@ export default class ProductTypePage extends Component<
 > {
   public readonly state: ProductTypeState = {
     isLoading: true,
-    products: null,
+    products: [],
     queryResults: null,
   };
 
@@ -57,6 +57,7 @@ export default class ProductTypePage extends Component<
     const { isLoading, products, queryResults } = this.state;
     const { type, history, admin } = this.props;
     const results = queryResults || products;
+    console.log(results);
     return isLoading ? (
       <Loading size={100} />
     ) : (

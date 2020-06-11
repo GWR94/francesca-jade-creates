@@ -37,15 +37,9 @@
   width: 90px;
   height: 90px;
   position: absolute;
-  left: calc(50% - 45px);
+  left: calc(50% - 42px);
   z-index: 10;
-  margin-top: 80px;
-  @media screen and (max-width: $s-breakpoint) {
-    width: 70px;
-    height: 70px;
-    left: calc(50% - 35px);
-    margin-top: 120px;
-  }
+  margin-top: 90px;
 }
 
 .home__container {
@@ -67,7 +61,7 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 85px 0 60px;
+  padding: 45px 0 60px;
   @media screen and (max-width: $s-breakpoint) {
     width: 100vw;
   }
@@ -115,9 +109,10 @@
   @extend %landing__box;
   color: $dark-pink;
   text-align: center;
-  margin-left: -10px;
   border: 1px solid $light-gray;
   background: #fff;
+  padding: 14px;
+  margin: 50px 0 30px 20px;
 }
 
 .landing__icon {
@@ -131,8 +126,7 @@
   color: white;
   font-size: 18px;
   display: inline-flex;
-  height: 100%;
-  margin-top: -50px;
+  margin: 0 20px 10px 10px
 }
 
 .landing__quote-icon--left {
@@ -157,18 +151,20 @@
   justify-content: space-evenly;
   font-size: 18px;
   color: white;
-  text-align: center;
+  margin: -20px 0 10px 10px;
 }
 
 .landing__review-alt {
   @extend %landing__box;
   background: #fff;
-  margin: -30px 0 0 10px;
+  margin-left: 10px;
   text-align: center;
   border: 1px solid $pink;
-  min-height: 240px;
+  min-height: 280px;
   justify-content: space-evenly;
   font-size: 19px;
+  padding: 20px;
+  margin-top: -30px;
 }
 
 .landing__cakes-button {
@@ -181,7 +177,7 @@
 }
 
 .landing__text {
-  margin: 20px 0;
+  margin: 10px;
   font-size: 18px;
   @media screen and (max-width: $xs-breakpoint) {
     font-size: 16px;

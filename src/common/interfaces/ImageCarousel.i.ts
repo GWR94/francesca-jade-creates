@@ -6,11 +6,11 @@ export interface ImageCarouselProps {
   id?: string;
   handleUpdateImages?: (image: S3ImageProps[]) => void;
   update?: boolean;
+  type: "Cake" | "Creates";
 }
 
 export interface ImageCarouselState {
-  animating: boolean;
-  currentIndex: number;
   dialogOpen: boolean;
-  keyToDelete: string;
+  keyToDelete: string | null;
+  isPlaying: boolean;
 }

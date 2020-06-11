@@ -8,7 +8,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
-import { Toaster } from "../../utils";
+import { openSnackbar } from "../../utils/Notifier";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
 import PasswordInput from "../../common/PasswordInput";
@@ -41,11 +41,13 @@ class Login extends React.Component<LoginProps, LoginState> {
     const { history } = this.props;
     this.setState({ loggingIn: true });
     try {
-      await Auth.signIn(username, password);
+      const user = await Auth.signIn(username, password);
+      console.log(user);
       history.push("/");
     } catch (err) {
-      Toaster.show({
-        intent: "danger",
+      console.error(err);
+      openSnackbar({
+        severity: "error",
         message: "Failed to sign in. Please check your username and password.",
       });
     }

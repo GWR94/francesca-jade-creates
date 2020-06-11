@@ -1,16 +1,26 @@
 .content-container {
-  width: 80vw;
+  width: 1200px;
   background: #fff;
   margin: 0 auto;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 54px);
+  @media screen and (max-width: $l-breakpoint) {
+    width: 900px;
+  }
   @media screen and (max-width: $md-breakpoint) {
-    width: 90vw;
+    width: 720px;
   }
   @media screen and (max-width: $s-breakpoint) {
     width: 95vw;
   }
 }
 
+body {
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+}
+
 html {
   font-size: 0.9em;
 }
+

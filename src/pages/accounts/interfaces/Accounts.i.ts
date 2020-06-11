@@ -6,16 +6,18 @@ import {
 import { History } from "history";
 import { ProductProps } from "../../../common/interfaces/Product.i";
 
+export type AccountTabTypes = "profile" | "products" | "create" | "orders";
+
 export interface AccountsState {
   products: ProductProps[];
   isLoading: boolean;
-  currentTab: "profile" | "products" | "create" | "orders";
+  currentTab: AccountTabTypes;
 }
 
 export interface AccountsProps {
   user: CognitoUserProps;
   userAttributes: UserAttributeProps;
-  accountsTab: "profile" | "products" | "create" | "orders";
+  accountsTab: AccountTabTypes;
   admin: boolean;
   history: History;
 }

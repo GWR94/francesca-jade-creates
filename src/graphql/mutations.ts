@@ -10,6 +10,7 @@ export const createProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -21,6 +22,16 @@ export const createProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -33,6 +44,7 @@ export const updateProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -44,6 +56,16 @@ export const updateProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -56,6 +78,7 @@ export const deleteProduct = /* GraphQL */ `
       id
       title
       description
+      tagline
       image {
         bucket
         region
@@ -67,6 +90,16 @@ export const deleteProduct = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      customFeatures {
+        images {
+          bucket
+          region
+          key
+        }
+        expectedImages
+        text
+        expectedText
+      }
     }
   }
 `;
@@ -215,6 +248,7 @@ export const createOrder = /* GraphQL */ `
         id
         title
         description
+        tagline
         image {
           bucket
           region
@@ -226,6 +260,11 @@ export const createOrder = /* GraphQL */ `
         tags
         createdAt
         updatedAt
+        customFeatures {
+          expectedImages
+          text
+          expectedText
+        }
       }
     }
   }

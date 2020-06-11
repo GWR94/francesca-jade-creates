@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import StripeCheckout from "react-stripe-checkout";
 import { useHistory } from "react-router-dom";
 import { API, graphqlOperation } from "aws-amplify";
-import { Button } from "@blueprintjs/core";
+import { Button } from "@material-ui/core";
 import { loadStripe } from "@stripe/stripe-js";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { Toaster } from "../../utils";
+import Notifier, { openSnackbar } from "../../utils/Notifier";
 import { ProductProps } from "../interfaces/Product.i";
 import { UserAttributeProps } from "../../pages/accounts/interfaces/Accounts.i";
 import { createOrder } from "../../graphql/mutations";
@@ -78,17 +78,15 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
         };
         const order = await API.graphql(graphqlOperation(createOrder, { input }));
         console.log(order);
-        Toaster.show({
-          intent: "success",
+        openSnackbar({
+          severity: "success",
           message: res.message,
-          timeout: 3000,
         });
         setTimeout(() => {
           history.push("/");
-          Toaster.show({
-            intent: "primary",
+          openSnackbar({
+            severity: "info",
             message: "Check your verified email address for order confirmation",
-            icon: "info-sign",
           });
         }, 3000);
       }

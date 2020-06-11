@@ -4,7 +4,8 @@ export interface ConfirmDialogProps {
   isOpen: boolean;
   title: string;
   description: string;
-  type: string;
+  type: "Cake" | "Creates";
+  tagline?: string;
   setPrice: boolean;
   productCost: string;
   shippingCost: string;

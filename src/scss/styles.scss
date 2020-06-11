@@ -1,5 +1,3 @@
-@import "~bootstrap-css-only/css/bootstrap.min.css";
-
 // settings
 @import "./base/settings";
 @import "./base/base";
@@ -12,8 +10,8 @@
 @import "../common/scss/carousel";
 @import "../common/scss/filter";
 @import "../common/scss/view";
-@import "../common/scss/pagination";
 @import "../common/scss/tags";
+@import "../common/scss/product-list";
 
 // not found page
 @import "../pages/not-found/scss/not-found";
@@ -26,7 +24,6 @@
 @import "../pages/accounts/scss/confirm";
 @import "../pages/accounts/scss/verify";
 @import "../pages/accounts/scss/update";
-@import "../pages/accounts/scss/product-list";
 
 // home page
 @import "../pages/home/scss/login";

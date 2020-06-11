@@ -1,39 +1,18 @@
 import React from "react";
 import { API } from "aws-amplify";
-import {
-  Container,
-  Button,
-  createMuiTheme,
-  ThemeProvider,
-  Chip,
-} from "@material-ui/core";
+import { Container, Button, ThemeProvider, Chip } from "@material-ui/core";
 import { connect } from "react-redux";
-import { green } from "@material-ui/core/colors";
+import { Dispatch } from "redux";
 import ImageCarousel from "../ImageCarousel";
 import { getProduct } from "../../graphql/queries";
 import Loading from "../Loading";
 import * as actions from "../../actions/basket.actions";
 import { AddItemAction } from "../../interfaces/basket.redux.i";
 import { ViewProps, ViewState, ViewDispatchProps } from "../interfaces/ViewProduct.i";
+import { chipTheme, buttonTheme } from "../styles/viewProduct.style";
 
-const buttonTheme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-
-const chipTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#9370f6",
-    },
-    secondary: {
-      main: "#ff80f7",
-    },
-  },
-});
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
-  public readonly state = {
+  public readonly state: ViewState = {
     product: null,
   };
 
@@ -41,18 +20,20 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
     this.getProducts();
   }
 
-  public handleAddToBasket = (): AddItemAction => {
+  public handleAddToBasket = (): AddItemAction | null => {
     const { product } = this.state;
     const { addToBasket } = this.props;
-    const { id, title, price, shippingCost, description, image, type } = product;
+    if (!product) return null;
+    const { id, title, price, shippingCost, description, image, type, tagline } = product;
     return addToBasket({
       id,
       title,
       description,
       price,
       shippingCost,
-      image,
+      image: image[0],
       type,
+      tagline,
     });
   };
 
@@ -104,7 +85,7 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
               )}
             </div>
           </ThemeProvider>
-          <ImageCarousel images={product.image} />
+          <ImageCarousel images={product.image} type={product.type} />
           <div className="view__price">
             {product.price > 0 ? (
               <p>
@@ -151,7 +132,7 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   }
 }
 
-const mapDispatchToProps = (dispatch): ViewDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch<AddItemAction>): ViewDispatchProps => ({
   addToBasket: (product): AddItemAction => dispatch(actions.addToBasket(product)),
 });
 

@@ -1,22 +1,23 @@
 import React, { Component } from "react";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { Container } from "reactstrap";
 import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProductTypePage from "../common/product/ProductTypePage";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import NavBar from "../common/NavBar";
+import NavBar from "../pages/navigation/NavBar";
 import ViewProduct from "../common/product/ViewProduct";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import { RouterState, RouterDispatchProps } from "./interfaces/Router.i";
-import { attributesToObject, Toaster } from "../utils/index";
+import { attributesToObject } from "../utils/index";
+import { openSnackbar } from "../utils/Notifier";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
-import background from "../img/background.jpg";
+import background from "../img/pinkbg.jpg";
 import UpdateProduct from "../pages/accounts/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import { ClearBasketAction } from "../interfaces/basket.redux.i";
@@ -24,6 +25,9 @@ import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
 import Checkout from "../pages/payment/components/Checkout";
+import { MatchParams } from "../pages/accounts/interfaces/EditProduct.i";
+import { AccountTabTypes } from "../pages/accounts/interfaces/Accounts.i";
+import { INTENT } from "../themes";
 
 export const history = createBrowserHistory();
 
@@ -53,14 +57,19 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
       const user = await Auth.currentAuthenticatedUser();
       if (user) {
         this.admin =
-          user.signInUserSession.idToken.payload["cognito:groups"].includes("Admin") ||
-          false;
+          user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
+            "Admin",
+          ) ?? false;
         this.setState(
           { user, isLoading: false },
           (): Promise<void> => this.getUserAttributes(user),
         );
       }
     } catch (err) {
+      openSnackbar({
+        severity: INTENT.Danger,
+        message: "Unable to sign in. Please try again.",
+      });
       this.admin = false;
       this.setState({ user: null, isLoading: false });
     }
@@ -72,13 +81,13 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
       await Auth.signOut();
       clearBasket();
       clearUser();
-      Toaster.show({
-        intent: "success",
+      openSnackbar({
+        severity: "success",
         message: "Successfully signed out.",
       });
     } catch (err) {
-      Toaster.show({
-        intent: "danger",
+      openSnackbar({
+        severity: "error",
         message: "Error signing out. Please try again.",
       });
     }
@@ -126,7 +135,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
     switch (capsule.payload.event) {
       case "signIn":
         await this.getUserData();
-        this.registerNewUser(capsule.payload.data);
+        // this.registerNewUser(capsule.payload.data);
         break;
       case "signUp":
         this.registerNewUser(capsule.payload.data);
@@ -145,7 +154,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
       <Router history={history}>
         <div
           className="landing__background"
-          style={{ background: `url(${background}) no-repeat center fixed` }}
+          style={{ background: `url(${background}) center 100% fixed` }}
         >
           <NavBar
             signOut={this.handleSignOut}
@@ -238,19 +247,18 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
               />
               <Route
                 path="/account/:id"
-                component={(matchParams): JSX.Element =>
+                component={(matchParams: RouteComponentProps<MatchParams>): JSX.Element =>
                   this.admin ? (
-                    <Container className="content-container">
+                    <div className="content-container">
                       <UpdateProduct
                         update
-                        setCurrentTab={(tab): void => {
+                        setCurrentTab={(tab: AccountTabTypes): void => {
                           history.push("/account");
                           if (tab !== accountsTab) this.setState({ accountsTab: tab });
                         }}
-                        history={history}
                         {...matchParams}
                       />
-                    </Container>
+                    </div>
                   ) : (
                     <Redirect to="/" />
                   )
@@ -259,9 +267,9 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
               <Route
                 path="/checkout"
                 component={(): JSX.Element => (
-                  <Container className="content-container">
+                  <div className="content-container">
                     <Checkout />
-                  </Container>
+                  </div>
                 )}
               />
               <Route component={NotFoundPage} />
@@ -273,7 +281,9 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
   }
 }
 
-const mapDispatchToProps = (dispatch): RouterDispatchProps => ({
+const mapDispatchToProps = (
+  dispatch: Dispatch<RouterDispatchProps>,
+): RouterDispatchProps => ({
   clearBasket: (): ClearBasketAction => dispatch(basketActions.clearBasket()),
   setUser: (id): SetUserAction => dispatch(userActions.setUser(id)),
   clearUser: (): ClearUserAction => dispatch(userActions.clearUser()),

@@ -1,5 +1,4 @@
-import React, { FormEvent } from "react";
-
+import React from "react";
 import {
   Select,
   Radio,
@@ -11,41 +10,23 @@ import {
   InputAdornment,
   Grid,
   MenuItem,
-  ClickAwayListener,
-  withStyles,
   ThemeProvider,
   FormGroup,
   Checkbox,
-  FormHelperText,
   InputLabel,
 } from "@material-ui/core";
 import { SearchRounded } from "@material-ui/icons";
-import { ControlGroup } from "@blueprintjs/core";
-import { styles, searchFilterTheme } from "../themes";
-
-interface Props {
-  type?: string;
-  setQuery: (query, filters) => void;
-  admin?: boolean;
-}
-
-interface State {
-  adminFilters: {
-    cake: boolean;
-    creates: boolean;
-  };
-  searchQuery: string;
-  query: string;
-  sortBy: string;
-}
+import { searchFilterTheme } from "../themes";
+import { SearchFilterProps, SearchFilterState } from "./interfaces/SearchFilter.i";
+import { sortMethod } from "../pages/accounts/interfaces/ProductList.i";
 
 /**
  * TODO
  * [ ] Fix radio buttons on smaller devices (don't do inline)
  */
 
-class SearchFilter extends React.Component<Props, State> {
-  public readonly state = {
+class SearchFilter extends React.Component<SearchFilterProps, SearchFilterState> {
+  public readonly state: SearchFilterState = {
     adminFilters: {
       cake: true,
       creates: true,
@@ -55,15 +36,22 @@ class SearchFilter extends React.Component<Props, State> {
     sortBy: "createdAt",
   };
 
+  /**
+   * The function which sets the value of the selected Dropdown/Select value
+   * and sets it into state as the searchQuery.
+   */
   private handleSelect = (e: React.ChangeEvent<{ value: unknown }>): void => {
-    this.setState({
-      searchQuery: e.target.value as string,
-    });
+    const { setQuery } = this.props;
+    const { query, adminFilters, sortBy } = this.state;
+    const searchQuery = e.target.value as string;
+    this.setState({ searchQuery });
+    setQuery(query, { adminFilters, searchQuery, sortBy });
   };
 
   public render(): JSX.Element {
     const { adminFilters, searchQuery, query, sortBy } = this.state;
-    const { setQuery, admin } = this.props;
+    const { setQuery, admin, type } = this.props;
+    console.log(sortBy);
 
     return (
       <>
@@ -86,9 +74,10 @@ class SearchFilter extends React.Component<Props, State> {
                       </InputAdornment>
                     ),
                   }}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    this.setState({ query: e.target.value })
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                    this.setState({ query: e.target.value });
+                    setQuery(query, { adminFilters, searchQuery, sortBy });
+                  }}
                 />
               </Grid>
               <Grid item xs={5}>
@@ -121,48 +110,62 @@ class SearchFilter extends React.Component<Props, State> {
             {admin && (
               <>
                 <Grid container spacing={1}>
-                  <Grid item xs={6}>
-                    <FormControl fullWidth>
-                      <FormLabel style={{ marginTop: 12 }}>Include</FormLabel>
-                      <FormGroup>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={adminFilters.cake}
-                              onChange={(): void =>
-                                this.setState({
-                                  adminFilters: {
+                  {!type && (
+                    <Grid item xs={6}>
+                      <FormControl fullWidth>
+                        <FormLabel style={{ marginTop: 12 }}>Include</FormLabel>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={adminFilters.cake}
+                                onChange={(): void => {
+                                  const filters = {
                                     ...adminFilters,
                                     cake: !adminFilters.cake,
-                                  },
-                                })
-                              }
-                              name="Cakes"
-                            />
-                          }
-                          label="Cakes"
-                        />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={adminFilters.creates}
-                              onChange={(): void =>
-                                this.setState({
-                                  adminFilters: {
+                                  };
+                                  this.setState({
+                                    adminFilters: filters,
+                                  });
+                                  setQuery(query, {
+                                    adminFilters: filters,
+                                    searchQuery,
+                                    sortBy,
+                                  });
+                                }}
+                                name="Cakes"
+                              />
+                            }
+                            label="Cakes"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={adminFilters.creates}
+                                onChange={(): void => {
+                                  const filters = {
                                     ...adminFilters,
                                     creates: !adminFilters.creates,
-                                  },
-                                })
-                              }
-                              name="Creations"
-                            />
-                          }
-                          label="Creations"
-                        />
-                      </FormGroup>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={6}>
+                                  };
+                                  this.setState({
+                                    adminFilters: filters,
+                                  });
+                                  setQuery(query, {
+                                    adminFilters: filters,
+                                    searchQuery,
+                                    sortBy,
+                                  });
+                                }}
+                                name="Creations"
+                              />
+                            }
+                            label="Creations"
+                          />
+                        </FormGroup>
+                      </FormControl>
+                    </Grid>
+                  )}
+                  <Grid item xs={type ? 12 : 6}>
                     <FormControl
                       component="fieldset"
                       className="new-product__radio-container"
@@ -172,9 +175,17 @@ class SearchFilter extends React.Component<Props, State> {
                         aria-label="Sort by filters"
                         name="Sort By"
                         value={sortBy}
-                        onChange={(e): void =>
-                          this.setState({ sortBy: e.currentTarget.value })
-                        }
+                        row={!!type}
+                        onChange={(e): void => {
+                          const sort = e.currentTarget.value as sortMethod;
+                          this.setState({ sortBy: sort });
+                          setQuery(query, {
+                            adminFilters,
+                            searchQuery,
+                            sortBy: sort,
+                          });
+                        }}
+                        style={{ justifyContent: type ? "center" : undefined }}
                       >
                         <FormControlLabel
                           value="createdAt"

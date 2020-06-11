@@ -6,6 +6,7 @@ export type CreateProductInput = {
   id?: string | null,
   title: string,
   description: string,
+  tagline?: string | null,
   image: Array< S3ObjectInput | null >,
   price: number,
   shippingCost: number,
@@ -13,6 +14,7 @@ export type CreateProductInput = {
   tags: Array< string | null >,
   createdAt?: string | null,
   updatedAt?: string | null,
+  customFeatures?: CustomisableFeaturesInput | null,
 };
 
 export type S3ObjectInput = {
@@ -21,9 +23,17 @@ export type S3ObjectInput = {
   key: string,
 };
 
+export type CustomisableFeaturesInput = {
+  images?: Array< S3ObjectInput | null > | null,
+  expectedImages?: number | null,
+  text?: Array< string | null > | null,
+  expectedText?: number | null,
+};
+
 export type ModelProductConditionInput = {
   title?: ModelStringInput | null,
   description?: ModelStringInput | null,
+  tagline?: ModelStringInput | null,
   price?: ModelFloatInput | null,
   shippingCost?: ModelFloatInput | null,
   type?: ModelStringInput | null,
@@ -91,6 +101,7 @@ export type UpdateProductInput = {
   id: string,
   title?: string | null,
   description?: string | null,
+  tagline?: string | null,
   image?: Array< S3ObjectInput | null > | null,
   price?: number | null,
   shippingCost?: number | null,
@@ -98,6 +109,7 @@ export type UpdateProductInput = {
   tags?: Array< string | null > | null,
   createdAt?: string | null,
   updatedAt?: string | null,
+  customFeatures?: CustomisableFeaturesInput | null,
 };
 
 export type DeleteProductInput = {
@@ -181,6 +193,7 @@ export type ModelProductFilterInput = {
   id?: ModelStringInput | null,
   title?: ModelStringInput | null,
   description?: ModelStringInput | null,
+  tagline?: ModelStringInput | null,
   price?: ModelFloatInput | null,
   shippingCost?: ModelFloatInput | null,
   type?: ModelStringInput | null,
@@ -196,6 +209,7 @@ export type SearchableProductFilterInput = {
   id?: SearchableStringFilterInput | null,
   title?: SearchableStringFilterInput | null,
   description?: SearchableStringFilterInput | null,
+  tagline?: SearchableStringFilterInput | null,
   price?: SearchableFloatFilterInput | null,
   shippingCost?: SearchableFloatFilterInput | null,
   type?: SearchableStringFilterInput | null,
@@ -242,6 +256,7 @@ export enum SearchableProductSortableFields {
   id = "id",
   title = "title",
   description = "description",
+  tagline = "tagline",
   price = "price",
   shippingCost = "shippingCost",
   type = "type",
@@ -268,6 +283,7 @@ export type CreateProductMutation = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -280,6 +296,18 @@ export type CreateProductMutation = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -294,6 +322,7 @@ export type UpdateProductMutation = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -306,6 +335,18 @@ export type UpdateProductMutation = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -320,6 +361,7 @@ export type DeleteProductMutation = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -332,6 +374,18 @@ export type DeleteProductMutation = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -505,6 +559,7 @@ export type CreateOrderMutation = {
       id: string,
       title: string,
       description: string,
+      tagline: string | null,
       image:  Array< {
         __typename: "S3Object",
         bucket: string,
@@ -517,6 +572,12 @@ export type CreateOrderMutation = {
       tags: Array< string | null >,
       createdAt: string | null,
       updatedAt: string | null,
+      customFeatures:  {
+        __typename: "CustomisableFeatures",
+        expectedImages: number | null,
+        text: Array< string | null > | null,
+        expectedText: number | null,
+      } | null,
     } | null,
   } | null,
 };
@@ -589,6 +650,7 @@ export type ListProductsQuery = {
       id: string,
       title: string,
       description: string,
+      tagline: string | null,
       image:  Array< {
         __typename: "S3Object",
         bucket: string,
@@ -601,6 +663,12 @@ export type ListProductsQuery = {
       tags: Array< string | null >,
       createdAt: string | null,
       updatedAt: string | null,
+      customFeatures:  {
+        __typename: "CustomisableFeatures",
+        expectedImages: number | null,
+        text: Array< string | null > | null,
+        expectedText: number | null,
+      } | null,
     } | null > | null,
     nextToken: string | null,
   } | null,
@@ -616,6 +684,7 @@ export type GetProductQuery = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -628,6 +697,18 @@ export type GetProductQuery = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -646,6 +727,7 @@ export type SearchProductsQuery = {
       id: string,
       title: string,
       description: string,
+      tagline: string | null,
       image:  Array< {
         __typename: "S3Object",
         bucket: string,
@@ -658,6 +740,12 @@ export type SearchProductsQuery = {
       tags: Array< string | null >,
       createdAt: string | null,
       updatedAt: string | null,
+      customFeatures:  {
+        __typename: "CustomisableFeatures",
+        expectedImages: number | null,
+        text: Array< string | null > | null,
+        expectedText: number | null,
+      } | null,
     } | null > | null,
     nextToken: string | null,
     total: number | null,
@@ -670,6 +758,7 @@ export type OnCreateProductSubscription = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -682,6 +771,18 @@ export type OnCreateProductSubscription = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -691,6 +792,7 @@ export type OnUpdateProductSubscription = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -703,6 +805,18 @@ export type OnUpdateProductSubscription = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
 
@@ -712,6 +826,7 @@ export type OnDeleteProductSubscription = {
     id: string,
     title: string,
     description: string,
+    tagline: string | null,
     image:  Array< {
       __typename: "S3Object",
       bucket: string,
@@ -724,5 +839,17 @@ export type OnDeleteProductSubscription = {
     tags: Array< string | null >,
     createdAt: string | null,
     updatedAt: string | null,
+    customFeatures:  {
+      __typename: "CustomisableFeatures",
+      images:  Array< {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      } | null > | null,
+      expectedImages: number | null,
+      text: Array< string | null > | null,
+      expectedText: number | null,
+    } | null,
   } | null,
 };
