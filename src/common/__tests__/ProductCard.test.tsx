@@ -2,9 +2,9 @@ import React, { useState as useStateMock } from "react";
 import { shallow } from "enzyme";
 import { Card, Button } from "@blueprintjs/core";
 import { S3Image } from "aws-amplify-react";
-import ProductCard from "../product/ProductCard";
+import ProductCard from "../containers/ProductCard";
 import { history } from "../../routes/Router";
-import ChipContainer from "../ChipContainer";
+import ChipContainer from "../inputs/ChipContainer";
 import { cakeProduct, createsProduct } from "../../__mocks__/products";
 
 jest.mock("react", () => ({

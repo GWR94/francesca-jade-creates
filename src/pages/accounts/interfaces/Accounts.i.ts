@@ -4,7 +4,7 @@ import {
   ClientMetadata,
 } from "amazon-cognito-identity-js";
 import { History } from "history";
-import { ProductProps } from "../../../common/interfaces/Product.i";
+import { ProductProps } from "./Product.i";
 
 export type AccountTabTypes = "profile" | "products" | "create" | "orders";
 
@@ -15,8 +15,8 @@ export interface AccountsState {
 }
 
 export interface AccountsProps {
-  user: CognitoUserProps;
-  userAttributes: UserAttributeProps;
+  user: CognitoUserProps | null;
+  userAttributes: UserAttributeProps | null;
   accountsTab: AccountTabTypes;
   admin: boolean;
   history: History;

@@ -1,9 +1,9 @@
 import React from "react";
 import { shallow } from "enzyme";
-import ProductTypePage from "../product/ProductTypePage";
+import ProductTypePage from "../containers/ProductTypePage";
 import { history } from "../../routes/Router";
 import { createsProduct, cakeProduct } from "../../__mocks__/products";
-import ProductsList from "../ProductsList";
+import ProductsList from "../../pages/accounts/components/ProductsList";
 import Loading from "../Loading";
 
 describe("<ProductTypePage />", () => {

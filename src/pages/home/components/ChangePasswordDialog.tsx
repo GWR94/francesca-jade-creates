@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import { openSnackbar } from "../../../utils/Notifier";
-import PasswordInput from "../../../common/PasswordInput";
+import PasswordInput from "../../../common/inputs/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/Password.i";
 
 const initialState = {

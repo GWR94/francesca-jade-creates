@@ -2,7 +2,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { Carousel, CarouselIndicators, CarouselControl } from "reactstrap";
 import { S3Image } from "aws-amplify-react";
-import ImageCarousel from "../ImageCarousel";
+import ImageCarousel from "../containers/ImageCarousel";
 
 describe("<ImageCarousel />", () => {
   const setState = jest.fn();

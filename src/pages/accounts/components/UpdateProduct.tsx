@@ -23,16 +23,16 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import Compress from "client-compress";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
-import ImagePicker from "../../../common/ImagePicker";
+import ImagePicker from "../../../common/containers/ImagePicker";
 import { updateProduct, createProduct } from "../../../graphql/mutations";
 import { UploadedFile } from "../interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
 import { openSnackbar } from "../../../utils/Notifier";
 import { UpdateProps, UpdateState, FileToUpload } from "../interfaces/EditProduct.i";
-import ConfirmDialog from "./ConfirmDialog";
-import ImageCarousel from "../../../common/ImageCarousel";
-import OutlinedContainer from "../../../common/OutlinedContainer";
+import ConfirmDialog from "../../../common/alerts/ConfirmDialog";
+import ImageCarousel from "../../../common/containers/ImageCarousel";
+import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/updateProduct.style";
 import { defaultStyles } from "../../../themes/index";
 
@@ -106,14 +106,16 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             },
           },
         });
-        const {
-          customisedOptions: { images, text, colorTheme },
-        } = product;
+        const { customisedOptions } = product;
         /**
          * If any of the customisable options are truthy then set customOptions to be
          * true so they can be edited in the product editor.
          */
-        if (images > 0 || text > 0 || colorTheme) {
+        if (
+          customisedOptions?.images > 0 ||
+          customisedOptions?.text > 0 ||
+          customisedOptions?.colorTheme
+        ) {
           this.setState({ customOptions: true });
         }
       } catch (err) {
@@ -168,21 +170,25 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * A function which compressed the input image to a preferred size if necessary.
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
-  private handleImageCompress = (fileToUpload: FileToUpload): void => {
+  private handleImageCompress = (blobToUpload: File): void => {
+    console.log(blobToUpload);
     const compressor = new Compress({
       targetSize: 0.5, // target size in MB
     });
     // ! If errors compressing -> Remove try catch !! CHECK !!
     try {
       compressor
-        .compress([fileToUpload])
+        .compress([blobToUpload])
         .then((conversions: { photo: { data: File } }[]) => {
           /**
            * Compress the image via the compressor, then set the fileToUpload.file
            * to be the compressed file (photo.data);
            */
           const { photo } = conversions[0];
+          const fileToUpload: FileToUpload = blobToUpload;
           fileToUpload.file = photo.data;
+          console.log(photo.data, "Data");
+          console.log(fileToUpload);
           /**
            * If everything else was successful, then attempt to upload it to S3 with
            * the handleImageUpload function.
@@ -201,6 +207,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * returned file from handleImageCompress function.)
    */
   private handleImageUpload = async (fileToUpload: FileToUpload): Promise<void> => {
+    console.log("fileTOUpload", fileToUpload);
     const { product } = this.state;
     const { update } = this.props;
     try {
@@ -218,9 +225,12 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Create uploadedImage file using AWS's Storage API, which puts the selected
        * image into the cloud (S3).
        */
-      const uploadedImage = await Storage.put(filename, fileToUpload.file, {
-        contentType: fileToUpload.file.type,
-      });
+      let uploadedImage;
+      if (fileToUpload.file) {
+        uploadedImage = await Storage.put(filename, fileToUpload.file, {
+          contentType: fileToUpload?.file.type,
+        });
+      }
       /**
        * Retrieve the key from uploadedImage, as it will be used as a reference for
        * the created product to retrieve the image from - so therefore place in the
@@ -439,22 +449,24 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     const { setCurrentTab, history } = this.props;
     this.setState({ isUploading: true });
     try {
+      const input = {
+        title,
+        description,
+        image,
+        price: setPrice ? price : 0.0,
+        tagline,
+        shippingCost: setPrice ? shippingCost : 0.0,
+        type,
+        tags,
+      };
+      console.log(input);
       await API.graphql(
         /**
          * add all of the products values to the input variable for use in the createProduct
          * graphql mutation
          */
         graphqlOperation(createProduct, {
-          input: {
-            title,
-            description,
-            image,
-            price: setPrice ? price : 0.0,
-            tagline,
-            shippingCost: setPrice ? shippingCost : 0.0,
-            type,
-            tags,
-          },
+          input,
         }),
       );
       // If successful then show this to the user by showing the success snackbar.
@@ -663,6 +675,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             )}
             <ImagePicker
               setImageFile={(file): void => {
+                console.log(file);
                 this.handleImageCompress(file);
                 this.setState({ errors: { ...errors, image: null } });
               }}

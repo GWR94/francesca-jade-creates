@@ -1,6 +1,6 @@
+import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
-import { ImageProps } from "./NewProduct.i";
 
 export interface ProfileProps {
   userAttributes: UserAttributeProps; //object container user attributes
@@ -45,7 +45,7 @@ export interface ProfileState {
     error: string;
   };
   displayImage: S3ObjectInput | null;
-  newDisplayImage: ImageProps | null;
+  newDisplayImage: ImageFile | null;
   dialogOpen: {
     password: boolean;
     email: boolean;

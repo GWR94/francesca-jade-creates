@@ -12,7 +12,7 @@ import { AppState } from "../../../store/store";
 import { BasketState } from "../../../reducers/basket.reducer";
 import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction, ClearBasketAction } from "../../../interfaces/basket.redux.i";
-import NonIdealState from "../../../common/NonIdealState";
+import NonIdealState from "../../../common/containers/NonIdealState";
 import { ShoppingBasket } from "@material-ui/icons";
 
 interface Props {

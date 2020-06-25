@@ -11,16 +11,16 @@ import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
 import { getUser } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import { BasketState } from "../../reducers/basket.reducer";
-import NonIdealState from "../../common/NonIdealState";
+import NonIdealState from "../../common/containers/NonIdealState";
 import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
 import { BasketItemProps } from "./interfaces/Basket.i";
 
-interface Props {
-  userAttributes: UserAttributeProps;
+interface BasketProps {
+  userAttributes: UserAttributeProps | null;
 }
 
-const Basket: React.FC<Props> = () => {
+const Basket: React.FC<BasketProps> = () => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const { items, cost } = useSelector(({ basket }: AppState): BasketState => basket);

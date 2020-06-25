@@ -8,7 +8,7 @@ import {
 } from "@material-ui/icons";
 import { listProducts } from "../../graphql/queries";
 import Profile from "./components/Profile";
-import ProductsList from "../../common/ProductsList";
+import ProductsList from "./components/ProductsList";
 import {
   onUpdateProduct,
   onCreateProduct,
@@ -48,7 +48,7 @@ class AccountsPage extends Component<AccountsProps, AccountsState> {
 
   private handleGetProducts = async (): Promise<void> => {
     const { data } = await API.graphql(graphqlOperation(listProducts, { limit: 200 }));
-    const products = data.listProducts.items;
+    const products = data?.listProducts?.items ?? [];
     this.setState({ products, isLoading: false });
   };
 

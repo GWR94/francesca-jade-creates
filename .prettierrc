@@ -11,6 +11,6 @@
   "requirePragma": false,
   "insertPragma": false,
   "proseWrap": "preserve",
-  "parser": "babel-ts",
+  "parser": "babel-ts", 
   "endOfLine": "auto"
 }

@@ -1,0 +1,74 @@
+{
+    "identityPoolName": "francescajadecreatesf155220b_identitypool_f155220b",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "francef155220b",
+    "userPoolName": "francescajadecreatesf155220b_userpool_f155220b",
+    "autoVerifiedAttributes": [
+        "email"
+    ],
+    "mfaConfiguration": "OFF",
+    "mfaTypes": [
+        "SMS Text Message"
+    ],
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Francesca Jade Creates Verification Code",
+    "emailVerificationMessage": "Your verification code is {####}. Please enter it into the verification code input.",
+    "defaultPasswordPolicy": false,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [],
+    "requiredAttributes": [
+        "email"
+    ],
+    "userpoolClientGenerateSecret": true,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientWriteAttributes": [
+        "email"
+    ],
+    "userpoolClientReadAttributes": [
+        "email"
+    ],
+    "userpoolClientLambdaRole": "francef155220b_userpoolclient_lambda_role",
+    "userpoolClientSetAttributes": false,
+    "resourceName": "francescajadecreatesf155220b",
+    "authSelections": "identityPoolAndUserPool",
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    },
+    "unauthRoleArn": {
+        "Fn::GetAtt": [
+            "UnauthRole",
+            "Arn"
+        ]
+    },
+    "useDefault": "manual",
+    "hostedUI": true,
+    "triggers": "{}",
+    "hostedUIDomainName": "francescajadecreates",
+    "authProvidersUserPool": [
+        "Facebook",
+        "Google",
+        "LoginWithAmazon"
+    ],
+    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}},{\"ProviderName\":\"LoginWithAmazon\",\"authorize_scopes\":\"profile profile:user_id\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"user_id\"}}]",
+    "userPoolGroupList": [
+        "users"
+    ],
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "permissions": [],
+    "dependsOn": [],
+    "thirdPartyAuth": true,
+    "authProviders": [
+        "graph.facebook.com",
+        "accounts.google.com",
+        "www.amazon.com"
+    ],
+    "userPoolGroups": true,
+    "adminQueries": false,
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\",\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"]}"
+}

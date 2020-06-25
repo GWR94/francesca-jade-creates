@@ -1,5 +1,4 @@
-/* eslint-disable prefer-destructuring */
-import React, { ChangeEvent } from "react";
+import React from "react";
 import {
   Dialog,
   Button,
@@ -8,41 +7,39 @@ import {
   DialogTitle,
   DialogContent,
   CircularProgress,
-  createMuiTheme,
-  ThemeProvider,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
   DialogActions,
+  FormControl,
+  InputLabel,
 } from "@material-ui/core";
 import validate from "validate.js";
 import { Auth } from "aws-amplify";
 import euroNumbers from "../../../utils/europeanCodes";
 import { openSnackbar } from "../../../utils/Notifier";
-import PasswordInput from "../../../common/PasswordInput";
+import PasswordInput from "../../../common/inputs/PasswordInput";
 import { CreateProps, CreateState } from "../interfaces/Create.i";
 
 const initialState = {
   username: {
     value: "",
-    error: null,
+    error: "",
   },
   password: {
     value: "",
-    error: null,
+    error: "",
   },
   email: {
     value: "",
-    error: null,
+    error: "",
   },
   phoneNumber: {
     code: "",
     number: "",
-    error: null,
+    error: "",
   },
   codeSent: false,
-  destination: null,
+  destination: "",
   code: "",
   codeLoading: false,
   createLoading: false,

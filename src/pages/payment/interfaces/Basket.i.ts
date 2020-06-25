@@ -1,4 +1,4 @@
-import { S3ImageProps } from "../../../common/interfaces/Product.i";
+import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 
 export interface BasketItemProps {
   id: string;

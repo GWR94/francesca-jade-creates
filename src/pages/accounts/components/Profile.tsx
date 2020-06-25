@@ -31,12 +31,12 @@ import { UploadedFile } from "../interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
 import euroNumbers from "../../../utils/europeanCodes";
-import ImagePicker from "../../../common/ImagePicker";
+import ImagePicker from "../../../common/containers/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
 import { greenAndRedTheme, styles, INTENT, PLACEHOLDERS } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
-import OutlinedContainer from "../../../common/OutlinedContainer";
+import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 
 /**
  * Set the initial state to be empty/nullish values so they can be set to their correct
@@ -103,6 +103,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
       } = user;
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+      console.log(data);
       // set res to null so it can be changed if the criteria is met.
       let res: PhoneNumber | null = null;
       /**
@@ -161,6 +162,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
        * If there are any errors in retrieving or manipulating the data, then notify the user
        * with an error/danger snackbar with a relevant message.
        */
+      console.error(err);
       return openSnackbar({
         severity: INTENT.Danger,
         message: "Unable to retrieve profile information - Please try again.",
@@ -556,9 +558,9 @@ class Profile extends Component<ProfileProps, ProfileState> {
                   profile
                   savedImage={user?.picture ?? PLACEHOLDERS.DisplayImage}
                   disabled={!isEditing}
-                  setImageFile={(newDisplayImage): void =>
-                    this.setState({ newDisplayImage })
-                  }
+                  setImageFile={(newDisplayImage): void => {
+                    if (newDisplayImage) this.setState({ newDisplayImage });
+                  }}
                   showPreview
                 />
               </OutlinedContainer>

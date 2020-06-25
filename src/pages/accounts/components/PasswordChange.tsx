@@ -10,9 +10,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
-import Notifier, { openSnackbar } from "../../../utils/Notifier";
+import { openSnackbar } from "../../../utils/Notifier";
 
-import PasswordInput from "../../../common/PasswordInput";
+import PasswordInput from "../../../common/inputs/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/PasswordChange.i";
 
 /**

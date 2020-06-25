@@ -2,7 +2,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { S3Image, PhotoPicker } from "aws-amplify-react";
 import { FormGroup } from "@blueprintjs/core";
-import ImagePicker from "../ImagePicker";
+import ImagePicker from "../containers/ImagePicker";
 
 describe("<ImagePicker />", () => {
   const setImageFn = jest.fn();

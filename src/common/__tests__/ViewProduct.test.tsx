@@ -2,10 +2,12 @@ import React from "react";
 import { shallow } from "enzyme";
 import { Tag, Button } from "@blueprintjs/core";
 import configureStore from "redux-mock-store";
-import ConnectedViewProduct, { ViewProduct } from "../product/ViewProduct";
+import ConnectedViewProduct, {
+  ViewProduct,
+} from "../../pages/accounts/components/ViewProduct";
 import Loading from "../Loading";
 import { cakeProduct, createsProduct, userAttributes } from "../../__mocks__/products";
-import ImageCarousel from "../ImageCarousel";
+import ImageCarousel from "../containers/ImageCarousel";
 import { AppState } from "../../store/store";
 import * as types from "../../interfaces/basket.redux.i";
 

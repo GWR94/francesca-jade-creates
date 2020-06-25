@@ -10,24 +10,40 @@ import MiniBasketMenu from "./MiniBasketMenu";
 import { LinksProps } from "../interfaces/Links.i";
 import { AccountTabTypes } from "../../accounts/interfaces/Accounts.i";
 
+/**
+ * Component containing all of the links to navigate around the site.
+ * @param {boolean} [mobile = false] - Boolean value to say if the user is on a mobile device
+ * @param {boolean} [admin = false] - Boolean value which says if the current user is an admin.
+ * @param {() => void} closeNav - Function to close the navigation menu if it's open
+ * @param {UserAttributesProps} - Object containing  user data.
+ * @param {(tab: string) => void} setAccountsTab - Function to change the current tab in Account component
+ * @param {() => void} signOut - Function to sign out the current user.
+ */
 const Links: React.FC<LinksProps> = ({
   mobile = false,
-  admin,
+  admin = false,
   closeNav,
   user,
   setAccountsTab,
   signOut,
 }): JSX.Element => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [basketOpen, setBasketOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // open/close navigation menu for mobile
+  const [basketOpen, setBasketOpen] = useState(false); // open/close basket menu
+
+  /**
+   * Find all of the items (if any) in the basket by using useSelector and returning just
+   * the basket items.
+   */
   const items = useSelector(({ basket }: AppState): BasketItemProps[] => basket.items);
 
+  // create styles for component
   const useStyles = makeStyles(navStyles);
+  // use styles
   const classes = useStyles();
+
+  // create refs for anchor points
   const basketRef = React.useRef<HTMLDivElement>(null);
   const accountRef = React.useRef<HTMLDivElement>(null);
-
-  console.log(user);
 
   return (
     <div className={mobile ? classes.mobileLinks : classes.links}>
@@ -100,7 +116,7 @@ const Links: React.FC<LinksProps> = ({
             }
           >
             <i className={`fas fa-user-alt ${classes.navIcon}`} />
-            Account
+            Sign in
           </NavLink>
         )}
         <div

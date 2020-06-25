@@ -11,7 +11,7 @@ import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { openSnackbar } from "../../utils/Notifier";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
-import PasswordInput from "../../common/PasswordInput";
+import PasswordInput from "../../common/inputs/PasswordInput";
 
 const formTheme = createMuiTheme({
   palette: {

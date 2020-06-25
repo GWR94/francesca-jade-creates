@@ -1,6 +1,6 @@
 import { History } from "history";
 import { RouteComponentProps } from "react-router-dom";
-import { ProductProps } from "../../../common/interfaces/Product.i";
+import { ProductProps } from "./Product.i";
 import { AccountTabTypes } from "./Accounts.i";
 
 export interface MatchParams {
@@ -33,7 +33,7 @@ export interface UpdateState {
   customOptions: boolean;
 }
 
-export interface FileToUpload {
-  file: File;
-  name?: string;
+export interface FileToUpload extends Partial<File> {
+  file?: File;
+  webkitRelativePath?: string;
 }

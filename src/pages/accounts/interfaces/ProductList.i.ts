@@ -1,5 +1,5 @@
 import { History } from "history";
-import { ProductProps } from "../../../common/interfaces/Product.i";
+import { ProductProps } from "./Product.i";
 
 export interface ProductListProps {
   admin?: boolean;
@@ -21,13 +21,15 @@ export interface FilterProps {
   and?: any[];
 }
 
-export type sortMethod = "createdAt" | "updatedAt";
+export type SortMethod = "createdAt" | "updatedAt";
+
+export type SearchType = "all" | "title" | "description" | "tags";
 
 export interface ProductFilters {
   adminFilters: {
     cake: boolean;
     creates: boolean;
   };
-  searchQuery: string;
-  sortBy: sortMethod;
+  searchType: SearchType;
+  sortBy: SortMethod;
 }

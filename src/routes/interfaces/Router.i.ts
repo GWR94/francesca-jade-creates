@@ -5,6 +5,7 @@ import {
   UserAttributeProps,
   AccountTabTypes,
 } from "../../pages/accounts/interfaces/Accounts.i";
+import { CognitoUserSession, CognitoUserPool } from "amazon-cognito-identity-js";
 
 export interface RouterState {
   user: CognitoUserProps | null;
@@ -17,4 +18,32 @@ export interface RouterDispatchProps {
   clearBasket: () => ClearBasketAction;
   setUser: (id: string) => SetUserAction;
   clearUser: () => void;
+}
+
+export interface SignInUserData {
+  Session: CognitoUserSession;
+  authenticationFlorType: string;
+  client: ClientData;
+  keyPrefix: string;
+  pool: CognitoUserPool;
+  storage: Storage;
+  userDataKey: string;
+  username: string;
+  email: string;
+  id: string;
+  signInUserSession: {
+    idToken: {
+      payload: {
+        sub: string;
+        email: string;
+      };
+    };
+  };
+}
+
+export interface HubCapsule {
+  payload: {
+    event: string;
+    data: SignInUserData;
+  };
 }
