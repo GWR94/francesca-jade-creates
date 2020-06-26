@@ -1,4 +1,5 @@
-// tslint:disable
+/* tslint:disable */
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const getUser = /* GraphQL */ `
@@ -13,6 +14,7 @@ export const getUser = /* GraphQL */ `
         items {
           id
           createdAt
+          updatedAt
         }
         nextToken
       }
@@ -42,6 +44,8 @@ export const getUser = /* GraphQL */ `
         shippingCost
         type
       }
+      createdAt
+      updatedAt
     }
   }
 `;

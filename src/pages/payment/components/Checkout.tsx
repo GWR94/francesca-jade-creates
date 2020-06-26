@@ -6,6 +6,7 @@ import {
   PaymentRequestButtonElement,
 } from "@stripe/react-stripe-js";
 import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { BasketItemProps } from "../interfaces/Basket.i";
 import { AppState } from "../../../store/store";
@@ -14,12 +15,16 @@ import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction, ClearBasketAction } from "../../../interfaces/basket.redux.i";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import { ShoppingBasket } from "@material-ui/icons";
+import PayButton from "./PayButton";
 
 interface Props {
   paymentProps?: {
     items: BasketItemProps[];
     cost: number;
   };
+  items?: BasketItemProps[];
+  cost?: number;
+  userAttributes: UserAttributeProps;
 }
 
 interface State {
@@ -36,13 +41,13 @@ interface State {
 
 interface CheckoutDispatchProps {
   clearBasket: () => ClearBasketAction;
-  removeFromBasket: (id) => RemoveItemAction;
+  removeFromBasket: (id: string) => RemoveItemAction;
 }
 
 class Checkout extends React.Component<Props, State> {
   public readonly state = {
-    items: null,
-    cost: null,
+    items: [],
+    cost: 0,
     name: "",
     email: "",
     addressLine1: "",
@@ -55,7 +60,7 @@ class Checkout extends React.Component<Props, State> {
   public componentDidMount(): void {
     const { paymentProps } = this.props;
     if (!paymentProps) {
-      const { items, cost } = this.props;
+      const { items = [], cost = 0 } = this.props;
       this.setState({ items, cost });
     } else {
       const { items, cost } = paymentProps;
@@ -75,11 +80,11 @@ class Checkout extends React.Component<Props, State> {
       items,
       cost,
     } = this.state;
-    const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
+    const { userAttributes } = this.props;
     return (
       <Grid container spacing={1}>
         <Grid item sm={7} xs={12}>
-          <Typography variant="h5">Your Basket ({items.length})</Typography>
+          <Typography variant="h5">Your Basket ({items?.length ?? 0})</Typography>
           {items.length ? (
             items.map((item): void => {
               console.log(item);
@@ -92,7 +97,9 @@ class Checkout extends React.Component<Props, State> {
             />
           )}
         </Grid>
-        <Grid item sm={5} xs={12}></Grid>
+        <Grid item sm={5} xs={12}>
+          <PayButton charge={{ items, cost }} userAttributes={userAttributes} />
+        </Grid>
       </Grid>
     );
   }
@@ -103,7 +110,7 @@ const mapStateToProps = ({ basket }: AppState): BasketState => ({
   cost: basket.cost,
 });
 
-const mapDispatchToProps = (dispatch): CheckoutDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch): CheckoutDispatchProps => ({
   removeFromBasket: (id): RemoveItemAction => dispatch(actions.removeFromBasket(id)),
   clearBasket: (): ClearBasketAction => dispatch(actions.clearBasket()),
 });

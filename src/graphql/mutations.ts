@@ -1,4 +1,5 @@
-// tslint:disable
+/* tslint:disable */
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const createProduct = /* GraphQL */ `
@@ -118,6 +119,7 @@ export const registerUser = /* GraphQL */ `
         items {
           id
           createdAt
+          updatedAt
         }
         nextToken
       }
@@ -147,6 +149,8 @@ export const registerUser = /* GraphQL */ `
         shippingCost
         type
       }
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -165,6 +169,7 @@ export const updateUser = /* GraphQL */ `
         items {
           id
           createdAt
+          updatedAt
         }
         nextToken
       }
@@ -194,6 +199,8 @@ export const updateUser = /* GraphQL */ `
         shippingCost
         type
       }
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -234,6 +241,8 @@ export const createOrder = /* GraphQL */ `
           shippingCost
           type
         }
+        createdAt
+        updatedAt
       }
       shippingAddress {
         city
@@ -244,6 +253,7 @@ export const createOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
+      updatedAt
       product {
         id
         title

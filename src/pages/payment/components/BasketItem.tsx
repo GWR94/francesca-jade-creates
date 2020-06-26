@@ -19,7 +19,7 @@ import { BasketItemProps } from "../interfaces/Basket.i";
 import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/basketItem.style";
 
-interface Props {
+interface BasketProps {
   item: BasketItemProps;
   sub: string;
   savedProducts: BasketItemProps[];
@@ -27,7 +27,7 @@ interface Props {
   updateSavedProducts: (products: BasketItemProps[]) => void;
 }
 
-const BasketItem: React.FC<Props> = ({
+const BasketItem: React.FC<BasketProps> = ({
   item,
   sub,
   savedProducts,

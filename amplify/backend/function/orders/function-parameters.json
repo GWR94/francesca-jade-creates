@@ -1,0 +1,12 @@
+{
+    "permissions": {
+        "api": {
+            "francescajadecreates": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        }
+    }
+}

@@ -370,7 +370,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 path="/checkout"
                 component={(): JSX.Element => (
                   <div className="content-container">
-                    <Checkout />
+                    <Checkout userAttributes={userAttributes} />
                   </div>
                 )}
               />

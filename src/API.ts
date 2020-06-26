@@ -3,7 +3,7 @@
 //  This file was automatically generated and should not be edited.
 
 export type CreateProductInput = {
-  id?: string | null,
+  id: string,
   title: string,
   description: string,
   tagline?: string | null,
@@ -177,7 +177,7 @@ export type UpdateUserInput = {
 export type CreateOrderInput = {
   id?: string | null,
   shippingAddress?: ShippingAddressInput | null,
-  createdAt: string,
+  createdAt?: string | null,
   orderProductId?: string | null,
   orderUserId?: string | null,
 };
@@ -408,6 +408,7 @@ export type RegisterUserMutation = {
         __typename: "Order",
         id: string,
         createdAt: string,
+        updatedAt: string,
       } | null > | null,
       nextToken: string | null,
     } | null,
@@ -441,6 +442,8 @@ export type RegisterUserMutation = {
       shippingCost: number,
       type: string,
     } | null > | null,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
@@ -463,6 +466,7 @@ export type UpdateUserMutation = {
         __typename: "Order",
         id: string,
         createdAt: string,
+        updatedAt: string,
       } | null > | null,
       nextToken: string | null,
     } | null,
@@ -496,6 +500,8 @@ export type UpdateUserMutation = {
       shippingCost: number,
       type: string,
     } | null > | null,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
@@ -543,6 +549,8 @@ export type CreateOrderMutation = {
         shippingCost: number,
         type: string,
       } | null > | null,
+      createdAt: string,
+      updatedAt: string,
     } | null,
     shippingAddress:  {
       __typename: "ShippingAddress",
@@ -554,6 +562,7 @@ export type CreateOrderMutation = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    updatedAt: string,
     product:  {
       __typename: "Product",
       id: string,
@@ -600,6 +609,7 @@ export type GetUserQuery = {
         __typename: "Order",
         id: string,
         createdAt: string,
+        updatedAt: string,
       } | null > | null,
       nextToken: string | null,
     } | null,
@@ -633,6 +643,8 @@ export type GetUserQuery = {
       shippingCost: number,
       type: string,
     } | null > | null,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 

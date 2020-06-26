@@ -4,16 +4,19 @@ import { useHistory } from "react-router-dom";
 import { API, graphqlOperation } from "aws-amplify";
 import { Button } from "@material-ui/core";
 import { loadStripe } from "@stripe/stripe-js";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { CardElement, useStripe, useElements, Elements } from "@stripe/react-stripe-js";
 import Notifier, { openSnackbar } from "../../../utils/Notifier";
-import { ProductProps } from "../interfaces/Product.i";
-import { UserAttributeProps } from "../interfaces/Accounts.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
+import { UserAttributeProps } from "../../accounts/interfaces/Accounts.i";
 import { createOrder } from "../../../graphql/mutations";
 import Loading from "../../../common/Loading";
 import Stripe from "@stripe/stripe-js";
 
 interface PayProps {
-  product: ProductProps;
+  charge: {
+    items: ProductProps[];
+    cost: number;
+  };
   userAttributes: UserAttributeProps;
 }
 
@@ -26,20 +29,17 @@ interface AddressProps {
   address_postcode: string;
 }
 
-const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element => {
+const PayButton: React.FC<PayProps> = ({ charge, userAttributes }): JSX.Element => {
   const history = useHistory();
-  const stripe = useStripe();
 
   const elements = useElements();
   const [isLoading, setLoading] = useState(true);
-
-  const handleSubmit = async (e): Promise<void> => {
-    e.preventDefault();
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement),
-    });
-  };
+  let stripePromise = null;
+  useEffect(() => {
+    console.log(process.env.STRIPE_PUBLIC_KEY);
+    stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
+    setLoading(false);
+  }, []);
 
   const createShippingAddress = (source): AddressProps => ({
     city: source.address_city,
@@ -94,15 +94,15 @@ const PayButton: React.FC<PayProps> = ({ product, userAttributes }): JSX.Element
       console.error("error", err);
     }
   };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <CardElement />
-      <button type="submit" disabled={!stripe}>
-        Pay
-      </button>
-    </form>
-  );
+  const { STRIPE_PUBLIC_KEY } = process.env;
+  if (STRIPE_PUBLIC_KEY)
+    return isLoading ? (
+      <Loading />
+    ) : (
+      <Elements stripe={stripePromise !== null ? stripePromise : null}>
+        <CardElement />
+      </Elements>
+    );
 };
 
 export default PayButton;
