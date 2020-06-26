@@ -171,9 +171,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
   private handleImageCompress = (blobToUpload: File): void => {
-    console.log(blobToUpload);
     const compressor = new Compress({
-      targetSize: 0.5, // target size in MB
+      targetSize: 0.8, // target size in MB
+      quality: 0.8,
+      minQuality: 0.6,
+      autoRotate: false,
     });
     // ! If errors compressing -> Remove try catch !! CHECK !!
     try {
@@ -187,8 +189,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           const { photo } = conversions[0];
           const fileToUpload: FileToUpload = blobToUpload;
           fileToUpload.file = photo.data;
-          console.log(photo.data, "Data");
-          console.log(fileToUpload);
           /**
            * If everything else was successful, then attempt to upload it to S3 with
            * the handleImageUpload function.
@@ -207,7 +207,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * returned file from handleImageCompress function.)
    */
   private handleImageUpload = async (fileToUpload: FileToUpload): Promise<void> => {
-    console.log("fileTOUpload", fileToUpload);
     const { product } = this.state;
     const { update } = this.props;
     try {
@@ -304,9 +303,9 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       // set title error if the title is under 20 characters without a space.
       error.title = "Please don't add excessively long words to title";
     }
-    if (title.length > 25) {
-      // if the title is longer than 25 characters, set title error to true
-      error.title = "Please add a smaller title (25 chars max)";
+    if (title.length > 50) {
+      // if the title is longer than 50 characters, set title error to true
+      error.title = "Please add a smaller title (50 chars max)";
     }
     if (description.length <= 20) {
       // if the description is less than 20 characters set description error to true.
