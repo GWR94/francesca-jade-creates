@@ -21,8 +21,15 @@ import {
   withStyles,
   InputAdornment,
   Tooltip,
+  Tabs,
+  Tab,
 } from "@material-ui/core";
-import { LockOpen } from "@material-ui/icons";
+import {
+  LockOpen,
+  AccountCircleTwoTone,
+  ShoppingCartTwoTone,
+  CreateTwoTone,
+} from "@material-ui/icons";
 import { getUser } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import { ProfileProps, ProfileState, PhoneNumber } from "../interfaces/Profile.i";
@@ -37,6 +44,7 @@ import VerificationDialog from "./VerificationDialog";
 import { greenAndRedTheme, styles, INTENT, PLACEHOLDERS } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
+import TabNavigation from "./TabNavigation";
 
 /**
  * Set the initial state to be empty/nullish values so they can be set to their correct
@@ -103,7 +111,6 @@ class Profile extends Component<ProfileProps, ProfileState> {
       } = user;
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-      console.log(data);
       // set res to null so it can be changed if the criteria is met.
       let res: PhoneNumber | null = null;
       /**
@@ -487,308 +494,311 @@ class Profile extends Component<ProfileProps, ProfileState> {
       displayImage,
       dialogOpen,
     } = this.state;
-    const { user, classes } = this.props;
+    const { user, classes, admin } = this.props;
     return (
       <>
         <Container className="profile__container">
           {isLoading ? (
             <Loading size={100} />
           ) : (
-            <div className="profile__container">
-              <Typography variant="h4">Profile</Typography>
-              <Typography variant="subtitle1">
-                Here is an overview of your profile. To make changes click the &quot;Edit
-                Profile&quot; button at the bottom of the page.
-              </Typography>
-              <Typography variant="h6">Login Credentials</Typography>
-              <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Username"
-                    value={username.value}
-                    variant="outlined"
-                    fullWidth
-                    onChange={(e): void =>
-                      this.setState({
-                        username: { value: e.target.value, error: "" },
-                      })
-                    }
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled
-                    value="************"
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: isEditing && (
-                        <InputAdornment position="end">
-                          <Tooltip
-                            title="Click to change password"
-                            placement="left"
-                            arrow
-                          >
-                            <LockOpen
-                              onClick={(): void =>
-                                this.setState({
-                                  dialogOpen: { ...dialogOpen, password: true },
-                                })
-                              }
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
-              </Grid>
-              <OutlinedContainer
-                label="Display Image"
-                labelWidth={80}
-                padding={0}
-                disabled={!isEditing}
-              >
-                <ImagePicker
-                  savedS3Image={displayImage}
-                  profile
-                  savedImage={user?.picture ?? PLACEHOLDERS.DisplayImage}
-                  disabled={!isEditing}
-                  setImageFile={(newDisplayImage): void => {
-                    if (newDisplayImage) this.setState({ newDisplayImage });
-                  }}
-                  showPreview
-                />
-              </OutlinedContainer>
-              <Typography variant="h6">Contact Preferences</Typography>
-              <Grid container direction="row" spacing={1} className="profile__row">
-                <Grid item xs={12} md={6} style={{ position: "relative" }}>
-                  <TextField
-                    label="Email Address"
-                    helperText={email.error}
-                    error={!!email.error}
-                    variant="outlined"
-                    placeholder="Enter your email address"
-                    value={email.value}
-                    onChange={(e): void =>
-                      this.setState({
-                        email: {
-                          ...email,
-                          value: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                    disabled={!isEditing}
-                    fullWidth
-                  />
-                  <div
-                    className="profile__verified-tag"
-                    onClick={(): Promise<void> | null => {
-                      if (isEditing) return this.handleVerifyEmail();
-                      else return null;
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <ThemeProvider theme={greenAndRedTheme}>
-                      <Chip
-                        label={email.verified ? "Verified" : "Unverified"}
-                        size="small"
-                        color={email.verified ? "primary" : "secondary"}
-                      />
-                    </ThemeProvider>
-                  </div>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Grid container>
-                    <Grid item xs={5}>
-                      <FormControl variant="outlined" fullWidth disabled={!isEditing}>
-                        <InputLabel disabled={!isEditing}>Phone Number</InputLabel>
-                        <Select
-                          value={phoneNumber.code}
-                          fullWidth
-                          variant="outlined"
-                          labelWidth={100}
-                          disabled={!isEditing}
-                          style={{
-                            borderTopRightRadius: 0,
-                            borderBottomRightRadius: 0,
-                          }}
-                        >
-                          {euroNumbers.map((num, i) => (
-                            <MenuItem
-                              key={i}
-                              value={num.value}
-                              onClick={(e): void => this.handlePhoneCodeChange(e)}
+            <>
+              <TabNavigation current="profile" admin={admin} />
+              <div className="profile__container">
+                <Typography variant="h4">Profile</Typography>
+                <Typography variant="subtitle1">
+                  Here is an overview of your profile. To make changes click the
+                  &quot;Edit Profile&quot; button at the bottom of the page.
+                </Typography>
+                <Typography variant="h6">Login Credentials</Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      label="Username"
+                      value={username.value}
+                      variant="outlined"
+                      fullWidth
+                      onChange={(e): void =>
+                        this.setState({
+                          username: { value: e.target.value, error: "" },
+                        })
+                      }
+                      disabled={!isEditing}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      disabled
+                      value="************"
+                      label="Password"
+                      type="password"
+                      variant="outlined"
+                      fullWidth
+                      InputProps={{
+                        endAdornment: isEditing && (
+                          <InputAdornment position="end">
+                            <Tooltip
+                              title="Click to change password"
+                              placement="left"
+                              arrow
                             >
-                              {num.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={7}>
-                      <OutlinedInput
-                        value={phoneNumber.value}
-                        onChange={(e): void =>
-                          this.setState({
-                            phoneNumber: {
-                              ...phoneNumber,
-                              value: e.target.value,
-                              error: "",
-                            },
-                          })
-                        }
-                        disabled={!isEditing}
-                        fullWidth
-                        classes={{
-                          notchedOutline: classes.noLeftBorderInput,
-                        }}
-                        style={{ borderLeftColor: "transparent !important" }}
-                      />
-                    </Grid>
+                              <LockOpen
+                                onClick={(): void =>
+                                  this.setState({
+                                    dialogOpen: { ...dialogOpen, password: true },
+                                  })
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
                   </Grid>
                 </Grid>
-                <Typography variant="h6">
-                  Shipping Address{" "}
-                  <span
-                    style={{ color: "darkgray", fontStyle: "italic", fontSize: "14px" }}
-                  >
-                    (optional)
-                  </span>
-                </Typography>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Address Line 1"
-                    variant="outlined"
+                <OutlinedContainer
+                  label="Display Image"
+                  labelWidth={80}
+                  padding={0}
+                  disabled={!isEditing}
+                >
+                  <ImagePicker
+                    savedS3Image={displayImage}
+                    profile
+                    savedImage={user?.picture ?? PLACEHOLDERS.DisplayImage}
                     disabled={!isEditing}
-                    value={shippingAddress.line1}
-                    fullWidth
-                    error={!!shippingAddress.error}
-                    placeholder="Enter Address Line 1"
-                    onChange={(e): void =>
-                      this.setState({
-                        shippingAddress: {
-                          ...shippingAddress,
-                          line1: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
+                    setImageFile={(newDisplayImage): void => {
+                      if (newDisplayImage) this.setState({ newDisplayImage });
+                    }}
+                    showPreview
                   />
+                </OutlinedContainer>
+                <Typography variant="h6">Contact Preferences</Typography>
+                <Grid container direction="row" spacing={1} className="profile__row">
+                  <Grid item xs={12} md={6} style={{ position: "relative" }}>
+                    <TextField
+                      label="Email Address"
+                      helperText={email.error}
+                      error={!!email.error}
+                      variant="outlined"
+                      placeholder="Enter your email address"
+                      value={email.value}
+                      onChange={(e): void =>
+                        this.setState({
+                          email: {
+                            ...email,
+                            value: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                      disabled={!isEditing}
+                      fullWidth
+                    />
+                    <div
+                      className="profile__verified-tag"
+                      onClick={(): Promise<void> | null => {
+                        if (isEditing) return this.handleVerifyEmail();
+                        else return null;
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <ThemeProvider theme={greenAndRedTheme}>
+                        <Chip
+                          label={email.verified ? "Verified" : "Unverified"}
+                          size="small"
+                          color={email.verified ? "primary" : "secondary"}
+                        />
+                      </ThemeProvider>
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Grid container>
+                      <Grid item xs={5}>
+                        <FormControl variant="outlined" fullWidth disabled={!isEditing}>
+                          <InputLabel disabled={!isEditing}>Phone Number</InputLabel>
+                          <Select
+                            value={phoneNumber.code}
+                            fullWidth
+                            variant="outlined"
+                            labelWidth={100}
+                            disabled={!isEditing}
+                            style={{
+                              borderTopRightRadius: 0,
+                              borderBottomRightRadius: 0,
+                            }}
+                          >
+                            {euroNumbers.map((num, i) => (
+                              <MenuItem
+                                key={i}
+                                value={num.value}
+                                onClick={(e): void => this.handlePhoneCodeChange(e)}
+                              >
+                                {num.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={7}>
+                        <OutlinedInput
+                          value={phoneNumber.value}
+                          onChange={(e): void =>
+                            this.setState({
+                              phoneNumber: {
+                                ...phoneNumber,
+                                value: e.target.value,
+                                error: "",
+                              },
+                            })
+                          }
+                          disabled={!isEditing}
+                          fullWidth
+                          classes={{
+                            notchedOutline: classes.noLeftBorderInput,
+                          }}
+                          style={{ borderLeftColor: "transparent !important" }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Typography variant="h6">
+                    Shipping Address{" "}
+                    <span
+                      style={{ color: "darkgray", fontStyle: "italic", fontSize: "14px" }}
+                    >
+                      (optional)
+                    </span>
+                  </Typography>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Address Line 1"
+                      variant="outlined"
+                      disabled={!isEditing}
+                      value={shippingAddress.line1}
+                      fullWidth
+                      error={!!shippingAddress.error}
+                      placeholder="Enter Address Line 1"
+                      onChange={(e): void =>
+                        this.setState({
+                          shippingAddress: {
+                            ...shippingAddress,
+                            line1: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Address Line 2"
+                      variant="outlined"
+                      disabled={!isEditing}
+                      fullWidth
+                      value={shippingAddress.line2}
+                      onChange={(e): void =>
+                        this.setState({
+                          shippingAddress: {
+                            ...shippingAddress,
+                            line2: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                      placeholder="Enter Address Line 2 (optional)"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="City"
+                      variant="outlined"
+                      disabled={!isEditing}
+                      helperText={shippingAddress.error}
+                      error={!!shippingAddress.error}
+                      value={shippingAddress.city}
+                      fullWidth
+                      placeholder="Enter city"
+                      onChange={(e): void =>
+                        this.setState({
+                          shippingAddress: {
+                            ...shippingAddress,
+                            city: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4}>
+                    <TextField
+                      label="County"
+                      variant="outlined"
+                      value={shippingAddress.county}
+                      error={!!shippingAddress.error}
+                      disabled={!isEditing}
+                      placeholder="Enter county"
+                      fullWidth
+                      onChange={(e): void =>
+                        this.setState({
+                          shippingAddress: {
+                            ...shippingAddress,
+                            county: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6} sm={4}>
+                    <TextField
+                      label="Post Code"
+                      disabled={!isEditing}
+                      value={shippingAddress.postcode}
+                      variant="outlined"
+                      fullWidth
+                      type="text"
+                      placeholder="Enter post code"
+                      onChange={(e): void =>
+                        this.setState({
+                          shippingAddress: {
+                            ...shippingAddress,
+                            postcode: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                      error={!!shippingAddress.error}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Address Line 2"
-                    variant="outlined"
-                    disabled={!isEditing}
-                    fullWidth
-                    value={shippingAddress.line2}
-                    onChange={(e): void =>
-                      this.setState({
-                        shippingAddress: {
-                          ...shippingAddress,
-                          line2: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                    placeholder="Enter Address Line 2 (optional)"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    label="City"
-                    variant="outlined"
-                    disabled={!isEditing}
-                    helperText={shippingAddress.error}
-                    error={!!shippingAddress.error}
-                    value={shippingAddress.city}
-                    fullWidth
-                    placeholder="Enter city"
-                    onChange={(e): void =>
-                      this.setState({
-                        shippingAddress: {
-                          ...shippingAddress,
-                          city: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                  />
-                </Grid>
-                <Grid item xs={6} sm={4}>
-                  <TextField
-                    label="County"
-                    variant="outlined"
-                    value={shippingAddress.county}
-                    error={!!shippingAddress.error}
-                    disabled={!isEditing}
-                    placeholder="Enter county"
-                    fullWidth
-                    onChange={(e): void =>
-                      this.setState({
-                        shippingAddress: {
-                          ...shippingAddress,
-                          county: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                  />
-                </Grid>
-                <Grid item xs={6} sm={4}>
-                  <TextField
-                    label="Post Code"
-                    disabled={!isEditing}
-                    value={shippingAddress.postcode}
-                    variant="outlined"
-                    fullWidth
-                    type="text"
-                    placeholder="Enter post code"
-                    onChange={(e): void =>
-                      this.setState({
-                        shippingAddress: {
-                          ...shippingAddress,
-                          postcode: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                    error={!!shippingAddress.error}
-                  />
-                </Grid>
-              </Grid>
-              <div className="profile__button-container">
-                <ThemeProvider theme={greenAndRedTheme}>
-                  <Button
-                    size="large"
-                    variant="contained"
-                    className={classes.buttonBottom}
-                    onClick={(): void => this.setState({ isEditing: !isEditing })}
-                    color={!isEditing ? "primary" : "secondary"}
-                  >
-                    {isEditing ? "Cancel" : "Edit Profile"}
-                  </Button>
-                  {isEditing && (
+                <div className="profile__button-container">
+                  <ThemeProvider theme={greenAndRedTheme}>
                     <Button
                       size="large"
                       variant="contained"
                       className={classes.buttonBottom}
-                      color="primary"
-                      onClick={this.checkUpdateCredentials}
+                      onClick={(): void => this.setState({ isEditing: !isEditing })}
+                      color={!isEditing ? "primary" : "secondary"}
                     >
-                      Update Profile
+                      {isEditing ? "Cancel" : "Edit Profile"}
                     </Button>
-                  )}
-                </ThemeProvider>
+                    {isEditing && (
+                      <Button
+                        size="large"
+                        variant="contained"
+                        className={classes.buttonBottom}
+                        color="primary"
+                        onClick={this.checkUpdateCredentials}
+                      >
+                        Update Profile
+                      </Button>
+                    )}
+                  </ThemeProvider>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </Container>
 

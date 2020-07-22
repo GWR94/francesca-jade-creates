@@ -8,18 +8,17 @@ type Product
       { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
     ]
   ) {
-  id: String!
+  id: ID!
   title: String!
   description: String!
-  tagline: String
-  image: [S3Object]!
-  price: Float!
-  shippingCost: Float!
+  tagline: String!
+  images: Images!
+  customOptions: [String]
   type: String!
   tags: [String]!
   createdAt: String
   updatedAt: String
-  customFeatures: CustomisableFeatures
+  variants: [Variants]
 }
 
 type User
@@ -48,7 +47,8 @@ type User
 type Order
   @model(queries: null, mutations: { create: "createOrder" }, subscriptions: null) {
   id: ID!
-  product: Product @connection
+  productIDs: [String!]!
+  totalCost: Int!  
   user: User @connection(name: "UserOrders")
   shippingAddress: ShippingAddress
   createdAt: String!
@@ -79,9 +79,38 @@ type SavedProduct {
   type: String!
 }
 
-type CustomisableFeatures {
-  images: [S3Object],
-  expectedImages: Int
-  text: [String]
-  expectedText: Int
+type Variants {
+  dimensions: String!
+  features: [Features]!
+  price: Price
+  images: [S3Object]
+}
+
+type Features {
+  name: String!
+  inputType: String!
+  featureType: String!
+  price: Price
+  value: FeatureValue!
+}
+
+type FeatureValue {
+  array: [String]
+  range: [Int]
+  number: Int
+}
+
+type Price {
+  item: Float!
+  postage: Float!
+}
+
+type Range {
+  min: Int!
+  max: Int!
+}
+
+type Images {
+  cover: Int!
+  collection: [S3Object]!
 }

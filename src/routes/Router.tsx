@@ -7,10 +7,9 @@ import { Dispatch } from "redux";
 import Landing from "../pages/home/Landing";
 import NotFoundPage from "../pages/not-found/NotFoundPage";
 import ProductTypePage from "../common/containers/ProductTypePage";
-import AccountsPage from "../pages/accounts/AccountsPage";
 import NavBar from "../pages/navigation/NavBar";
 import ViewProduct from "../pages/accounts/components/ViewProduct";
-import { getUser } from "../graphql/queries";
+import { getUser, listProducts } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import {
   RouterState,
@@ -30,10 +29,16 @@ import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
 import Checkout from "../pages/payment/components/Checkout";
-import { MatchParams } from "../pages/accounts/interfaces/EditProduct.i";
-import { AccountTabTypes } from "../pages/accounts/interfaces/Accounts.i";
+import { MatchParams } from "../pages/accounts/interfaces/UpdateProduct.i";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
 import { INTENT } from "../themes";
+import Profile from "../pages/accounts/components/Profile";
+import {
+  onCreateProduct,
+  onUpdateProduct,
+  onDeleteProduct,
+} from "../graphql/subscriptions";
+import AdminProducts from "../pages/accounts/components/AdminProducts";
 
 export const history = createBrowserHistory();
 
@@ -49,7 +54,12 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
     userAttributes: null,
     isLoading: true,
     accountsTab: "profile",
+    products: [],
   };
+
+  private createProductListener: PushSubscription;
+  private deleteProductListener: PushSubscription;
+  private updateProductListener: PushSubscription;
 
   // set the property to be false to begin with, so no user can accidentally be an admin.
   private admin = false;
@@ -60,7 +70,79 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
     // listener for auth changes such as signIn, signOut, signUp etc.
     // @ts-ignore
     Hub.listen("auth", this.onHubCapsule);
+    this.handleGetProducts();
+    if (this.admin) this.handleSubscriptions();
   }
+
+  public componentWillUnmount(): void {
+    this.createProductListener?.unsubscribe();
+    this.deleteProductListener?.unsubscribe();
+    this.updateProductListener?.unsubscribe();
+  }
+
+  private handleGetProducts = async (): Promise<void> => {
+    /**
+     * destructure the data property from the listProduct graphql query so it
+     * can be used to retrieve the products
+     */
+    const { data } = await API.graphql(graphqlOperation(listProducts, { limit: 200 }));
+    // save the products into a variable
+    const products = data?.listProducts?.items ?? [];
+    // set the products into state and remove UI loading effects by setting isLoading to false
+    this.setState({ products, isLoading: false });
+  };
+
+  private handleSubscriptions = async (): Promise<void> => {
+    const { user } = this.state;
+    const {
+      attributes: { sub },
+    } = user;
+
+    this.createProductListener = API.graphql(
+      graphqlOperation(onCreateProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        const { products } = this.state;
+        const createdProduct = productData.value.data.onCreateCakeProduct;
+        const prevProducts = products
+          ? products.filter((item): boolean => item.id !== createdProduct.id)
+          : [];
+        const updatedProducts = [createdProduct, ...prevProducts];
+        return this.setState({ products: updatedProducts });
+      },
+    });
+
+    this.updateProductListener = API.graphql(
+      graphqlOperation(onUpdateProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        const { products } = this.state;
+        const updatedProduct = productData.value.data.onUpdateProduct;
+        const updatedProductIdx = products.findIndex(
+          (item): boolean => item.id === updatedProduct.id,
+        );
+        const updatedProducts = [
+          ...products.slice(0, updatedProductIdx),
+          updatedProduct,
+          ...products.slice(updatedProductIdx + 1),
+        ];
+        return this.setState({ products: updatedProducts });
+      },
+    });
+
+    this.deleteProductListener = API.graphql(
+      graphqlOperation(onDeleteProduct, { owner: sub }),
+    ).subscribe({
+      next: (productData): void => {
+        const { products } = this.state;
+        const deletedProduct = productData.value.data.onDeleteProduct;
+        const updatedProducts = products
+          ? products.filter((item): boolean => item.id !== deletedProduct.id)
+          : [];
+        return this.setState({ products: updatedProducts });
+      },
+    });
+  };
 
   /**
    * A method to retrieve the current authenticated users data, and set it into state. It also
@@ -70,7 +152,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
    * calling the function - this can only be done once so if it's set to true then there will not be
    * another retry attempt if there is a fail.
    */
-  private getUserData = async (retry = false): Promise<void> => {
+  private getUserData = async (): Promise<void> => {
     try {
       const user = await Auth.currentAuthenticatedUser();
       if (user) {
@@ -82,6 +164,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
           user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
             "Admin",
           ) ?? false;
+
         /**
          * if there is a user object, set it into state and set isLoading to false to stop any
          * loading UI effects. Then call getUserAttributes() as the callback function.
@@ -91,8 +174,6 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
           (): Promise<void> => this.getUserAttributes(user),
         );
       } else {
-        // try to recollect the data if it has failed once.
-        if (!retry) return this.getUserData(true); // FIXME - May need to be taken out - needs testing
         /**
          * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
          * set the user object to null, and remove loading UI effects by setting isLoading to false.
@@ -189,7 +270,11 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
       id: signInData.id || signInData.signInUserSession.idToken.payload.sub,
     };
     // check to see if the user is in the database
-    const { data } = await API.graphql(graphqlOperation(getUser, getUserInput));
+    const { data } = await API.graphql(
+      graphqlOperation(getUser, {
+        input: getUserInput,
+      }),
+    );
     try {
       // if there is no data.getUser, then the user is not in the database
       if (!data.getUser) {
@@ -251,7 +336,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
   };
 
   public render(): JSX.Element {
-    const { user, userAttributes, isLoading, accountsTab } = this.state;
+    const { user, userAttributes, isLoading, accountsTab, products } = this.state;
     return (
       <Router history={history}>
         <div
@@ -306,7 +391,11 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 path="/creates/:id"
                 component={(_: { match: { params: { id: string } } }): JSX.Element => (
                   <div className="content-container">
-                    <ViewProduct id={_.match.params.id} userAttributes={userAttributes} />
+                    <ViewProduct
+                      id={_.match.params.id}
+                      userAttributes={userAttributes}
+                      type="Creates"
+                    />
                   </div>
                 )}
               />
@@ -325,25 +414,61 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 path="/cakes/:id"
                 component={(_: { match: { params: { id: string } } }): JSX.Element => (
                   <div className="content-container">
-                    <ViewProduct userAttributes={userAttributes} id={_.match.params.id} />
+                    <ViewProduct
+                      userAttributes={userAttributes}
+                      id={_.match.params.id}
+                      type="Cake"
+                    />
                   </div>
                 )}
               />
               <Route path="/login" history={history} user={user} component={Login} />
               <Route
-                path="/account"
+                path="/profile"
                 exact
                 component={(): JSX.Element =>
                   user ? (
-                    <AccountsPage
-                      user={user}
-                      userAttributes={userAttributes}
-                      accountsTab={accountsTab}
-                      admin={this.admin}
-                      history={history}
-                    />
+                    <div className="content-container">
+                      <Profile
+                        user={user}
+                        userAttributes={userAttributes}
+                        accountsTab={accountsTab}
+                        admin={this.admin}
+                        history={history}
+                      />
+                    </div>
                   ) : (
                     <Redirect to="/login" />
+                  )
+                }
+              />
+              <Route
+                path="/products"
+                exact
+                component={(): JSX.Element =>
+                  this.admin ? (
+                    <div className="content-container">
+                      <AdminProducts
+                        admin={this.admin}
+                        history={history}
+                        products={products}
+                      />
+                    </div>
+                  ) : (
+                    <Redirect to="/" />
+                  )
+                }
+              />
+              <Route
+                path="/create"
+                exact
+                component={(matchParams: RouteComponentProps<MatchParams>): JSX.Element =>
+                  this.admin ? (
+                    <div className="content-container">
+                      <UpdateProduct {...matchParams} admin={this.admin} />
+                    </div>
+                  ) : (
+                    <Redirect to="/" />
                   )
                 }
               />
@@ -352,14 +477,7 @@ class AppRouter extends Component<RouterDispatchProps, RouterState> {
                 component={(matchParams: RouteComponentProps<MatchParams>): JSX.Element =>
                   this.admin ? (
                     <div className="content-container">
-                      <UpdateProduct
-                        update
-                        setCurrentTab={(tab: AccountTabTypes): void => {
-                          history.push("/account");
-                          if (tab !== accountsTab) this.setState({ accountsTab: tab });
-                        }}
-                        {...matchParams}
-                      />
+                      <UpdateProduct update {...matchParams} admin={this.admin} />
                     </div>
                   ) : (
                     <Redirect to="/" />

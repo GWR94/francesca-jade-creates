@@ -8,14 +8,12 @@ import {
   ExitToAppOutlined,
 } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
-import { AccountTabTypes } from "../../accounts/interfaces/Accounts.i";
 
 interface AccountMenuProps {
   closeNav: () => void;
   accountRef: RefObject<HTMLDivElement>;
   menuOpen: boolean;
   setMenuOpen: (value: boolean) => void;
-  setAccountsTab: (tab: AccountTabTypes) => void;
   admin: boolean;
   signOut: () => void;
 }
@@ -25,7 +23,6 @@ const AccountsMenu = ({
   accountRef,
   menuOpen,
   setMenuOpen,
-  setAccountsTab,
   admin,
   signOut,
 }: AccountMenuProps): JSX.Element => {
@@ -87,8 +84,7 @@ const AccountsMenu = ({
           onClick={(): void => {
             closeNav();
             setMenuOpen(false);
-            setAccountsTab("profile");
-            history.push("/account");
+            history.push("/profile");
           }}
         >
           <FaceRounded style={{ marginRight: 8 }} /> Profile
@@ -99,8 +95,7 @@ const AccountsMenu = ({
               onClick={(): void => {
                 closeNav();
                 setMenuOpen(false);
-                setAccountsTab("products");
-                history.push("/account");
+                history.push("/products");
               }}
             >
               <ShoppingCartRounded style={{ marginRight: 8 }} /> Products
@@ -109,8 +104,7 @@ const AccountsMenu = ({
               onClick={(): void => {
                 closeNav();
                 setMenuOpen(false);
-                history.push("/account");
-                setAccountsTab("create");
+                history.push("/create");
               }}
             >
               <AddShoppingCartRounded style={{ marginRight: 8 }} /> Create Product
@@ -121,8 +115,7 @@ const AccountsMenu = ({
             onClick={(): void => {
               closeNav();
               setMenuOpen(false);
-              history.push("/account");
-              setAccountsTab("orders");
+              history.push("/orders");
             }}
           >
             <MailOutlineRounded style={{ marginRight: 8 }} />

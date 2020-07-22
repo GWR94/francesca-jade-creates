@@ -13,6 +13,25 @@ export const getUser = /* GraphQL */ `
       orders {
         items {
           id
+          productIDs
+          totalCost
+          user {
+            id
+            username
+            email
+            name
+            registered
+            createdAt
+            updatedAt
+          }
+          shippingAddress {
+            city
+            country
+            address_line1
+            address_line2
+            address_county
+            address_postcode
+          }
           createdAt
           updatedAt
         }
@@ -49,6 +68,55 @@ export const getUser = /* GraphQL */ `
     }
   }
 `;
+export const getProduct = /* GraphQL */ `
+  query GetProduct($id: ID!) {
+    getProduct(id: $id) {
+      id
+      title
+      description
+      tagline
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
+      }
+      customOptions
+      type
+      tags
+      createdAt
+      updatedAt
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
+        images {
+          bucket
+          region
+          key
+        }
+      }
+    }
+  }
+`;
 export const listProducts = /* GraphQL */ `
   query ListProducts(
     $filter: ModelProductFilterInput
@@ -61,55 +129,38 @@ export const listProducts = /* GraphQL */ `
         title
         description
         tagline
-        image {
-          bucket
-          region
-          key
+        images {
+          cover
+          collection {
+            bucket
+            region
+            key
+          }
         }
-        price
-        shippingCost
+        customOptions
         type
         tags
         createdAt
         updatedAt
-        customFeatures {
-          expectedImages
-          text
-          expectedText
+        variants {
+          dimensions
+          features {
+            name
+            inputType
+            featureType
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
         }
       }
       nextToken
-    }
-  }
-`;
-export const getProduct = /* GraphQL */ `
-  query GetProduct($id: ID!) {
-    getProduct(id: $id) {
-      id
-      title
-      description
-      tagline
-      image {
-        bucket
-        region
-        key
-      }
-      price
-      shippingCost
-      type
-      tags
-      createdAt
-      updatedAt
-      customFeatures {
-        images {
-          bucket
-          region
-          key
-        }
-        expectedImages
-        text
-        expectedText
-      }
     }
   }
 `;
@@ -131,21 +182,35 @@ export const searchProducts = /* GraphQL */ `
         title
         description
         tagline
-        image {
-          bucket
-          region
-          key
+        images {
+          cover
+          collection {
+            bucket
+            region
+            key
+          }
         }
-        price
-        shippingCost
+        customOptions
         type
         tags
         createdAt
         updatedAt
-        customFeatures {
-          expectedImages
-          text
-          expectedText
+        variants {
+          dimensions
+          features {
+            name
+            inputType
+            featureType
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
         }
       }
       nextToken

@@ -71,7 +71,7 @@ const Product: React.FC<ProductCardProps> = ({
 }): JSX.Element => {
   const classes = useStyles();
   // destructure product for ease of variable use
-  const { id, image, title, price, shippingCost, type, tags, tagline } = product;
+  const { id, images, title, price, type, tags, tagline } = product;
   // boolean which shows/hides delete alert visibility
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
   // boolean which opens dropdown menu for admin options
@@ -169,8 +169,8 @@ const Product: React.FC<ProductCardProps> = ({
           ) : (
             <>
               <p className={classes.price}>
-                {price > 0
-                  ? `£${price.toFixed(2)} + £${shippingCost.toFixed(2)} postage`
+                {price?.item > 0
+                  ? `£${price.item.toFixed(2)} + £${price.postage.toFixed(2)} postage`
                   : "Variable price - request a quote."}
               </p>
               {tags && <ChipContainer type={type} tags={tags} />}
@@ -191,8 +191,8 @@ const Product: React.FC<ProductCardProps> = ({
           ) : (
             <>
               <p className={classes.price}>
-                {price > 0
-                  ? `£${price.toFixed(2)} + £${shippingCost.toFixed(2)} postage`
+                {price?.item > 0
+                  ? `£${price.item.toFixed(2)} + £${price.postage.toFixed(2)} postage`
                   : "Variable price - request a quote."}
               </p>
               {tags && (
@@ -204,7 +204,7 @@ const Product: React.FC<ProductCardProps> = ({
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
-              imgKey={image[0]?.key}
+              imgKey={images.collection[0].key}
               theme={{
                 photoImg: isLoading
                   ? { display: "none" }
@@ -235,7 +235,7 @@ const Product: React.FC<ProductCardProps> = ({
                   dispatch(
                     actions.addToBasket({
                       ...product,
-                      image: image[0],
+                      image: images.collection[images.cover],
                     }),
                   );
                   openSnackbar({

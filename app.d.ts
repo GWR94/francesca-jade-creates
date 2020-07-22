@@ -1,3 +1,5 @@
+import "./types";
+
 /** Allows importing of images through webpack */
 declare module "*.jpg";
 declare module "*.jpeg";
@@ -6,10 +8,6 @@ declare module "*.svg";
 declare module "*.png";
 declare module "*.wav";
 declare module "*.mp3";
-declare module "client-compress";
-declare module "aws-exports.js";
-
-import * as ts from "typescript";
 
 declare global {
   namespace NodeJS {
@@ -19,3 +17,5 @@ declare global {
     }
   }
 }
+
+export {};

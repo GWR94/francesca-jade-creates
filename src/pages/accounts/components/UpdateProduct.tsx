@@ -3,16 +3,11 @@ import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import ChipInput from "material-ui-chip-input";
 import {
   TextField,
-  FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
   Switch,
   Button,
-  Grid,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
   ThemeProvider,
   createMuiTheme,
   Typography,
@@ -29,20 +24,22 @@ import { UploadedFile } from "../interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
 import { openSnackbar } from "../../../utils/Notifier";
-import { UpdateProps, UpdateState, FileToUpload } from "../interfaces/EditProduct.i";
+import { UpdateProps, UpdateState, FileToUpload } from "../interfaces/UpdateProduct.i";
 import ConfirmDialog from "../../../common/alerts/ConfirmDialog";
 import ImageCarousel from "../../../common/containers/ImageCarousel";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/updateProduct.style";
 import { defaultStyles } from "../../../themes/index";
+import { S3ImageProps, CakeFeature } from "../interfaces/Product.i";
+import Variants from "./Variants";
+import TabNavigation from "./TabNavigation";
+import { Variant } from "../interfaces/Variants.i";
 
 /**
  * TODO
- *![ ] Fix scrollbar on delete confirm dialog
- * [ ] Test
- * [ ] Put tags in center of input
- * [ ] Add tag when clicking new radio button to change type.
- * [x] Fix colors for chips
+ * [ ] Fix scrollbar on delete confirm dialog
+ * [ ] Add colour scheme instead of inside variants component
+ * [ ] Fix ConfirmDialog component to add new variants/custom options
  */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
@@ -52,18 +49,20 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       id: "",
       title: "",
       description: "",
-      image: [],
-      price: 0,
-      shippingCost: 0,
+      images: {
+        cover: 0,
+        collection: [],
+      },
+      price: {
+        item: 0,
+        postage: 0,
+      },
+      customOptions: [], // colour scheme/cake variants
       tagline: "",
       type: "Cake",
       tags: [],
       setPrice: false,
-      customisedOptions: {
-        images: 0,
-        text: 0,
-        colorScheme: false,
-      },
+      variants: [],
     },
     imageConfirmOpen: false,
     confirmDialogOpen: false,
@@ -76,7 +75,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       tagline: null,
     },
     percentUploaded: 0,
-    customOptions: false,
+    customSwitch: false,
   };
 
   public async componentDidMount(): Promise<void> {
@@ -94,30 +93,15 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       try {
         const { data } = await API.graphql(graphqlOperation(getProduct, { id }));
         const product = data.getProduct;
+        const { variants } = product;
         this.setState({
           product: {
             ...product,
-            setPrice: product.price > 0,
-            tagline: product.tagline || "",
-            customisedOptions: product?.customisedOptions ?? {
-              images: 0,
-              text: 0,
-              colorTheme: null,
-            },
+            setPrice:
+              variants.some((variant: Variant) => variant.price.item > 0) ?? false,
+            customOptions: product?.customOptions ?? [],
           },
         });
-        const { customisedOptions } = product;
-        /**
-         * If any of the customisable options are truthy then set customOptions to be
-         * true so they can be edited in the product editor.
-         */
-        if (
-          customisedOptions?.images > 0 ||
-          customisedOptions?.text > 0 ||
-          customisedOptions?.colorTheme
-        ) {
-          this.setState({ customOptions: true });
-        }
       } catch (err) {
         console.error(err); //FIXME
       }
@@ -177,7 +161,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       minQuality: 0.6,
       autoRotate: false,
     });
-    // ! If errors compressing -> Remove try catch !! CHECK !!
     try {
       compressor
         .compress([blobToUpload])
@@ -250,7 +233,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           graphqlOperation(updateProduct, {
             input: {
               id: product.id,
-              image: [...product.image, file],
+              images: {
+                collection: [...product.images.collection, file],
+                cover: product.images?.cover ?? 0,
+              },
             },
           }),
         ));
@@ -260,7 +246,13 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * should be completed by now.
        */
       this.setState({
-        product: { ...product, image: [...product.image, file] },
+        product: {
+          ...product,
+          images: {
+            ...product.images,
+            collection: [...product.images.collection, file],
+          },
+        },
         imageConfirmOpen: false,
         isUploading: false,
       });
@@ -282,7 +274,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    */
   private handleProductErrors = (): void => {
     const {
-      product: { title, description, tags, image, tagline },
+      product: { title, description, tags, images, tagline },
     } = this.state;
 
     // set errors for each field to be false, so they can be tracked if there are changes.
@@ -319,7 +311,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       // if there are more than 5 tags, set tag error to true.
       error.tags = "Please enter a maximum of 5 tags.";
     }
-    if (!image.length) {
+    if (!images.collection.length) {
       // if there is no image set the image error to true.
       error.image = "Please enter at least one image for your product.";
     }
@@ -372,14 +364,13 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       id,
       title,
       description,
-      price,
-      shippingCost,
       type,
       tags,
-      setPrice,
       tagline,
+      variants,
+      customOptions,
     } = product;
-    const { setCurrentTab, history } = this.props;
+    const { history } = this.props;
     // set uploading to true so loading spinners and ui changes will show to user.
     this.setState({ isUploading: true });
     try {
@@ -387,18 +378,19 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * add all of the products values to the input variable for use in the updateProduct
        * graphql mutation
        */
+      const input = {
+        id,
+        title,
+        tagline,
+        description,
+        customOptions,
+        type,
+        tags,
+        variants,
+      };
       await API.graphql(
         graphqlOperation(updateProduct, {
-          input: {
-            id,
-            title,
-            description,
-            price: setPrice ? price : 0.0,
-            shippingCost: setPrice ? shippingCost : 0.0,
-            tagline,
-            type,
-            tags,
-          },
+          input,
         }),
       );
       /**
@@ -409,14 +401,17 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         severity: "success",
         message: `Successfully updated ${title}.`,
       });
-      // set isUploading to stop loading UI effects, and close the confirm dialog.
-      this.setState({ isUploading: false, confirmDialogOpen: false });
+
+      setTimeout(() => {
+        // set isUploading to stop loading UI effects, and close the confirm dialog.
+        this.setState({ isUploading: false, confirmDialogOpen: false });
+      }, 1000);
       /**
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      setCurrentTab("products");
-      history.push("/account");
+
+      history.push("/products");
     } catch (err) {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
@@ -436,29 +431,27 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       product: {
         title,
         description,
-        image,
-        price,
-        shippingCost,
+        images,
         type,
         tags,
-        setPrice,
         tagline,
+        customOptions,
+        variants,
       },
     } = this.state;
-    const { setCurrentTab, history } = this.props;
+    const { history } = this.props;
     this.setState({ isUploading: true });
     try {
       const input = {
         title,
-        description,
-        image,
-        price: setPrice ? price : 0.0,
         tagline,
-        shippingCost: setPrice ? shippingCost : 0.0,
+        description,
+        images,
+        customOptions,
         type,
         tags,
+        variants,
       };
-      console.log(input);
       await API.graphql(
         /**
          * add all of the products values to the input variable for use in the createProduct
@@ -474,13 +467,14 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         message: `${title} has been successfully created!`,
       });
       // set isUploading to false to stop loading ui effects, and close confirm dialog
-      this.setState({ isUploading: false, confirmDialogOpen: false });
+      setTimeout(() => {
+        this.setState({ isUploading: false, confirmDialogOpen: false });
+      }, 1000);
       /**
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      setCurrentTab("products");
-      history.push("/account");
+      history.push("/products");
     } catch (err) {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
@@ -500,15 +494,25 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       errors,
       confirmDialogOpen,
       percentUploaded,
-      customOptions,
     } = this.state;
-    const { history, update, classes } = this.props;
+    const {
+      title,
+      description,
+      images,
+      tagline,
+      type,
+      tags,
+      setPrice,
+      customOptions,
+    } = product;
+    const { history, update, classes, admin } = this.props;
 
     return isLoading ? (
       <Loading size={100} />
     ) : (
       <>
         <div className={classes.mainContainer}>
+          <TabNavigation current="create" admin={admin} />
           <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }}>
             {update ? "Update Product" : "Create Product"}
           </Typography>
@@ -520,7 +524,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           )}
           <TextField
             variant="outlined"
-            value={product.title}
+            value={title}
             onChange={(e): void => this.handleFormItem(e, "title")}
             error={!!errors.title}
             helperText={errors.title}
@@ -531,7 +535,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           />
           <TextField
             variant="outlined"
-            value={product.tagline}
+            value={tagline}
             onChange={(e): void => this.handleFormItem(e, "tagline")}
             error={!!errors.tagline}
             helperText={errors.tagline}
@@ -542,7 +546,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           />
           <TextField
             variant="outlined"
-            value={product.description}
+            value={description}
             rows={3}
             rowsMax={5}
             onChange={(e): void => this.handleFormItem(e, "description")}
@@ -557,7 +561,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             <RadioGroup
               aria-label="Product Type"
               name="ProductType"
-              value={product.type}
+              value={type}
               onChange={(e): void => this.handleFormItem(e, "type")}
               row
               style={{ justifyContent: "space-around", margin: 0 }}
@@ -578,6 +582,42 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               />
             </RadioGroup>
           </OutlinedContainer>
+          <ChipInput
+            value={customOptions || []}
+            fullWidth
+            variant="outlined"
+            label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
+            classes={{
+              inputRoot: classes.chipInput,
+              // label: classes.chipLabel,
+              chip: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
+            }}
+            placeholder="Save each item by pressing enter"
+            onAdd={(chip): void => {
+              this.setState(
+                (prevState): UpdateState => {
+                  return {
+                    ...prevState,
+                    product: {
+                      ...prevState.product,
+                      customOptions: [...prevState.product?.customOptions, chip],
+                    },
+                  };
+                },
+              );
+            }}
+            onDelete={(chip): void => {
+              const idx = customOptions.findIndex((name) => name === chip);
+              const newCustom = [
+                ...customOptions.slice(0, idx),
+                ...customOptions.slice(idx + 1),
+              ];
+              this.setState({
+                product: { ...product, customOptions: newCustom },
+              });
+            }}
+            style={{ marginBottom: 10 }}
+          />
           <Alert
             severity="info"
             className={classes.callout}
@@ -600,7 +640,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             </div>
             <div className={classes.switch}>
               <Switch
-                checked={product.setPrice}
+                checked={setPrice}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
                   this.setState({
                     product: { ...product, setPrice: e.target.checked },
@@ -613,68 +653,30 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               />
             </div>
           </Alert>
-          {product.setPrice && (
-            <>
-              <Grid
-                container
-                direction="row"
-                spacing={1}
-                style={{ marginBottom: "10px" }}
-              >
-                <Grid item sm={6} xs={12}>
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-amount">
-                      Product Cost
-                    </InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-amount"
-                      value={product.price}
-                      onChange={(e): void => this.handleFormItem(e, "price")}
-                      startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                      labelWidth={90}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-amount">
-                      Shipping Cost
-                    </InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-shipping"
-                      value={product.shippingCost}
-                      onChange={(e): void => this.handleFormItem(e, "shippingCost")}
-                      startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                      labelWidth={95}
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </>
-          )}
           <OutlinedContainer
-            label={product.image.length <= 1 ? "Product Image" : "Product Images"}
-            labelWidth={product.image.length <= 1 ? 84 : 90}
+            label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
+            labelWidth={images.collection.length <= 1 ? 84 : 90}
             padding={12}
             error={!!errors.image}
           >
-            {product.image.length > 0 && (
+            {images.collection.length > 0 && (
               <div className={classes.carouselContainer}>
                 <ImageCarousel
-                  images={product.image}
+                  images={images.collection}
                   deleteImages
                   update={update}
                   id={product.id}
-                  type={product.type}
-                  handleUpdateImages={(image): void =>
-                    this.setState({ product: { ...product, image } })
-                  }
+                  type={type}
+                  handleUpdateImages={(collection: S3ImageProps[]): void => {
+                    this.setState({
+                      product: { ...product, images: { ...product.images, collection } },
+                    });
+                  }}
                 />
               </div>
             )}
             <ImagePicker
               setImageFile={(file): void => {
-                console.log(file);
                 this.handleImageCompress(file);
                 this.setState({ errors: { ...errors, image: null } });
               }}
@@ -685,7 +687,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           </OutlinedContainer>
           {errors.image && <p className={classes.errorText}>{errors.image}</p>}
           <ChipInput
-            value={product.tags || []}
+            value={tags || []}
             fullWidth
             variant="outlined"
             label="Tags"
@@ -720,193 +722,23 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               );
             }}
             onDelete={(chip): void => {
-              const idx = product.tags.findIndex((name) => name === chip);
-              const newTags = [
-                ...product.tags.slice(0, idx),
-                ...product.tags.slice(idx + 1),
-              ];
+              const idx = tags.findIndex((name) => name === chip);
+              const newTags = [...tags.slice(0, idx), ...tags.slice(idx + 1)];
               this.setState({
                 product: { ...product, tags: newTags },
                 errors: { ...errors, tags: null },
               });
             }}
-            style={{ paddingBottom: 6, marginBottom: 14 }}
           />
-          <Alert
-            severity="warning"
-            className={classes.callout}
-            style={{ marginBottom: 10 }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <AlertTitle style={{ fontSize: "18px" }}>
-                Are the customisable options?
-              </AlertTitle>
-              <Typography variant="body1">
-                If there are any customisable options, please turn on the switch and input
-                the maximum amount of customisable options for the product.
-              </Typography>
-            </div>
-            <div className={classes.switch}>
-              <Switch
-                checked={customOptions}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  this.setState({
-                    customOptions: e.target.checked,
-                  })
-                }
-                style={{ display: "flex", justifyContent: "center" }}
-                color="secondary"
-                name="customisedOptions"
-                inputProps={{ "aria-label": "primary checkbox" }}
-              />
-            </div>
-          </Alert>
-          {customOptions && (
-            <OutlinedContainer label="Customisable Options" labelWidth={120} padding={8}>
-              <div className={classes.customisableContainer}>
-                <Typography>Images</Typography>
-                <div style={{ display: "inline-flex", alignItems: "center" }}>
-                  <i
-                    className={`fas fa-minus ${classes.icon}`}
-                    onClick={(): void => {
-                      const {
-                        customisedOptions: { images },
-                      } = product;
-                      if (images >= 1) {
-                        this.setState((prevState) => ({
-                          product: {
-                            ...prevState.product,
-                            customisedOptions: {
-                              ...prevState.product.customisedOptions,
-                              images: images - 1,
-                            },
-                          },
-                        }));
-                      }
-                    }}
-                    style={{
-                      cursor:
-                        product.customisedOptions.text >= 1 ? "pointer" : "not-allowed",
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  />
-                  <Typography className={classes.customNumber}>
-                    {product.customisedOptions.images}
-                  </Typography>
-                  <i
-                    className={`fas fa-plus ${classes.icon}`}
-                    onClick={(): void => {
-                      const {
-                        customisedOptions: { images },
-                      } = product;
-                      if (images <= 9) {
-                        this.setState((prevState) => ({
-                          ...prevState,
-                          product: {
-                            ...prevState.product,
-                            customisedOptions: {
-                              ...prevState.product.customisedOptions,
-                              images: images + 1,
-                            },
-                          },
-                        }));
-                      }
-                    }}
-                    style={{
-                      cursor:
-                        product.customisedOptions.images <= 9 ? "pointer" : "not-allowed",
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  />
-                </div>
-              </div>
-              <div className={classes.customisableContainer}>
-                <Typography>Text</Typography>
-                <div style={{ display: "inline-flex", alignItems: "center" }}>
-                  <i
-                    className={`fas fa-minus ${classes.icon}`}
-                    onClick={(): void => {
-                      const {
-                        customisedOptions: { text },
-                      } = product;
-                      if (text >= 1) {
-                        this.setState((prevState) => ({
-                          product: {
-                            ...prevState.product,
-                            customisedOptions: {
-                              ...prevState.product.customisedOptions,
-                              text: text - 1,
-                            },
-                          },
-                        }));
-                      }
-                    }}
-                    style={{
-                      cursor:
-                        product.customisedOptions.text >= 1 ? "pointer" : "not-allowed",
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  />
-                  <Typography className={classes.customNumber}>
-                    {product.customisedOptions.text}
-                  </Typography>
-                  <i
-                    className={`fas fa-plus ${classes.icon}`}
-                    onClick={(): void => {
-                      const {
-                        customisedOptions: { text },
-                      } = product;
-                      if (text <= 9) {
-                        this.setState((prevState) => ({
-                          product: {
-                            ...prevState.product,
-                            customisedOptions: {
-                              ...prevState.product.customisedOptions,
-                              text: text + 1,
-                            },
-                          },
-                        }));
-                      }
-                    }}
-                    style={{
-                      cursor:
-                        product.customisedOptions.text <= 9 ? "pointer" : "not-allowed",
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  />
-                </div>
-              </div>
-              <div className={classes.customisableContainer}>
-                <Typography>Colour Scheme</Typography>
-                <div style={{ display: "flex", justifyContent: "flex-start", width: 65 }}>
-                  <Switch
-                    value={product.customisedOptions.colorScheme}
-                    onChange={(): void => {
-                      this.setState((prevState) => ({
-                        product: {
-                          ...prevState.product,
-                          customisedOptions: {
-                            ...prevState.product.customisedOptions,
-                            colorScheme: !prevState.product.customisedOptions.colorScheme,
-                          },
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-              </div>
-            </OutlinedContainer>
-          )}
+
+          <Variants
+            variants={product.variants}
+            type={type}
+            setPrice={product.setPrice}
+            updateVariants={(variants: Variant[]): void =>
+              this.setState({ product: { ...product, variants } })
+            }
+          />
           <div className={classes.buttonContainer} style={{ marginBottom: "40px" }}>
             <ThemeProvider
               theme={createMuiTheme({
@@ -938,12 +770,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         </div>
         <ConfirmDialog
           isOpen={confirmDialogOpen}
-          {...product}
+          product={product}
           isUploading={isUploading}
-          image={product.image}
-          shippingCost={product.shippingCost.toString()}
-          productCost={product.price.toString()}
-          setPrice={product.setPrice}
           percentUploaded={percentUploaded}
           onProductCreate={update ? this.handleProductUpdate : this.handleProductCreate}
           closeModal={(): void => this.setState({ confirmDialogOpen: false })}

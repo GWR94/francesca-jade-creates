@@ -25,30 +25,11 @@ export default createStyles({
     },
   },
   chipInput: {
-    padding: "6px 10px 6px !important",
-  },
-  customisableContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: 300,
-    alignItems: "center",
-    margin: "0 auto",
-    [breakpoints.down("sm")]: {
-      width: "100%",
-    },
-  },
-  icon: {
-    width: 20,
-    textAlign: "center",
-  },
-  customNumber: {
-    fontSize: "2rem",
-    width: 30,
-    textAlign: "center",
+    paddingBottom: 6,
   },
   mainContainer: {
     margin: "0 auto",
-    width: 640,
+    width: 720,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -60,7 +41,7 @@ export default createStyles({
     },
   },
   callout: {
-    margin: "12px 0",
+    margin: "10px 0",
     width: "100%",
     boxSizing: "border-box",
   },
@@ -79,5 +60,14 @@ export default createStyles({
     width: "100%",
     textAlign: "left",
     marginTop: -4,
+  },
+  icon: {
+    width: 20,
+    textAlign: "center",
+  },
+  customNumber: {
+    fontSize: "2rem",
+    width: 30,
+    textAlign: "center",
   },
 });

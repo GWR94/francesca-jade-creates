@@ -16,21 +16,14 @@ import ChipContainer from "../inputs/ChipContainer";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
-  title,
-  description,
-  type,
-  setPrice,
-  productCost,
-  tagline,
-  shippingCost,
+  product,
   isUploading,
   imagePreview,
   onProductCreate,
   closeModal,
   percentUploaded,
-  tags,
-  image,
 }): JSX.Element | null => {
+  const { title, tagline, description, type, price, tags, images } = product;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
   if (!isOpen) return null;
@@ -54,21 +47,6 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <strong>Type: </strong>
           {type}
         </p>
-        {setPrice ? (
-          <>
-            <p>
-              <strong>Product price:</strong> £{parseFloat(productCost).toFixed(2)}
-            </p>
-            <p>
-              <strong>Shipping cost:</strong> £{parseFloat(shippingCost).toFixed(2)}
-            </p>
-          </>
-        ) : (
-          <p>
-            <strong>Prices: </strong>
-            No set price - customer requests a quote.
-          </p>
-        )}
         <p>
           <strong>Tags: </strong>
         </p>
@@ -80,7 +58,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         {imagePreview ? (
           <img src={imagePreview} alt={`${title} Preview`} className="confirm__image" />
         ) : (
-          <ImageCarousel images={image} type={type} />
+          <ImageCarousel images={images.collection} type={type} />
         )}
         <DialogActions>
           <Button color="secondary" onClick={closeModal} style={{ margin: "6px 4px" }}>

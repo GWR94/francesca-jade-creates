@@ -3,24 +3,6 @@ import {
   CognitoUserSession,
   ClientMetadata,
 } from "amazon-cognito-identity-js";
-import { History } from "history";
-import { ProductProps } from "./Product.i";
-
-export type AccountTabTypes = "profile" | "products" | "create" | "orders";
-
-export interface AccountsState {
-  products: ProductProps[];
-  isLoading: boolean;
-  currentTab: AccountTabTypes;
-}
-
-export interface AccountsProps {
-  user: CognitoUserProps | null;
-  userAttributes: UserAttributeProps | null;
-  accountsTab: AccountTabTypes;
-  admin: boolean;
-  history: History;
-}
 
 export interface UserAttributeProps {
   sub?: string;

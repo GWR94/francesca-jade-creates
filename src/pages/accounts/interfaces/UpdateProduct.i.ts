@@ -1,7 +1,6 @@
 import { History } from "history";
 import { RouteComponentProps } from "react-router-dom";
 import { ProductProps } from "./Product.i";
-import { AccountTabTypes } from "./Accounts.i";
 
 export interface MatchParams {
   id: string;
@@ -10,10 +9,11 @@ export interface MatchParams {
 export interface UpdateProps extends RouteComponentProps<MatchParams> {
   history: History;
   update?: boolean;
-  setCurrentTab: (tab: AccountTabTypes) => void;
   classes: {
     [key: string]: string;
   };
+  admin: boolean;
+  // type: "Cake" | "Creates";
 }
 
 export interface UpdateState {
@@ -30,7 +30,7 @@ export interface UpdateState {
     tagline: string | null;
   };
   percentUploaded: number;
-  customOptions: boolean;
+  customSwitch: boolean;
 }
 
 export interface FileToUpload extends Partial<File> {

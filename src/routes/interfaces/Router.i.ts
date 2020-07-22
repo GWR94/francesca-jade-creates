@@ -6,12 +6,14 @@ import {
   AccountTabTypes,
 } from "../../pages/accounts/interfaces/Accounts.i";
 import { CognitoUserSession, CognitoUserPool } from "amazon-cognito-identity-js";
+import { ProductProps } from "../../pages/accounts/interfaces/Product.i";
 
 export interface RouterState {
   user: CognitoUserProps | null;
   userAttributes: UserAttributeProps | null;
   isLoading: boolean;
   accountsTab: AccountTabTypes;
+  products: ProductProps[];
 }
 
 export interface RouterDispatchProps {

@@ -9,10 +9,11 @@ export interface ViewProps {
   userAttributes: UserAttributeProps | null;
   addToBasket: (product: BasketItemProps) => AddItemAction;
   store?: Store; // test - mock-redux-store
+  type: "Cake" | "Creates";
 }
 
 export interface ViewState {
-  product: ProductProps | null;
+  product: ProductProps;
 }
 
 export interface ViewDispatchProps {

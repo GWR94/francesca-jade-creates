@@ -12,26 +12,44 @@ export const createProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }
@@ -46,26 +64,44 @@ export const updateProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }
@@ -80,26 +116,44 @@ export const deleteProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }
@@ -118,6 +172,25 @@ export const registerUser = /* GraphQL */ `
       orders {
         items {
           id
+          productIDs
+          totalCost
+          user {
+            id
+            username
+            email
+            name
+            registered
+            createdAt
+            updatedAt
+          }
+          shippingAddress {
+            city
+            country
+            address_line1
+            address_line2
+            address_county
+            address_postcode
+          }
           createdAt
           updatedAt
         }
@@ -168,6 +241,25 @@ export const updateUser = /* GraphQL */ `
       orders {
         items {
           id
+          productIDs
+          totalCost
+          user {
+            id
+            username
+            email
+            name
+            registered
+            createdAt
+            updatedAt
+          }
+          shippingAddress {
+            city
+            country
+            address_line1
+            address_line2
+            address_county
+            address_postcode
+          }
           createdAt
           updatedAt
         }
@@ -211,6 +303,8 @@ export const createOrder = /* GraphQL */ `
   ) {
     createOrder(input: $input, condition: $condition) {
       id
+      productIDs
+      totalCost
       user {
         id
         username
@@ -218,6 +312,13 @@ export const createOrder = /* GraphQL */ `
         name
         registered
         orders {
+          items {
+            id
+            productIDs
+            totalCost
+            createdAt
+            updatedAt
+          }
           nextToken
         }
         profileImage {
@@ -237,6 +338,11 @@ export const createOrder = /* GraphQL */ `
           id
           title
           description
+          image {
+            bucket
+            region
+            key
+          }
           price
           shippingCost
           type
@@ -254,28 +360,6 @@ export const createOrder = /* GraphQL */ `
       }
       createdAt
       updatedAt
-      product {
-        id
-        title
-        description
-        tagline
-        image {
-          bucket
-          region
-          key
-        }
-        price
-        shippingCost
-        type
-        tags
-        createdAt
-        updatedAt
-        customFeatures {
-          expectedImages
-          text
-          expectedText
-        }
-      }
     }
   }
 `;

@@ -45,6 +45,10 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
       fontWeight: 300,
       padding: "0 5px",
     },
+    content: {
+      minHeight: 45,
+      margin: "auto",
+    },
   });
 
   // use the styles in the component
@@ -67,14 +71,14 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
             : error
             ? COLORS.ErrorRed // if not disabled and error
             : COLORS.TextGray, // not disabled and no error
-          marginTop: -10 - padding,
+          marginTop: -8 - padding,
           marginLeft: 10 - padding,
           marginBottom: padding - 8,
         }}
       >
         {label}
       </p>
-      {children}
+      <div className={classes.content}>{children}</div>
     </div>
   );
 };

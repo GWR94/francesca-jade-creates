@@ -103,7 +103,9 @@ class ImageCarousel extends React.Component<ImageCarouselProps, ImageCarouselSta
        */
       if (update) {
         await API.graphql(
-          graphqlOperation(updateProduct, { input: { id, image: updatedImages } }),
+          graphqlOperation(updateProduct, {
+            input: { id, images: { cover: 0, collection: updatedImages } },
+          }),
         );
       }
       /**
@@ -122,6 +124,7 @@ class ImageCarousel extends React.Component<ImageCarouselProps, ImageCarouselSta
        * If there are any errors at any point in the function, notify the user with a
        * danger snackbar with a relevant message.
        */
+      console.error(err);
       openSnackbar({
         severity: "error",
         message: "Failed to removed image. Please try again.",

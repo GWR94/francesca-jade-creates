@@ -13,7 +13,27 @@ import { chipTheme, buttonTheme } from "../../../common/styles/viewProduct.style
 
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state: ViewState = {
-    product: null,
+    product: {
+      id: "",
+      title: "",
+      description: "",
+      tagline: "",
+      type: "Cake",
+      images: {
+        cover: 0,
+        collection: [],
+      },
+      price: {
+        item: 0,
+        postage: 0,
+      },
+      tags: [],
+      setPrice: false,
+      customOptions: {
+        cake: null,
+        creates: null,
+      },
+    },
   };
 
   public componentDidMount(): void {
@@ -24,14 +44,13 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
     const { product } = this.state;
     const { addToBasket } = this.props;
     if (!product) return null;
-    const { id, title, price, shippingCost, description, image, type, tagline } = product;
+    const { id, title, price, description, images, type, tagline } = product;
     return addToBasket({
       id,
       title,
       description,
       price,
-      shippingCost,
-      image: image[0],
+      images,
       type,
       tagline,
     });
@@ -64,20 +83,21 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
 
   public render(): JSX.Element {
     const { product } = this.state;
+    const { tags, type, images, description, title, price } = product;
     const { userAttributes } = this.props;
     return product ? (
       <Container className="content-container">
         <div className="view__container">
-          <h3 className="view__title">{product.title}</h3>
-          <p className="view__description">{product.description}</p>
+          <h3 className="view__title">{title}</h3>
+          <p className="view__description">{description}</p>
           <ThemeProvider theme={chipTheme}>
             <div className="view__tags">
-              {product.tags.map(
-                (tag, i): JSX.Element => (
+              {tags.map(
+                (tag: string, i: number): JSX.Element => (
                   <Chip
                     key={i}
                     size="small"
-                    color={product.type === "Cake" ? "primary" : "secondary"}
+                    color={type === "Cake" ? "primary" : "secondary"}
                     style={{ margin: "0px 4px 4px", color: "#fff" }}
                     label={tag}
                   />
@@ -85,12 +105,12 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
               )}
             </div>
           </ThemeProvider>
-          <ImageCarousel images={product.image} type={product.type} />
+          <ImageCarousel images={images.collection} type={type} />
           <div className="view__price">
-            {product.price > 0 ? (
+            {product.price.item > 0 ? (
               <p>
-                The cost for {product.title} is £{product.price.toFixed(2)} + £
-                {product.shippingCost.toFixed(2)} postage and packaging
+                The cost for {title} is £{price.item.toFixed(2)} + £
+                {price.postage.toFixed(2)} postage and packaging
               </p>
             ) : (
               <p>
@@ -100,7 +120,7 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
             )}
           </div>
           <ThemeProvider theme={buttonTheme}>
-            {product.price > 0 ? (
+            {price.item > 0 ? (
               userAttributes && (
                 <Button
                   variant="contained"

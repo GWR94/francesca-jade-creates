@@ -9,26 +9,44 @@ export const onCreateProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }
@@ -40,26 +58,44 @@ export const onUpdateProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }
@@ -71,26 +107,44 @@ export const onDeleteProduct = /* GraphQL */ `
       title
       description
       tagline
-      image {
-        bucket
-        region
-        key
+      images {
+        cover
+        collection {
+          bucket
+          region
+          key
+        }
       }
-      price
-      shippingCost
+      customOptions
       type
       tags
       createdAt
       updatedAt
-      customFeatures {
+      variants {
+        dimensions
+        features {
+          name
+          inputType
+          featureType
+          price {
+            item
+            postage
+          }
+          value {
+            array
+            range
+            number
+          }
+        }
+        price {
+          item
+          postage
+        }
         images {
           bucket
           region
           key
         }
-        expectedImages
-        text
-        expectedText
       }
     }
   }

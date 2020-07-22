@@ -24,3 +24,9 @@ html {
   font-size: 0.9em;
 }
 
+// overrides
+.WAMuiChipInput-outlined-241 input {
+    height: 16px !important;
+    margin-top: 4px !important;
+    padding: 5px 5px 12px 5px !important;
+}
