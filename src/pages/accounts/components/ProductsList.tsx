@@ -122,7 +122,8 @@ class ProductsList extends React.Component<ProductListProps, ProductListState> {
      * If the filtering object is empty, then queryResults needs to be returned and
      * set into state, which will stop the execution of the function.
      */
-    if (Object.keys(filtering).length === 0 && filtering.constructor === Object) {
+
+    if (_.isEmpty(filtering)) {
       return this.setState({ queryResults: null });
     }
 
@@ -131,7 +132,6 @@ class ProductsList extends React.Component<ProductListProps, ProductListState> {
        * If the filtering object is not empty then the products table on the database
        * needs to be searched with the correct filters.
        */
-      console.log(filtering);
       const { data } = await API.graphql({
         query: searchProducts,
         variables: {

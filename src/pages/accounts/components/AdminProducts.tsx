@@ -1,8 +1,8 @@
 import React from "react";
-import { Tabs, Tab, Typography, Container } from "@material-ui/core";
+import { Typography, Container } from "@material-ui/core";
+import { History } from "history";
 import ProductsList from "./ProductsList";
 import { ProductProps } from "../interfaces/Product.i";
-import { History } from "history";
 import TabNavigation from "./TabNavigation";
 
 interface AdminProductProps {

@@ -16,20 +16,10 @@ export default createStyles({
     },
   },
   chipCake: {
-    background: COLORS.Pink,
-    [breakpoints.down("md")]: {
-      margin: "0 4px 0 0",
-      fontSize: "11px",
-      height: 24,
-    },
+    background: COLORS.Purple,
   },
   chipCreates: {
-    background: COLORS.Purple,
-    [breakpoints.down("md")]: {
-      margin: "0 4px 0 0",
-      fontSize: "11px",
-      height: 24,
-    },
+    background: COLORS.Pink,
   },
   chipInput: {
     paddingBottom: 6,

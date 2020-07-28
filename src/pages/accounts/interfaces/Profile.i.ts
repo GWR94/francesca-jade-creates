@@ -1,16 +1,24 @@
+import { History } from "history";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
+import { UserProps } from "../../../interfaces/user.redux.i";
 
-export interface ProfileProps {
+export interface ProfileProps extends ProfileStateProps {
   userAttributes: UserAttributeProps; //object container user attributes
-  user: CognitoUserProps; // user attributes saved in cognito
   admin: boolean; // boolean to check if user is admin
+  history: History;
+  user: CognitoUserProps;
   // styles object containing classNames.
-  classes: {
+  classes?: {
     noLeftBorderInput: string;
     buttonBottom: string;
   };
+}
+
+export interface ProfileStateProps {
+  sub?: string | null;
+  username?: string | null;
 }
 
 export interface PhoneNumber {

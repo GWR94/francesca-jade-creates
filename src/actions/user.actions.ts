@@ -5,9 +5,10 @@ import {
   CLEAR_USER,
 } from "../interfaces/user.redux.i";
 
-export const setUser = (id: string): SetUserAction => ({
+export const setUser = (id: string, username: string): SetUserAction => ({
   type: SET_USER,
   id,
+  username,
 });
 
 export const clearUser = (): ClearUserAction => ({

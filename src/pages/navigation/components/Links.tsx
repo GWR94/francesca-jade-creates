@@ -8,7 +8,6 @@ import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 import AccountsMenu from "./AccountsMenu";
 import MiniBasketMenu from "./MiniBasketMenu";
 import { LinksProps } from "../interfaces/Links.i";
-import { AccountTabTypes } from "../../accounts/interfaces/Accounts.i";
 
 /**
  * Component containing all of the links to navigate around the site.
@@ -23,8 +22,6 @@ const Links: React.FC<LinksProps> = ({
   mobile = false,
   admin = false,
   closeNav,
-  user,
-  setAccountsTab,
   signOut,
 }): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false); // open/close navigation menu for mobile
@@ -35,7 +32,7 @@ const Links: React.FC<LinksProps> = ({
    * the basket items.
    */
   const items = useSelector(({ basket }: AppState): BasketItemProps[] => basket.items);
-
+  const user = useSelector(({ user }: AppState): string => user.id);
   // create styles for component
   const useStyles = makeStyles(navStyles);
   // use styles
@@ -99,7 +96,6 @@ const Links: React.FC<LinksProps> = ({
               accountRef={accountRef}
               menuOpen={menuOpen}
               setMenuOpen={(value): void => setMenuOpen(value)}
-              setAccountsTab={(value: AccountTabTypes): void => setAccountsTab(value)}
               signOut={signOut}
               admin={admin}
             />

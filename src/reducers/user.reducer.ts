@@ -2,10 +2,12 @@ import UserActionTypes, { SET_USER, CLEAR_USER } from "../interfaces/user.redux.
 
 const defaultUserState = {
   id: null,
+  username: null,
 };
 
 export interface UserState {
-  id: string;
+  id: string | null;
+  username: string | null;
 }
 
 export default (state = defaultUserState, action: UserActionTypes): UserState => {
@@ -14,6 +16,7 @@ export default (state = defaultUserState, action: UserActionTypes): UserState =>
       return {
         ...state,
         id: action.id,
+        username: action.username,
       };
     case CLEAR_USER:
       return defaultUserState;

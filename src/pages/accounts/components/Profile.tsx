@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import validate from "validate.js";
+import { connect } from "react-redux";
 import {
   Container,
   Grid,
@@ -21,18 +22,16 @@ import {
   withStyles,
   InputAdornment,
   Tooltip,
-  Tabs,
-  Tab,
 } from "@material-ui/core";
-import {
-  LockOpen,
-  AccountCircleTwoTone,
-  ShoppingCartTwoTone,
-  CreateTwoTone,
-} from "@material-ui/icons";
+import { LockOpen } from "@material-ui/icons";
 import { getUser } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
-import { ProfileProps, ProfileState, PhoneNumber } from "../interfaces/Profile.i";
+import {
+  ProfileProps,
+  ProfileState,
+  PhoneNumber,
+  ProfileStateProps,
+} from "../interfaces/Profile.i";
 import { updateUser } from "../../../graphql/mutations";
 import { UploadedFile } from "../interfaces/NewProduct.i";
 // @ts-ignore
@@ -45,6 +44,7 @@ import { greenAndRedTheme, styles, INTENT, PLACEHOLDERS } from "../../../themes"
 import { openSnackbar } from "../../../utils/Notifier";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import TabNavigation from "./TabNavigation";
+import { AppState } from "../../../store/store";
 
 /**
  * Set the initial state to be empty/nullish values so they can be set to their correct
@@ -104,11 +104,8 @@ class Profile extends Component<ProfileProps, ProfileState> {
    */
   private handleRetrieveData = async (): Promise<void> => {
     try {
-      const { user, userAttributes } = this.props;
+      const { username, sub, userAttributes } = this.props;
       // get the sub (id) of the user from the user object.
-      const {
-        attributes: { sub },
-      } = user;
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
       // set res to null so it can be changed if the criteria is met.
@@ -141,7 +138,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
       this.setState((prevState) => ({
         username: {
           ...prevState.username,
-          value: data.getUser?.username ?? user.username,
+          value: data.getUser?.username ?? username,
         },
         email: {
           ...prevState.email,
@@ -364,7 +361,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
    * using the updateUser graphQL mutation.
    */
   private onUpdateProfile = async (): Promise<void> => {
-    const { user } = this.props;
+    const { sub } = this.props;
     const { newDisplayImage, shippingAddress, dialogOpen, username, email } = this.state;
     try {
       // initialise the file variable so the key, bucket and region can be assigned to it.
@@ -394,7 +391,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
       await API.graphql(
         graphqlOperation(updateUser, {
           input: {
-            id: user.attributes.sub,
+            id: sub,
             profileImage: file,
             email: email.value,
             username: username.value,
@@ -656,7 +653,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                           disabled={!isEditing}
                           fullWidth
                           classes={{
-                            notchedOutline: classes.noLeftBorderInput,
+                            notchedOutline: classes?.noLeftBorderInput,
                           }}
                           style={{ borderLeftColor: "transparent !important" }}
                         />
@@ -778,7 +775,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     <Button
                       size="large"
                       variant="contained"
-                      className={classes.buttonBottom}
+                      className={classes?.buttonBottom}
                       onClick={(): void => this.setState({ isEditing: !isEditing })}
                       color={!isEditing ? "primary" : "secondary"}
                     >
@@ -788,7 +785,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       <Button
                         size="large"
                         variant="contained"
-                        className={classes.buttonBottom}
+                        className={classes?.buttonBottom}
                         color="primary"
                         onClick={this.checkUpdateCredentials}
                       >
@@ -860,4 +857,9 @@ class Profile extends Component<ProfileProps, ProfileState> {
   }
 }
 
-export default withStyles(styles)(Profile);
+const mapStateToProps = ({ user }: AppState): ProfileStateProps => ({
+  sub: user.id,
+  username: user.username,
+});
+
+export default connect(mapStateToProps, null)(withStyles(styles)(Profile));

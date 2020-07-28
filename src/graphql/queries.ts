@@ -84,6 +84,7 @@ export const getProduct = /* GraphQL */ `
         }
       }
       customOptions
+      setPrice
       type
       tags
       createdAt
@@ -138,6 +139,7 @@ export const listProducts = /* GraphQL */ `
           }
         }
         customOptions
+        setPrice
         type
         tags
         createdAt
@@ -191,6 +193,7 @@ export const searchProducts = /* GraphQL */ `
           }
         }
         customOptions
+        setPrice
         type
         tags
         createdAt

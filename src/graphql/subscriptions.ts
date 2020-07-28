@@ -18,6 +18,7 @@ export const onCreateProduct = /* GraphQL */ `
         }
       }
       customOptions
+      setPrice
       type
       tags
       createdAt
@@ -67,6 +68,7 @@ export const onUpdateProduct = /* GraphQL */ `
         }
       }
       customOptions
+      setPrice
       type
       tags
       createdAt
@@ -116,6 +118,7 @@ export const onDeleteProduct = /* GraphQL */ `
         }
       }
       customOptions
+      setPrice
       type
       tags
       createdAt

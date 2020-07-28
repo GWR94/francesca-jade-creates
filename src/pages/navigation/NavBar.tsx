@@ -45,7 +45,7 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
 
   public render(): JSX.Element {
     const { navOpen, mobile } = this.state;
-    const { user, admin, items, setAccountsTab, signOut, classes } = this.props;
+    const { admin, items, signOut, classes } = this.props;
     return (
       <>
         {/* ClickAwayListener closes the NavBar when clicking away from itself */}
@@ -86,8 +86,6 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
                 {!mobile && (
                   <Links
                     closeNav={(): void => this.setState({ navOpen: false })}
-                    user={user}
-                    setAccountsTab={setAccountsTab}
                     admin={admin}
                     signOut={signOut}
                   />
@@ -102,8 +100,6 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
                   <Links
                     mobile
                     closeNav={(): void => this.setState({ navOpen: false })}
-                    user={user}
-                    setAccountsTab={setAccountsTab}
                     admin={admin}
                     signOut={signOut}
                   />

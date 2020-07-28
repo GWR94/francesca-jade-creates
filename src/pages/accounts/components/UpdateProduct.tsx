@@ -40,6 +40,7 @@ import { Variant } from "../interfaces/Variants.i";
  * [ ] Fix scrollbar on delete confirm dialog
  * [ ] Add colour scheme instead of inside variants component
  * [ ] Fix ConfirmDialog component to add new variants/custom options
+ * [ ] Fix NavBar padding/underlines on links
  */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
@@ -52,10 +53,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       images: {
         cover: 0,
         collection: [],
-      },
-      price: {
-        item: 0,
-        postage: 0,
       },
       customOptions: [], // colour scheme/cake variants
       tagline: "",
@@ -157,8 +154,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
   private handleImageCompress = (blobToUpload: File): void => {
     const compressor = new Compress({
       targetSize: 0.8, // target size in MB
-      quality: 0.8,
-      minQuality: 0.6,
+      quality: 1.0,
       autoRotate: false,
     });
     try {
@@ -369,6 +365,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       tagline,
       variants,
       customOptions,
+      setPrice,
     } = product;
     const { history } = this.props;
     // set uploading to true so loading spinners and ui changes will show to user.
@@ -378,19 +375,19 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * add all of the products values to the input variable for use in the updateProduct
        * graphql mutation
        */
-      const input = {
-        id,
-        title,
-        tagline,
-        description,
-        customOptions,
-        type,
-        tags,
-        variants,
-      };
       await API.graphql(
         graphqlOperation(updateProduct, {
-          input,
+          input: {
+            id,
+            title,
+            tagline,
+            description,
+            customOptions,
+            setPrice,
+            type,
+            tags,
+            variants,
+          },
         }),
       );
       /**
@@ -437,28 +434,30 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         tagline,
         customOptions,
         variants,
+        setPrice,
       },
     } = this.state;
     const { history } = this.props;
     this.setState({ isUploading: true });
     try {
-      const input = {
-        title,
-        tagline,
-        description,
-        images,
-        customOptions,
-        type,
-        tags,
-        variants,
-      };
       await API.graphql(
         /**
          * add all of the products values to the input variable for use in the createProduct
          * graphql mutation
          */
+
         graphqlOperation(createProduct, {
-          input,
+          input: {
+            title,
+            tagline,
+            description,
+            images,
+            customOptions,
+            type,
+            tags,
+            variants,
+            setPrice,
+          },
         }),
       );
       // If successful then show this to the user by showing the success snackbar.

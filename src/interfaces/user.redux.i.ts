@@ -4,6 +4,7 @@ export const CLEAR_USER = "CLEAR_USER";
 export interface SetUserAction {
   type: typeof SET_USER;
   id: string;
+  username: string;
 }
 
 export interface ClearUserAction {

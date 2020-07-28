@@ -6,7 +6,8 @@ import { Dispatch } from "redux";
 import ImageCarousel from "../../../common/containers/ImageCarousel";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
-import * as actions from "../../../actions/basket.actions";
+import * as basketActions from "../../../actions/basket.actions";
+import * as productsActions from "../../../actions/products.actions";
 import { AddItemAction } from "../../../interfaces/basket.redux.i";
 import { ViewProps, ViewState, ViewDispatchProps } from "../interfaces/ViewProduct.i";
 import { chipTheme, buttonTheme } from "../../../common/styles/viewProduct.style";
@@ -23,20 +24,16 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
         cover: 0,
         collection: [],
       },
-      price: {
-        item: 0,
-        postage: 0,
-      },
       tags: [],
       setPrice: false,
-      customOptions: {
-        cake: null,
-        creates: null,
-      },
+      variants: [],
+      customOptions: [],
     },
   };
 
   public componentDidMount(): void {
+    const { id, getCurrentProduct } = this.props;
+
     this.getProducts();
   }
 
@@ -44,13 +41,13 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
     const { product } = this.state;
     const { addToBasket } = this.props;
     if (!product) return null;
-    const { id, title, price, description, images, type, tagline } = product;
+    const { id, title, description, images, type, tagline, variants } = product;
     return addToBasket({
       id,
       title,
       description,
-      price,
-      images,
+      image: images.collection[images.cover],
+      variants,
       type,
       tagline,
     });
@@ -74,16 +71,34 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
         authMode: "API_KEY",
       });
       this.setState({
-        product: data.getProduct,
+        product: {
+          ...data.getProduct,
+        },
       });
     } catch (err) {
       console.error(err);
     }
   };
 
+  // public getPriceValues = (): string => {
+  //   const {
+  //     product: { variants },
+  //   } = this.state;
+  //   let min = Infinity;
+  //   let max = -Infinity;
+  //   if (variants?.length) {
+  //     for (const variant of variants) {
+  //       min = Math.min(variant.price.item, min);
+  //       max = Math.max(variant.price.item, max);
+  //     }
+  //   }
+  //   if (min === max) return `£${min}`;
+  //   else if(min === Infinity || max === -Infinity) return `Variable Price - `
+  // };
+
   public render(): JSX.Element {
     const { product } = this.state;
-    const { tags, type, images, description, title, price } = product;
+    const { tags, type, images, description, title, variants, setPrice } = product;
     const { userAttributes } = this.props;
     return product ? (
       <Container className="content-container">
@@ -106,8 +121,8 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
             </div>
           </ThemeProvider>
           <ImageCarousel images={images.collection} type={type} />
-          <div className="view__price">
-            {product.price.item > 0 ? (
+          {/* <div className="view__price">
+            {setPrice ? (
               <p>
                 The cost for {title} is £{price.item.toFixed(2)} + £
                 {price.postage.toFixed(2)} postage and packaging
@@ -118,9 +133,9 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
                 get back to you as soon as possible with a quote.
               </p>
             )}
-          </div>
+          </div> */}
           <ThemeProvider theme={buttonTheme}>
-            {price.item > 0 ? (
+            {setPrice ? (
               userAttributes && (
                 <Button
                   variant="contained"
@@ -153,7 +168,9 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<AddItemAction>): ViewDispatchProps => ({
-  addToBasket: (product): AddItemAction => dispatch(actions.addToBasket(product)),
+  addToBasket: (product): AddItemAction => dispatch(basketActions.addToBasket(product)),
+  getCurrentProduct: (id): GetCurrentProductAction =>
+    dispatch(productsActions.getCurrentProduct(id)),
 });
 
 export default connect(null, mapDispatchToProps)(ViewProduct);

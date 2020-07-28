@@ -7,7 +7,6 @@ import { Typography, Button, makeStyles, Grid, Hidden } from "@material-ui/core"
 import { useHistory } from "react-router-dom";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
-import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
 import { getUser } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import { BasketState } from "../../reducers/basket.reducer";
@@ -16,11 +15,7 @@ import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
 import { BasketItemProps } from "./interfaces/Basket.i";
 
-interface BasketProps {
-  userAttributes: UserAttributeProps | null;
-}
-
-const Basket: React.FC<BasketProps> = () => {
+const Basket: React.FC = () => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const { items, cost } = useSelector(({ basket }: AppState): BasketState => basket);

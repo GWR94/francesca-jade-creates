@@ -9,6 +9,7 @@ export type CreateProductInput = {
   tagline: string,
   images: ImagesInput,
   customOptions?: Array< string | null > | null,
+  setPrice?: boolean | null,
   type: string,
   tags: Array< string | null >,
   createdAt?: string | null,
@@ -58,6 +59,7 @@ export type ModelProductConditionInput = {
   description?: ModelStringInput | null,
   tagline?: ModelStringInput | null,
   customOptions?: ModelStringInput | null,
+  setPrice?: ModelBooleanInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
@@ -107,6 +109,13 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
 export type UpdateProductInput = {
   id: string,
   title?: string | null,
@@ -114,6 +123,7 @@ export type UpdateProductInput = {
   tagline?: string | null,
   images?: ImagesInput | null,
   customOptions?: Array< string | null > | null,
+  setPrice?: boolean | null,
   type?: string | null,
   tags?: Array< string | null > | null,
   createdAt?: string | null,
@@ -165,13 +175,6 @@ export type ModelUserConditionInput = {
   not?: ModelUserConditionInput | null,
 };
 
-export type ModelBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
 export type UpdateUserInput = {
   id: string,
   username?: string | null,
@@ -219,6 +222,7 @@ export type ModelProductFilterInput = {
   description?: ModelStringInput | null,
   tagline?: ModelStringInput | null,
   customOptions?: ModelStringInput | null,
+  setPrice?: ModelBooleanInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
@@ -250,6 +254,7 @@ export type SearchableProductFilterInput = {
   description?: SearchableStringFilterInput | null,
   tagline?: SearchableStringFilterInput | null,
   customOptions?: SearchableStringFilterInput | null,
+  setPrice?: SearchableBooleanFilterInput | null,
   type?: SearchableStringFilterInput | null,
   tags?: SearchableStringFilterInput | null,
   createdAt?: SearchableStringFilterInput | null,
@@ -291,6 +296,11 @@ export type SearchableStringFilterInput = {
   regexp?: string | null,
 };
 
+export type SearchableBooleanFilterInput = {
+  eq?: boolean | null,
+  ne?: boolean | null,
+};
+
 export type SearchableProductSortInput = {
   field?: SearchableProductSortableFields | null,
   direction?: SearchableSortDirection | null,
@@ -302,6 +312,7 @@ export enum SearchableProductSortableFields {
   description = "description",
   tagline = "tagline",
   customOptions = "customOptions",
+  setPrice = "setPrice",
   type = "type",
   tags = "tags",
   createdAt = "createdAt",
@@ -338,6 +349,7 @@ export type CreateProductMutation = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -400,6 +412,7 @@ export type UpdateProductMutation = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -462,6 +475,7 @@ export type DeleteProductMutation = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -836,6 +850,7 @@ export type GetProductQuery = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -901,6 +916,7 @@ export type ListProductsQuery = {
         } | null >,
       },
       customOptions: Array< string | null > | null,
+      setPrice: boolean | null,
       type: string,
       tags: Array< string | null >,
       createdAt: string | null,
@@ -958,6 +974,7 @@ export type SearchProductsQuery = {
         } | null >,
       },
       customOptions: Array< string | null > | null,
+      setPrice: boolean | null,
       type: string,
       tags: Array< string | null >,
       createdAt: string | null,
@@ -1007,6 +1024,7 @@ export type OnCreateProductSubscription = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -1064,6 +1082,7 @@ export type OnUpdateProductSubscription = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,
@@ -1121,6 +1140,7 @@ export type OnDeleteProductSubscription = {
       } | null >,
     },
     customOptions: Array< string | null > | null,
+    setPrice: boolean | null,
     type: string,
     tags: Array< string | null >,
     createdAt: string | null,

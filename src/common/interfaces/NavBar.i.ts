@@ -5,7 +5,6 @@ import {
 
 export interface NavBarProps {
   signOut: () => void;
-  setAccountsTab: (tab) => void;
   user: CognitoUserProps;
   userAttributes: UserAttributeProps;
   admin: boolean;

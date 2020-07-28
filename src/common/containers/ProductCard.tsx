@@ -71,7 +71,7 @@ const Product: React.FC<ProductCardProps> = ({
 }): JSX.Element => {
   const classes = useStyles();
   // destructure product for ease of variable use
-  const { id, images, title, price, type, tags, tagline } = product;
+  const { id, images, title, type, tags, tagline, variants } = product;
   // boolean which shows/hides delete alert visibility
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
   // boolean which opens dropdown menu for admin options
@@ -107,6 +107,17 @@ const Product: React.FC<ProductCardProps> = ({
         Please try again`,
       });
     }
+  };
+
+  const handleGetPrices = (): string => {
+    let min = Infinity;
+    if (variants?.length) {
+      for (const variant of variants) {
+        min = Math.min(min, variant.price.item);
+      }
+    }
+    if (min === Infinity) return `Variable Price - Request a Quote!`;
+    return `From £${min.toFixed(2)}`;
   };
 
   return (
@@ -168,11 +179,7 @@ const Product: React.FC<ProductCardProps> = ({
             </div>
           ) : (
             <>
-              <p className={classes.price}>
-                {price?.item > 0
-                  ? `£${price.item.toFixed(2)} + £${price.postage.toFixed(2)} postage`
-                  : "Variable price - request a quote."}
-              </p>
+              <p className={classes.price}>{handleGetPrices()}</p>
               {tags && <ChipContainer type={type} tags={tags} />}
             </>
           )}
@@ -190,11 +197,7 @@ const Product: React.FC<ProductCardProps> = ({
             </div>
           ) : (
             <>
-              <p className={classes.price}>
-                {price?.item > 0
-                  ? `£${price.item.toFixed(2)} + £${price.postage.toFixed(2)} postage`
-                  : "Variable price - request a quote."}
-              </p>
+              <p className={classes.price}>{handleGetPrices()}</p>
               {tags && (
                 <div style={{ marginBottom: 10 }}>
                   <ChipContainer type={type} tags={tags} />

@@ -17,10 +17,6 @@ export interface ProductProps {
     cover: number;
     collection: S3ImageProps[];
   };
-  price: {
-    item: number;
-    postage: number;
-  };
   customOptions: string[];
   tags: string[];
   setPrice: boolean;
