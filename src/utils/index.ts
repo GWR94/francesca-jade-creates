@@ -1,13 +1,9 @@
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 
-export const convertPoundsToPence = (price: number): number => {
-  return parseInt((price / 100).toFixed(2), 10);
-};
-
-export const convertPenceToPounds = (price: number): number => {
-  return parseInt((price * 100).toFixed(0), 10);
-};
-
+/**
+ * helper method to put cognito user attributes array into an object that can
+ * be read and processed properly
+ */
 export const attributesToObject = (attributes: CognitoUserAttribute[]): any => {
   const obj: { [key: string]: boolean | string } = {};
   attributes.map((attribute: any): void => {
@@ -21,3 +17,15 @@ export const attributesToObject = (attributes: CognitoUserAttribute[]): any => {
   });
   return obj;
 };
+
+// helper methods for setting up aws_exports with localhost and production simultaneously
+export const hasLocalhost = (hostname: string): boolean =>
+  Boolean(
+    hostname.match(/localhost/) ||
+      hostname.match(/127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/),
+  );
+
+export const hasHostname = (hostname: string): boolean =>
+  Boolean(hostname.includes(window.location.hostname));
+
+export const isLocalhost = hasLocalhost(window.location.hostname);

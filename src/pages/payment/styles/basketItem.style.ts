@@ -1,28 +1,26 @@
 import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { COLORS } from "../../../themes";
+import { COLORS, FONTS } from "../../../themes";
 
 const breakpoints = createBreakpoints({});
 
 export default createStyles({
   container: {
-    width: "100%",
-    display: "inline-flex",
+    display: "flex",
+    flexDirection: "column",
     background: "#fff",
     border: `1px solid ${COLORS.AltBorderGray}`,
     WebkitBorderRadius: 8,
     MozBorderRadius: 8,
     borderRadius: 8,
-    position: "relative",
     marginBottom: 12,
-    [breakpoints.only("xs")]: {
-      padding: "8px 6px",
-    },
-    [breakpoints.only("sm")]: {
+    width: "100%",
+    boxSizing: "border-box",
+    [breakpoints.down("md")]: {
       padding: "12px 8px",
     },
     [breakpoints.up("md")]: {
-      padding: "16px 10px",
+      padding: "24px 16px",
     },
   },
   title: {
@@ -37,6 +35,7 @@ export default createStyles({
     },
     textAlign: "center",
     fontWeight: "bold",
+    marginBottom: 4,
   },
   tagline: {
     [breakpoints.only("xs")]: {
@@ -49,6 +48,12 @@ export default createStyles({
       fontSize: "1.1rem",
     },
     textAlign: "center",
+  },
+  innerContainer: {
+    display: "inline-flex",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   icon: {
     position: "absolute",
@@ -70,5 +75,38 @@ export default createStyles({
     justifyContent: "space-evenly",
     width: "100%",
     height: "100%",
+    margin: "0 12px",
+  },
+  heading: {
+    fontSize: "1rem",
+    flexBasis: "47%",
+    flexShrink: 0,
+    paddingRight: 10,
+  },
+  secondaryHeading: {
+    fontSize: "0.85rem",
+    color: COLORS.TextGray,
+  },
+  editSpan: {
+    fontStyle: "italic",
+    fontFamily: FONTS.Title,
+    paddingLeft: 12,
+    color: COLORS.InfoBlue,
+    cursor: "pointer",
+  },
+  uploadedImageContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  previewImage: {
+    height: 240,
+    marginBottom: 8,
+  },
+  variantsInputContainer: {
+    width: "100%",
+    margin: "8px 0",
   },
 });

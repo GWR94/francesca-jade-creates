@@ -4,7 +4,6 @@ import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 export interface NavBarProps {
   signOut: () => void;
   admin: boolean;
-  history: History;
   items?: BasketItemProps[];
   // removeFromBasket: (itemID: string) => void;
   classes: {

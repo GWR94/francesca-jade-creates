@@ -12,6 +12,7 @@ export default createStyles({
     [breakpoints.up("sm")]: {
       width: "90%",
     },
+    width: "100%",
     margin: "0 auto",
   },
   overviewContainer: {
@@ -19,5 +20,12 @@ export default createStyles({
     border: `1px solid ${COLORS.Pink}`,
     padding: 8,
     borderRadius: 4,
+  },
+  title: {
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+  },
+  subtotal: {
+    marginTop: 8,
   },
 });

@@ -1,27 +1,22 @@
-import { History } from "history";
 import { ProductProps } from "./Product.i";
 
 export interface ProductListProps {
-  admin?: boolean;
+  admin: boolean;
   noTitle?: boolean;
-  products: ProductProps[] | null;
   type?: "Cake" | "Creates";
-  history: History;
 }
 
 export interface ProductListState {
   page: number;
-  queryResults: ProductProps[] | null;
-  sortMethod: number | string; // FIXME
+  searchResults: ProductProps[] | null;
   filterOpen: boolean;
+  isLoading: boolean;
 }
 
 export interface FilterProps {
   or?: any[];
   and?: any[];
 }
-
-export type SortMethod = "createdAt" | "updatedAt";
 
 export type SearchType = "all" | "title" | "description" | "tags";
 
@@ -31,5 +26,4 @@ export interface ProductFilters {
     creates: boolean;
   };
   searchType: SearchType;
-  sortBy: SortMethod;
 }

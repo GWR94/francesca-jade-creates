@@ -8,6 +8,8 @@ import {
   ExitToAppOutlined,
 } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import * as actions from "../../../actions/user.actions";
 
 interface AccountMenuProps {
   closeNav: () => void;
@@ -59,6 +61,7 @@ const AccountsMenu = ({
     },
   });
   const classes = useStyles();
+  const dispatch = useDispatch();
   return (
     <Menu
       open={menuOpen}
@@ -84,7 +87,8 @@ const AccountsMenu = ({
           onClick={(): void => {
             closeNav();
             setMenuOpen(false);
-            history.push("/profile");
+            dispatch(actions.setCurrentTab("profile"));
+            history.push("/account");
           }}
         >
           <FaceRounded style={{ marginRight: 8 }} /> Profile
@@ -95,7 +99,8 @@ const AccountsMenu = ({
               onClick={(): void => {
                 closeNav();
                 setMenuOpen(false);
-                history.push("/products");
+                dispatch(actions.setCurrentTab("products"));
+                history.push("/account");
               }}
             >
               <ShoppingCartRounded style={{ marginRight: 8 }} /> Products
@@ -104,7 +109,8 @@ const AccountsMenu = ({
               onClick={(): void => {
                 closeNav();
                 setMenuOpen(false);
-                history.push("/create");
+                dispatch(actions.setCurrentTab("create"));
+                history.push("/account");
               }}
             >
               <AddShoppingCartRounded style={{ marginRight: 8 }} /> Create Product
@@ -115,7 +121,8 @@ const AccountsMenu = ({
             onClick={(): void => {
               closeNav();
               setMenuOpen(false);
-              history.push("/orders");
+              dispatch(actions.setCurrentTab("orders"));
+              history.push("/account");
             }}
           >
             <MailOutlineRounded style={{ marginRight: 8 }} />

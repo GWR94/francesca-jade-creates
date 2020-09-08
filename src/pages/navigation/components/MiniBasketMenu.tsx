@@ -89,7 +89,16 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
             View Basket
           </Button>
           {/* // FIXME */}
-          <Button size="small" color="primary">
+          <Button
+            size="small"
+            color="primary"
+            onClick={(): void => {
+              history.push("/checkout");
+              closeNav();
+              setBasketOpen(false);
+              setMenuOpen(false);
+            }}
+          >
             Checkout
           </Button>
         </div>

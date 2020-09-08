@@ -1,0 +1,53 @@
+{
+    "paths": [
+        {
+            "name": "/orders",
+            "lambdaFunction": "orderlambda",
+            "privacy": {
+                "open": true
+            }
+        },
+        {
+            "name": "/webhook",
+            "lambdaFunction": "stripeWebhook",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "orderlambda",
+    "apiName": "orderlambda",
+    "functionArns": [
+        {
+            "lambdaFunction": "orderlambda"
+        },
+        {
+            "lambdaFunction": "stripeWebhook"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-francescajadecreates-prod-113437-authRole",
+        "unAuthRoleName": "amplify-francescajadecreates-prod-113437-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "orderlambda",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        },
+        {
+            "category": "function",
+            "resourceName": "stripeWebhook",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ],
+    "uuid": "df00fa8d"
+}

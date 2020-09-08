@@ -1,9 +1,10 @@
 import React from "react";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, makeStyles } from "@material-ui/core";
 
 interface LoadingProps {
   size?: number;
   color?: "inherit" | "primary" | "secondary";
+  small?: boolean;
 }
 
 /**
@@ -15,10 +16,32 @@ interface LoadingProps {
 const Loading: React.FC<LoadingProps> = ({
   size = 100,
   color = "inherit",
+  small = false,
 }): JSX.Element => {
+  const useStyles = makeStyles({
+    loading: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
+      height: "calc(100vh - 60px)",
+    },
+    loadingSmall: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
+      padding: 60,
+    },
+    spinner: {
+      margin: "0 auto",
+      display: "block",
+    },
+  });
+  const classes = useStyles();
   return (
-    <div className="loading__container">
-      <CircularProgress size={size} color={color} className="loading__spinner" />
+    <div className={small ? classes.loadingSmall : classes.loading}>
+      <CircularProgress size={size} color={color} className={classes.spinner} />
     </div>
   );
 };

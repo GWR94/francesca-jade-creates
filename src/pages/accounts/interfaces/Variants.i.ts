@@ -33,10 +33,12 @@ export interface VariantsState {
   number: number;
   current: number;
   features: Feature[];
+  variantName: string;
   errors: {
     [key: string]: string;
   };
   isEditing: number | null;
+  instructions: string;
 }
 
 export type FeatureType = "images" | "text" | "other" | "";
@@ -50,4 +52,6 @@ export interface Variant {
     postage: number;
   };
   features: Feature[];
+  variantName: string;
+  instructions: string;
 }

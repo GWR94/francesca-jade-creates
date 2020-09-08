@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Badge, makeStyles } from "@material-ui/core";
 import navStyles from "../styles/links.style";
@@ -32,12 +32,13 @@ const Links: React.FC<LinksProps> = ({
    * the basket items.
    */
   const items = useSelector(({ basket }: AppState): BasketItemProps[] => basket.items);
-  const user = useSelector(({ user }: AppState): string => user.id);
+  const user = useSelector(({ user }: AppState): string => user.id as string);
   // create styles for component
   const useStyles = makeStyles(navStyles);
   // use styles
   const classes = useStyles();
-
+  // useHistory hook allows navigation to other pages.
+  const history = useHistory();
   // create refs for anchor points
   const basketRef = React.useRef<HTMLDivElement>(null);
   const accountRef = React.useRef<HTMLDivElement>(null);
@@ -119,15 +120,21 @@ const Links: React.FC<LinksProps> = ({
           role="button"
           tabIndex={0}
           ref={basketRef}
-          onClick={(): void => setBasketOpen(!basketOpen)}
+          onClick={(): void => {
+            if (mobile) {
+              history.push("/basket");
+              closeNav();
+            } else {
+              setBasketOpen(!basketOpen);
+            }
+          }}
           className={
             window.location.href.includes("basket") ? classes.linkActive : classes.link
           }
         >
           <Badge
             badgeContent={items.length}
-            color="primary"
-            classes={{ root: classes.badgeRoot }}
+            classes={{ root: classes.badgeRoot, badge: classes.badge }}
           >
             <i className={`fas fa-shopping-basket ${classes.navIcon}`} />
           </Badge>

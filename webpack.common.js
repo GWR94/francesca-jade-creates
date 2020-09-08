@@ -25,6 +25,7 @@ module.exports = {
       "BUCKET_REGION",
       "BUCKET_NAME",
       "STRIPE_PUBLIC_KEY",
+      "STRIPE_SECRET_KEY",
     ]),
   ],
   output: {

@@ -1,8 +1,6 @@
+import { FetchProductsSuccessAction } from "./../../interfaces/products.redux.i";
+import { fetchProductsSuccess } from "./../../actions/products.actions";
 import { CognitoUserSession, CognitoUserPool } from "amazon-cognito-identity-js";
-import {
-  FetchProductsSuccessAction,
-  GetProductsAction,
-} from "../../interfaces/products.redux.i";
 import { ClearUserAction, SetUserAction } from "../../interfaces/user.redux.i";
 import { ClearBasketAction } from "../../interfaces/basket.redux.i";
 import {
@@ -19,24 +17,34 @@ export interface RouterState {
 
 export interface RouterDispatchProps {
   clearBasket: () => ClearBasketAction;
-  setUser: (id: string, username: string) => SetUserAction;
+  setUser: (
+    id: string,
+    username: string,
+    admin: boolean,
+    email: string,
+    emailVerified: boolean,
+  ) => SetUserAction;
   clearUser: () => ClearUserAction;
-  getProducts: () => GetProductsAction;
   fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
 }
 
 export interface RouterProps {
   clearBasket: () => ClearBasketAction;
-  setUser: (id: string, username: string) => SetUserAction;
+  setUser: (
+    id: string,
+    username: string,
+    admin: boolean,
+    email: string,
+    emailVerified: boolean,
+  ) => SetUserAction;
   clearUser: () => ClearUserAction;
-  getProducts: () => GetProductsAction;
   fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
-  products: ProductProps[] | [];
-  sub?: string | null;
+  products: ProductProps[];
+  sub: string | null;
 }
 export interface RouterStateProps {
-  products: ProductProps[] | [];
-  sub?: string | null;
+  sub: string | null;
+  products: ProductProps[];
 }
 
 export interface ProductData {

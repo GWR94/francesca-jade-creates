@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  IconButtonTypeMap,
-  makeStyles,
-  Typography,
-  Button,
-  ThemeProvider,
-} from "@material-ui/core";
+import { makeStyles, Typography, Button, ThemeProvider } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { nonIdealStateTheme } from "../../themes";
 
 interface NonIdealProps {
   title: string;
-  Icon: IconButtonTypeMap;
+  Icon: JSX.Element;
   subtext: string;
 }
 

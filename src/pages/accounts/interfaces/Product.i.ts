@@ -1,10 +1,8 @@
-import { History } from "history";
 import { Variant } from "./Variants.i";
 
 export interface ProductCardProps {
   product: ProductProps;
   admin?: boolean;
-  history: History;
 }
 
 export interface ProductProps {

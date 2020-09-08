@@ -13,10 +13,10 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Tooltip,
 } from "@material-ui/core";
-import _ from "underscore";
 import ChipInput from "material-ui-chip-input";
-import { DeleteRounded, EditRounded } from "@material-ui/icons";
+import { DeleteRounded, EditRounded, FileCopyRounded } from "@material-ui/icons";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/variants.style";
 import {
@@ -44,6 +44,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
     array: [],
     features: [],
     current: 1,
+    variantName: "",
     errors: {
       number: "",
       range: "",
@@ -54,6 +55,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
       feature: "",
     },
     isEditing: null,
+    instructions: "",
   };
 
   private marks = [
@@ -191,7 +193,16 @@ class Variants extends Component<VariantsProps, VariantsState> {
   };
 
   private handleAddVariant = (): void => {
-    const { price, dimensions, features, current, errors, isEditing } = this.state;
+    const {
+      price,
+      dimensions,
+      features,
+      current,
+      errors,
+      isEditing,
+      variantName,
+      instructions,
+    } = this.state;
     const { updateVariants, variants } = this.props;
 
     if (!dimensions) {
@@ -205,15 +216,21 @@ class Variants extends Component<VariantsProps, VariantsState> {
         dimensions,
         price,
         features,
+        variantName,
+        instructions,
       };
     } else {
       updatedVariants.push({
         dimensions,
         price,
         features,
+        variantName,
+        instructions,
       });
     }
     this.setState({
+      variantName: "",
+      instructions: "",
       dimensions: "",
       price: {
         item: 0,
@@ -334,22 +351,50 @@ class Variants extends Component<VariantsProps, VariantsState> {
       features,
       featureType,
       isEditing,
+      variantName,
+      instructions,
     } = this.state;
     const { classes, setPrice, variants } = this.props;
 
     return (
       <OutlinedContainer label="Variants" labelWidth={50} padding={24}>
         <Typography gutterBottom>
-          Complete all of the fields then add the products&apos; customisable features for
-          each variant.
+          Complete all of the required fields then add the products&apos; customisable
+          features for each variant.
         </Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={7}>
+            <TextField
+              variant="outlined"
+              label="Name (optional)"
+              fullWidth
+              value={variantName}
+              onChange={(e): void => this.setState({ variantName: e.target.value })}
+              style={{ marginBottom: 8 }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <TextField
+              variant="outlined"
+              label="Dimensions"
+              fullWidth
+              value={dimensions}
+              onChange={(e): void => this.setState({ dimensions: e.target.value })}
+              style={{ marginBottom: 8 }}
+            />
+          </Grid>
+        </Grid>
         <TextField
           variant="outlined"
-          label="Dimensions"
+          value={instructions}
+          rows={3}
+          rowsMax={5}
+          onChange={(e): void => this.setState({ instructions: e.target.value })}
+          label="Instructions (optional)"
           fullWidth
-          value={dimensions}
-          onChange={(e): void => this.setState({ dimensions: e.target.value })}
-          style={{ marginBottom: 10 }}
+          multiline
+          placeholder="Enter any instructions that may be needed to complete the purchase"
+          style={{ marginBottom: 8 }}
         />
 
         {setPrice && (
@@ -366,7 +411,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                       price: { ...price, item: parseFloat(e.target.value) },
                     });
                   }}
-                  style={{ marginBottom: 10 }}
+                  style={{ marginBottom: 8 }}
                   startAdornment={<InputAdornment position="start">£</InputAdornment>}
                   labelWidth={90}
                 />
@@ -384,7 +429,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                       price: { ...price, postage: parseFloat(e.target.value) },
                     })
                   }
-                  style={{ marginBottom: 10 }}
+                  style={{ marginBottom: 8 }}
                   startAdornment={<InputAdornment position="start">£</InputAdornment>}
                   labelWidth={90}
                 />
@@ -396,10 +441,10 @@ class Variants extends Component<VariantsProps, VariantsState> {
           Enter the name of the customisable option and choose a value type to reveal the
           input.
         </Typography>
-        <Grid container style={{ marginBottom: 10 }}>
+        <Grid container style={{ marginBottom: 8 }}>
           <Grid item xs={6} sm={4}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel id="feature-type-label">Feature Type</InputLabel>
+              <InputLabel id="feature-type-label">User Action</InputLabel>
               <Select
                 value={featureType}
                 fullWidth
@@ -418,16 +463,16 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 <MenuItem value="">
                   <em>Pick a Value</em>
                 </MenuItem>
-                <MenuItem value="images">Images</MenuItem>
-                <MenuItem value="text">Text</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
+                <MenuItem value="images">User Uploads Image</MenuItem>
+                <MenuItem value="text">User Inputs Text</MenuItem>
+                <MenuItem value="dropdown">User Picks From Choice</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={6} sm={4}>
             <TextField
               variant="outlined"
-              label="Name"
+              label="Feature Name"
               value={name}
               InputProps={{
                 classes: {
@@ -440,7 +485,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
           </Grid>
           <Grid item xs={6} sm={4}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel id="input-type-label">Input Type</InputLabel>
+              <InputLabel id="input-type-label">Required Values</InputLabel>
               <Select
                 value={inputType}
                 fullWidth
@@ -460,8 +505,8 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 <MenuItem value="">
                   <em>Pick a Value</em>
                 </MenuItem>
-                <MenuItem value="number">Number</MenuItem>
-                <MenuItem value="range">Range of Numbers</MenuItem>
+                <MenuItem value="number">Requires Exact Number</MenuItem>
+                <MenuItem value="range">Requires Min & Max Range</MenuItem>
                 <MenuItem value="array">Multiple Choice</MenuItem>
               </Select>
             </FormControl>
@@ -505,7 +550,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
         <Grid container spacing={1}>
           {variants?.length > 0 &&
             variants.map((variant, i) => {
-              const { dimensions, price, features } = variant;
+              const { dimensions, price, features, variantName, instructions } = variant;
               return (
                 <Grid item xs={12} sm={6} key={i}>
                   <div
@@ -522,7 +567,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                       }}
                     >
                       <Typography style={{ fontWeight: "bold" }}>
-                        Variant {i + 1}.
+                        {variantName || `Variant ${i + 1}.`}
                       </Typography>
                       <Typography>
                         Dimensions: <em>{dimensions}</em>
@@ -535,13 +580,18 @@ class Variants extends Component<VariantsProps, VariantsState> {
                           </em>
                         </Typography>
                       )}
+                      {instructions && (
+                        <Typography>
+                          Instructions: <em>{instructions}</em>
+                        </Typography>
+                      )}
                     </div>
                     <Typography style={{ fontWeight: "bold" }}>Features:</Typography>
                     <ul style={{ margin: 0 }}>{this.renderCurrentFeatures(features)}</ul>
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "center",
+                        justifyContent: "space-evenly",
                       }}
                     >
                       <IconButton
@@ -561,7 +611,9 @@ class Variants extends Component<VariantsProps, VariantsState> {
                           console.log(variants);
                         }}
                       >
-                        <DeleteRounded />
+                        <Tooltip title="Delete Variant">
+                          <DeleteRounded />
+                        </Tooltip>
                       </IconButton>
                       <IconButton
                         color="primary"
@@ -569,7 +621,24 @@ class Variants extends Component<VariantsProps, VariantsState> {
                           this.setState({ ...variant, isEditing: i });
                         }}
                       >
-                        <EditRounded />
+                        <Tooltip title="Edit the current variant">
+                          <EditRounded />
+                        </Tooltip>
+                      </IconButton>
+                      <IconButton
+                        onClick={(): void => {
+                          this.setState({
+                            dimensions,
+                            price,
+                            features,
+                            variantName,
+                            instructions,
+                          });
+                        }}
+                      >
+                        <Tooltip title="Copy to new variant">
+                          <FileCopyRounded />
+                        </Tooltip>
                       </IconButton>
                     </div>
                   </div>

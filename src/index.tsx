@@ -17,6 +17,7 @@ import "@stripe/stripe-js";
 import configureStore from "./store/store";
 import { rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
+import { isLocalhost, hasLocalhost, hasHostname } from "./utils";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
@@ -36,24 +37,17 @@ const oauth = {
   responseType: config.oauth.responseType,
 };
 
-const hasLocalhost = (hostname): boolean =>
-  Boolean(
-    hostname.match(/localhost/) ||
-      hostname.match(/127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/),
-  );
-
-const hasHostname = (hostname): boolean =>
-  Boolean(hostname.includes(window.location.hostname));
-
-const isLocalhost = hasLocalhost(window.location.hostname);
-
+/**
+ * Sets the correct oauth redirect sign-in/sign-out variables depending on
+ * if the user is accessing from the localhost or production.
+ */
 if (isLocalhost) {
-  urlsIn.forEach((e): void => {
+  urlsIn.forEach((e: string): void => {
     if (hasLocalhost(e)) {
       oauth.redirectSignIn = e;
     }
   });
-  urlsOut.forEach((e): void => {
+  urlsOut.forEach((e: string): void => {
     if (hasLocalhost(e)) {
       oauth.redirectSignOut = e;
     }

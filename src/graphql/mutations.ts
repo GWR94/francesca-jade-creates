@@ -27,10 +27,13 @@ export const createProduct = /* GraphQL */ `
       createdAt
       updatedAt
       variants {
+        variantName
+        instructions
         dimensions
         features {
           name
           inputType
+          description
           featureType
           price {
             item
@@ -80,10 +83,13 @@ export const updateProduct = /* GraphQL */ `
       createdAt
       updatedAt
       variants {
+        variantName
+        instructions
         dimensions
         features {
           name
           inputType
+          description
           featureType
           price {
             item
@@ -133,10 +139,13 @@ export const deleteProduct = /* GraphQL */ `
       createdAt
       updatedAt
       variants {
+        variantName
+        instructions
         dimensions
         features {
           name
           inputType
+          description
           featureType
           price {
             item
@@ -175,14 +184,85 @@ export const registerUser = /* GraphQL */ `
       orders {
         items {
           id
-          productIDs
-          totalCost
+          products {
+            id
+            title
+            tagline
+            image {
+              bucket
+              region
+              key
+            }
+            variant {
+              variantName
+              instructions
+              dimensions
+              features {
+                name
+                inputType
+                description
+                featureType
+              }
+              price {
+                item
+                postage
+              }
+              images {
+                bucket
+                region
+                key
+              }
+            }
+            price
+            shippingCost
+            customOptions
+          }
+          stripePaymentIntent
           user {
             id
             username
             email
             name
             registered
+            orders {
+              items {
+                id
+                stripePaymentIntent
+                createdAt
+                paymentStatus
+                updatedAt
+              }
+              nextToken
+            }
+            profileImage {
+              bucket
+              region
+              key
+            }
+            shippingAddress {
+              city
+              country
+              address_line1
+              address_line2
+              address_postcode
+            }
+            savedProducts {
+              id
+              title
+              description
+              image {
+                bucket
+                region
+                key
+              }
+              type
+              tagline
+              variants {
+                variantName
+                instructions
+                dimensions
+              }
+            }
             createdAt
             updatedAt
           }
@@ -191,10 +271,10 @@ export const registerUser = /* GraphQL */ `
             country
             address_line1
             address_line2
-            address_county
             address_postcode
           }
           createdAt
+          paymentStatus
           updatedAt
         }
         nextToken
@@ -209,7 +289,6 @@ export const registerUser = /* GraphQL */ `
         country
         address_line1
         address_line2
-        address_county
         address_postcode
       }
       savedProducts {
@@ -221,9 +300,37 @@ export const registerUser = /* GraphQL */ `
           region
           key
         }
-        price
-        shippingCost
         type
+        tagline
+        variants {
+          variantName
+          instructions
+          dimensions
+          features {
+            name
+            inputType
+            description
+            featureType
+            price {
+              item
+              postage
+            }
+            value {
+              array
+              range
+              number
+            }
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
+        }
       }
       createdAt
       updatedAt
@@ -244,14 +351,85 @@ export const updateUser = /* GraphQL */ `
       orders {
         items {
           id
-          productIDs
-          totalCost
+          products {
+            id
+            title
+            tagline
+            image {
+              bucket
+              region
+              key
+            }
+            variant {
+              variantName
+              instructions
+              dimensions
+              features {
+                name
+                inputType
+                description
+                featureType
+              }
+              price {
+                item
+                postage
+              }
+              images {
+                bucket
+                region
+                key
+              }
+            }
+            price
+            shippingCost
+            customOptions
+          }
+          stripePaymentIntent
           user {
             id
             username
             email
             name
             registered
+            orders {
+              items {
+                id
+                stripePaymentIntent
+                createdAt
+                paymentStatus
+                updatedAt
+              }
+              nextToken
+            }
+            profileImage {
+              bucket
+              region
+              key
+            }
+            shippingAddress {
+              city
+              country
+              address_line1
+              address_line2
+              address_postcode
+            }
+            savedProducts {
+              id
+              title
+              description
+              image {
+                bucket
+                region
+                key
+              }
+              type
+              tagline
+              variants {
+                variantName
+                instructions
+                dimensions
+              }
+            }
             createdAt
             updatedAt
           }
@@ -260,10 +438,10 @@ export const updateUser = /* GraphQL */ `
             country
             address_line1
             address_line2
-            address_county
             address_postcode
           }
           createdAt
+          paymentStatus
           updatedAt
         }
         nextToken
@@ -278,7 +456,6 @@ export const updateUser = /* GraphQL */ `
         country
         address_line1
         address_line2
-        address_county
         address_postcode
       }
       savedProducts {
@@ -290,9 +467,37 @@ export const updateUser = /* GraphQL */ `
           region
           key
         }
-        price
-        shippingCost
         type
+        tagline
+        variants {
+          variantName
+          instructions
+          dimensions
+          features {
+            name
+            inputType
+            description
+            featureType
+            price {
+              item
+              postage
+            }
+            value {
+              array
+              range
+              number
+            }
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
+        }
       }
       createdAt
       updatedAt
@@ -306,8 +511,49 @@ export const createOrder = /* GraphQL */ `
   ) {
     createOrder(input: $input, condition: $condition) {
       id
-      productIDs
-      totalCost
+      products {
+        id
+        title
+        tagline
+        image {
+          bucket
+          region
+          key
+        }
+        variant {
+          variantName
+          instructions
+          dimensions
+          features {
+            name
+            inputType
+            description
+            featureType
+            price {
+              item
+              postage
+            }
+            value {
+              array
+              range
+              number
+            }
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
+        }
+        price
+        shippingCost
+        customOptions
+      }
+      stripePaymentIntent
       user {
         id
         username
@@ -317,9 +563,65 @@ export const createOrder = /* GraphQL */ `
         orders {
           items {
             id
-            productIDs
-            totalCost
+            products {
+              id
+              title
+              tagline
+              image {
+                bucket
+                region
+                key
+              }
+              variant {
+                variantName
+                instructions
+                dimensions
+              }
+              price
+              shippingCost
+              customOptions
+            }
+            stripePaymentIntent
+            user {
+              id
+              username
+              email
+              name
+              registered
+              orders {
+                nextToken
+              }
+              profileImage {
+                bucket
+                region
+                key
+              }
+              shippingAddress {
+                city
+                country
+                address_line1
+                address_line2
+                address_postcode
+              }
+              savedProducts {
+                id
+                title
+                description
+                type
+                tagline
+              }
+              createdAt
+              updatedAt
+            }
+            shippingAddress {
+              city
+              country
+              address_line1
+              address_line2
+              address_postcode
+            }
             createdAt
+            paymentStatus
             updatedAt
           }
           nextToken
@@ -334,7 +636,6 @@ export const createOrder = /* GraphQL */ `
           country
           address_line1
           address_line2
-          address_county
           address_postcode
         }
         savedProducts {
@@ -346,9 +647,37 @@ export const createOrder = /* GraphQL */ `
             region
             key
           }
-          price
-          shippingCost
           type
+          tagline
+          variants {
+            variantName
+            instructions
+            dimensions
+            features {
+              name
+              inputType
+              description
+              featureType
+              price {
+                item
+                postage
+              }
+              value {
+                array
+                range
+                number
+              }
+            }
+            price {
+              item
+              postage
+            }
+            images {
+              bucket
+              region
+              key
+            }
+          }
         }
         createdAt
         updatedAt
@@ -358,10 +687,10 @@ export const createOrder = /* GraphQL */ `
         country
         address_line1
         address_line2
-        address_county
         address_postcode
       }
       createdAt
+      paymentStatus
       updatedAt
     }
   }

@@ -3,7 +3,9 @@ import { FONTS, COLORS } from "../../../themes/index";
 
 export default createStyles({
   badge: {
-    marginTop: 6,
+    backgroundColor: COLORS.LightPink,
+    color: "#fff",
+    marginRight: 3,
   },
   badgeRoot: {
     margin: 0,

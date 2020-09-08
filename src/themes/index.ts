@@ -5,7 +5,7 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 const breakpoints = createBreakpoints({});
 
 export enum COLORS {
-  LightPink = "#efb0c9",
+  LightPink = "#ffa3f9",
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
   Purple = "#9370f6",
@@ -18,6 +18,8 @@ export enum COLORS {
   DisabledGray = "#BABABA",
   AltBorderGray = "#dadada",
   TextGray = "#828282",
+  SuccessGreen = "#4caf50",
+  InfoBlue = "#00b0ff",
 }
 
 export enum BREAKPOINTS {
@@ -200,12 +202,8 @@ export const rootTheme = createMuiTheme({
     },
     MuiFab: {
       root: {
-        background: "rgba(248, 6, 240, 0.4) !important",
         transition: "background 0.8s",
         color: "#fff",
-        "&:hover": {
-          background: "rgba(248, 6, 240, 0.65) !important",
-        },
       },
     },
     // @ts-ignore

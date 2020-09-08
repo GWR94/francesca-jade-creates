@@ -16,18 +16,24 @@ import {
   InputLabel,
   makeStyles,
 } from "@material-ui/core";
+import { API } from "aws-amplify";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { SearchRounded } from "@material-ui/icons";
+import { SearchRounded, RefreshRounded } from "@material-ui/icons";
 import { searchFilterTheme, FONTS } from "../../../themes";
-import { SearchFilterProps } from "../interfaces/SearchFilter.i";
-import { SortMethod, SearchType } from "../interfaces/ProductList.i";
+import {
+  SearchFilterProps,
+  AdminFilters,
+  SortMethod,
+} from "../interfaces/SearchFilter.i";
+import { SearchType, FilterProps } from "../interfaces/ProductList.i";
+import { searchProducts } from "../../../graphql/queries";
 
 const breakpoints = createBreakpoints({});
 
 const useStyles = makeStyles({
   container: {
     background: "#fff",
-    padding: " 24px 24px 12px",
+    padding: 24,
     boxSizing: "border-box",
     width: "400px",
     margin: "0 auto",
@@ -42,6 +48,12 @@ const useStyles = makeStyles({
 });
 
 /**
+ * TODO
+ * [ ] Add filters
+ * [ ] Add
+ */
+
+/**
  * Component which allows the user to filter out products to fit their needs.
  * @param {(query: string, filters: ProductFilters) => void} setQuery - Function to set the
  * filters and searchQuery into the parent where the search/filter process will begin.
@@ -51,28 +63,74 @@ const useStyles = makeStyles({
  * the user has come from (i.e /cake or /creates)
  */
 const SearchFilter: React.FC<SearchFilterProps> = ({
+  admin,
   type = null,
-  setQuery,
-  admin = false,
+  setSearchResults,
 }): JSX.Element => {
-  const [adminFilters, setAdminFilters] = useState({ cake: true, creates: true });
-  const [searchType, setSearchType] = useState<SearchType>("all");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortBy, setSortBy] = useState<SortMethod>("createdAt");
-
   const classes = useStyles();
 
-  /**
-   * The function which sets the value of the selected Dropdown/Select value
-   * and sets it into state as the searchQuery.
-   */
-  const handleSelect = (e: React.ChangeEvent<{ value: unknown }>): void => {
-    // retrieve the type
-    const type = e.target.value as SearchType;
-    // set the searchType in state so it's not lost after passing the values to parent
-    setSearchType(type);
-    // pass values to parent so searching/filtering can begin.
-    setQuery(searchQuery, { adminFilters, searchType: type, sortBy });
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [adminFilters, setAdminFilters] = useState<AdminFilters>({
+    cake: type === "Cake" ? true : false,
+    creates: type ? (type === "Creates" ? true : false) : true,
+  });
+  const [searchType, setSearchType] = useState<SearchType>("all");
+
+  const handleSearchProducts = async (updateWithNoQuery?: boolean): Promise<void> => {
+    const filter: FilterProps = {};
+    if (!searchQuery.length && !updateWithNoQuery) return setSearchResults(null);
+    // if (!searchQuery || (!searchQuery && !adminFilters)) return dispatch(searchProductsFailure());
+    /**
+     * This filter allows the user to find all products where the products tags, title, tagline or
+     * description matches that of a product.
+     */
+    if (!updateWithNoQuery) {
+      filter.or = [
+        { tags: { matchPhrasePrefix: searchQuery } },
+        { title: { matchPhrasePrefix: searchQuery } },
+        { description: { matchPhrasePrefix: searchQuery } },
+      ];
+    }
+
+    if (type) {
+      filter.and = [{ type: { eq: type } }];
+    }
+    /**
+     * If there are any admin filters that have been passed through props, then they
+     * need to be added to the filtering object.
+     */
+    if (adminFilters) {
+      // destructure the adminFilters so they can be accessed easily.
+      const { cake, creates } = adminFilters;
+      /**
+       * if the cake boolean value is true and creates boolean is false, then you only
+       * want to show cakes. This means that the filtering.and needs to be set to equal
+       * (eq) "Cake". If the opposite is true then filtering.and needs to be set to equal
+       * "Creates". If cake & creates are both true/false then the type needs to be set
+       * to be the type, which will come from props.
+       */
+      if (cake && !creates) {
+        filter.and = [{ type: { eq: "Cake" } }];
+      } else if (!cake && creates) {
+        filter.and = [{ type: { eq: "Creates" } }];
+      }
+    }
+    try {
+      const { data } = await API.graphql({
+        query: searchProducts,
+        variables: {
+          filter,
+          limit: 12,
+        },
+        // @ts-ignore
+        authMode: "API_KEY",
+      });
+      console.log(data);
+      setSearchResults(data.searchProducts.items);
+    } catch (err) {
+      setSearchResults(null);
+      console.error(err);
+    }
   };
 
   return (
@@ -85,7 +143,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 type="text"
                 value={searchQuery}
                 label="Search Query"
-                placeholder="Enter a search query..."
+                placeholder="Enter a query..."
                 variant="outlined"
                 fullWidth
                 size="small"
@@ -95,10 +153,22 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       <SearchRounded />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <RefreshRounded
+                        style={{ cursor: "pointer" }}
+                        onClick={(): void => {
+                          setSearchQuery("");
+                          setSearchResults(null);
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                  setSearchQuery(e.target.value);
-                  setQuery(searchQuery, { adminFilters, searchType, sortBy });
+                  const query = e.target.value;
+                  setSearchQuery(query);
+                  handleSearchProducts();
                 }}
               />
             </Grid>
@@ -108,7 +178,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 <Select
                   variant="outlined"
                   value={searchType}
-                  onChange={handleSelect}
+                  onChange={(e): void => {
+                    const searchType = e.target.value;
+                    setSearchType(searchType as SearchType);
+                    handleSearchProducts();
+                  }}
                   fullWidth
                   margin="dense"
                   label="From"
@@ -131,94 +205,47 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           </Grid>
           {admin && (
             <>
-              <Grid container spacing={1}>
-                {!type && (
-                  <Grid item xs={6}>
-                    <FormControl fullWidth>
-                      <FormLabel style={{ marginTop: 12 }}>Include</FormLabel>
-                      <FormGroup>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={adminFilters.cake}
-                              onChange={(): void => {
-                                const filters = {
-                                  ...adminFilters,
-                                  cake: !adminFilters.cake,
-                                };
-                                setAdminFilters(filters);
-                                setQuery(searchQuery, {
-                                  adminFilters: filters,
-                                  searchType,
-                                  sortBy,
-                                });
-                              }}
-                              name="Cakes"
-                            />
-                          }
-                          label="Cakes"
+              {!type && (
+                <FormControl fullWidth>
+                  <FormLabel style={{ marginTop: 12 }}>Include</FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={adminFilters.cake}
+                          onChange={(): void => {
+                            const filters = {
+                              ...adminFilters,
+                              cake: !adminFilters.cake,
+                            };
+                            setAdminFilters(filters);
+                            handleSearchProducts(true);
+                          }}
+                          name="Cakes"
                         />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={adminFilters.creates}
-                              onChange={(): void => {
-                                const filters = {
-                                  ...adminFilters,
-                                  creates: !adminFilters.creates,
-                                };
-                                setAdminFilters(filters);
-                                setQuery(searchQuery, {
-                                  adminFilters: filters,
-                                  searchType,
-                                  sortBy,
-                                });
-                              }}
-                              name="Creations"
-                            />
-                          }
-                          label="Creations"
+                      }
+                      label="Cakes"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={adminFilters.creates}
+                          onChange={(): void => {
+                            const filters = {
+                              ...adminFilters,
+                              creates: !adminFilters.creates,
+                            };
+                            setAdminFilters(filters);
+                            handleSearchProducts(true);
+                          }}
+                          name="Creations"
                         />
-                      </FormGroup>
-                    </FormControl>
-                  </Grid>
-                )}
-                <Grid item xs={type ? 12 : 6}>
-                  <FormControl
-                    component="fieldset"
-                    className="new-product__radio-container"
-                  >
-                    <FormLabel style={{ marginTop: 12 }}>Sorting Method</FormLabel>
-                    <RadioGroup
-                      aria-label="Sort by filters"
-                      name="Sort By"
-                      value={sortBy}
-                      row={!!type}
-                      onChange={(e): void => {
-                        const sort = e.currentTarget.value as SortMethod;
-                        setSortBy(sort);
-                        setQuery(searchQuery, {
-                          adminFilters,
-                          searchType,
-                          sortBy: sort,
-                        });
-                      }}
-                      style={{ justifyContent: type ? "center" : undefined }}
-                    >
-                      <FormControlLabel
-                        value="createdAt"
-                        control={<Radio />}
-                        label="Last Created"
-                      />
-                      <FormControlLabel
-                        value="updatedAt"
-                        control={<Radio />}
-                        label="Last Updated"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Grid>
-              </Grid>
+                      }
+                      label="Creations"
+                    />
+                  </FormGroup>
+                </FormControl>
+              )}
             </>
           )}
         </div>

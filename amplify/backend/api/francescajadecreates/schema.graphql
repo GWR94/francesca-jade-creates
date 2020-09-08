@@ -12,7 +12,7 @@ type Product
   title: String!
   description: String!
   tagline: String!
-  images: Images!
+  images: Images
   customOptions: [String]
   setPrice: Boolean
   type: String!
@@ -46,13 +46,26 @@ type User
 }
 
 type Order
-  @model(queries: null, mutations: { create: "createOrder" }, subscriptions: null) {
-  id: ID!
-  productIDs: [String!]!
-  totalCost: Int!  
+  @model(mutations: { create: "createOrder" }) {
+  id: String!
+  products: [StripeProduct!]!
+  stripePaymentIntent: String
   user: User @connection(name: "UserOrders")
   shippingAddress: ShippingAddress
   createdAt: String!
+  paymentStatus: String
+}
+
+
+type StripeProduct {
+  id: ID!
+  title: String!
+  tagline: String!
+  image: S3Object!
+  variant: Variants
+  price: Float!
+  shippingCost: Float!
+  customOptions: String!
 }
 
 type S3Object {
@@ -66,7 +79,6 @@ type ShippingAddress {
   country: String!
   address_line1: String!
   address_line2: String
-  address_county: String!
   address_postcode: String!
 }
 
@@ -74,13 +86,15 @@ type SavedProduct {
   id: String!
   title: String!
   description: String!
-  image: [S3Object]!
-  price: Float!
-  shippingCost: Float!
+  image: S3Object!
   type: String!
+  tagline: String!
+  variants: [Variants]!
 }
 
 type Variants {
+  variantName: String
+  instructions: String
   dimensions: String!
   features: [Features]!
   price: Price
@@ -90,6 +104,7 @@ type Variants {
 type Features {
   name: String!
   inputType: String!
+  description: String
   featureType: String!
   price: Price
   value: FeatureValue!

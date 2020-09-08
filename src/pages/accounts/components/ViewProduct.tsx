@@ -11,6 +11,8 @@ import * as productsActions from "../../../actions/products.actions";
 import { AddItemAction } from "../../../interfaces/basket.redux.i";
 import { ViewProps, ViewState, ViewDispatchProps } from "../interfaces/ViewProduct.i";
 import { chipTheme, buttonTheme } from "../../../common/styles/viewProduct.style";
+import { AppState } from "../../../store/store";
+import { useHistory } from "react-router-dom";
 
 export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public readonly state: ViewState = {
@@ -99,7 +101,8 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   public render(): JSX.Element {
     const { product } = this.state;
     const { tags, type, images, description, title, variants, setPrice } = product;
-    const { userAttributes } = this.props;
+    const { sub } = this.props;
+    const history = useHistory();
     return product ? (
       <Container className="content-container">
         <div className="view__container">
@@ -135,8 +138,8 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
             )}
           </div> */}
           <ThemeProvider theme={buttonTheme}>
-            {setPrice ? (
-              userAttributes && (
+            {sub ? (
+              setPrice ? (
                 <Button
                   variant="contained"
                   color="primary"
@@ -146,16 +149,26 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
                 >
                   Add to Basket
                 </Button>
+              ) : (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  style={{ color: "#fff" }}
+                  onClick={this.handleQuoteQuery}
+                  startIcon={<i className="fas fa-credit-card view__icon" />}
+                >
+                  Request a Quote
+                </Button>
               )
             ) : (
               <Button
-                color="primary"
                 variant="contained"
+                color="primary"
                 style={{ color: "#fff" }}
-                onClick={this.handleQuoteQuery}
-                startIcon={<i className="fas fa-credit-card view__icon" />}
+                onClick={(): void => history.push("/login")}
+                startIcon={<i className="fas fa-user view__icon" />}
               >
-                Request a Quote
+                Login to Purchase
               </Button>
             )}
           </ThemeProvider>
@@ -167,10 +180,12 @@ export class ViewProduct extends React.Component<ViewProps, ViewState> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<AddItemAction>): ViewDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch): ViewDispatchProps => ({
   addToBasket: (product): AddItemAction => dispatch(basketActions.addToBasket(product)),
-  getCurrentProduct: (id): GetCurrentProductAction =>
-    dispatch(productsActions.getCurrentProduct(id)),
 });
 
-export default connect(null, mapDispatchToProps)(ViewProduct);
+const mapStateToProps = ({ user }: AppState): { sub: string | null } => ({
+  sub: user.id,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ViewProduct);

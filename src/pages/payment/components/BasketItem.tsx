@@ -1,48 +1,105 @@
-/* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
-import React, { useRef, MutableRefObject } from "react";
+import React, { useRef, MutableRefObject, useState, useEffect } from "react";
 import { S3Image } from "aws-amplify-react";
 import _ from "underscore";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { API, graphqlOperation } from "aws-amplify";
-import { Paper, IconButton, Tooltip, Typography, makeStyles } from "@material-ui/core";
 import {
-  BrushOutlined,
-  CakeOutlined,
-  Delete,
-  Favorite,
-  Schedule,
-} from "@material-ui/icons";
+  Typography,
+  makeStyles,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Card,
+  Button,
+  CardActions,
+  CardContent,
+} from "@material-ui/core";
+import { Skeleton } from "@material-ui/lab";
 import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction, AddItemAction } from "../../../interfaces/basket.redux.i";
 import { updateUser } from "../../../graphql/mutations";
-import { BasketItemProps } from "../interfaces/Basket.i";
+import {
+  BasketItemProps,
+  CheckoutProductProps,
+  CustomOptionArrayType,
+} from "../interfaces/Basket.i";
 import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/basketItem.style";
+import { Variant } from "../../accounts/interfaces/Variants.i";
+import BasketCustomOptions from "./BasketCustomOptions";
+import { AppState } from "../../../store/store";
+
+interface BasketItemState {
+  isLoading: boolean;
+  currentVariant: Variant | null;
+  variantIndex: number | "";
+  customOptions: CustomOptionArrayType;
+  isCompleted: boolean;
+}
 
 interface BasketProps {
   item: BasketItemProps;
   sub: string;
   savedProducts: BasketItemProps[];
-  saved?: boolean;
+  saved: boolean;
   updateSavedProducts: (products: BasketItemProps[]) => void;
 }
+
+/**
+ * TODO
+ * [ ] Fix label for select
+ * [ ] Fix label for select
+ * [ ] Add image preview before adding
+ */
 
 const BasketItem: React.FC<BasketProps> = ({
   item,
   sub,
   savedProducts,
   updateSavedProducts,
-  saved,
-}): JSX.Element => {
-  const useStyles = makeStyles(styles);
+  saved = false,
+}: BasketProps): JSX.Element => {
+  const {
+    id,
+    title,
+    description,
+    image,
+    variants,
+    type,
+    tagline,
+  } = item as BasketItemProps;
+
+  const [state, setState] = useState<BasketItemState>({
+    isLoading: true,
+    currentVariant: null,
+    variantIndex: "",
+    customOptions: [],
+    isCompleted: false,
+  });
+
   const desktop = useScreenWidth(600);
+  const useStyles = makeStyles(styles);
   const classes = useStyles();
-  const { id, title, description, image, price, shippingCost, type, tagline } = item;
   const dispatch = useDispatch();
   const basket = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
 
+  const { products } = useSelector(({ basket }: AppState) => basket.checkout);
+  useEffect(() => {
+    if (variants.length === 1) {
+      setState({
+        ...state,
+        currentVariant: variants[0],
+        customOptions: [...Array(variants[0].features.length)],
+      });
+    }
+    if (products.find((item) => item.id === id)) {
+      setState({ ...state, isCompleted: true });
+    }
+  }, []);
+
   const handleDeleteBasketItem = (): void => {
-    basket.current.classList.add("zoomOut");
+    basket.current?.classList.add("zoomOut");
     setTimeout((): RemoveItemAction => {
       // basket.current.classList.remove("zoomOut"); // FIXME - May be needed?
       return dispatch(actions.removeFromBasket(id));
@@ -54,7 +111,9 @@ const BasketItem: React.FC<BasketProps> = ({
     if (savedProducts.length <= 1) {
       updatedSaved = [];
     } else {
-      const idx = savedProducts.findIndex((itemToFind) => _.isEqual(itemToFind, item));
+      const idx = savedProducts.findIndex((itemToFind: BasketItemProps) =>
+        _.isEqual(itemToFind, item),
+      );
       updatedSaved = [...savedProducts.slice(0, idx), ...savedProducts.slice(idx + 1)];
     }
     updateSavedProducts(updatedSaved);
@@ -66,7 +125,21 @@ const BasketItem: React.FC<BasketProps> = ({
         },
       }),
     );
-    handleDeleteBasketItem();
+  };
+
+  const handleAddToBasket = async (): Promise<void> => {
+    dispatch(
+      actions.addToBasket({
+        id,
+        title,
+        description,
+        image,
+        type,
+        tagline,
+        variants,
+      }),
+    );
+    handleDeleteSavedItem();
   };
 
   const handleAddToSaveLater = async (): Promise<void> => {
@@ -75,10 +148,9 @@ const BasketItem: React.FC<BasketProps> = ({
       title,
       description,
       image,
-      price,
-      shippingCost,
       type,
       tagline,
+      variants,
     };
     await API.graphql(
       graphqlOperation(updateUser, {
@@ -93,68 +165,165 @@ const BasketItem: React.FC<BasketProps> = ({
     handleDeleteBasketItem();
   };
 
+  const handleGetPrices = (): JSX.Element => {
+    let min = Infinity;
+    let max = -Infinity;
+    variants.forEach((variant: Variant) => {
+      if (variant.price.item) {
+        min = Math.min(min, variant.price.item);
+        max = Math.max(max, variant.price.item);
+      }
+    });
+    if (min === max) return <Typography>£{min.toFixed(2)}</Typography>;
+    else if (min === Infinity) {
+      return <Typography>Request a quote for a price</Typography>;
+    }
+    return <Typography>From £{min.toFixed(2)}</Typography>;
+  };
+
+  const handleVariantChange = (
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>,
+  ): void => {
+    const index = parseInt(event.target.value as string);
+    const updatedVariant = variants[index];
+    setState({
+      ...state,
+      variantIndex: index,
+      customOptions: [...Array(updatedVariant.features.length)],
+      currentVariant: updatedVariant,
+    });
+  };
+
+  const { isLoading, variantIndex, currentVariant, customOptions, isCompleted } = state;
   return (
-    <>
-      <Paper ref={basket} className={`animated ${classes.container}`}>
-        <S3Image
-          imgKey={image.key}
-          theme={{
-            photoImg: {
-              height: desktop ? "200px" : "120px",
-              borderRadius: "5px",
-            },
-          }}
-        />
-        <div className={classes.infoContainer}>
-          <div>
+    <Card
+      ref={basket}
+      className="animated"
+      style={{ cursor: "default", marginBottom: 14 }}
+    >
+      <CardContent>
+        <div className={classes.innerContainer}>
+          <S3Image
+            imgKey={image.key}
+            theme={{
+              photoImg: isLoading
+                ? { display: "none" }
+                : {
+                    height: desktop ? "140px" : "80px",
+                    display: "block",
+                    margin: "auto",
+                    padding: 10,
+                  },
+            }}
+            onLoad={(): void => setState({ ...state, isLoading: false })}
+          />
+          {isLoading && (
+            <Skeleton
+              animation="wave"
+              variant="rect"
+              style={{ width: "80px", height: desktop ? 140 : 80 }}
+            />
+          )}
+          <div className={classes.infoContainer}>
             <Typography className={classes.title}>{title}</Typography>
             {tagline && <Typography className={classes.tagline}>{tagline}</Typography>}
           </div>
-
-          <>
-            <Typography variant="caption">£{price.toFixed(2)}</Typography>
-            <Typography variant="caption">£{shippingCost.toFixed(2)}</Typography>
-          </>
-          <>
-            {item.type === "Cake" ? (
-              <CakeOutlined className={classes.icon} />
-            ) : (
-              <BrushOutlined className={classes.icon} />
-            )}
-          </>
-          <div className={classes.buttonContainer}>
-            <Tooltip
-              title={saved ? "Remove from Saved List" : "Remove from Basket"}
-              placement="top"
-            >
-              <IconButton
-                className={classes.iconButton}
-                role="button"
-                onClick={saved ? handleDeleteSavedItem : handleDeleteBasketItem}
-              >
-                <Delete />
-              </IconButton>
-            </Tooltip>
-            <Tooltip
-              title={saved ? "Add to Shopping Basket" : "Move to Save For Later"}
-              placement="top"
-            >
-              <IconButton
-                className={classes.iconButton}
-                role="button"
-                onClick={
-                  saved
-                    ? (): AddItemAction => dispatch(actions.addToBasket(item))
-                    : handleAddToSaveLater
-                }
-              >
-                {saved ? <Favorite /> : <Schedule />}
-              </IconButton>
-            </Tooltip>
-          </div>
         </div>
-      </Paper>
-    </>
+      </CardContent>
+      {!saved && (
+        <div className={classes.variantsInputContainer}>
+          {variants.length > 1 && (
+            <FormControl style={{ margin: "8px 0 6px" }} variant="outlined" fullWidth>
+              <InputLabel id="select-helper-label">Pick Variant</InputLabel>
+              <Select
+                labelId="select-helper-label"
+                labelWidth={80}
+                value={variantIndex}
+                onChange={(e): void => handleVariantChange(e)}
+                style={{ marginBottom: 28 }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {item.variants.map((variant: Variant, i) => (
+                  <MenuItem value={i} key={i}>
+                    {`${
+                      variant?.variantName ?? variant.dimensions
+                    } (£${variant.price.item.toFixed(2)})`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          {currentVariant && !isCompleted ? (
+            <BasketCustomOptions
+              setCustomOptions={(customOptions: CustomOptionArrayType): void => {
+                setState({ ...state, customOptions });
+              }}
+              item={item}
+              currentVariant={currentVariant}
+              customOptions={customOptions}
+              setCompleted={(): void => {
+                if (customOptions.every((option) => option !== undefined)) {
+                  setState({ ...state, isCompleted: true });
+                  if (products.findIndex((product) => product.id === id) === -1) {
+                    dispatch(
+                      actions.addToCheckout({
+                        id,
+                        title,
+                        tagline,
+                        image,
+                        variant: currentVariant,
+                        price: currentVariant.price.item,
+                        shippingCost: currentVariant.price.postage,
+                        customOptions,
+                      }),
+                    );
+                  } else {
+                    dispatch(actions.updateCustomOptions(id, customOptions));
+                  }
+                }
+              }}
+            />
+          ) : (
+            <Button
+              onClick={(): void => {
+                const product = products.find((product) => product.id === id);
+                setState({
+                  ...state,
+                  isCompleted: false,
+                  currentVariant: product?.variant ?? null,
+                  customOptions: product?.customOptions ?? [],
+                });
+              }}
+              fullWidth
+              style={{ marginTop: 12 }}
+            >
+              Edit Custom Options
+            </Button>
+          )}
+        </div>
+      )}
+      <CardActions
+        disableSpacing
+        style={{ display: "flex", justifyContent: "flex-end", padding: "5px 10px" }}
+      >
+        <Button
+          color="primary"
+          style={{ margin: "0 3px" }}
+          onClick={saved ? handleAddToBasket : handleAddToSaveLater}
+        >
+          {saved ? "Add to Basket" : "Save for Later"}
+        </Button>
+        <Button
+          color="secondary"
+          style={{ margin: "0 3px" }}
+          onClick={saved ? handleDeleteSavedItem : handleDeleteBasketItem}
+        >
+          {saved ? "Remove from Saved" : "Remove from Basket"}
+        </Button>
+      </CardActions>
+    </Card>
   );
 };
 

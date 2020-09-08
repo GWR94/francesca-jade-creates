@@ -43,7 +43,6 @@ import VerificationDialog from "./VerificationDialog";
 import { greenAndRedTheme, styles, INTENT, PLACEHOLDERS } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
-import TabNavigation from "./TabNavigation";
 import { AppState } from "../../../store/store";
 
 /**
@@ -268,7 +267,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     const updatedAttributes = {
       email: email.value,
     };
-    if (userAttributes.email_verified && email.value === userAttributes.email) {
+    if (userAttributes?.email_verified && email.value === userAttributes?.email) {
       openSnackbar({
         severity: "info",
         message: `${email.value} is already verified.`,
@@ -371,7 +370,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
        * with the correct attributes for its use in the database.
        */
       if (newDisplayImage) {
-        // get the identityId from aws-amplifys Auth package.
+        // get the identityId from aws-amplify's Auth package.
         const { identityId } = await Auth.currentCredentials();
         // create the filename based on the id, date and image name
         const filename = `${identityId}/${Date.now()}/${newDisplayImage.name}`;
@@ -499,8 +498,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
             <Loading size={100} />
           ) : (
             <>
-              <TabNavigation current="profile" admin={admin} />
-              <div className="profile__container">
+              <div className="profile__container animated fadeIn">
                 <Typography variant="h4">Profile</Typography>
                 <Typography variant="subtitle1">
                   Here is an overview of your profile. To make changes click the
@@ -606,6 +604,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                           label={email.verified ? "Verified" : "Unverified"}
                           size="small"
                           color={email.verified ? "primary" : "secondary"}
+                          style={{ cursor: isEditing ? "pointer" : "not-allowed" }}
                         />
                       </ThemeProvider>
                     </div>

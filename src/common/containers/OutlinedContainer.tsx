@@ -36,7 +36,7 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
       width: "100%",
       boxSizing: "border-box",
       "&:hover": {
-        border: "1px solid black !important",
+        border: !disabled && "1px solid black !important",
       },
     },
     label: {
@@ -58,7 +58,11 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
     <div
       className={classes.container}
       style={{
-        border: error ? `1px solid ${COLORS.ErrorRed}` : `1px solid ${COLORS.BorderGray}`,
+        border: error
+          ? `1px solid ${COLORS.ErrorRed}`
+          : disabled
+          ? `1px solid ${COLORS.DisabledGray}`
+          : `1px solid ${COLORS.BorderGray}`,
         padding,
       }}
     >

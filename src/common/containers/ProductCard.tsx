@@ -26,6 +26,7 @@ import {
   AddShoppingCartOutlined,
 } from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
+import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
@@ -33,42 +34,44 @@ import { deleteProduct } from "../../graphql/mutations";
 import ChipContainer from "../inputs/ChipContainer";
 import { INTENT, FONTS } from "../../themes";
 
-/**
- * TODO
- * [ ] Find out why Creates cards have broken tooltip
- * [x] Change Carousel/Reactstrap components
- **/
-
-// create styles for component
-const useStyles = makeStyles({
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    position: "relative",
-  },
-  media: {
-    overflow: "hidden",
-    width: "100%",
-  },
-  price: {
-    textAlign: "center",
-    margin: "10px 0",
-    fontStyle: "italic",
-    fontFamily: FONTS.Title,
-  },
-  root: {
-    padding: 0,
-    paddingBottom: "0 !important",
-  },
-});
-
-const Product: React.FC<ProductCardProps> = ({
-  product,
-  admin = false,
-  history,
-}): JSX.Element => {
+const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.Element => {
+  // create styles for component
+  const useStyles = makeStyles({
+    card: {
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      position: "relative",
+    },
+    media: {
+      overflow: "hidden",
+      width: "100%",
+    },
+    price: {
+      textAlign: "center",
+      margin: "10px 0",
+      fontStyle: "italic",
+      fontFamily: FONTS.Title,
+    },
+    root: {
+      padding: 0,
+      paddingBottom: "0 !important",
+    },
+    fab: {
+      position: "absolute",
+      bottom: 4,
+      right: 4,
+      backgroundColor:
+        product.type === "Cake" ? "rgba(253, 78, 242, 0.4)" : "rgba(147, 112, 246, 0.5)",
+      "&:hover": {
+        backgroundColor:
+          product.type === "Cake"
+            ? "rgba(253, 78, 242, 0.65)"
+            : "rgba(147, 112, 246, 0.75)",
+      },
+    },
+  });
   const classes = useStyles();
   // destructure product for ease of variable use
   const { id, images, title, type, tags, tagline, variants } = product;
@@ -78,7 +81,8 @@ const Product: React.FC<ProductCardProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   // boolean which shows/hides loading UI effects
   const [isLoading, setLoading] = useState(true);
-
+  // import and initialise useHistory() for navigation around the page
+  const history = useHistory();
   // create anchorRef to allow a point to fit the anchor point for the menu
   const anchorRef = React.useRef<SVGSVGElement>(null);
   // connect with redux via hook.
@@ -91,7 +95,13 @@ const Product: React.FC<ProductCardProps> = ({
   const handleDeleteProduct = async (): Promise<void> => {
     try {
       // use the id of the current product as the input for deleteProduct
-      await API.graphql(graphqlOperation(deleteProduct, { input: { id } }));
+      await API.graphql(
+        graphqlOperation(deleteProduct, {
+          input: {
+            id,
+          },
+        }),
+      );
       // close the confirm delete dialog
       setDeleteAlert(false);
       // notify the user of success using a success snackbar with a relevant title.
@@ -100,6 +110,7 @@ const Product: React.FC<ProductCardProps> = ({
         message: `${title} has been successfully removed.`,
       });
     } catch (err) {
+      console.error(err);
       // if there are any errors, notify the user with a danger snackbar.
       openSnackbar({
         severity: INTENT.Danger,
@@ -136,7 +147,9 @@ const Product: React.FC<ProductCardProps> = ({
               <Skeleton
                 animation="wave"
                 variant="circle"
-                style={{ marginLeft: -10 }}
+                style={{
+                  marginLeft: -10,
+                }}
                 width={40}
                 height={40}
               />
@@ -162,19 +175,42 @@ const Product: React.FC<ProductCardProps> = ({
           }
           title={
             // if loading return a skeleton of the potential product
-            isLoading ? <Skeleton animation="wave" style={{ marginRight: 14 }} /> : title
+            isLoading ? (
+              <Skeleton
+                animation="wave"
+                style={{
+                  marginRight: 14,
+                }}
+              />
+            ) : (
+              title
+            )
           }
           subheader={isLoading ? <Skeleton animation="wave" /> : tagline || ""}
-          style={{ textAlign: "center" }}
+          style={{
+            textAlign: "center",
+          }}
         >
           {isLoading ? (
-            <div style={{ margin: "30px 0" }}>
-              <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
+            <div
+              style={{
+                margin: "30px 0",
+              }}
+            >
+              <Skeleton
+                animation="wave"
+                height={10}
+                style={{
+                  marginBottom: 6,
+                }}
+              />
               <Skeleton
                 animation="wave"
                 height={10}
                 width="80%"
-                style={{ margin: "auto" }}
+                style={{
+                  margin: "auto",
+                }}
               />
             </div>
           ) : (
@@ -184,22 +220,42 @@ const Product: React.FC<ProductCardProps> = ({
             </>
           )}
         </CardHeader>
-        <CardContent classes={{ root: classes.root }}>
+        <CardContent
+          classes={{
+            root: classes.root,
+          }}
+        >
           {isLoading ? (
-            <div style={{ margin: "30px 0" }}>
-              <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
+            <div
+              style={{
+                margin: "30px 0",
+              }}
+            >
+              <Skeleton
+                animation="wave"
+                height={10}
+                style={{
+                  marginBottom: 6,
+                }}
+              />
               <Skeleton
                 animation="wave"
                 height={10}
                 width="80%"
-                style={{ margin: "auto" }}
+                style={{
+                  margin: "auto",
+                }}
               />
             </div>
           ) : (
             <>
               <p className={classes.price}>{handleGetPrices()}</p>
               {tags && (
-                <div style={{ marginBottom: 10 }}>
+                <div
+                  style={{
+                    marginBottom: 10,
+                  }}
+                >
                   <ChipContainer type={type} tags={tags} />
                 </div>
               )}
@@ -210,7 +266,9 @@ const Product: React.FC<ProductCardProps> = ({
               imgKey={images.collection[0].key}
               theme={{
                 photoImg: isLoading
-                  ? { display: "none" }
+                  ? {
+                      display: "none",
+                    }
                   : {
                       width: "100%",
                       display: "flex",
@@ -225,13 +283,17 @@ const Product: React.FC<ProductCardProps> = ({
               <Skeleton
                 animation="wave"
                 variant="rect"
-                style={{ width: "100%", height: 400 }}
+                style={{
+                  width: "100%",
+                  height: 400,
+                }}
               />
             )}
           </CardMedia>
           <Tooltip title="Add to Shopping Basket" arrow placement="top">
             <Fab
               aria-label="Add to shopping basket"
+              className={classes.fab}
               onClick={(e): void => {
                 e.stopPropagation();
                 try {
@@ -251,11 +313,6 @@ const Product: React.FC<ProductCardProps> = ({
                     severity: "error",
                   });
                 }
-              }}
-              style={{
-                position: "absolute",
-                bottom: 4,
-                right: 4,
               }}
             >
               <AddShoppingCartOutlined />
@@ -293,9 +350,17 @@ const Product: React.FC<ProductCardProps> = ({
             </MenuItem>
           </Menu>
           <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
-            <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
+            <DialogTitle>
+              Delete &quot;
+              {title}
+              &quot;?
+            </DialogTitle>
             <DialogContent>
-              <p>Are you sure you want to delete &quot;{title}&quot;?</p>
+              <p>
+                Are you sure you want to delete &quot;
+                {title}
+                &quot;?
+              </p>
               <p>This cannot be undone.</p>
             </DialogContent>
             <DialogActions>

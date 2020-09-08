@@ -1,7 +1,14 @@
-import { ProductFilters } from "./ProductList.i";
+import { ProductProps } from "./Product.i";
 
 export interface SearchFilterProps {
   type?: string;
-  setQuery: (query: string, filters: ProductFilters) => void;
-  admin?: boolean;
+  admin: boolean;
+  setSearchResults: (results: ProductProps[] | null) => void;
 }
+
+export interface AdminFilters {
+  cake: boolean;
+  creates: boolean;
+}
+
+export type SortMethod = "createdAt" | "updatedAt";

@@ -1,6 +1,6 @@
 projects:
   francescajadecreates:
-    schemaPath: src/graphql/schema.json
+    schemaPath: amplify/backend/api/francescajadecreates/build/schema.graphql
     includes:
       - src/graphql/**/*.ts
     excludes:
@@ -10,7 +10,9 @@ projects:
         codeGenTarget: typescript
         generatedFileName: src/API.ts
         docsFilePath: src/graphql
-        maxDepth: 4
+        region: eu-west-2
+        apiId: null
+        maxDepth: 6
 extensions:
   amplify:
     version: 3

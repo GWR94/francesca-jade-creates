@@ -41,4 +41,5 @@ export interface ImageProps {
 
 export interface UploadedFile {
   key: string;
+  file: File;
 }

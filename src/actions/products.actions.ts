@@ -1,21 +1,20 @@
 import { Dispatch } from "redux";
-import { API, graphqlOperation } from "aws-amplify";
-import { getProduct, listProducts } from "../graphql/queries";
+import { API } from "aws-amplify";
+import { listProducts } from "../graphql/queries";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
-import { FilterProps } from "../pages/accounts/interfaces/ProductList.i";
 import {
-  SET_FILTERS,
-  CLEAR_FILTERS,
-  SetFiltersAction,
-  ClearFiltersAction,
-  FETCH_CURRENT_FAILURE,
-  FETCH_CURRENT_SUCCESS,
+  SearchProductsSuccessAction,
+  SearchProductsFailureAction,
+  SEARCH_PRODUCTS_SUCCESS,
+  SEARCH_PRODUCTS_FAILURE,
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
-  FetchCurrentFailureAction,
-  FetchCurrentSuccessAction,
   FetchProductsFailureAction,
   FetchProductsSuccessAction,
+  HandleSortProductsAction,
+  HANDLE_SORT_PRODUCTS,
+  FILTER_PRODUCTS,
+  FilterProductsAction,
 } from "../interfaces/products.redux.i";
 
 export const fetchProductsSuccess = (
@@ -29,48 +28,50 @@ export const fetchProductsFailure = (): FetchProductsFailureAction => ({
   type: FETCH_PRODUCTS_FAILURE,
 });
 
-export const getProducts = () => {
+export const searchProductsSuccess = (
+  products: ProductProps[],
+): SearchProductsSuccessAction => ({
+  type: SEARCH_PRODUCTS_SUCCESS,
+  products,
+});
+
+export const searchProductsFailure = (): SearchProductsFailureAction => ({
+  type: SEARCH_PRODUCTS_FAILURE,
+});
+
+export const handleSortProducts = (
+  sortMethod: "updatedAt" | "createdAt",
+): HandleSortProductsAction => ({
+  type: HANDLE_SORT_PRODUCTS,
+  sortMethod,
+});
+
+export const filterProducts = (filterType: "Cake" | "Creates"): FilterProductsAction => ({
+  type: FILTER_PRODUCTS,
+  filterType,
+});
+
+export const getProducts = (type?: "Cake" | "Creates") => {
   return async (
     dispatch: Dispatch,
   ): Promise<FetchProductsSuccessAction | FetchProductsFailureAction> => {
     try {
-      const { data } = await API.graphql(graphqlOperation(listProducts));
+      const { data } = await API.graphql({
+        query: listProducts,
+        variables: {
+          filter: type && {
+            type: {
+              eq: type,
+            },
+          },
+          limit: 100,
+        },
+        // @ts-ignore
+        authMode: "API_KEY",
+      });
       return dispatch(fetchProductsSuccess(data.listProducts.items));
     } catch (error) {
       return dispatch(fetchProductsFailure());
     }
   };
 };
-
-export const fetchCurrentSuccess = (
-  product: ProductProps,
-): FetchCurrentSuccessAction => ({
-  type: FETCH_CURRENT_SUCCESS,
-  product,
-});
-
-export const fetchCurrentFailure = (): FetchCurrentFailureAction => ({
-  type: FETCH_CURRENT_FAILURE,
-});
-
-export const getCurrentProduct = (id: string) => {
-  return async (
-    dispatch: Dispatch,
-  ): Promise<FetchCurrentSuccessAction | FetchCurrentFailureAction> => {
-    try {
-      const { data } = await API.graphql(graphqlOperation(getProduct, { id }));
-      return fetchCurrentSuccess(data.getProduct);
-    } catch (err) {
-      return dispatch(fetchCurrentFailure());
-    }
-  };
-};
-
-export const setFilters = (filters: FilterProps): SetFiltersAction => ({
-  type: SET_FILTERS,
-  filters,
-});
-
-export const clearFilters = (): ClearFiltersAction => ({
-  type: CLEAR_FILTERS,
-});

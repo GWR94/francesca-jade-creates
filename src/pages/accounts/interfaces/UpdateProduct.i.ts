@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ProductProps } from "./Product.i";
 
 export interface MatchParams {
-  id: string;
+  id?: string;
 }
 
 export interface UpdateProps extends RouteComponentProps<MatchParams> {

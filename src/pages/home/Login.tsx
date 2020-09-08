@@ -41,8 +41,7 @@ class Login extends React.Component<LoginProps, LoginState> {
     const { history } = this.props;
     this.setState({ loggingIn: true });
     try {
-      const user = await Auth.signIn(username, password);
-      console.log(user);
+      await Auth.signIn(username, password);
       history.push("/");
     } catch (err) {
       console.error(err);

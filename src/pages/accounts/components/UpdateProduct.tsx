@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { connect } from "react-redux";
 import Compress from "client-compress";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
@@ -32,15 +33,17 @@ import styles from "../styles/updateProduct.style";
 import { defaultStyles } from "../../../themes/index";
 import { S3ImageProps, CakeFeature } from "../interfaces/Product.i";
 import Variants from "./Variants";
-import TabNavigation from "./TabNavigation";
 import { Variant } from "../interfaces/Variants.i";
+import { CurrentTabTypes, SetCurrentTabAction } from "../../../interfaces/user.redux.i";
+import * as actions from "../../../actions/user.actions";
 
 /**
- * TODO
- * [ ] Fix scrollbar on delete confirm dialog
- * [ ] Add colour scheme instead of inside variants component
+ * TODO -
+ * [x] Fix scrollbar on delete confirm dialog
+ * [x] Fix NavBar padding/underlines on links
  * [ ] Fix ConfirmDialog component to add new variants/custom options
- * [ ] Fix NavBar padding/underlines on links
+ * [ ] Fix Feature/Input type inputs on mobile
+ * [ ] Fix tags on mobile
  */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
@@ -367,7 +370,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       customOptions,
       setPrice,
     } = product;
-    const { history } = this.props;
+    const { history, setCurrentTab } = this.props;
     // set uploading to true so loading spinners and ui changes will show to user.
     this.setState({ isUploading: true });
     try {
@@ -407,8 +410,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-
-      history.push("/products");
+      setCurrentTab("products");
+      history.push("/account");
     } catch (err) {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
@@ -437,7 +440,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         setPrice,
       },
     } = this.state;
-    const { history } = this.props;
+    const { history, setCurrentTab } = this.props;
     this.setState({ isUploading: true });
     try {
       await API.graphql(
@@ -466,14 +469,15 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         message: `${title} has been successfully created!`,
       });
       // set isUploading to false to stop loading ui effects, and close confirm dialog
-      setTimeout(() => {
+      await setTimeout(() => {
         this.setState({ isUploading: false, confirmDialogOpen: false });
       }, 1000);
       /**
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      history.push("/products");
+      setCurrentTab("products");
+      history.push("/account");
     } catch (err) {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
@@ -511,7 +515,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     ) : (
       <>
         <div className={classes.mainContainer}>
-          <TabNavigation current="create" admin={admin} />
           <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }}>
             {update ? "Update Product" : "Create Product"}
           </Typography>
@@ -783,4 +786,9 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
 
 const merged = { ...styles, defaultStyles };
 
-export default withStyles(merged)(UpdateProduct);
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  setCurrentTab: (currentTab: CurrentTabTypes): SetCurrentTabAction =>
+    dispatch(actions.setCurrentTab(currentTab)),
+});
+
+export default connect(null, mapDispatchToProps)(withStyles(merged)(UpdateProduct));

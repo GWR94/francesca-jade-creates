@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Lambda resource stack creation using Amplify CLI",
+	"Description": "Lambda Function resource stack creation using Amplify CLI",
 	"Parameters": {
 		"CloudWatchRule": {
 			"Type": "String",
@@ -17,6 +17,10 @@
 		"apifrancescajadecreatesGraphQLAPIEndpointOutput": {
 			"Type": "String",
 			"Default": "apifrancescajadecreatesGraphQLAPIEndpointOutput"
+		},
+		"apifrancescajadecreatesGraphQLAPIKeyOutput": {
+			"Type": "String",
+			"Default": "apifrancescajadecreatesGraphQLAPIKeyOutput"
 		}
 	},
 	"Conditions": {
@@ -41,12 +45,12 @@
 				"FunctionName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"orders",
+						"stripeWebhook",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"orders",
+									"stripeWebhook",
 									"-",
 									{
 										"Ref": "env"
@@ -69,6 +73,9 @@
 						},
 						"API_FRANCESCAJADECREATES_GRAPHQLAPIENDPOINTOUTPUT": {
 							"Ref": "apifrancescajadecreatesGraphQLAPIEndpointOutput"
+						},
+						"API_FRANCESCAJADECREATES_GRAPHQLAPIKEYOUTPUT": {
+							"Ref": "apifrancescajadecreatesGraphQLAPIKeyOutput"
 						}
 					}
 				},
@@ -79,10 +86,11 @@
 					]
 				},
 				"Runtime": "nodejs12.x",
+				"Layers": [],
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "amplify-francescajadecreates-prod-113437-deployment",
-					"S3Key": "amplify-builds/orders-5a324c614a7437717154-build.zip"
+					"S3Key": "amplify-builds/stripeWebhook-377873736472756c5a72-build.zip"
 				}
 			}
 		},
@@ -92,12 +100,12 @@
 				"RoleName": {
 					"Fn::If": [
 						"ShouldNotCreateEnvResources",
-						"francescajadecreatesLambdaRole7ec3de49",
+						"francescajadecreatesLambdaRolec09d1da2",
 						{
 							"Fn::Join": [
 								"",
 								[
-									"francescajadecreatesLambdaRole7ec3de49",
+									"francescajadecreatesLambdaRolec09d1da2",
 									"-",
 									{
 										"Ref": "env"
@@ -163,6 +171,22 @@
 									}
 								]
 							}
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"dynamodb:PutItem",
+								"dynamodb:DeleteItem",
+								"dynamodb:GetItem",
+								"dynamodb:Query",
+								"dynamodb:UpdateItem"
+							],
+							"Resource": "arn:aws:dynamodb:*:*:table/*"
+						},
+						{
+							"Effect": "Allow",
+							"Action": "dynamodb:Query",
+							"Resource": "arn:aws:dynamodb:*:*:table/*/index/*"
 						}
 					]
 				}
@@ -188,11 +212,7 @@
 							"Action": [
 								"appsync:Create*",
 								"appsync:StartSchemaCreation",
-								"appsync:GraphQL",
-								"appsync:Get*",
-								"appsync:List*",
-								"appsync:Update*",
-								"appsync:Delete*"
+								"appsync:GraphQL"
 							],
 							"Resource": [
 								{
