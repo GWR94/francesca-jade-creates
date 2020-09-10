@@ -115,7 +115,13 @@ Parameters:
                     
   authProviders:
     Type: CommaDelimitedList
-      
+        
+  userPoolGroups:
+    Type: String
+              
+  adminQueries:
+    Type: String
+            
   facebookAppId:
     Type: String
               
@@ -124,13 +130,7 @@ Parameters:
               
   amazonAppId:
     Type: String
-                
-  userPoolGroups:
-    Type: String
               
-  adminQueries:
-    Type: String
-            
   hostedUIProviderCreds:
     Type: String
               

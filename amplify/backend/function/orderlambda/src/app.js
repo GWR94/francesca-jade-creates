@@ -13,10 +13,14 @@ const awsServerlessExpressMiddleware = require("aws-serverless-express/middlewar
 // declare a new express app
 const app = express();
 
-require("dotenv").config(".env");
-// Set your secret key. Remember to switch to your live secret key in production.
-// See your keys here: https://dashboard.stripe.com/account/apikeys
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+let stripe;
+
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config(".env");
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+} else {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+}
 
 app.use(bodyParser.json());
 app.use(awsServerlessExpressMiddleware.eventContext());

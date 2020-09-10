@@ -38,7 +38,7 @@ interface Props {
   userAttributes: UserAttributeProps;
 }
 
-const Basket: React.FC<Props> = ({ userAttributes }) => {
+const Basket: React.FC<Props> = (): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const {

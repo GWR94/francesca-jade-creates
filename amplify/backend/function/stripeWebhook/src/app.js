@@ -17,12 +17,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 const AWS = require("aws-sdk");
-require("dotenv").config("./.env");
 
-const url =
-  process.env.NODE_ENV === "production"
-    ? "https://www.francescajadecreates.co.uk"
-    : "http://localhost:3000/";
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config("./.env");
+}
 
 AWS.config.update({
   region: "eu-west-2",
@@ -43,8 +41,12 @@ const app = express();
 
 app.use(awsServerlessExpressMiddleware.eventContext());
 
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
-
+let stripe;
+if (process.env.NODE_ENV === "production") {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+} else {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+}
 const paymentTable = process.env.PAYMENT_TABLE;
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
 
@@ -74,10 +76,12 @@ const emailHandler = (req, res) => {
         Body: {
           Html: {
             Charset: "UTF-8",
-            Data: `<div style="margin-bottom: 16px">
+            Data: `
+            <div style="color: black">
+            <div style="margin-bottom: 16px">
               <h2>Thank you for your order!</h2>
               <div style="display: inline-flex; justify-content: space-evenly">
-                <img src="https://francescajadecreatesimages113437-prod.s3.eu-west-2.amazonaws.com/public/eu-west-2%3Ae7935f42-d7de-402d-a403-3ab64754dc91/IMG_0198.JPG" width=80 height=80 style="margin: 20px"/>
+                <img src="https://francescajadecreatesimages113437-prod.s3.eu-west-2.amazonaws.com/public/eu-west-2%3Ae7935f42-d7de-402d-a403-3ab64754dc91/IMG_0198.JPG" style="width: 80px; height=80px; margin: 20px"/>
               <div>
                 <h3>Order Confirmation</h3>
                 <p style="margin: 0">
@@ -96,7 +100,7 @@ const emailHandler = (req, res) => {
             <div style="display: inline-flex; flex-direction: row;  width: 100%; flex-wrap: wrap">
               ${data.Attributes.products.map(
                 (product) =>
-                  `<div style="max-width: 45%">
+                  `<div style="width: 200px">
                     <p style="margin: 0"><span style="font-weight: bold"">Product:</span> ${
                       product.title
                     }</p>
@@ -129,7 +133,8 @@ const emailHandler = (req, res) => {
                 here
               </a>
             </p>
-            <p style="margin-top: 40; font-size: 12px">Please note - due to COVID-19 orders may take longer to process - but rest assured, all products are still being produced, delivery just may take a bit longer.</p>`,
+            <p style="margin-top: 40; font-size: 12px">Please note - due to COVID-19 orders may take longer to process - but rest assured, all products are still being produced, delivery just may take a bit longer.</p>
+          </div>`,
           },
         },
       },
