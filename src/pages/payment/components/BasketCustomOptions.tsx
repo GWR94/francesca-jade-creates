@@ -31,7 +31,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   setCustomOptions,
   customOptions,
   currentVariant,
-  setCompleted,
 }) => {
   const [state, setState] = useState<CustomOptionsState>({
     currentTextValue: "",
@@ -44,7 +43,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     currentImageFile: null,
     imageCount: 0,
     expanded: false,
-    isCompleted: false,
   });
 
   const useStyles = makeStyles(styles);
@@ -423,7 +421,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
       <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
         Customisable Features
       </Typography>
-      {currentVariant.features.map((feature, i) => {
+      {currentVariant.features.map((feature: Feature, i: number) => {
         return (
           <Accordion
             expanded={expanded === `panel${i}`}
@@ -494,11 +492,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
           </Accordion>
         );
       })}
-      {customOptions.every((option) => option !== undefined) && (
-        <Button onClick={setCompleted} variant="text" fullWidth style={{ marginTop: 12 }}>
-          Save Custom Options
-        </Button>
-      )}
     </div>
   );
 };

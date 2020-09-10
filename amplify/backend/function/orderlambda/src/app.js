@@ -17,9 +17,9 @@ let stripe;
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config(".env");
-  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-} else {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+} else {
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 }
 
 app.use(bodyParser.json());

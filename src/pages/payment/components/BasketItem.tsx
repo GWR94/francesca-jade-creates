@@ -16,19 +16,15 @@ import {
   CardContent,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
+import { CheckCircleOutline, DeleteRounded, EditRounded } from "@material-ui/icons";
 import * as actions from "../../../actions/basket.actions";
-import { RemoveItemAction, AddItemAction } from "../../../interfaces/basket.redux.i";
-import { updateUser } from "../../../graphql/mutations";
-import {
-  BasketItemProps,
-  CheckoutProductProps,
-  CustomOptionArrayType,
-} from "../interfaces/Basket.i";
+import { RemoveItemAction } from "../../../interfaces/basket.redux.i";
+import { BasketItemProps, CustomOptionArrayType } from "../interfaces/Basket.i";
 import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/basketItem.style";
-import { Variant } from "../../accounts/interfaces/Variants.i";
 import BasketCustomOptions from "./BasketCustomOptions";
 import { AppState } from "../../../store/store";
+import { Variant } from "../../accounts/interfaces/Variants.i";
 
 interface BasketItemState {
   isLoading: boolean;
@@ -40,10 +36,6 @@ interface BasketItemState {
 
 interface BasketProps {
   item: BasketItemProps;
-  sub: string;
-  savedProducts: BasketItemProps[];
-  saved: boolean;
-  updateSavedProducts: (products: BasketItemProps[]) => void;
 }
 
 /**
@@ -53,22 +45,8 @@ interface BasketProps {
  * [ ] Add image preview before adding
  */
 
-const BasketItem: React.FC<BasketProps> = ({
-  item,
-  sub,
-  savedProducts,
-  updateSavedProducts,
-  saved = false,
-}: BasketProps): JSX.Element => {
-  const {
-    id,
-    title,
-    description,
-    image,
-    variants,
-    type,
-    tagline,
-  } = item as BasketItemProps;
+const BasketItem: React.FC<BasketProps> = ({ item }: BasketProps): JSX.Element => {
+  const { id, title, image, variants, tagline } = item as BasketItemProps;
 
   const [state, setState] = useState<BasketItemState>({
     isLoading: true,
@@ -98,71 +76,14 @@ const BasketItem: React.FC<BasketProps> = ({
     }
   }, []);
 
+  console.log(products);
+
   const handleDeleteBasketItem = (): void => {
     basket.current?.classList.add("zoomOut");
     setTimeout((): RemoveItemAction => {
       // basket.current.classList.remove("zoomOut"); // FIXME - May be needed?
       return dispatch(actions.removeFromBasket(id));
     }, 500);
-  };
-
-  const handleDeleteSavedItem = async (): Promise<void> => {
-    let updatedSaved: BasketItemProps[];
-    if (savedProducts.length <= 1) {
-      updatedSaved = [];
-    } else {
-      const idx = savedProducts.findIndex((itemToFind: BasketItemProps) =>
-        _.isEqual(itemToFind, item),
-      );
-      updatedSaved = [...savedProducts.slice(0, idx), ...savedProducts.slice(idx + 1)];
-    }
-    updateSavedProducts(updatedSaved);
-    await API.graphql(
-      graphqlOperation(updateUser, {
-        input: {
-          id: sub,
-          savedProducts: updatedSaved,
-        },
-      }),
-    );
-  };
-
-  const handleAddToBasket = async (): Promise<void> => {
-    dispatch(
-      actions.addToBasket({
-        id,
-        title,
-        description,
-        image,
-        type,
-        tagline,
-        variants,
-      }),
-    );
-    handleDeleteSavedItem();
-  };
-
-  const handleAddToSaveLater = async (): Promise<void> => {
-    const newProduct = {
-      id,
-      title,
-      description,
-      image,
-      type,
-      tagline,
-      variants,
-    };
-    await API.graphql(
-      graphqlOperation(updateUser, {
-        input: {
-          id: sub,
-          savedProducts: [...savedProducts, newProduct],
-        },
-      }),
-    );
-    updateSavedProducts([...savedProducts, newProduct]);
-    dispatch(actions.removeFromBasket(id));
-    handleDeleteBasketItem();
   };
 
   const handleGetPrices = (): JSX.Element => {
@@ -192,6 +113,32 @@ const BasketItem: React.FC<BasketProps> = ({
       customOptions: [...Array(updatedVariant.features.length)],
       currentVariant: updatedVariant,
     });
+  };
+
+  const handleCustomCompletion = (): void => {
+    const { customOptions, currentVariant } = state;
+    if (customOptions.every((option) => option !== undefined)) {
+      setState({ ...state, isCompleted: true });
+      if (
+        products.findIndex((product) => product.id === id) === -1 &&
+        currentVariant !== null
+      ) {
+        dispatch(
+          actions.addToCheckout({
+            id,
+            title,
+            tagline,
+            image,
+            variant: currentVariant,
+            price: currentVariant.price.item,
+            shippingCost: currentVariant.price.postage,
+            customOptions,
+          }),
+        );
+      } else {
+        dispatch(actions.updateCustomOptions(id, customOptions));
+      }
+    }
   };
 
   const { isLoading, variantIndex, currentVariant, customOptions, isCompleted } = state;
@@ -230,97 +177,77 @@ const BasketItem: React.FC<BasketProps> = ({
           </div>
         </div>
       </CardContent>
-      {!saved && (
-        <div className={classes.variantsInputContainer}>
-          {variants.length > 1 && (
-            <FormControl style={{ margin: "8px 0 6px" }} variant="outlined" fullWidth>
-              <InputLabel id="select-helper-label">Pick Variant</InputLabel>
-              <Select
-                labelId="select-helper-label"
-                labelWidth={80}
-                value={variantIndex}
-                onChange={(e): void => handleVariantChange(e)}
-                style={{ marginBottom: 28 }}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {item.variants.map((variant: Variant, i) => (
-                  <MenuItem value={i} key={i}>
-                    {`${
-                      variant?.variantName ?? variant.dimensions
-                    } (£${variant.price.item.toFixed(2)})`}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-          {currentVariant && !isCompleted ? (
-            <BasketCustomOptions
-              setCustomOptions={(customOptions: CustomOptionArrayType): void => {
-                setState({ ...state, customOptions });
-              }}
-              item={item}
-              currentVariant={currentVariant}
-              customOptions={customOptions}
-              setCompleted={(): void => {
-                if (customOptions.every((option) => option !== undefined)) {
-                  setState({ ...state, isCompleted: true });
-                  if (products.findIndex((product) => product.id === id) === -1) {
-                    dispatch(
-                      actions.addToCheckout({
-                        id,
-                        title,
-                        tagline,
-                        image,
-                        variant: currentVariant,
-                        price: currentVariant.price.item,
-                        shippingCost: currentVariant.price.postage,
-                        customOptions,
-                      }),
-                    );
-                  } else {
-                    dispatch(actions.updateCustomOptions(id, customOptions));
-                  }
-                }
-              }}
-            />
-          ) : (
-            <Button
-              onClick={(): void => {
-                const product = products.find((product) => product.id === id);
-                setState({
-                  ...state,
-                  isCompleted: false,
-                  currentVariant: product?.variant ?? null,
-                  customOptions: product?.customOptions ?? [],
-                });
-              }}
-              fullWidth
-              style={{ marginTop: 12 }}
+      <div className={classes.variantsInputContainer}>
+        {variants.length > 1 && (
+          <FormControl style={{ margin: "8px 0 6px" }} variant="outlined" fullWidth>
+            <InputLabel id="select-helper-label">Pick Variant</InputLabel>
+            <Select
+              labelId="select-helper-label"
+              labelWidth={80}
+              value={variantIndex}
+              onChange={(e): void => handleVariantChange(e)}
+              style={{ marginBottom: 28 }}
             >
-              Edit Custom Options
-            </Button>
-          )}
-        </div>
-      )}
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {item.variants.map((variant: Variant, i) => (
+                <MenuItem value={i} key={i}>
+                  {`${
+                    variant?.variantName ?? variant.dimensions
+                  } (£${variant.price.item.toFixed(2)})`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {currentVariant && !isCompleted && (
+          <BasketCustomOptions
+            setCustomOptions={(customOptions: CustomOptionArrayType): void => {
+              let isCompleted = false;
+              if (customOptions.every((option) => option !== undefined)) {
+                isCompleted = true;
+                handleCustomCompletion();
+              }
+              setState({ ...state, customOptions, isCompleted });
+            }}
+            currentVariant={currentVariant}
+            customOptions={customOptions}
+          />
+        )}
+      </div>
       <CardActions
         disableSpacing
         style={{ display: "flex", justifyContent: "flex-end", padding: "5px 10px" }}
       >
-        <Button
-          color="primary"
-          style={{ margin: "0 3px" }}
-          onClick={saved ? handleAddToBasket : handleAddToSaveLater}
-        >
-          {saved ? "Add to Basket" : "Save for Later"}
-        </Button>
+        {isCompleted && (
+          <Button
+            onClick={(): void => {
+              const product = products.find((product) => product.id === id);
+              setState({
+                ...state,
+                isCompleted: false,
+                currentVariant: product?.variant ?? null,
+                customOptions: product?.customOptions ?? [],
+              });
+            }}
+            startIcon={<EditRounded />}
+          >
+            {!desktop ? "Edit" : "Edit Custom Options"}
+          </Button>
+        )}
+        {!isCompleted && customOptions.every((option) => option !== undefined) && (
+          <Button onClick={handleCustomCompletion} startIcon={<CheckCircleOutline />}>
+            {!desktop ? "Save Options" : "Save Custom Options"}
+          </Button>
+        )}
         <Button
           color="secondary"
           style={{ margin: "0 3px" }}
-          onClick={saved ? handleDeleteSavedItem : handleDeleteBasketItem}
+          onClick={handleDeleteBasketItem}
+          startIcon={<DeleteRounded />}
         >
-          {saved ? "Remove from Saved" : "Remove from Basket"}
+          {!desktop ? "Remove" : "Remove from Basket"}
         </Button>
       </CardActions>
     </Card>

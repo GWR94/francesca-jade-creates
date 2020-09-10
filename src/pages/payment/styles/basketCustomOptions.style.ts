@@ -10,6 +10,12 @@ export default createStyles({
     flexBasis: "47%",
     flexShrink: 0,
     paddingRight: 10,
+    [breakpoints.down("md")]: {
+      fontSize: "0.9rem",
+    },
+    [breakpoints.down("sm")]: {
+      fontSize: "0.8rem",
+    },
   },
   secondaryHeading: {
     fontSize: "0.85rem",
@@ -21,6 +27,12 @@ export default createStyles({
     paddingRight: 4,
     color: COLORS.InfoBlue,
     cursor: "pointer",
+    [breakpoints.down("md")]: {
+      fontSize: "0.9rem",
+    },
+    [breakpoints.down("sm")]: {
+      fontSize: "0.8rem",
+    },
   },
   deleteSpan: {
     fontStyle: "italic",
@@ -28,6 +40,12 @@ export default createStyles({
     paddingLeft: 4,
     color: COLORS.ErrorRed,
     cursor: "pointer",
+    [breakpoints.down("md")]: {
+      fontSize: "0.9rem",
+    },
+    [breakpoints.down("sm")]: {
+      fontSize: "0.8rem",
+    },
   },
   imageLabel: {
     display: "flex",

@@ -41,6 +41,4 @@ export interface CustomOptionsProps {
   setCustomOptions: (customOptions: CustomOptionArrayType) => void;
   currentVariant: Variant;
   customOptions: CustomOptionArrayType;
-  item: BasketItemProps;
-  setCompleted: () => void;
 }

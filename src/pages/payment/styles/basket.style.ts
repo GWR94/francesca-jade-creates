@@ -15,6 +15,12 @@ export default createStyles({
     width: "100%",
     margin: "0 auto",
   },
+  mainTitle: {
+    fontSize: "1.6rem",
+    margin: "0 10px",
+    padding: "10px 0 5px",
+    fontWeight: "bold",
+  },
   overviewContainer: {
     background: COLORS.OffWhite,
     border: `1px solid ${COLORS.Pink}`,
@@ -27,5 +33,9 @@ export default createStyles({
   },
   subtotal: {
     marginTop: 8,
+  },
+  subtext: {
+    margin: "0 10px 8px",
+    fontSize: "0.8rem",
   },
 });
