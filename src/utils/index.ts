@@ -29,3 +29,11 @@ export const hasHostname = (hostname: string): boolean =>
   Boolean(hostname.includes(window.location.hostname));
 
 export const isLocalhost = hasLocalhost(window.location.hostname);
+
+export const getReadableStringFromArray = (array: string[]): string => {
+  return array.length == 1
+    ? array[0]
+    : [array.slice(0, array.length - 1).join(", "), array[array.length - 1]].join(
+        " and ",
+      );
+};

@@ -11,7 +11,6 @@ import BasketActionTypes, {
   CLEAR_CHECKOUT,
   UPDATE_CUSTOM_OPTIONS,
 } from "../interfaces/basket.redux.i";
-import { Variant } from "../pages/accounts/interfaces/Variants.i";
 
 const defaultBasketState = {
   items: [],

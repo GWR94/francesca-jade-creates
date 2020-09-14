@@ -1,8 +1,6 @@
 import React, { useRef, MutableRefObject, useState, useEffect } from "react";
 import { S3Image } from "aws-amplify-react";
-import _ from "underscore";
 import { useDispatch, useSelector } from "react-redux";
-import { API, graphqlOperation } from "aws-amplify";
 import {
   Typography,
   makeStyles,
@@ -38,13 +36,6 @@ interface BasketProps {
   item: BasketItemProps;
 }
 
-/**
- * TODO
- * [ ] Fix label for select
- * [ ] Fix label for select
- * [ ] Add image preview before adding
- */
-
 const BasketItem: React.FC<BasketProps> = ({ item }: BasketProps): JSX.Element => {
   const { id, title, image, variants, tagline } = item as BasketItemProps;
 
@@ -76,30 +67,12 @@ const BasketItem: React.FC<BasketProps> = ({ item }: BasketProps): JSX.Element =
     }
   }, []);
 
-  console.log(products);
-
   const handleDeleteBasketItem = (): void => {
     basket.current?.classList.add("zoomOut");
     setTimeout((): RemoveItemAction => {
       // basket.current.classList.remove("zoomOut"); // FIXME - May be needed?
       return dispatch(actions.removeFromBasket(id));
     }, 500);
-  };
-
-  const handleGetPrices = (): JSX.Element => {
-    let min = Infinity;
-    let max = -Infinity;
-    variants.forEach((variant: Variant) => {
-      if (variant.price.item) {
-        min = Math.min(min, variant.price.item);
-        max = Math.max(max, variant.price.item);
-      }
-    });
-    if (min === max) return <Typography>£{min.toFixed(2)}</Typography>;
-    else if (min === Infinity) {
-      return <Typography>Request a quote for a price</Typography>;
-    }
-    return <Typography>From £{min.toFixed(2)}</Typography>;
   };
 
   const handleVariantChange = (

@@ -57,11 +57,11 @@ export default createStyles({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
+    maxWidth: 400,
   },
   previewImage: {
-    height: 240,
     marginBottom: 8,
+    width: 220,
   },
   variantsInputContainer: {
     width: "100%",
@@ -71,5 +71,23 @@ export default createStyles({
     width: "100%",
     display: "inline-flex",
     justifyContent: "space-evenly",
+  },
+  chip: {
+    background: COLORS.DarkPink,
+    "&:hover": {
+      background: COLORS.Pink,
+    },
+    "&:focus": {
+      background: COLORS.Pink,
+    },
+  },
+  accordionRoot: {
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "column",
+  },
+  formControl: {
+    margin: 8,
+    minWidth: 120,
   },
 });

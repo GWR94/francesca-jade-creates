@@ -33,6 +33,7 @@ export interface CustomOptionsState {
   expanded: string | false;
   imageCompleted: boolean;
   confirmDialogOpen: boolean;
+  uploadedImageArray: string[];
 }
 
 export type CustomOptionArrayType = (string | File[] | string[] | undefined)[];

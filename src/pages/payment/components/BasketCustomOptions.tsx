@@ -14,18 +14,19 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
-  useTheme,
-  useMediaQuery,
+  FormControl,
+  InputLabel,
 } from "@material-ui/core";
 import ChipInput from "material-ui-chip-input";
-import { useDispatch, useSelector } from "react-redux";
 import { ExpandMore } from "@material-ui/icons";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
 import { COLORS, INTENT } from "../../../themes";
-import { Feature, Variant } from "../../accounts/interfaces/Variants.i";
+import { Feature } from "../../accounts/interfaces/Variants.i";
 import { openSnackbar } from "../../../utils/Notifier";
 import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
-import { AppState } from "../../../store/store";
+import { getReadableStringFromArray } from "../../../utils";
+import "@splidejs/splide/dist/css/themes/splide-default.min.css";
 
 const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   setCustomOptions,
@@ -38,6 +39,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     currentImagesArray: [],
     currentMultipleChoice: "",
     uploadedImage: null,
+    uploadedImageArray: [],
     imageCompleted: false,
     confirmDialogOpen: false,
     currentImageFile: null,
@@ -47,11 +49,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
-
-  const dispatch = useDispatch();
-  const { products } = useSelector(({ basket }: AppState) => basket.checkout);
 
   const handlePanelChange = (panel: string) => (
     _event: React.ChangeEvent<{}>,
@@ -73,13 +70,16 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
       currentImageFile,
       imageCount,
       confirmDialogOpen,
+      uploadedImageArray,
     } = state;
     const { featureType, inputType, value, name } = feature;
     let renderedFeature: JSX.Element | null = null;
 
-    let maxNumber = -1;
+    let maxNumber = -Infinity;
+    let minNumber = Infinity;
     if (inputType === "range" && value.range !== undefined) {
       maxNumber = value.range[1];
+      minNumber = value.range[0];
     } else if (inputType === "number" && value.number !== undefined) {
       maxNumber = value.number;
     }
@@ -115,6 +115,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   fullWidth
                   variant="outlined"
                   label={name}
+                  classes={{
+                    chip: classes.chip,
+                  }}
                   // @ts-ignore
                   placeholder="Press enter to add an item"
                   onAdd={(chip): void => {
@@ -130,6 +133,12 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       });
                     }
                   }}
+                  onDelete={(chip): void => {
+                    const updatedChips = currentArrayValue.filter(
+                      (value) => value !== chip,
+                    );
+                    setState({ ...state, currentArrayValue: updatedChips });
+                  }}
                 />
                 <Button
                   onClick={(): void => {
@@ -143,7 +152,12 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     setCustomOptions(updatedCustomOptions);
                   }}
                   color="primary"
-                  disabled={currentArrayValue.length === 0}
+                  disabled={
+                    inputType === "range"
+                      ? currentArrayValue.length < minNumber ||
+                        currentArrayValue.length > maxNumber
+                      : currentArrayValue.length !== maxNumber
+                  }
                 >
                   Next
                 </Button>
@@ -173,7 +187,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   onClick={(): void => {
                     const updatedCustomOptions = customOptions;
                     updatedCustomOptions[i] = currentTextValue;
-                    console.log("custom", updatedCustomOptions);
                     setState({
                       ...state,
                       currentTextValue: "",
@@ -194,22 +207,33 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
       case "other":
         if (value.array === undefined) return null;
         renderedFeature = (
-          <>
-            <Select
-              value={currentMultipleChoice}
-              label={name}
-              variant="outlined"
-              onChange={(e): void =>
-                setState({ ...state, currentMultipleChoice: e.target.value as string })
-              }
-              style={{ minWidth: 160 }}
-            >
-              {value.array.map((val, i) => (
-                <MenuItem value={val} key={i}>
-                  {val}
-                </MenuItem>
-              ))}
-            </Select>
+          <div
+            style={{
+              display: "inline-flex",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel id="demo-simple-select-outlined-label">{name}</InputLabel>
+              <Select
+                value={currentMultipleChoice}
+                label={name}
+                fullWidth
+                variant="outlined"
+                onChange={(e): void =>
+                  setState({ ...state, currentMultipleChoice: e.target.value as string })
+                }
+                style={{ minWidth: 220 }}
+              >
+                {value.array.map((val, i) => (
+                  <MenuItem value={val} key={i}>
+                    {val}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               onClick={(): void => {
                 const updatedCustomOptions = customOptions;
@@ -222,11 +246,11 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 setCustomOptions(updatedCustomOptions);
               }}
               color="primary"
-              disabled={currentMultipleChoice.length === 0}
+              disabled={!currentMultipleChoice}
             >
               Next
             </Button>
-          </>
+          </div>
         );
         break;
       case "images":
@@ -241,7 +265,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   </Typography>
                 ) : (
                   <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
-                    Please add {maxNumber} images.
+                    Please add {maxNumber} image{maxNumber === 1 ? "" : "s"}.
                   </Typography>
                 )}
                 {!uploadedImage ? (
@@ -266,6 +290,10 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                                   ...state,
                                   uploadedImage: e.target.result as string,
                                   currentImageFile: file,
+                                  uploadedImageArray: [
+                                    ...uploadedImageArray,
+                                    e.target.result as string,
+                                  ],
                                 });
                               } else {
                                 openSnackbar({
@@ -287,11 +315,47 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                         </Button>
                       )}
                     </label>
+                    {uploadedImageArray.length > 0 && (
+                      <>
+                        <Typography
+                          variant="subtitle2"
+                          gutterBottom
+                          style={{ marginTop: 10 }}
+                        >
+                          Uploaded Images:
+                        </Typography>
+                        <Splide
+                          options={{
+                            width: 220,
+                            arrows: uploadedImageArray.length > 1,
+                          }}
+                        >
+                          {uploadedImageArray.map((file, i) => {
+                            return (
+                              <SplideSlide key={i}>
+                                <img
+                                  src={file}
+                                  alt="Uploaded Image"
+                                  style={{
+                                    width: "100%",
+                                  }}
+                                />
+                              </SplideSlide>
+                            );
+                          })}
+                        </Splide>
+                      </>
+                    )}
                     {currentImagesArray.length >= 1 && (
-                      <div className={classes.buttonContainer}>
+                      <div className={classes.buttonContainer} style={{ marginTop: 10 }}>
                         <Button
                           onClick={(): void =>
-                            setState({ ...state, currentImagesArray: [] })
+                            setState({
+                              ...state,
+                              currentImagesArray: [],
+                              imageCount: 0,
+                              uploadedImageArray: [],
+                            })
                           }
                           color="secondary"
                           variant="text"
@@ -316,7 +380,6 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       onClose={(): void =>
                         setState({ ...state, confirmDialogOpen: false })
                       }
-                      fullScreen={fullScreen}
                     >
                       <DialogTitle>
                         Do you want to have less than the recommended amount of images?
@@ -358,20 +421,27 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   </>
                 ) : (
                   <>
-                    <img
-                      src={uploadedImage}
-                      alt="Your uploaded image"
-                      className={classes.previewImage}
-                    />
-                    <div>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Do you want to add this image?
+                    </Typography>
+                    <div className={classes.uploadedImageContainer}>
+                      <img
+                        src={uploadedImage}
+                        alt="Your uploaded image"
+                        className={classes.previewImage}
+                      />
+                    </div>
+                    <div className={classes.buttonContainer}>
                       <Button
                         onClick={(): void =>
                           setState({
                             ...state,
                             currentImageFile: null,
                             uploadedImage: null,
+                            uploadedImageArray: uploadedImageArray.slice(0, -1),
                           })
                         }
+                        color="secondary"
                       >
                         Cancel
                       </Button>
@@ -398,6 +468,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                             setCustomOptions(updatedCustomOptions);
                           }
                         }}
+                        color="primary"
                       >
                         Confirm
                       </Button>
@@ -422,6 +493,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
         Customisable Features
       </Typography>
       {currentVariant.features.map((feature: Feature, i: number) => {
+        const current = customOptions[i];
         return (
           <Accordion
             expanded={expanded === `panel${i}`}
@@ -447,43 +519,52 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 )}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails classes={{ root: classes.accordionRoot }}>
               {customOptions[i] ? (
                 <>
-                  {!Array.isArray(customOptions[i]) && (
-                    <Typography>{customOptions[i]}</Typography>
+                  {!Array.isArray(current) ? (
+                    <Typography>{current}</Typography>
+                  ) : (
+                    typeof current[0] === "string" && (
+                      <Typography>
+                        {getReadableStringFromArray(current as string[])}
+                      </Typography>
+                    )
                   )}
-                  <Button
-                    onClick={(): void => {
-                      const updatedCustomOptions = customOptions;
-                      const prevValue = customOptions[i];
-                      updatedCustomOptions[i] = undefined;
-                      setState({
-                        ...state,
-                        currentTextValue:
-                          typeof prevValue === "string" ? prevValue : currentTextValue,
-                        currentArrayValue: Array.isArray(prevValue)
-                          ? prevValue
-                          : currentArrayValue,
-                      });
-                      setCustomOptions(updatedCustomOptions);
-                    }}
-                    variant="text"
-                    color="primary"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={(): void => {
-                      const updatedCustomOptions = customOptions;
-                      updatedCustomOptions[i] = undefined;
-                      setCustomOptions(updatedCustomOptions);
-                    }}
-                    variant="text"
-                    color="secondary"
-                  >
-                    Clear
-                  </Button>
+                  <div className={classes.buttonContainer}>
+                    <Button
+                      onClick={(): void => {
+                        const updatedCustomOptions = customOptions;
+                        const prevValue = customOptions[i];
+                        updatedCustomOptions[i] = undefined;
+                        setState({
+                          ...state,
+                          currentTextValue:
+                            typeof prevValue === "string" ? prevValue : currentTextValue,
+                          // @ts-ignore
+                          currentArrayValue: Array.isArray(prevValue)
+                            ? prevValue
+                            : currentArrayValue,
+                        });
+                        setCustomOptions(updatedCustomOptions);
+                      }}
+                      variant="text"
+                      color="primary"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={(): void => {
+                        const updatedCustomOptions = customOptions;
+                        updatedCustomOptions[i] = undefined;
+                        setCustomOptions(updatedCustomOptions);
+                      }}
+                      variant="text"
+                      color="secondary"
+                    >
+                      Clear
+                    </Button>
+                  </div>
                 </>
               ) : (
                 renderInput(feature, i)

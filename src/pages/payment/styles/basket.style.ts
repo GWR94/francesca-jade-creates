@@ -14,6 +14,7 @@ export default createStyles({
     },
     width: "100%",
     margin: "0 auto",
+    paddingTop: 10,
   },
   mainTitle: {
     fontSize: "1.6rem",

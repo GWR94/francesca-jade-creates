@@ -1,7 +1,7 @@
 import { S3ImageProps } from "../../../pages/accounts/interfaces/Product.i";
 
 export interface ImageCarouselProps {
-  images: S3ImageProps[];
+  images: S3ImageProps[] | File[];
   deleteImages?: boolean;
   id?: string;
   handleUpdateImages?: (image: S3ImageProps[]) => void;

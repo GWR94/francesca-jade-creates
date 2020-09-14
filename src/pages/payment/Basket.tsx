@@ -4,18 +4,9 @@ import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
 import { loadStripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import { InfoOutlined } from "@material-ui/icons";
-import {
-  Typography,
-  Button,
-  makeStyles,
-  Grid,
-  Hidden,
-  useTheme,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Typography, Button, makeStyles, Grid, Hidden } from "@material-ui/core";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
-import { getUser } from "../../graphql/queries";
 import Loading from "../../common/Loading";
 import { BasketState } from "../../reducers/basket.reducer";
 import NonIdealState from "../../common/containers/NonIdealState";
@@ -32,8 +23,12 @@ import { UserState } from "../../reducers/user.reducer";
 // @ts-ignore
 import awsExports from "../../aws-exports";
 
-const stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
-
+let stripePromise;
+if (process.env.NODE_ENV === "production") {
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
+} else {
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST);
+}
 interface Props {
   userAttributes: UserAttributeProps;
 }
@@ -51,8 +46,6 @@ const Basket: React.FC<Props> = (): JSX.Element => {
   console.log(email, emailVerified);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
-  const theme = useTheme();
-  const mobile = useMediaQuery(theme.breakpoints.down("xs"));
 
   let isMounted = false;
   const dispatch = useDispatch();
@@ -64,10 +57,17 @@ const Basket: React.FC<Props> = (): JSX.Element => {
    * @param product - the current product to get the minimum price from
    */
   const getMinPrice = (product: BasketItemProps): string => {
+    // set min to infinity so everything will be smaller
     let min = Infinity;
+    // iterate through the variants of the current product
     product.variants.forEach((variant) => {
+      // set the min value to be the smaller value of the current min or the current variants price
       min = Math.min(variant.price.item, min);
     });
+    /**
+     * if min is still infinity, there is no price so notify the user that they
+     * need to request a quote; otherwise show the formatted price
+     */
     return min === Infinity ? "Request for Price" : `From £${min.toFixed(2)}`;
   };
 
@@ -234,10 +234,8 @@ const Basket: React.FC<Props> = (): JSX.Element => {
     <Loading />
   ) : (
     <div className={classes.container}>
-      <Typography variant="h4" className={classes.mainTitle}>
-        Shopping Basket
-      </Typography>
-      <Typography className={classes.subtext}>
+      <Typography variant="h4">Shopping Basket</Typography>
+      <Typography variant="subtitle1">
         Please choose a variant for your product (if necessary), and complete all of the
         customisable features input.
       </Typography>

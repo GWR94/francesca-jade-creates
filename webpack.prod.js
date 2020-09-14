@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const merge = require("webpack-merge");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require("webpack");
 const common = require("./webpack.common");
 
 module.exports = merge(common, {
@@ -10,6 +11,7 @@ module.exports = merge(common, {
       filename: "[name].[hash].css",
       chunkFilename: "[id].[hash].css",
     }),
+    new webpack.EnvironmentPlugin(["STRIPE_PUBLIC_KEY", "STRIPE_SECRET_KEY"]),
   ],
   optimization: {
     runtimeChunk: "single",

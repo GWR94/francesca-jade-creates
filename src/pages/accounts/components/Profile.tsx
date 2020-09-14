@@ -264,9 +264,14 @@ class Profile extends Component<ProfileProps, ProfileState> {
     const { user, userAttributes } = this.props;
     // retrieve email from state
     const { email } = this.state;
+    // set values to be updated into an object
     const updatedAttributes = {
       email: email.value,
     };
+    /**
+     * if email is verified and the input user email matches the userAttributes
+     * email, notify the user that it's already verified
+     */
     if (userAttributes?.email_verified && email.value === userAttributes?.email) {
       openSnackbar({
         severity: "info",
@@ -274,32 +279,47 @@ class Profile extends Component<ProfileProps, ProfileState> {
       });
       return;
     }
+    // update the attributes by using Auth's updateUserAttributes method
     try {
       const res = await Auth.updateUserAttributes(user, updatedAttributes);
+      /**
+       * if the text "SUCCESS" is returned from the method, send a verification code
+       * via the sendVerificationCode method
+       */
       if (res === "SUCCESS") {
         this.sendVerificationCode("email");
       }
     } catch (err) {
+      // if there was an error, notify the user of the error.
       openSnackbar({
         severity: "error",
         message: "Unable to update email address. Please try again.",
       });
     }
+    // if updateProfile boolean is true, update the profile.
     if (updateProfile) {
       this.onUpdateProfile();
     }
   };
 
+  /**
+   * Method to verify the user's phone number
+   */
   private handleVerifyPhone = async (): Promise<void> => {
+    // retrieve the user object from props
     const { user } = this.props;
+    // retrieve the input phone number from state
     const { phoneNumber } = this.state;
     if (!phoneNumber) return;
+    // place the values that need to be updated into an object
     const updatedAttributes = {
       phone_number: `${phoneNumber.code}${phoneNumber.value}`,
     };
+    // try to update the user attributes via Auth's updateUserAttributes method
     try {
       await Auth.updateUserAttributes(user, updatedAttributes);
     } catch (err) {
+      // if there are any errors, notify the user.
       openSnackbar({
         severity: "error",
         message: "Unable to update phone number. Please try again.",

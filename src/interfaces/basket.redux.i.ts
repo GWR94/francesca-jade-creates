@@ -1,5 +1,4 @@
 import { CustomOptionArrayType } from "./../pages/payment/components/BasketCustomOptions";
-import { ClearCheckoutAction } from "./basket.redux.i";
 import {
   CheckoutProductProps,
   BasketItemProps,
