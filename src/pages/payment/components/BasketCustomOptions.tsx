@@ -307,7 +307,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                         }}
                       />
                       <Typography variant="subtitle2">
-                        You have entered {imageCount} image(s).
+                        You have entered {imageCount} image{imageCount === 1 ? "" : "s"}.
                       </Typography>
                       {currentImagesArray.length < maxNumber && (
                         <Button variant="contained" component="span" color="primary">
@@ -498,6 +498,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
           <Accordion
             expanded={expanded === `panel${i}`}
             key={i}
+            TransitionProps={{ unmountOnExit: true }}
             onChange={handlePanelChange(`panel${i}`)}
           >
             <AccordionSummary

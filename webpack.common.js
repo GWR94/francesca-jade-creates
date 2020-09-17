@@ -24,6 +24,7 @@ module.exports = {
       "SECRET_KEY_AWS",
       "BUCKET_REGION",
       "BUCKET_NAME",
+      "TINY_API_KEY",
     ]),
   ],
   output: {

@@ -9,10 +9,12 @@ import {
   DialogActions,
   useMediaQuery,
   useTheme,
+  makeStyles,
 } from "@material-ui/core";
 import { ConfirmDialogProps } from "../../pages/accounts/interfaces/ConfirmDialog.i";
 import ImageCarousel from "../containers/ImageCarousel";
 import ChipContainer from "../inputs/ChipContainer";
+import { FONTS } from "../../themes";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
@@ -25,10 +27,22 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }): JSX.Element | null => {
   const { title, tagline, description, type, price, tags, images } = product;
   const theme = useTheme();
+  const useStyles = makeStyles({
+    dialogContainer: {
+      fontFamily: FONTS.Title,
+    },
+  });
+  const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
   if (!isOpen) return null;
   return (
-    <Dialog open={isOpen} onClose={closeModal} scroll="body" fullScreen={fullScreen}>
+    <Dialog
+      open={isOpen}
+      onClose={closeModal}
+      scroll="body"
+      className={classes.dialogContainer}
+      fullScreen={fullScreen}
+    >
       <DialogTitle>Confirm your product is correct</DialogTitle>
       <DialogContent>
         <p>

@@ -9,10 +9,10 @@ export default createStyles({
     fontSize: "36px", //FIXME
     color: COLORS.Pink,
     [breakpoints.down("md")]: {
-      fontSize: "28px",
+      fontSize: "30px",
     },
     [breakpoints.down("sm")]: {
-      fontSize: "20px",
+      fontSize: "24px",
     },
   },
   filterContainer: {
@@ -30,5 +30,9 @@ export default createStyles({
       marginLeft: -1,
       border: "1px solid #eee",
     },
+    [breakpoints.down("sm")]: {
+      padding: 8,
+    },
+    zIndex: 10,
   },
 });

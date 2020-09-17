@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Dispatch } from "react";
 import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import ChipInput from "material-ui-chip-input";
 import {
@@ -17,6 +17,8 @@ import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { connect } from "react-redux";
 import Compress from "client-compress";
+import { AnyAction } from "redux";
+import { Editor, IAllProps } from "@tinymce/tinymce-react";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import ImagePicker from "../../../common/containers/ImagePicker";
@@ -31,20 +33,12 @@ import ImageCarousel from "../../../common/containers/ImageCarousel";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/updateProduct.style";
 import { defaultStyles } from "../../../themes/index";
-import { S3ImageProps, CakeFeature } from "../interfaces/Product.i";
+import { S3ImageProps } from "../interfaces/Product.i";
 import Variants from "./Variants";
 import { Variant } from "../interfaces/Variants.i";
 import { CurrentTabTypes, SetCurrentTabAction } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
-
-/**
- * TODO -
- * [x] Fix scrollbar on delete confirm dialog
- * [x] Fix NavBar padding/underlines on links
- * [ ] Fix ConfirmDialog component to add new variants/custom options
- * [ ] Fix Feature/Input type inputs on mobile
- * [ ] Fix tags on mobile
- */
+import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
@@ -154,7 +148,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * A function which compressed the input image to a preferred size if necessary.
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
-  private handleImageCompress = (blobToUpload: File): void => {
+  private handleImageCompress = (blobToUpload: ImageFile): void => {
     const compressor = new Compress({
       targetSize: 0.8, // target size in MB
       quality: 1.0,
@@ -488,6 +482,13 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     }
   };
 
+  public handleEditorChange = (e: any): void => {
+    const { product } = this.state;
+    this.setState({
+      product: { ...product, description: e.target.getContent() },
+    });
+  };
+
   public render(): JSX.Element {
     const {
       isLoading,
@@ -508,7 +509,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       setPrice,
       customOptions,
     } = product;
-    const { history, update, classes, admin } = this.props;
+    const { history, update, classes } = this.props;
 
     return isLoading ? (
       <Loading size={100} />
@@ -546,18 +547,25 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             placeholder="Enter a brief tagline for the product"
             style={{ marginBottom: "10px" }}
           />
-          <TextField
-            variant="outlined"
-            value={description}
-            rows={3}
-            rowsMax={5}
-            onChange={(e): void => this.handleFormItem(e, "description")}
-            error={!!errors.description}
-            helperText={errors.description}
-            label="Description"
-            fullWidth
-            multiline
-            placeholder="Enter a product description"
+          <Editor
+            initialValue={description}
+            apiKey={process.env.TINY_API_KEY}
+            init={{
+              height: 500,
+              width: "100%",
+              marginBottom: 10,
+              menubar: false,
+              plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste code help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic backcolor | \
+                alignleft aligncenter alignright alignjustify | \
+                bullist numlist outdent indent | removeformat | help",
+            }}
+            onChange={this.handleEditorChange}
           />
           <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
             <RadioGroup
@@ -588,6 +596,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             value={customOptions || []}
             fullWidth
             variant="outlined"
+            size="small"
             label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
             classes={{
               inputRoot: classes.chipInput,
@@ -786,8 +795,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
 
 const merged = { ...styles, defaultStyles };
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  setCurrentTab: (currentTab: CurrentTabTypes): SetCurrentTabAction =>
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): unknown => ({
+  setCurrentTab: (currentTab: CurrentTabTypes): void =>
     dispatch(actions.setCurrentTab(currentTab)),
 });
 

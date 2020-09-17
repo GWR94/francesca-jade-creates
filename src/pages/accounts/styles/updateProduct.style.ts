@@ -10,19 +10,9 @@ export default createStyles({
   },
   chipCake: {
     background: COLORS.Pink,
-    [breakpoints.down("md")]: {
-      margin: "0 4px 0 0",
-      fontSize: "11px",
-      height: 24,
-    },
   },
   chipCreates: {
     background: COLORS.Purple,
-    [breakpoints.down("md")]: {
-      margin: "0 4px 0 0",
-      fontSize: "11px",
-      height: 24,
-    },
   },
   chipInput: {
     paddingBottom: 6,
@@ -69,5 +59,8 @@ export default createStyles({
     fontSize: "2rem",
     width: 30,
     textAlign: "center",
+  },
+  tinyEditor: {
+    borderRadius: 5,
   },
 });

@@ -7,7 +7,10 @@ export interface ProductListProps {
 }
 
 export interface ProductListState {
-  page: number;
+  page: {
+    min: number;
+    max: number;
+  };
   searchResults: ProductProps[] | null;
   filterOpen: boolean;
   isLoading: boolean;

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Pagination as Page } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core";
 
 interface PaginationProps {
-  page: number;
-  setPage: (page: number) => void;
-  maxPages: number;
+  dataLength: number;
+  setPageValues: (values: { min: number; max: number }) => void;
+  numPerPage: number;
+  defaultPageNum?: number;
 }
 
 const useStyles = makeStyles({
@@ -23,17 +24,28 @@ const useStyles = makeStyles({
  * @param {(page: number) => void} setPage - function to set the current page
  * @param {number} maxPages - the maximum amount of pages available based on data.
  */
-const Pagination: React.SFC<PaginationProps> = ({
-  page,
-  setPage,
-  maxPages,
+const Pagination: React.FunctionComponent<PaginationProps> = ({
+  dataLength,
+  numPerPage = 12,
+  defaultPageNum = 1,
+  setPageValues,
 }): JSX.Element => {
   const classes = useStyles();
+  const [page, setPage] = useState(defaultPageNum);
+  console.log(dataLength);
+  const maxPages = Math.ceil(dataLength / numPerPage);
+
   return (
     <div className={classes.container}>
       <Page
         page={page}
-        onChange={(_e: React.ChangeEvent<unknown>, value: number): void => setPage(value)}
+        onChange={(_e: React.ChangeEvent<unknown>, value: number): void => {
+          setPage(value);
+          setPageValues({
+            min: value === 1 ? 0 : (value - 1) * numPerPage,
+            max: value === 1 ? 12 : (value - 1) * numPerPage + numPerPage,
+          });
+        }}
         shape="rounded"
         showFirstButton
         showLastButton

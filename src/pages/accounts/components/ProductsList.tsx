@@ -32,10 +32,13 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
   const classes = useStyles();
 
   const [state, setState] = useState<ProductListState>({
-    page: 1,
     filterOpen: false,
     searchResults: null,
     isLoading: true,
+    page: {
+      min: 0,
+      max: 12,
+    },
   });
 
   let isMounted = false;
@@ -59,18 +62,14 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     };
   }, []);
 
-  const { page, filterOpen, searchResults, isLoading } = state;
+  const {
+    filterOpen,
+    searchResults,
+    isLoading,
+    page: { min, max },
+  } = state;
   const { items: products } = useSelector(({ products }: AppState) => products);
   const results = searchResults || products;
-  let maxPages = -1;
-  if (results) {
-    maxPages = Math.ceil(results.length / 12);
-  }
-  const productRange = {
-    min: page === 1 ? 0 : (page - 1) * 12,
-    max: page === 1 ? 12 : (page - 1) * 12 + 12,
-  };
-
   return (
     <>
       <div
@@ -88,7 +87,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
         {isLoading ? (
           <Loading small />
         ) : results.length > 0 ? (
-          results.slice(productRange.min, productRange.max).map(
+          results.slice(min, max).map(
             (product: ProductProps): JSX.Element => (
               <Grid item lg={4} sm={6} xs={12} key={product.id}>
                 <ProductCard admin={admin} product={product} />
@@ -105,9 +104,11 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       </Grid>
       {results && results.length > 12 && (
         <Pagination
-          maxPages={maxPages}
-          setPage={(page): void => setState({ ...state, page })}
-          page={page}
+          dataLength={results.length}
+          numPerPage={12}
+          setPageValues={({ min, max }): void =>
+            setState({ ...state, page: { min, max } })
+          }
         />
       )}
       <Drawer

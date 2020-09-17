@@ -105,6 +105,7 @@ const Checkout: React.FC<CheckoutProps> = ({}) => {
           <Accordion
             expanded={expanded === `panel${i}`}
             onChange={handleChange(`panel${i}`)}
+            TransitionProps={{ unmountOnExit: true }}
           >
             <AccordionSummary
               expandIcon={<ExpandMore />}

@@ -13,6 +13,7 @@ export interface UpdateProps extends RouteComponentProps<MatchParams> {
     [key: string]: string;
   };
   admin: boolean;
+  setCurrentTab: (tab: string) => void;
   // type: "Cake" | "Creates";
 }
 
