@@ -9,6 +9,7 @@ export enum COLORS {
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
   Purple = "#9370f6",
+  LightPurple = "#ae91ff",
   PaleBlue = "#b9d6f3",
   SkyBlue = "#69abec",
   LightGray = "#d3d3d3",

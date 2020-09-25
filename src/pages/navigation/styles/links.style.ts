@@ -50,6 +50,7 @@ export default createStyles({
     fontWeight: "bold",
     margin: "0 4px",
     fontSize: "1rem",
+    textTransform: "uppercase",
     "&:hover": {
       paddingTop: 2,
       boxSizing: "border-box",
@@ -71,13 +72,14 @@ export default createStyles({
     fontWeight: "bold",
     margin: "0 4px",
     boxSizing: "border-box",
+    textTransform: "uppercase",
     "&:hover": {
       textDecoration: "none",
       borderBottom: `2px solid ${COLORS.LightPink}`,
     },
   },
   navIcon: {
-    fontSize: "1.3rem",
+    fontSize: "1.4rem",
     marginRight: 10,
   },
 });

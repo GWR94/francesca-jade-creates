@@ -115,6 +115,17 @@ const AccountsMenu = ({
             >
               <AddShoppingCartRounded style={{ marginRight: 8 }} /> Create Product
             </MenuItem>
+            <MenuItem
+              onClick={(): void => {
+                closeNav();
+                setMenuOpen(false);
+                dispatch(actions.setCurrentTab("adminOrders"));
+                history.push("/account");
+              }}
+            >
+              <MailOutlineRounded style={{ marginRight: 8 }} />
+              Orders
+            </MenuItem>
           </>
         ) : (
           <MenuItem
