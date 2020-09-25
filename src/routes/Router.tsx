@@ -23,7 +23,6 @@ import { attributesToObject } from "../utils/index";
 import { openSnackbar } from "../utils/Notifier";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
-import background from "../img/pinkbg.jpg";
 import UpdateProduct from "../pages/accounts/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import { ClearBasketAction } from "../interfaces/basket.redux.i";
@@ -269,10 +268,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
     const { userAttributes, isLoading, user } = this.state;
     return (
       <Router history={history}>
-        <div
-          className="landing__background"
-          style={{ background: `url(${background}) center 100% fixed` }}
-        >
+        <div className="landing__background">
           <NavBar signOut={this.handleSignOut} admin={this._admin} />
           {isLoading ? (
             <Loading size={100} />

@@ -1,4 +1,4 @@
-import "./types";
+import "./types.d";
 
 /** Allows importing of images through webpack */
 declare module "*.jpg";

@@ -8,6 +8,7 @@ import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 import AccountsMenu from "./AccountsMenu";
 import MiniBasketMenu from "./MiniBasketMenu";
 import { LinksProps } from "../interfaces/Links.i";
+import { CakeRounded, HomeRounded } from "@material-ui/icons";
 
 /**
  * Component containing all of the links to navigate around the site.
@@ -53,7 +54,7 @@ const Links: React.FC<LinksProps> = ({
           className={classes.link}
           onClick={closeNav}
         >
-          <i className={`fas fa-home ${classes.navIcon}`} />
+          <HomeRounded className={classes.navIcon} />
           Home
         </NavLink>
         <NavLink
@@ -62,7 +63,7 @@ const Links: React.FC<LinksProps> = ({
           className={classes.link}
           onClick={closeNav}
         >
-          <i className={`fas fa-birthday-cake ${classes.navIcon}`} />
+          <CakeRounded className={classes.navIcon} />
           Cakes
         </NavLink>
         <NavLink

@@ -14,6 +14,7 @@ import "animate.css/animate.min.css";
 import "normalize.css";
 import "./scss/styles.scss";
 import "@stripe/stripe-js";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import configureStore from "./store/store";
 import { rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";

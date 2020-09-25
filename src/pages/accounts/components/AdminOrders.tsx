@@ -40,8 +40,6 @@ const AdminOrders = (): JSX.Element => {
 
   dayjs.extend(localizedFormat);
 
-  console.log(process.env.ACCESS_KEY_AWS);
-
   AWS.config.update({
     accessKeyId: process.env.ACCESS_KEY_AWS,
     secretAccessKey: process.env.SECRET_KEY_AWS,
