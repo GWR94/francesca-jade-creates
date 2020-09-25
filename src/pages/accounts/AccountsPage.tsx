@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import { Dispatch } from "redux";
-import { connect, DispatchProp } from "react-redux";
+import { connect } from "react-redux";
 import { Tabs, Tab } from "@material-ui/core";
 import {
   AccountCircleTwoTone,
@@ -24,6 +24,7 @@ import * as productActions from "../../actions/products.actions";
 import * as userActions from "../../actions/user.actions";
 import { SetCurrentTabAction, CurrentTabTypes } from "../../interfaces/user.redux.i";
 import Orders from "./components/Orders";
+import AdminOrders from "./components/AdminOrders";
 
 interface AccountPageProps {
   admin: boolean;
@@ -126,6 +127,9 @@ class AccountsPage extends Component<AccountPageProps, {}> {
       case "orders":
         tab = <Orders userAttributes={userAttributes} />;
         break;
+      case "adminOrders":
+        tab = <AdminOrders />;
+        break;
       default:
         tab = null;
     }
@@ -146,16 +150,20 @@ class AccountsPage extends Component<AccountPageProps, {}> {
           className="animated bounceInLeft"
         >
           <Tab icon={<AccountCircleTwoTone />} label="Profile" value="profile" />
-          {admin && [
-            <Tab
-              icon={<ShoppingCartTwoTone />}
-              label="Products"
-              key={1}
-              value="products"
-            />,
-            <Tab icon={<CreateTwoTone />} label="Create" key={2} value="create" />,
-          ]}
-          <Tab icon={<ShoppingCartTwoTone />} label="My Orders" value="orders" />
+          {admin ? (
+            [
+              <Tab
+                icon={<ShoppingCartTwoTone />}
+                label="Products"
+                key={1}
+                value="products"
+              />,
+              <Tab icon={<CreateTwoTone />} label="Create" key={2} value="create" />,
+              <Tab icon={<ShoppingCartTwoTone />} label="Orders" value="adminOrders" />,
+            ]
+          ) : (
+            <Tab icon={<ShoppingCartTwoTone />} label="My Orders" value="orders" />
+          )}
         </Tabs>
         {this.renderCurrentTab()}
       </div>

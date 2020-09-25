@@ -20,7 +20,12 @@ export interface SetCurrentTabAction {
   currentTab: CurrentTabTypes;
 }
 
-export type CurrentTabTypes = "profile" | "create" | "products" | "orders";
+export type CurrentTabTypes =
+  | "profile"
+  | "create"
+  | "products"
+  | "orders"
+  | "adminOrders";
 
 export interface UserProps {
   id: string;

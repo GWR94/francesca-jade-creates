@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import { InfoOutlined } from "@material-ui/icons";
 import { Typography, Button, makeStyles, Grid, Hidden } from "@material-ui/core";
@@ -12,18 +12,15 @@ import { BasketState } from "../../reducers/basket.reducer";
 import NonIdealState from "../../common/containers/NonIdealState";
 import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
-import { BasketItemProps } from "./interfaces/Basket.i";
+import { BasketItemProps, CustomOptionArrayType } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
 import { INTENT } from "../../themes";
 import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
 import { createOrder } from "../../graphql/mutations";
-import { UploadedFile } from "../accounts/interfaces/NewProduct.i";
 import { S3ImageProps } from "../accounts/interfaces/Product.i";
 import { UserState } from "../../reducers/user.reducer";
-// @ts-ignore
-import awsExports from "../../aws-exports";
 
-let stripePromise;
+let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
   stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
 } else {
@@ -32,6 +29,11 @@ if (process.env.NODE_ENV === "production") {
 interface Props {
   userAttributes: UserAttributeProps;
 }
+
+/**
+ * TODO
+ * [ ] Fix image sent to stripe
+ */
 
 const Basket: React.FC<Props> = (): JSX.Element => {
   const useStyles = makeStyles(styles);
@@ -90,9 +92,19 @@ const Basket: React.FC<Props> = (): JSX.Element => {
    * @param s3 {S3ImageProps} - object containing the key, region and bucket
    * data which is needed to create a src url.
    */
-  const convertS3ObjectToUrl = (s3: S3ImageProps): string => {
-    const { key, bucket, region } = s3;
-    return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
+  const convertS3ObjectToUrl = async (
+    s3: S3ImageProps,
+    policy: "public" | "private" = "public",
+  ): Promise<string> => {
+    const { key, bucket, region } = s3 as S3ImageProps;
+    const { identityId } = await Auth.currentCredentials();
+    switch (policy) {
+      case "public":
+        return `https://${bucket}.s3.${region}.amazonaws.com/public/${identityId}/${key}`;
+      case "private": {
+        return `https://${bucket}.s3.${region}.amazonaws.com/private/${identityId}/${key}`;
+      }
+    }
   };
 
   /**
@@ -106,67 +118,20 @@ const Basket: React.FC<Props> = (): JSX.Element => {
       setSubmitted(true);
       // connect to stripe via awaiting stripePromise
       const stripe = await stripePromise;
-      /**
-       * get the current authenticated users' identityId so it can be used
-       * for a path in for S3 images in the database.
-       */
-      const { identityId } = await Auth.currentCredentials();
       // create a unique id for the order
       const orderId = uuidv4();
+
       /**
-       * initialise an array to contain the possible images from each of the customers
-       * customisable options in their order.
+       * Create an updatedProducts variable with each of the customOptions
+       * stringified so it can be passed into the database via graphql without
+       * validation errors (customOptions is a string array in graphql).
        */
-      const images: S3ImageProps[][] = [];
-      /**
-       * Iterate through all of the checked-out products (items where customisable
-       * options/variants have been chosen) and extract any images so they can be
-       * uploaded to S3.
-       */
-      products.forEach((product) => {
-        /**
-         * create an array which holds all the keys, region and bucket for each
-         * individual image per product.
-         */
-        const imageKeys: S3ImageProps[] = [];
-        // iterate through each products customisable options
-        product.customOptions.forEach((option: unknown | unknown[]) => {
-          /**
-           * if the current value of the map is an array, and ALL of the items in that
-           * array is of type object, then that is the array which is holding all of
-           * the relevant images data.
-           */
-          if (
-            Array.isArray(option) &&
-            option.every((item: unknown) => typeof item === "object")
-          ) {
-            /**
-             * iterate through all of the customOptions images array and extract all of
-             * the relevant information to store them into an S3 bucket.
-             */
-            option.map(async (file) => {
-              const filename = `${identityId}/${orderId}/${product.title}/${file.name}`;
-              const uploadedFile = await Storage.put(filename, file, {
-                contentType: file.type,
-              });
-              const { key } = uploadedFile as UploadedFile;
-              const s3 = {
-                key,
-                bucket: awsExports.aws_user_files_s3_bucket,
-                region: awsExports.aws_project_region,
-              };
-              // push the S3 object keys to imageKeys so they can be matched to the current product
-              imageKeys.push(s3);
-              option = filename;
-            });
-          }
-        });
-        /**
-         * after iterating through all possible products & customOptions, push all of the imageKeys
-         * from ALL products into one array of arrays - one sub-array for each individual product.
-         */
-        images.push(imageKeys);
-      });
+      const updatedProducts = products.map((product) => ({
+        ...product,
+        customOptions: (product.customOptions as CustomOptionArrayType).map((options) => {
+          return JSON.stringify(options);
+        }),
+      }));
 
       /**
        * create an input object for creating a new order with the graphql createOrder
@@ -176,10 +141,7 @@ const Basket: React.FC<Props> = (): JSX.Element => {
        */
       const input = {
         id: orderId,
-        products: products.map((product) => ({
-          ...product,
-          customOptions: JSON.stringify(product.customOptions),
-        })),
+        products: updatedProducts,
         createdAt: new Date(),
         orderUserId: id,
         paymentStatus: "unpaid",
@@ -191,6 +153,7 @@ const Basket: React.FC<Props> = (): JSX.Element => {
           address_postcode: "",
         },
       };
+
       // execute the createOrder mutation with the input as the parameter.
       await API.graphql(graphqlOperation(createOrder, { input }));
       /**
@@ -199,9 +162,8 @@ const Basket: React.FC<Props> = (): JSX.Element => {
        */
       const response = await API.post("orderlambda", "/orders/create-checkout-session", {
         body: {
-          products: products.map((product) => ({
+          products: updatedProducts.map((product) => ({
             ...product,
-            // change each image to a url string which can be used to view their chosen product.
             image: convertS3ObjectToUrl(product.image),
           })),
           email,

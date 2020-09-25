@@ -25,18 +25,20 @@ export interface CheckoutProductProps {
 export interface CustomOptionsState {
   currentTextValue: string;
   currentArrayValue: string[];
-  currentImagesArray: File[];
+  currentImagesArray: S3ImageProps[];
   currentMultipleChoice: string;
   uploadedImage: string | null;
-  currentImageFile: File | null;
+  currentImageFile: S3ImageProps | null;
   imageCount: number;
   expanded: string | false;
   imageCompleted: boolean;
   confirmDialogOpen: boolean;
-  uploadedImageArray: string[];
+  uploadedImageArray: S3ImageProps[];
 }
 
-export type CustomOptionArrayType = (string | File[] | string[] | undefined)[];
+export type CustomOptionArrayType = {
+  [key: string]: string | S3ImageProps[] | string[] | undefined;
+}[];
 
 export interface CustomOptionsProps {
   setCustomOptions: (customOptions: CustomOptionArrayType) => void;

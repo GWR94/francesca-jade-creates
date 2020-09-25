@@ -42,13 +42,15 @@ const app = express();
 app.use(awsServerlessExpressMiddleware.eventContext());
 
 let stripe;
+let endpointSecret;
 if (process.env.NODE_ENV === "production") {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+  endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 } else {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+  endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
 }
 const paymentTable = process.env.PAYMENT_TABLE;
-const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
 
 // Enable CORS for all methods
 app.use(function (req, res, next) {

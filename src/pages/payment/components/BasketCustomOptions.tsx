@@ -18,6 +18,7 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import ChipInput from "material-ui-chip-input";
+import { Auth, Storage } from "aws-amplify";
 import { ExpandMore } from "@material-ui/icons";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import { COLORS, INTENT } from "../../../themes";
@@ -27,6 +28,12 @@ import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
 import { getReadableStringFromArray } from "../../../utils";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
+import awsExports from "../../../aws-exports";
+import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
+import { S3Image } from "aws-amplify-react";
+import { S3ImageProps } from "../../accounts/interfaces/Product.i";
+import { useSelector } from "react-redux";
+import { AppState } from "../../../store/store";
 
 const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   setCustomOptions,
@@ -49,6 +56,8 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+
+  const sub = useSelector(({ user }: AppState) => user.id);
 
   const handlePanelChange = (panel: string) => (
     _event: React.ChangeEvent<{}>,
@@ -90,7 +99,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
         setState({ ...state, confirmDialogOpen: true });
       } else {
         const updatedCustomOptions = customOptions;
-        updatedCustomOptions[i] = currentImagesArray;
+        updatedCustomOptions[i] = {
+          Images: currentImagesArray,
+        };
         setState({
           ...state,
           imageCompleted: true,
@@ -143,7 +154,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 <Button
                   onClick={(): void => {
                     const updatedCustomOptions = customOptions;
-                    updatedCustomOptions[i] = currentArrayValue;
+                    updatedCustomOptions[i] = {
+                      [name]: currentArrayValue,
+                    };
                     setState({
                       ...state,
                       currentArrayValue: [],
@@ -186,7 +199,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 <Button
                   onClick={(): void => {
                     const updatedCustomOptions = customOptions;
-                    updatedCustomOptions[i] = currentTextValue;
+                    updatedCustomOptions[i] = {
+                      [name]: currentTextValue,
+                    };
                     setState({
                       ...state,
                       currentTextValue: "",
@@ -237,7 +252,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
             <Button
               onClick={(): void => {
                 const updatedCustomOptions = customOptions;
-                updatedCustomOptions[i] = currentMultipleChoice;
+                updatedCustomOptions[i] = {
+                  [name]: currentMultipleChoice,
+                };
                 setState({
                   ...state,
                   currentMultipleChoice: "",
@@ -284,16 +301,25 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                           if (e.target.files) {
                             const file = e.target.files[0];
                             const reader = new FileReader();
-                            reader.onload = function (e): void {
+                            reader.onload = async function (e): Promise<void> {
                               if (e.target !== null) {
+                                const filename = `${Date.now()}/${file.name}`;
+                                // put the file into aws with aws-amplify's Storage package.
+                                const uploadedFile = await Storage.put(filename, file, {
+                                  contentType: file.type,
+                                  level: "public",
+                                });
+                                const { key } = uploadedFile as UploadedFile;
+                                // set the file to contain the correct data
+                                const s3 = {
+                                  key,
+                                  bucket: awsExports.aws_user_files_s3_bucket,
+                                  region: awsExports.aws_project_region,
+                                };
                                 setState({
                                   ...state,
                                   uploadedImage: e.target.result as string,
-                                  currentImageFile: file,
-                                  uploadedImageArray: [
-                                    ...uploadedImageArray,
-                                    e.target.result as string,
-                                  ],
+                                  currentImageFile: s3,
                                 });
                               } else {
                                 openSnackbar({
@@ -332,14 +358,22 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                         >
                           {uploadedImageArray.map((file, i) => {
                             return (
-                              <SplideSlide key={i}>
-                                <img
+                              <SplideSlide key={i} style={{ width: "100%" }}>
+                                <S3Image
+                                  imgKey={file.key}
+                                  theme={{
+                                    photoImg: {
+                                      width: 220,
+                                    },
+                                  }}
+                                />
+                                {/* <img
                                   src={file}
                                   alt="Uploaded Image"
                                   style={{
                                     width: "100%",
                                   }}
-                                />
+                                /> */}
                               </SplideSlide>
                             );
                           })}
@@ -397,7 +431,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                         <Button
                           onClick={(): void => {
                             const updatedCustomOptions = customOptions;
-                            updatedCustomOptions[i] = currentImagesArray;
+                            updatedCustomOptions[i] = {
+                              Images: currentImagesArray,
+                            };
                             setState({
                               ...state,
                               imageCompleted: true,
@@ -447,19 +483,23 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       </Button>
                       <Button
                         onClick={(): void => {
+                          const updatedImages = [
+                            ...currentImagesArray,
+                            currentImageFile as S3ImageProps,
+                          ];
                           setState({
                             ...state,
-                            currentImagesArray: [
-                              ...currentImagesArray,
-                              currentImageFile as File,
-                            ],
+                            currentImagesArray: updatedImages,
                             uploadedImage: null,
+                            uploadedImageArray: updatedImages,
                             currentImageFile: null,
                             imageCount: imageCount + 1,
                           });
-                          if (currentImagesArray.length === maxNumber) {
+                          if (updatedImages.length === maxNumber) {
                             const updatedCustomOptions = customOptions;
-                            updatedCustomOptions[i] = currentImagesArray;
+                            updatedCustomOptions[i] = {
+                              Images: updatedImages,
+                            };
                             setState({
                               ...state,
                               currentImagesArray: [],
@@ -487,13 +527,18 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   };
 
   const { expanded, currentArrayValue, currentTextValue, imageCompleted } = state;
+
   return (
     <div>
       <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
         Customisable Features
       </Typography>
       {currentVariant.features.map((feature: Feature, i: number) => {
-        const current = customOptions[i];
+        const current =
+          typeof customOptions[i] === "object"
+            ? Object.values(customOptions[i])
+            : customOptions[i];
+        console.log(current);
         return (
           <Accordion
             expanded={expanded === `panel${i}`}

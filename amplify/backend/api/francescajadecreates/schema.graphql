@@ -46,7 +46,14 @@ type User
 }
 
 type Order
-  @model(mutations: { create: "createOrder" }) {
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "id", identityClaim: "sub" },
+      { allow: private, provider: userPools, operations: [create, read] }
+      { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
+    ]
+  )
+  @model(mutations: { create: "createOrder" }, queries: { list: "listOrders" }) {
   id: String!
   products: [StripeProduct!]!
   stripePaymentIntent: String
@@ -65,7 +72,7 @@ type StripeProduct {
   variant: Variants
   price: Float!
   shippingCost: Float!
-  customOptions: String!
+  customOptions: [String]!
 }
 
 type S3Object {
