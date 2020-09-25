@@ -222,7 +222,7 @@ const AdminOrders = (): JSX.Element => {
                             {links?.map((link, i) => (
                               <Button
                                 disabled={isFetching}
-                                onClick={() => download(link)}
+                                onClick={(): void => download(link)}
                               >
                                 Download Image {i}
                               </Button>
