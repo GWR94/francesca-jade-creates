@@ -2,16 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Drawer, Grid, makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Warning } from "@material-ui/icons";
+// import { API, graphqlOperation } from "aws-amplify";
 import ProductCard from "../../../common/containers/ProductCard";
 import { ProductProps } from "../interfaces/Product.i";
 import Pagination from "../../../common/Pagination";
 import SearchFilter from "./SearchFilter";
 import * as actions from "../../../actions/products.actions";
 import { AppState } from "../../../store/store";
-import { ProductListProps, ProductListState } from "../interfaces/ProductList.i";
+import {
+  ProductListProps,
+  ProductListState,
+  // SortDirection,
+} from "../interfaces/ProductList.i";
 import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import styles from "../styles/productList.style";
+// import { listProducts } from "../../../graphql/queries";
 
 /**
  * TODO
@@ -39,6 +45,10 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       min: 0,
       max: 12,
     },
+    // nextToken: undefined,
+    // nextNextToken: undefined,
+    // previousTokens: [],
+    // sortDirection: SortDirection.DESC,
   });
 
   let isMounted = false;
@@ -62,6 +72,31 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     };
   }, []);
 
+  // useEffect(() => {
+  //   const fetch = async (): Promise<void> => {
+  //     const { data } = await API.graphql(
+  //       graphqlOperation(listProducts, {
+  //         nextToken: state.nextToken,
+  //         filter: type && {
+  //           type: {
+  //             eq: type,
+  //           },
+  //         },
+  //         limit: 12,
+  //         sortDirection: state.sortDirection,
+  //       }),
+  //     );
+  //     setState({
+  //       ...state,
+  //       nextNextToken: data.listProducts.nextToken,
+  //       searchResults: data.listProducts.items,
+  //     });
+  //     console.log(data);
+  //   };
+
+  //   fetch();
+  // }, [state.nextToken, state.sortDirection]);
+
   const {
     filterOpen,
     searchResults,
@@ -69,7 +104,9 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     page: { min, max },
   } = state;
   const { items: products } = useSelector(({ products }: AppState) => products);
+  console.log(searchResults);
   const results = searchResults || products;
+
   return (
     <>
       <div
@@ -89,7 +126,14 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
         ) : results.length > 0 ? (
           results.slice(min, max).map(
             (product: ProductProps): JSX.Element => (
-              <Grid item lg={4} sm={6} xs={12} key={product.id}>
+              <Grid
+                item
+                lg={4}
+                sm={6}
+                xs={12}
+                key={product.id}
+                className={classes.gridContainer}
+              >
                 <ProductCard admin={admin} product={product} />
               </Grid>
             ),

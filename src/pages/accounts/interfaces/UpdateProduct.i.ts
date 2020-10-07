@@ -1,19 +1,15 @@
 import { History } from "history";
-import { RouteComponentProps } from "react-router-dom";
 import { ProductProps } from "./Product.i";
 
-export interface MatchParams {
-  id?: string;
-}
-
-export interface UpdateProps extends RouteComponentProps<MatchParams> {
+export interface UpdateProps {
   history: History;
+  id: string | undefined;
+  admin: boolean;
   update?: boolean;
   classes: {
     [key: string]: string;
   };
-  admin: boolean;
-  setCurrentTab: (tab: string) => void;
+  setCurrentTab?: (tab: string) => void;
   // type: "Cake" | "Creates";
 }
 
@@ -32,6 +28,7 @@ export interface UpdateState {
   };
   percentUploaded: number;
   customSwitch: boolean;
+  isDesktop: boolean;
 }
 
 export interface FileToUpload extends Partial<File> {

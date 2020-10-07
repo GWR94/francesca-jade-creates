@@ -5,7 +5,7 @@ import { ProductProps } from "./Product.i";
 
 export interface ViewProps {
   id: string;
-  addToBasket: (product: BasketItemProps) => AddItemAction;
+  addToBasket?: (product: BasketItemProps) => AddItemAction;
   store?: Store; // test - mock-redux-store
   type: "Cake" | "Creates";
 }

@@ -21,4 +21,6 @@ export interface OrderProps {
   shippingAddress: { [key: string]: string };
   stripePaymentIntent: string;
   user: UserAttributeProps;
+  orderProcessed: boolean;
+  shipped: boolean;
 }

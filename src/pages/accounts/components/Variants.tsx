@@ -103,6 +103,30 @@ class Variants extends Component<VariantsProps, VariantsState> {
       value: 20,
       label: 20,
     },
+    {
+      value: 22,
+      label: 22,
+    },
+    {
+      value: 24,
+      label: 24,
+    },
+    {
+      value: 26,
+      label: 26,
+    },
+    {
+      value: 28,
+      label: 28,
+    },
+    {
+      value: 30,
+      label: 30,
+    },
+    {
+      value: 32,
+      label: 32,
+    },
   ];
 
   private handleAddFeature = (): void => {
@@ -250,7 +274,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
 
   private renderType = (): JSX.Element | null => {
     const { number, array, range, name, inputType, errors, isEditing } = this.state;
-    const { classes } = this.props;
+    const { classes, size } = this.props;
     switch (inputType) {
       case "number":
         return (
@@ -262,7 +286,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
               value={number}
               step={1}
               min={1}
-              max={20}
+              max={32}
               valueLabelDisplay="auto"
               onChange={(_e, number): void => this.setState({ number: number as number })}
               aria-labelledby="range-slider"
@@ -288,7 +312,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
               value={range}
               step={1}
               min={0}
-              max={20}
+              max={32}
               valueLabelDisplay="auto"
               onChange={(_e, range): void => this.setState({ range: range as number[] })}
               aria-labelledby="range-slider"
@@ -354,13 +378,13 @@ class Variants extends Component<VariantsProps, VariantsState> {
       variantName,
       instructions,
     } = this.state;
-    const { classes, setPrice, variants } = this.props;
+    const { classes, setPrice, variants, size } = this.props;
 
     return (
       <OutlinedContainer label="Variants" labelWidth={50} padding={24}>
         <Typography gutterBottom>
-          Complete all of the required fields then add the products&apos; customisable
-          features for each variant.
+          Please complete all of the required fields then add the products&apos;
+          customisable features for each variant.
         </Typography>
         <Grid container spacing={1}>
           <Grid item xs={12} sm={7}>
@@ -368,9 +392,9 @@ class Variants extends Component<VariantsProps, VariantsState> {
               variant="outlined"
               label="Name (optional)"
               fullWidth
+              size={size}
               value={variantName}
               onChange={(e): void => this.setState({ variantName: e.target.value })}
-              style={{ marginBottom: 8 }}
             />
           </Grid>
           <Grid item xs={12} sm={5}>
@@ -378,6 +402,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
               variant="outlined"
               label="Dimensions"
               fullWidth
+              size={size}
               value={dimensions}
               onChange={(e): void => this.setState({ dimensions: e.target.value })}
               style={{ marginBottom: 8 }}
@@ -387,6 +412,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
         <TextField
           variant="outlined"
           value={instructions}
+          size={size}
           rows={3}
           rowsMax={5}
           onChange={(e): void => this.setState({ instructions: e.target.value })}
@@ -400,7 +426,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
         {setPrice && (
           <Grid container spacing={1}>
             <Grid item xs={6} sm={6}>
-              <FormControl fullWidth variant="outlined">
+              <FormControl fullWidth variant="outlined" size={size}>
                 <InputLabel htmlFor="item-adornment">Product Cost</InputLabel>
                 <OutlinedInput
                   id="item-adornment"
@@ -418,7 +444,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
               </FormControl>
             </Grid>
             <Grid item xs={6} sm={6}>
-              <FormControl fullWidth variant="outlined">
+              <FormControl fullWidth variant="outlined" size={size}>
                 <InputLabel htmlFor="postage-adornment">Shipping Cost</InputLabel>
                 <OutlinedInput
                   id="postage-adornment"
@@ -442,8 +468,8 @@ class Variants extends Component<VariantsProps, VariantsState> {
           input.
         </Typography>
         <Grid container style={{ marginBottom: 8 }}>
-          <Grid item xs={6} sm={4}>
-            <FormControl variant="outlined" className={classes.formControl}>
+          <Grid item xs={12} sm={4}>
+            <FormControl variant="outlined" className={classes.formControl} size={size}>
               <InputLabel id="feature-type-label">User Action</InputLabel>
               <Select
                 value={featureType}
@@ -469,22 +495,23 @@ class Variants extends Component<VariantsProps, VariantsState> {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={6} sm={4}>
+          <Grid item xs={12} sm={4}>
             <TextField
               variant="outlined"
               label="Feature Name"
               value={name}
+              size={size}
               InputProps={{
                 classes: {
-                  notchedOutline: classes.input,
+                  notchedOutline: size === "medium" ? classes.input : "",
                 },
               }}
               fullWidth
               onChange={(e): void => this.setState({ name: e.target.value })}
             />
           </Grid>
-          <Grid item xs={6} sm={4}>
-            <FormControl variant="outlined" className={classes.formControl}>
+          <Grid item xs={12} sm={4}>
+            <FormControl variant="outlined" className={classes.formControl} size={size}>
               <InputLabel id="input-type-label">Required Values</InputLabel>
               <Select
                 value={inputType}
@@ -516,7 +543,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
         {features.length > 0 && (
           <ul style={{ margin: 0 }}>{this.renderCurrentFeatures()}</ul>
         )}
-        {features.length > 0 && dimensions.length > 0 && (
+        {dimensions.length > 0 && (
           <div className={classes.buttonContainer}>
             {isEditing !== null && (
               <Button
@@ -586,8 +613,14 @@ class Variants extends Component<VariantsProps, VariantsState> {
                         </Typography>
                       )}
                     </div>
-                    <Typography style={{ fontWeight: "bold" }}>Features:</Typography>
-                    <ul style={{ margin: 0 }}>{this.renderCurrentFeatures(features)}</ul>
+                    {features.length > 0 && (
+                      <>
+                        <Typography style={{ fontWeight: "bold" }}>Features:</Typography>
+                        <ul style={{ margin: 0 }}>
+                          {this.renderCurrentFeatures(features)}
+                        </ul>
+                      </>
+                    )}
                     <div
                       style={{
                         display: "flex",
@@ -633,6 +666,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                             features,
                             variantName,
                             instructions,
+                            isEditing: null,
                           });
                         }}
                       >

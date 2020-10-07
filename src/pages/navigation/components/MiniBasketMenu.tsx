@@ -55,10 +55,9 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
         {items.length > 0 ? (
           items.map((item, i) => (
             <div style={{ display: "flex", marginRight: 22 }} key={i}>
-              <Typography style={{ width: 20 }}>{i + 1}.</Typography>
               <Typography style={{ width: "100%" }}>{item.title}</Typography>
               <i
-                className="fas fa-times nav__basket-delete"
+                className={`fas fa-times ${classes.basketDelete}`}
                 onClick={(): RemoveItemAction =>
                   dispatch(actions.removeFromBasket(item.id))
                 }

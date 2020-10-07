@@ -8,7 +8,13 @@ import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 import AccountsMenu from "./AccountsMenu";
 import MiniBasketMenu from "./MiniBasketMenu";
 import { LinksProps } from "../interfaces/Links.i";
-import { CakeRounded, HomeRounded } from "@material-ui/icons";
+import {
+  AccountBoxRounded,
+  BrushRounded,
+  CakeRounded,
+  HomeRounded,
+  ShoppingCartRounded,
+} from "@material-ui/icons";
 
 /**
  * Component containing all of the links to navigate around the site.
@@ -72,7 +78,7 @@ const Links: React.FC<LinksProps> = ({
           className={classes.link}
           onClick={closeNav}
         >
-          <i className={`fas fa-paint-brush ${classes.navIcon}`} />
+          <BrushRounded className={classes.navIcon} />
           Creates
         </NavLink>
       </div>
@@ -90,7 +96,7 @@ const Links: React.FC<LinksProps> = ({
                   : classes.link
               }
             >
-              <i className={`fas fa-user-alt ${classes.navIcon}`} />
+              <AccountBoxRounded className={classes.navIcon} />
               Account
             </div>
             <AccountsMenu
@@ -113,7 +119,7 @@ const Links: React.FC<LinksProps> = ({
                 : classes.link
             }
           >
-            <i className={`fas fa-user-alt ${classes.navIcon}`} />
+            <AccountBoxRounded className={classes.navIcon} />
             Sign in
           </NavLink>
         )}
@@ -137,7 +143,7 @@ const Links: React.FC<LinksProps> = ({
             badgeContent={items.length}
             classes={{ root: classes.badgeRoot, badge: classes.badge }}
           >
-            <i className={`fas fa-shopping-basket ${classes.navIcon}`} />
+            <ShoppingCartRounded className={classes.navIcon} />
           </Badge>
           Basket
         </div>

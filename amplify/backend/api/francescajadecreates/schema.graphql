@@ -43,6 +43,7 @@ type User
   profileImage: S3Object
   shippingAddress: ShippingAddress
   savedProducts: [SavedProduct]
+  trackingInfo: String
 }
 
 type Order
@@ -57,12 +58,19 @@ type Order
   id: String!
   products: [StripeProduct!]!
   stripePaymentIntent: String
-  user: User @connection(name: "UserOrders")
+  user: User @connection(name: "UserOrders") 
   shippingAddress: ShippingAddress
   createdAt: String!
   paymentStatus: String
+  orderProcessed: Boolean!
+  userInfo: UserInfo!
+  shipped: Boolean
 }
 
+type UserInfo {
+  emailAddress: String!
+  name: String!
+}
 
 type StripeProduct {
   id: ID!

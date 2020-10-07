@@ -14,9 +14,6 @@ export default createStyles({
   chipCreates: {
     background: COLORS.Purple,
   },
-  chipInput: {
-    paddingBottom: 6,
-  },
   mainContainer: {
     margin: "0 auto",
     width: 720,

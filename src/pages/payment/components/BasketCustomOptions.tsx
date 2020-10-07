@@ -303,7 +303,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                             const reader = new FileReader();
                             reader.onload = async function (e): Promise<void> {
                               if (e.target !== null) {
-                                const filename = `${Date.now()}/${file.name}`;
+                                const filename = `/customImages/${Date.now()}/${
+                                  file.name
+                                }`;
                                 // put the file into aws with aws-amplify's Storage package.
                                 const uploadedFile = await Storage.put(filename, file, {
                                   contentType: file.type,

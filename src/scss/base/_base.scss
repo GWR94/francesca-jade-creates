@@ -34,3 +34,17 @@ html {
     margin-top: 4px !important;
     padding: 5px 5px 12px 5px !important;
 }
+
+span.bp3-popover-target {
+  display: flex;
+}
+
+.headroom-wrapper {
+  height: 54px !important;
+}
+
+.navbar-collapse {
+  .nav__link {
+    margin: 0 auto !important;
+  }
+}

@@ -21,10 +21,11 @@ export default createStyles({
     textAlign: "center",
   },
   subheading: {
-    fontSize: "1.3rem",
+    fontSize: "1.2rem",
     margin: "10px",
+    fontWeight: "bold",
     [breakpoints.down("md")]: {
-      fontSize: "1.2rem",
+      fontSize: "1rem",
     },
   },
   imageContainer: {
@@ -41,29 +42,38 @@ export default createStyles({
     height: 80,
     margin: "0 auto 10px",
   },
-  cakesButton: {
+  createsButton: {
     background: COLORS.DarkPink,
     color: "#fff",
-    margin: "12px 0",
     borderRadius: 20,
+    margin: "6px auto 12px",
     "&:hover": {
       background: COLORS.Pink,
     },
     [breakpoints.up("sm")]: {
       width: 220,
-      margin: "12px auto",
     },
   },
-  createsButton: {
+  cakesButton: {
     background: COLORS.Purple,
     color: "#fff",
     borderRadius: 20,
+    margin: "6px auto 12px",
     "&:hover": {
       background: COLORS.LightPurple,
     },
     [breakpoints.up("sm")]: {
       width: 220,
-      margin: "0 auto",
     },
+  },
+  cakeIcon: {
+    fontSize: "3rem",
+    color: COLORS.DarkPink,
+    margin: "12px auto 0",
+  },
+  createsIcon: {
+    fontSize: "3rem",
+    color: COLORS.Purple,
+    margin: "12px auto 0",
   },
 });

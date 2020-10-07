@@ -2,11 +2,10 @@ import { History } from "history";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
-import { UserProps } from "../../../interfaces/user.redux.i";
 import { ImageProps } from "./NewProduct.i";
 
 export interface ProfileProps extends ProfileStateProps {
-  userAttributes: UserAttributeProps; //object container user attributes
+  userAttributes: UserAttributeProps | null; //object container user attributes
   admin: boolean; // boolean to check if user is admin
   history: History;
   user: CognitoUserProps;

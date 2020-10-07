@@ -12,22 +12,25 @@ import { BasketState } from "../../reducers/basket.reducer";
 import NonIdealState from "../../common/containers/NonIdealState";
 import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
-import { BasketItemProps, CustomOptionArrayType } from "./interfaces/Basket.i";
+import { CustomOptionArrayType } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
 import { INTENT } from "../../themes";
 import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
 import { createOrder } from "../../graphql/mutations";
 import { S3ImageProps } from "../accounts/interfaces/Product.i";
 import { UserState } from "../../reducers/user.reducer";
+import { getUser } from "../../graphql/queries";
+import { ProfileProps } from "../accounts/interfaces/Profile.i";
+import { getProductPrice } from "../../utils";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
-  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY);
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY as string);
 } else {
-  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST);
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string);
 }
 interface Props {
-  userAttributes: UserAttributeProps;
+  userAttributes: UserAttributeProps | null;
 }
 
 /**
@@ -35,7 +38,7 @@ interface Props {
  * [ ] Fix image sent to stripe
  */
 
-const Basket: React.FC<Props> = (): JSX.Element => {
+const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const {
@@ -48,29 +51,14 @@ const Basket: React.FC<Props> = (): JSX.Element => {
   console.log(email, emailVerified);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
+  const [user, setUser] = useState<ProfileProps | null>(null);
 
   let isMounted = false;
   const dispatch = useDispatch();
 
-  /**
-   * A function to get the minimum possible value for the current chosen
-   * product. Will also return a string to notify the customer to request
-   * a quote if there is no current price.
-   * @param product - the current product to get the minimum price from
-   */
-  const getMinPrice = (product: BasketItemProps): string => {
-    // set min to infinity so everything will be smaller
-    let min = Infinity;
-    // iterate through the variants of the current product
-    product.variants.forEach((variant) => {
-      // set the min value to be the smaller value of the current min or the current variants price
-      min = Math.min(variant.price.item, min);
-    });
-    /**
-     * if min is still infinity, there is no price so notify the user that they
-     * need to request a quote; otherwise show the formatted price
-     */
-    return min === Infinity ? "Request for Price" : `From £${min.toFixed(2)}`;
+  const getUserInfo = async (): Promise<void> => {
+    const { data } = await API.graphql(graphqlOperation(getUser, { id }));
+    setUser(data.getUser);
   };
 
   useEffect(() => {
@@ -80,6 +68,7 @@ const Basket: React.FC<Props> = (): JSX.Element => {
     if (isMounted) {
       dispatch(actions.clearCheckout());
       setLoading(false);
+      getUserInfo();
     }
     return (): void => {
       isMounted = false;
@@ -100,7 +89,7 @@ const Basket: React.FC<Props> = (): JSX.Element => {
     const { identityId } = await Auth.currentCredentials();
     switch (policy) {
       case "public":
-        return `https://${bucket}.s3.${region}.amazonaws.com/public/${identityId}/${key}`;
+        return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
       case "private": {
         return `https://${bucket}.s3.${region}.amazonaws.com/private/${identityId}/${key}`;
       }
@@ -133,6 +122,12 @@ const Basket: React.FC<Props> = (): JSX.Element => {
         }),
       }));
 
+      if (!userAttributes) {
+        return openSnackbar({
+          severity: INTENT.Danger,
+          message: "Unable to create session. Please try again.",
+        });
+      }
       /**
        * create an input object for creating a new order with the graphql createOrder
        * mutation. Other fields will be added to the database (such as stripePaymentIntent
@@ -145,12 +140,17 @@ const Basket: React.FC<Props> = (): JSX.Element => {
         createdAt: new Date(),
         orderUserId: id,
         paymentStatus: "unpaid",
+        orderProcessed: false,
         shippingAddress: {
           city: "",
           country: "",
           address_line1: "",
           address_line2: "",
           address_postcode: "",
+        },
+        userInfo: {
+          emailAddress: userAttributes.email,
+          name: user?.username ?? userAttributes.email,
         },
       };
 
@@ -238,7 +238,7 @@ const Basket: React.FC<Props> = (): JSX.Element => {
                     return (
                       products.findIndex((product) => product.id === item.id) === -1 && (
                         <Typography key={i}>
-                          {`${item.title} - ${getMinPrice(item)}`}
+                          {`${item.title} - ${getProductPrice(item)}`}
                         </Typography>
                       )
                     );

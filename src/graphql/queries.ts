@@ -59,6 +59,8 @@ export const getUser = /* GraphQL */ `
                 stripePaymentIntent
                 createdAt
                 paymentStatus
+                orderProcessed
+                shipped
                 updatedAt
               }
               nextToken
@@ -92,6 +94,7 @@ export const getUser = /* GraphQL */ `
                 dimensions
               }
             }
+            trackingInfo
             createdAt
             updatedAt
           }
@@ -104,6 +107,12 @@ export const getUser = /* GraphQL */ `
           }
           createdAt
           paymentStatus
+          orderProcessed
+          userInfo {
+            emailAddress
+            name
+          }
+          shipped
           updatedAt
         }
         nextToken
@@ -161,6 +170,7 @@ export const getUser = /* GraphQL */ `
           }
         }
       }
+      trackingInfo
       createdAt
       updatedAt
     }
@@ -242,6 +252,7 @@ export const listOrders = /* GraphQL */ `
                 email
                 name
                 registered
+                trackingInfo
                 createdAt
                 updatedAt
               }
@@ -254,6 +265,12 @@ export const listOrders = /* GraphQL */ `
               }
               createdAt
               paymentStatus
+              orderProcessed
+              userInfo {
+                emailAddress
+                name
+              }
+              shipped
               updatedAt
             }
             nextToken
@@ -302,6 +319,7 @@ export const listOrders = /* GraphQL */ `
               }
             }
           }
+          trackingInfo
           createdAt
           updatedAt
         }
@@ -314,6 +332,12 @@ export const listOrders = /* GraphQL */ `
         }
         createdAt
         paymentStatus
+        orderProcessed
+        userInfo {
+          emailAddress
+          name
+        }
+        shipped
         updatedAt
       }
       nextToken

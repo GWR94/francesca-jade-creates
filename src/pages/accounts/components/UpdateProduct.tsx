@@ -1,5 +1,5 @@
 import React, { Component, Dispatch } from "react";
-import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
+import { API, graphqlOperation, Storage } from "aws-amplify";
 import ChipInput from "material-ui-chip-input";
 import {
   TextField,
@@ -18,7 +18,7 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { connect } from "react-redux";
 import Compress from "client-compress";
 import { AnyAction } from "redux";
-import { Editor, IAllProps } from "@tinymce/tinymce-react";
+import { Editor } from "@tinymce/tinymce-react";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import ImagePicker from "../../../common/containers/ImagePicker";
@@ -36,7 +36,7 @@ import { defaultStyles } from "../../../themes/index";
 import { S3ImageProps } from "../interfaces/Product.i";
 import Variants from "./Variants";
 import { Variant } from "../interfaces/Variants.i";
-import { CurrentTabTypes, SetCurrentTabAction } from "../../../interfaces/user.redux.i";
+import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 
@@ -70,6 +70,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     },
     percentUploaded: 0,
     customSwitch: false,
+    isDesktop: window.innerWidth > 600,
   };
 
   public async componentDidMount(): Promise<void> {
@@ -79,11 +80,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
      * and set it into state so it can be edited by the user.
      */
     if (update) {
-      const {
-        match: {
-          params: { id },
-        },
-      } = this.props;
+      const { id } = this.props;
       try {
         const { data } = await API.graphql(graphqlOperation(getProduct, { id }));
         const product = data.getProduct;
@@ -100,12 +97,22 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         console.error(err); //FIXME
       }
     }
+    window.addEventListener("resize", this.checkWindowDimensions);
     /**
      * Set isLoading to true, as the rest of the component can be rendered with the correct
      * data.
      */
     this.setState({ isLoading: false });
   }
+
+  public componentWillUnmount(): void {
+    window.removeEventListener("resize", this.checkWindowDimensions);
+  }
+
+  public checkWindowDimensions = (): void => {
+    if (window.innerWidth > 600) return this.setState({ isDesktop: true });
+    return this.setState({ isDesktop: false });
+  };
 
   /**
    * A function which sets the value from the "e" parameter into the products' state named
@@ -148,7 +155,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * A function which compressed the input image to a preferred size if necessary.
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
-  private handleImageCompress = (blobToUpload: ImageFile): void => {
+  private handleImageCompress = (blobToUpload: ImageFile, filename: string): void => {
+    console.log(filename);
     const compressor = new Compress({
       targetSize: 0.8, // target size in MB
       quality: 1.0,
@@ -165,6 +173,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           const { photo } = conversions[0];
           const fileToUpload: FileToUpload = blobToUpload;
           fileToUpload.file = photo.data;
+          Object.defineProperty(fileToUpload, "name", {
+            writable: true,
+            value: blobToUpload.name,
+          });
           /**
            * If everything else was successful, then attempt to upload it to S3 with
            * the handleImageUpload function.
@@ -194,8 +206,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Get the identityId from the current auth user, and create the filename from
        * all of the relevant parts of data.
        */
-      const { identityId } = await Auth.currentCredentials();
-      const filename = `/public/${identityId}/${Date.now()}-${fileToUpload.name}`;
+      const filename = `products/${Date.now()}-${fileToUpload.name}`;
       /**
        * Create uploadedImage file using AWS's Storage API, which puts the selected
        * image into the cloud (S3).
@@ -404,7 +415,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      setCurrentTab("products");
+      if (setCurrentTab) setCurrentTab("products");
       history.push("/account");
     } catch (err) {
       console.error(err);
@@ -470,7 +481,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      setCurrentTab("products");
+      if (setCurrentTab) setCurrentTab("products");
       history.push("/account");
     } catch (err) {
       console.error(err);
@@ -482,10 +493,16 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     }
   };
 
-  public handleEditorChange = (e: any): void => {
+  /**
+   * Method to update the description state to whatever has been input by the
+   * user inside the TinyMCE editor.
+   * @param {React.ChangeEvent} e - event containing the data which shows
+   * the updated information from the TinyMCE editor.
+   */
+  public handleEditorChange = (e: React.ChangeEvent<any>): void => {
     const { product } = this.state;
     this.setState({
-      product: { ...product, description: e.target.getContent() },
+      product: { ...product, description: e.target.getContent() as string },
     });
   };
 
@@ -493,7 +510,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     const {
       isLoading,
       product,
-      // imageConfirmOpen,
+      isDesktop,
       isUploading,
       errors,
       confirmDialogOpen,
@@ -509,7 +526,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       setPrice,
       customOptions,
     } = product;
-    const { history, update, classes } = this.props;
+    const { history, update, classes, setCurrentTab } = this.props;
 
     return isLoading ? (
       <Loading size={100} />
@@ -533,6 +550,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             helperText={errors.title}
             label="Title"
             fullWidth
+            size={isDesktop === false ? "small" : "medium"}
             placeholder="Enter a product title"
             style={{ marginBottom: "10px" }}
           />
@@ -544,6 +562,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             helperText={errors.tagline}
             label="Tag line"
             fullWidth
+            size={isDesktop === false ? "small" : "medium"}
             placeholder="Enter a brief tagline for the product"
             style={{ marginBottom: "10px" }}
           />
@@ -562,7 +581,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               ],
               toolbar:
                 "undo redo | formatselect | bold italic backcolor | \
-                alignleft aligncenter alignright alignjustify | \
+                alignleft aligncenter alignjustify | \
                 bullist numlist outdent indent | removeformat | help",
             }}
             onChange={this.handleEditorChange}
@@ -596,7 +615,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             value={customOptions || []}
             fullWidth
             variant="outlined"
-            size="small"
             label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
             classes={{
               inputRoot: classes.chipInput,
@@ -660,6 +678,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 style={{ display: "flex", justifyContent: "center" }}
                 color="primary"
                 name="setPrice"
+                size={isDesktop === false ? "small" : "medium"}
                 inputProps={{ "aria-label": "primary checkbox" }}
               />
             </div>
@@ -688,7 +707,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             )}
             <ImagePicker
               setImageFile={(file): void => {
-                this.handleImageCompress(file);
+                this.handleImageCompress(file, file.name);
                 this.setState({ errors: { ...errors, image: null } });
               }}
               cropImage
@@ -732,6 +751,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
                 },
               );
             }}
+            style={{ marginBottom: errors.tags ? 16 : 0 }}
             onDelete={(chip): void => {
               const idx = tags.findIndex((name) => name === chip);
               const newTags = [...tags.slice(0, idx), ...tags.slice(idx + 1)];
@@ -745,6 +765,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           <Variants
             variants={product.variants}
             type={type}
+            size={isDesktop === false ? "small" : "medium"}
             setPrice={product.setPrice}
             updateVariants={(variants: Variant[]): void =>
               this.setState({ product: { ...product, variants } })
@@ -759,7 +780,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               })}
             >
               <Button
-                onClick={(): void => history.push("/")}
+                onClick={(): void => {
+                  if (setCurrentTab) setCurrentTab("products");
+                  history.push("/account");
+                }}
                 style={{ margin: "0 10px" }}
                 size="large"
                 variant="contained"

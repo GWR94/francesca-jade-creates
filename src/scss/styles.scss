@@ -3,11 +3,7 @@
 @import "./base/base";
 
 // common components
-@import "../common/scss/navbar";
 @import "../common/scss/product";
-@import "../common/scss/image-picker";
-@import "../common/scss/carousel";
-@import "../common/scss/filter";
 @import "../common/scss/view";
 @import "../common/scss/tags";
 
@@ -15,11 +11,8 @@
 @import "../pages/not-found/scss/not-found";
 
 //accounts page
-@import "../pages/accounts/scss/new-product";
-@import "../pages/accounts/scss/account-page";
 @import "../pages/accounts/scss/password";
 @import "../pages/accounts/scss/profile";
-@import "../pages/accounts/scss/confirm";
 @import "../pages/accounts/scss/verify";
 @import "../pages/accounts/scss/update";
 
@@ -28,6 +21,3 @@
 @import "../pages/home/scss/dialog";
 @import "../pages/home/scss/landing";
 
-// payment page
-@import "../pages/payment/scss/basket-item";
-@import "../pages/payment/scss/checkout";

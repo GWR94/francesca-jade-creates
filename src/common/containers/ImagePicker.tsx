@@ -88,6 +88,7 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
    */
   public onImageLoaded = (image: HTMLImageElement): void => {
     this.imageRef = image;
+    console.log(image);
   };
 
   /**
@@ -201,7 +202,7 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
         <FormLabel className="profile__input">{showText && "Display Image:"}</FormLabel>
         {/* Show image preview if one exists */}
         {imagePreview ? (
-          <div className={propStyles?.imageContainer ?? classes.imageContainer}>
+          <div className={classes.imageContainer}>
             <img className={classes.image} src={imagePreview} alt="Image Preview" />
           </div>
         ) : savedS3Image ? (

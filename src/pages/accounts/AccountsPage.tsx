@@ -8,6 +8,7 @@ import {
   ShoppingCartTwoTone,
   CreateTwoTone,
 } from "@material-ui/icons";
+import { History } from "history";
 import { AppState } from "../../store/store";
 import { ProductProps } from "./interfaces/Product.i";
 import {
@@ -25,14 +26,11 @@ import * as userActions from "../../actions/user.actions";
 import { SetCurrentTabAction, CurrentTabTypes } from "../../interfaces/user.redux.i";
 import Orders from "./components/Orders";
 import AdminOrders from "./components/AdminOrders";
-
-interface AccountPageProps {
-  admin: boolean;
-  currentTab?: CurrentTabTypes;
-  sub: string | null;
-  products: ProductProps[];
-  fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
-}
+import {
+  AccountsMapProps,
+  AccountsMapState,
+  AccountPageProps,
+} from "./interfaces/Accounts.i";
 
 class AccountsPage extends Component<AccountPageProps, {}> {
   private createProductListener: PushSubscription;
@@ -53,6 +51,7 @@ class AccountsPage extends Component<AccountPageProps, {}> {
   private handleSubscriptions = async (): Promise<void> => {
     const { sub } = this.props;
     const { fetchProductsSuccess } = this.props;
+    if (!fetchProductsSuccess) return;
 
     this.createProductListener = API.graphql(
       graphqlOperation(onCreateProduct, { owner: sub }),
@@ -143,7 +142,9 @@ class AccountsPage extends Component<AccountPageProps, {}> {
       <div>
         <Tabs
           value={currentTab}
-          onChange={(_e, currentTab): void => setCurrentTab(currentTab)}
+          onChange={(_e, currentTab): void => {
+            if (setCurrentTab) setCurrentTab(currentTab);
+          }}
           indicatorColor="primary"
           textColor="primary"
           centered
@@ -171,14 +172,14 @@ class AccountsPage extends Component<AccountPageProps, {}> {
   }
 }
 
-const mapStateToProps = ({ user, products }: AppState) => ({
+const mapStateToProps = ({ user, products }: AppState): AccountsMapState => ({
   admin: user.admin,
   sub: user.id,
   products: products.items,
   currentTab: user.currentTab,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch): AccountsMapProps => ({
   fetchProductsSuccess: (products: ProductProps[]): FetchProductsSuccessAction =>
     dispatch(productActions.fetchProductsSuccess(products)),
   setCurrentTab: (currentTab: CurrentTabTypes): SetCurrentTabAction =>

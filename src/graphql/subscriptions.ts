@@ -105,6 +105,7 @@ export const onCreateOrder = /* GraphQL */ `
                 type
                 tagline
               }
+              trackingInfo
               createdAt
               updatedAt
             }
@@ -117,6 +118,12 @@ export const onCreateOrder = /* GraphQL */ `
             }
             createdAt
             paymentStatus
+            orderProcessed
+            userInfo {
+              emailAddress
+              name
+            }
+            shipped
             updatedAt
           }
           nextToken
@@ -174,6 +181,7 @@ export const onCreateOrder = /* GraphQL */ `
             }
           }
         }
+        trackingInfo
         createdAt
         updatedAt
       }
@@ -186,6 +194,12 @@ export const onCreateOrder = /* GraphQL */ `
       }
       createdAt
       paymentStatus
+      orderProcessed
+      userInfo {
+        emailAddress
+        name
+      }
+      shipped
       updatedAt
     }
   }

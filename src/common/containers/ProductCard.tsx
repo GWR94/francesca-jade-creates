@@ -32,32 +32,13 @@ import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
 import ChipContainer from "../inputs/ChipContainer";
-import { INTENT, FONTS } from "../../themes";
+import { INTENT } from "../../themes";
+import styles from "../styles/productCard.style";
 
 const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
-    card: {
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      position: "relative",
-    },
-    media: {
-      overflow: "hidden",
-      width: "100%",
-    },
-    price: {
-      textAlign: "center",
-      margin: "10px 0",
-      fontStyle: "italic",
-      fontFamily: FONTS.Title,
-    },
-    root: {
-      padding: 0,
-      paddingBottom: "0 !important",
-    },
+    ...styles,
     fab: {
       position: "absolute",
       bottom: 4,
@@ -72,6 +53,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
       },
     },
   });
+
   const classes = useStyles();
   // destructure product for ease of variable use
   const { id, images, title, type, tags, tagline, variants } = product;
@@ -141,6 +123,9 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
         className={classes.card}
       >
         <CardHeader
+          classes={{
+            title: classes.headerContainer,
+          }}
           avatar={
             // if loading return a skeleton of the potential product
             isLoading ? (
@@ -263,7 +248,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
-              imgKey={images.collection[0].key}
+              imgKey={images.collection[0]?.key}
               theme={{
                 photoImg: isLoading
                   ? {

@@ -5,6 +5,7 @@ export interface VariantsProps {
   };
   type: "Cake" | "Creates";
   setPrice: boolean;
+  size: "small" | "medium";
   updateVariants: (variants: Variant[]) => void;
 }
 

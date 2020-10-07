@@ -16,7 +16,7 @@ import "./scss/styles.scss";
 import "@stripe/stripe-js";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import configureStore from "./store/store";
-import { rootTheme } from "./themes";
+import { COLORS, rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
 import { isLocalhost, hasLocalhost, hasHostname } from "./utils";
 
@@ -80,7 +80,7 @@ export const App: FC = (): JSX.Element => (
     <Provider store={persist.store}>
       <PersistGate loading={null} persistor={persist.persistor}>
         <ThemeProvider theme={rootTheme}>
-          <div id="app">
+          <div id="app" style={{ background: COLORS.PalePink }}>
             <AppRouter />
           </div>
         </ThemeProvider>

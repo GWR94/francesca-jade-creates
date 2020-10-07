@@ -28,13 +28,18 @@ import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/orders.style";
 import { S3ImageProps } from "../interfaces/Product.i";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import { OrderProps, GraphQlProduct } from "../interfaces/Orders.i";
+import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
+import { UserAttributeProps } from "../interfaces/Accounts.i";
+
+interface OrdersProps {
+  userAttributes: UserAttributeProps | null;
+}
 
 /**
  * A functional component which renders all of the current authenticated
  * users orders
  */
-const Orders = (): JSX.Element => {
+const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   // isLoading is used to show/hide loading UI effects
   const [isLoading, setLoading] = useState(true);
   // initialise a variable to store orders in state so they can be used through the component
@@ -179,7 +184,7 @@ const Orders = (): JSX.Element => {
                   {order.products.map((product, i) => {
                     const { title, price, shippingCost, variant } = product;
                     return (
-                      <Grid item xs={12} sm={6}>
+                      <Grid item xs={12} sm={6} key={i}>
                         <div key={i} style={{ marginBottom: 8 }}>
                           <Typography className={classes.details}>{title}</Typography>
                           <Typography className={classes.details}>
@@ -221,12 +226,12 @@ const Orders = (): JSX.Element => {
         <Dialog open={dialogOpen} onClose={(): void => setDialogOpen(false)}>
           <DialogTitle>{currentProduct!.title} Custom Options</DialogTitle>
           <DialogContent>
-            {currentProduct.customOptions.map((option) => {
+            {currentProduct.customOptions.map((option, i) => {
               const data: { [key: string]: string[] | S3ImageProps[] } = JSON.parse(
                 option,
               );
               return Object.keys(data)[0] === "Images" ? (
-                <>
+                <div key={i}>
                   <Typography className={classes.details} gutterBottom>
                     Custom Images:
                   </Typography>
@@ -254,9 +259,9 @@ const Orders = (): JSX.Element => {
                       })}
                     </Splide>
                   </div>
-                </>
+                </div>
               ) : (
-                <Typography className={classes.details} gutterBottom>
+                <Typography className={classes.details} gutterBottom key={i}>
                   {Object.keys(data)[0]}:
                   <span className={classes.data}>{Object.values(data)[0]}</span>
                 </Typography>

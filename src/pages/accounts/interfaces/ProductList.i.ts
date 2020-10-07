@@ -6,6 +6,11 @@ export interface ProductListProps {
   type?: "Cake" | "Creates";
 }
 
+export enum SortDirection {
+  DESC = "DESC",
+  ASC = "ASC",
+}
+
 export interface ProductListState {
   page: {
     min: number;
@@ -14,11 +19,15 @@ export interface ProductListState {
   searchResults: ProductProps[] | null;
   filterOpen: boolean;
   isLoading: boolean;
+  // nextToken: string | undefined;
+  // nextNextToken: string | undefined;
+  // previousTokens: string[];
+  // sortDirection: SortDirection;
 }
 
 export interface FilterProps {
-  or?: any[];
-  and?: any[];
+  or?: unknown[];
+  and?: unknown[];
 }
 
 export type SearchType = "all" | "title" | "description" | "tags";

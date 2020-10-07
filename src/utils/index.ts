@@ -1,4 +1,6 @@
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
+import { ProductProps } from "../pages/accounts/interfaces/Product.i";
+import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
 
 /**
  * helper method to put cognito user attributes array into an object that can
@@ -36,4 +38,36 @@ export const getReadableStringFromArray = (array: string[]): string => {
     : [array.slice(0, array.length - 1).join(", "), array[array.length - 1]].join(
         " and ",
       );
+};
+
+/**
+ * A function to get the minimum possible value for the current chosen
+ * product. Will also return a string to notify the customer to request
+ * a quote if there is no current price.
+ * @param {BasketItemProps} product - the current product to get the minimum price from
+ * @param {boolean} showMax - value to signify if the maximum product price should be shown
+ * the returned string.
+ */
+export const getProductPrice = (
+  product: BasketItemProps | ProductProps,
+  showMax = false,
+): string => {
+  // set min to infinity so everything will be smaller
+  let min = Infinity;
+  let max = -Infinity;
+  // iterate through the variants of the current product
+  product.variants.forEach((variant) => {
+    // set the min value to be the smaller value of the current min or the current variants price
+    min = Math.min(variant.price.item + variant.price.postage, min);
+    max = Math.max(variant.price.item + variant.price.postage, max);
+  });
+  /**
+   * if min is still infinity, there is no price so notify the user that they
+   * need to request a quote; otherwise show the formatted price
+   */
+  return min === Infinity
+    ? "Request for Price"
+    : min === max
+    ? `£${min.toFixed(2)} incl. P&P`
+    : `From £${min.toFixed(2)}${showMax ? `to £${max.toFixed(2)}` : ""} incl. P&P`;
 };

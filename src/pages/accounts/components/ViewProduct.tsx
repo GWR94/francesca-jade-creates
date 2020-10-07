@@ -53,6 +53,13 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
     const data: JSX.Element[] = [];
     if (!product) return data;
     let i = 1;
+    if (product.variants.some((variant) => variant.features.length > 0)) {
+      data.push(
+        <Typography variant="h5" style={{ marginBottom: -5 }}>
+          Variants
+        </Typography>,
+      );
+    }
     for (const variant of variants) {
       const { variantName, dimensions, features, price } = variant;
       data.push(
@@ -73,19 +80,21 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
       );
     }
     i++;
-    data.push(<div className={classes.break} />);
-    data.push(
-      <div className={classes.customFeatures}>
-        <Typography gutterBottom className={classes.variantTitle}>
-          Customisable Features
-        </Typography>
-        <ul style={{ margin: 0 }}>
-          {product.variants[0].features.map((feature) => {
-            return <li key={uuidv4()}>{feature.name}</li>;
-          })}
-        </ul>
-      </div>,
-    );
+    if (product.variants.some((variant) => variant.features.length > 0)) {
+      data.push(<div className={classes.break} />);
+      data.push(
+        <div className={classes.customFeatures}>
+          <Typography gutterBottom className={classes.variantTitle}>
+            Customisable Features
+          </Typography>
+          <ul style={{ margin: 0 }}>
+            {product.variants[0]?.features.map((feature) => {
+              return <li key={uuidv4()}>{feature.name}</li>;
+            })}
+          </ul>
+        </div>,
+      );
+    }
     return data;
   };
 
@@ -156,13 +165,14 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
           style={{ marginBottom: 10 }}
         />
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={5}>
-            <ImageCarousel images={product.images.collection} type={productType} />
+          <Grid item xs={12} sm={product.type === "Cake" ? 12 : 5}>
+            <ImageCarousel
+              images={product.images.collection}
+              type={productType}
+              isCentered
+            />
           </Grid>
-          <Grid item xs={12} sm={7}>
-            <Typography variant="h5" style={{ marginBottom: -5 }}>
-              Variants
-            </Typography>
+          <Grid item xs={12} sm={product.type === "Cake" ? 12 : 7}>
             <div className={classes.variantContainer}>{handleViewVariants()}</div>
           </Grid>
         </Grid>

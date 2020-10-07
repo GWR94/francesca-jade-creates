@@ -30,8 +30,6 @@ import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import * as productsActions from "../actions/products.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
-import Checkout from "../pages/payment/components/Checkout";
-import { MatchParams } from "../pages/accounts/interfaces/UpdateProduct.i";
 import { INTENT } from "../themes";
 import { FetchProductsSuccessAction } from "../interfaces/products.redux.i";
 import { AppState } from "../store/store";
@@ -39,6 +37,7 @@ import ProductsList from "../pages/accounts/components/ProductsList";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import Success from "../pages/payment/components/Success";
+import background from "../img/pinkbg2.png";
 
 export const history = createBrowserHistory();
 
@@ -266,9 +265,14 @@ class AppRouter extends Component<RouterProps, RouterState> {
 
   public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
+
+    console.log({ userAttributes, user });
     return (
       <Router history={history}>
-        <div className="landing__background">
+        <div
+          className="landing__background"
+          style={{ background: `url(${background}) no-repeat center center fixed` }}
+        >
           <NavBar signOut={this.handleSignOut} admin={this._admin} />
           {isLoading ? (
             <Loading size={100} />
@@ -299,7 +303,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 history={history}
                 component={(): JSX.Element => (
                   <div className="content-container">
-                    <Basket userAttribues={userAttributes} />
+                    <Basket userAttributes={userAttributes} />
                   </div>
                 )}
               />
@@ -362,20 +366,17 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 component={(matchParams: RouteComponentProps<MatchParams>): JSX.Element =>
                   this._admin ? (
                     <div className="content-container">
-                      <UpdateProduct update {...matchParams} admin={this._admin} />
+                      <UpdateProduct
+                        history={history}
+                        update
+                        id={matchParams.match.params.id}
+                        admin={this._admin}
+                      />
                     </div>
                   ) : (
                     <Redirect to="/" />
                   )
                 }
-              />
-              <Route
-                path="/checkout"
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Checkout userAttributes={userAttributes} />
-                  </div>
-                )}
               />
               <Route path="/success" component={(): JSX.Element => <Success />} />
               <Route component={NotFoundPage} />

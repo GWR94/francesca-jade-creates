@@ -5,6 +5,7 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 const breakpoints = createBreakpoints({});
 
 export enum COLORS {
+  PalePink = "#fff2fe",
   LightPink = "#ffa3f9",
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
@@ -20,6 +21,7 @@ export enum COLORS {
   AltBorderGray = "#dadada",
   TextGray = "#828282",
   SuccessGreen = "#4caf50",
+  LightGreen = "#59cf5e",
   InfoBlue = "#00b0ff",
 }
 
@@ -39,6 +41,8 @@ export enum FONTS {
   Header = "Lobster Two, cursive",
   Text = "Neucha, sans-serif",
   Title = "Roboto, sans-serif",
+  Display = "Londrina Solid, sans-serif",
+  Paint = "Finger Paint, sans-serif",
 }
 
 export enum INTENT {

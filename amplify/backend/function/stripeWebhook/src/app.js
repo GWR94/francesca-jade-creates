@@ -83,7 +83,7 @@ const emailHandler = (req, res) => {
             <div style="margin-bottom: 16px">
               <h2>Thank you for your order!</h2>
               <div style="display: inline-flex; justify-content: space-evenly">
-                <img src="https://francescajadecreatesimages113437-prod.s3.eu-west-2.amazonaws.com/public/eu-west-2%3Ae7935f42-d7de-402d-a403-3ab64754dc91/IMG_0198.JPG" style="width: 80px; height=80px; margin: 20px"/>
+                <img src="https://francescajadecreatesimages113437-prod.s3.eu-west-2.amazonaws.com/public/logo.png" style="width: 80px; height=80px; margin: 20px"/>
               <div>
                 <h3>Order Confirmation</h3>
                 <p style="margin: 0">

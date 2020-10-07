@@ -1,5 +1,6 @@
 import { Grid, Typography, Container, makeStyles, Button } from "@material-ui/core";
 import React from "react";
+import { BrushRounded, CakeRounded } from "@material-ui/icons";
 import { COLORS } from "../../themes";
 import cake from "../../img/cake3.svg";
 import logo from "../../img/logo.png";
@@ -15,11 +16,12 @@ const Landing: React.FC = (): JSX.Element => {
           <img src={logo} className={classes.logoImg} alt="Francesca Jade Creates" />
           <Typography className={classes.headingText}>
             Homemade Cakes & Creations, personalised{" "}
-            <span style={{ color: COLORS.Pink, fontWeight: "bolder" }}>for you.</span>
+            <span style={{ color: COLORS.DarkPink, fontWeight: "bolder" }}>for you.</span>
           </Typography>
+          <BrushRounded className={classes.createsIcon} />
           <Typography className={classes.subheading}>
-            Delicious homemade Cakes and personalised Creations - Perfect for any
-            occasion.
+            Personalised Prints, Frames and Cards. All handmade with love and a little bit
+            of sparkle, to capture moments, share memories & celebrate loved ones
           </Typography>
           <Button
             onClick={(): string => (window.location.href = "/creates")}
@@ -28,6 +30,11 @@ const Landing: React.FC = (): JSX.Element => {
           >
             Explore Creations
           </Button>
+          <CakeRounded className={classes.cakeIcon} />
+          <Typography className={classes.subheading}>
+            Delicious fully customisable cakes for every occasion. All created from
+            scratch with love and care - perfect for a gift/celebration to remember.
+          </Typography>
           <Button
             onClick={(): string => (window.location.href = "/cakes")}
             className={classes.createsButton}

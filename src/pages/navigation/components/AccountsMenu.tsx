@@ -142,7 +142,6 @@ const AccountsMenu = ({
         )}
         <Divider />
         <MenuItem
-          className="nav__logout"
           onClick={(): void => {
             closeNav();
             setMenuOpen(false);

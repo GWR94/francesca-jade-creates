@@ -15,6 +15,7 @@ import { ConfirmDialogProps } from "../../pages/accounts/interfaces/ConfirmDialo
 import ImageCarousel from "../containers/ImageCarousel";
 import ChipContainer from "../inputs/ChipContainer";
 import { FONTS } from "../../themes";
+import { getProductPrice } from "../../utils";
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
@@ -25,7 +26,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   closeModal,
   percentUploaded,
 }): JSX.Element | null => {
-  const { title, tagline, description, type, price, tags, images } = product;
+  const { title, tagline, description, type, tags, images } = product;
   const theme = useTheme();
   const useStyles = makeStyles({
     dialogContainer: {
@@ -54,23 +55,39 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {tagline}
         </p>
         <p>
-          <strong>Description: </strong>
-          {description}
+          <strong>Description:</strong>
         </p>
+        <p
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: description,
+          }}
+        />
         <p>
           <strong>Type: </strong>
           {type}
         </p>
         <p>
+          <strong>Price: </strong>
+          {getProductPrice(product, true)}
+        </p>
+        <p>
           <strong>Tags: </strong>
         </p>
         {tags?.length > 0 ? <ChipContainer tags={tags} type={type} /> : "No tags"}
-
         <p>
           <strong>Cover image:</strong>
         </p>
         {imagePreview ? (
-          <img src={imagePreview} alt={`${title} Preview`} className="confirm__image" />
+          <img
+            src={imagePreview}
+            alt={`${title} Preview`}
+            style={{
+              display: "block",
+              width: 340,
+              margin: "0 auto",
+            }}
+          />
         ) : (
           <ImageCarousel images={images.collection} type={type} />
         )}
