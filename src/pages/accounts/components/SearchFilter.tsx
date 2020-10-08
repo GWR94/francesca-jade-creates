@@ -322,121 +322,111 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               </FormControl>
             </Grid>
           </Grid>
-          {admin && (
-            <Grid container>
-              {adminFilters && (
-                <Grid item xs={4}>
-                  <FormControl fullWidth>
-                    <FormLabel style={{ marginTop: 12, textAlign: "left" }}>
-                      Include
-                    </FormLabel>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={adminFilters.cake}
-                            onChange={(): void => {
-                              const updatedAdmin = {
-                                ...adminFilters,
-                                cake: !adminFilters.cake,
-                              };
-                              dispatch(
-                                actions.setSearchFilters({
-                                  ...filters,
-                                  shouldUpdateWithNoQuery: true,
-                                  adminFilters: updatedAdmin,
-                                }),
-                              );
-                            }}
-                            name="Cakes"
-                          />
-                        }
-                        label="Cakes"
-                      />
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={adminFilters.creates}
-                            onChange={(): void => {
-                              const updatedAdmin = {
-                                ...adminFilters,
-                                creates: !adminFilters.creates,
-                              };
-                              dispatch(
-                                actions.setSearchFilters({
-                                  ...filters,
-                                  shouldUpdateWithNoQuery: true,
-                                  adminFilters: updatedAdmin,
-                                }),
-                              );
-                            }}
-                            name="Creations"
-                          />
-                        }
-                        label="Creations"
-                      />
-                    </FormGroup>
-                  </FormControl>
-                </Grid>
-              )}
-              <Grid item xs={type ? 6 : 4}>
+          <Grid container>
+            {adminFilters && (
+              <Grid item xs={4}>
                 <FormControl fullWidth>
-                  <FormLabel style={{ marginTop: 12, textAlign: "left" }}>
-                    Sort By
+                  <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
+                    Include
                   </FormLabel>
-                  <RadioGroup
-                    aria-label="Sort By"
-                    name="SortBy"
-                    value={sortBy}
-                    onChange={(e): void => {
-                      dispatch(
-                        actions.setSearchFilters({
-                          ...filters,
-                          shouldUpdateWithNoQuery: true,
-                          sortBy: e.target.value as SortBy,
-                        }),
-                      );
-                    }}
-                  >
+                  <FormGroup>
                     <FormControlLabel
-                      value="createdAt"
-                      control={<Radio />}
-                      label="Date"
+                      control={
+                        <Checkbox
+                          checked={adminFilters.cake}
+                          onChange={(): void => {
+                            const updatedAdmin = {
+                              ...adminFilters,
+                              cake: !adminFilters.cake,
+                            };
+                            dispatch(
+                              actions.setSearchFilters({
+                                ...filters,
+                                shouldUpdateWithNoQuery: true,
+                                adminFilters: updatedAdmin,
+                              }),
+                            );
+                          }}
+                          name="Cakes"
+                        />
+                      }
+                      label="Cakes"
                     />
-                    <FormControlLabel value="price" control={<Radio />} label="Price" />
-                  </RadioGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={adminFilters.creates}
+                          onChange={(): void => {
+                            const updatedAdmin = {
+                              ...adminFilters,
+                              creates: !adminFilters.creates,
+                            };
+                            dispatch(
+                              actions.setSearchFilters({
+                                ...filters,
+                                shouldUpdateWithNoQuery: true,
+                                adminFilters: updatedAdmin,
+                              }),
+                            );
+                          }}
+                          name="Creations"
+                        />
+                      }
+                      label="Creations"
+                    />
+                  </FormGroup>
                 </FormControl>
               </Grid>
-              <Grid item xs={type ? 6 : 4}>
-                <FormControl fullWidth>
-                  <FormLabel style={{ marginTop: 12, textAlign: "left" }}>
-                    Sort Direction
-                  </FormLabel>
-                  <RadioGroup
-                    aria-label="sort by ascending"
-                    name="sortAscending"
-                    value={sortDirection}
-                    onChange={(e): void => {
-                      dispatch(
-                        actions.setSearchFilters({
-                          ...filters,
-                          shouldUpdateWithNoQuery: true,
-                          sortDirection: e.target.value as SortDirection,
-                        }),
-                      );
-                    }}
-                  >
-                    <FormControlLabel
-                      value="DESC"
-                      control={<Radio />}
-                      label="Descending"
-                    />
-                    <FormControlLabel value="ASC" control={<Radio />} label="Ascending" />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
+            )}
+            <Grid item xs={adminFilters ? 4 : 6}>
+              <FormControl fullWidth>
+                <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
+                  Sort By
+                </FormLabel>
+                <RadioGroup
+                  aria-label="Sort By"
+                  name="SortBy"
+                  value={sortBy}
+                  onChange={(e): void => {
+                    dispatch(
+                      actions.setSearchFilters({
+                        ...filters,
+                        shouldUpdateWithNoQuery: true,
+                        sortBy: e.target.value as SortBy,
+                      }),
+                    );
+                  }}
+                >
+                  <FormControlLabel value="createdAt" control={<Radio />} label="Date" />
+                  <FormControlLabel value="price" control={<Radio />} label="Price" />
+                </RadioGroup>
+              </FormControl>
             </Grid>
-          )}
+            <Grid item xs={adminFilters ? 4 : 6}>
+              <FormControl fullWidth>
+                <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
+                  Sort Direction
+                </FormLabel>
+                <RadioGroup
+                  aria-label="sort by ascending"
+                  name="sortAscending"
+                  value={sortDirection}
+                  onChange={(e): void => {
+                    dispatch(
+                      actions.setSearchFilters({
+                        ...filters,
+                        shouldUpdateWithNoQuery: true,
+                        sortDirection: e.target.value as SortDirection,
+                      }),
+                    );
+                  }}
+                >
+                  <FormControlLabel value="DESC" control={<Radio />} label="Descending" />
+                  <FormControlLabel value="ASC" control={<Radio />} label="Ascending" />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+          </Grid>
         </div>
       </ThemeProvider>
     </>
