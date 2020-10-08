@@ -162,6 +162,9 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
           onBackdropClick: (): void => setState({ ...state, filterOpen: false }),
           disableScrollLock: true,
         }}
+        SlideProps={{
+          unmountOnExit: false,
+        }}
       >
         <SearchFilter
           admin={admin}

@@ -32,7 +32,6 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
 }): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = useState(defaultPageNum);
-  console.log(dataLength);
   const maxPages = Math.ceil(dataLength / numPerPage);
 
   return (

@@ -266,7 +266,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
   public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
 
-    console.log({ userAttributes, user });
     return (
       <Router history={history}>
         <div

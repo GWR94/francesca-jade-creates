@@ -18,17 +18,18 @@ import {
 } from "@material-ui/core";
 import { API } from "aws-amplify";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { SearchRounded, RefreshRounded, TrendingDown } from "@material-ui/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { SearchRounded, RefreshRounded } from "@material-ui/icons";
 import { searchFilterTheme, FONTS } from "../../../themes";
-import {
-  SearchFilterProps,
-  AdminFilters,
-  SortMethod,
-} from "../interfaces/SearchFilter.i";
+import { SearchFilterProps } from "../interfaces/SearchFilter.i";
 import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
 import { searchProducts } from "../../../graphql/queries";
 import { ProductProps } from "../interfaces/Product.i";
 import { Variant } from "../interfaces/Variants.i";
+import { AppState } from "../../../store/store";
+import { FilterActionProps, SortBy } from "../../../interfaces/products.redux.i";
+import * as actions from "../../../actions/products.actions";
+import _ from "underscore";
 
 const breakpoints = createBreakpoints({});
 
@@ -51,8 +52,11 @@ const useStyles = makeStyles({
 
 /**
  * TODO
- * [ ] Add filters
- * [ ] Add
+ * [ ] disable price when selected cakes
+ * [ ] Sort out success page
+ * [ ] Sort out basket
+ * [ ] Test filter properly
+ * [ ] Fix hamburger icon
  */
 
 /**
@@ -72,40 +76,47 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   const classes = useStyles();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [adminFilters, setAdminFilters] = useState<AdminFilters>({
-    cake: type === "Cake" ? true : false,
-    creates: type ? (type === "Creates" ? true : false) : true,
-  });
-  const [searchType, setSearchType] = useState<SearchType>("all");
-  const [sortDirection, setSortDirection] = useState<"DESC" | "ASC">("DESC");
-  const [updateWithNoQuery, setUpdateNoQuery] = useState<boolean>(true);
-  const [sortBy, setSortBy] = useState("createdAt");
-  const [searchResults, setSearch] = useState<ProductProps[]>([]);
-  const [disabledPrice, setDisablePrice] = useState<boolean>(false);
+  const [searchResults, setSearch] = useState<ProductProps[] | null>([]);
 
-  const getMin = (variants: Variant[]): number => {
+  const dispatch = useDispatch();
+
+  const filters: FilterActionProps = useSelector(
+    ({ products }: AppState) => products.filters,
+  );
+
+  const getMinPriceFromVariants = (variants: Variant[]): number => {
     let min = Infinity;
     variants.forEach((variant) => {
       min = Math.min(min, variant.price.item + variant.price.postage);
     });
-    console.log(min);
     return min;
   };
 
   const sortSearchResults = (products = searchResults): void => {
+    const { sortBy, sortDirection } = filters;
     let sorted: ProductProps[] = [];
+    if (!products) return setSearchResults(null);
     if (sortBy === "price") {
-      sorted = products.sort((a: ProductProps, b: ProductProps) => {
-        if (getMin(a.variants) === Infinity || getMin(b.variants) === Infinity)
-          return sortDirection === "DESC" ? -1 : 1;
-        return getMin(a.variants) < getMin(b.variants)
-          ? sortDirection === "DESC"
-            ? 1
-            : -1
-          : sortDirection === "DESC"
-          ? -1
-          : 1;
-      });
+      const cakes = products.filter((product) => product.type === "Cake");
+      const creates = products
+        .filter((product) => product.type === "Creates")
+        .sort((a: ProductProps, b: ProductProps) => {
+          return getMinPriceFromVariants(a.variants) < getMinPriceFromVariants(b.variants)
+            ? sortDirection === "DESC"
+              ? 1
+              : -1
+            : sortDirection === "DESC"
+            ? -1
+            : 1;
+        });
+      /**
+       * place cakes after creates because cakes do not have a set price so they
+       * should be placed after.
+       */
+
+      sortDirection === "DESC"
+        ? (sorted = [...creates, ...cakes])
+        : (sorted = [...cakes, ...creates]);
     } else {
       sorted = products.sort((a, b) =>
         //@ts-expect-error
@@ -118,43 +129,46 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           : 1,
       );
     }
-    console.log(sorted);
     setSearchResults(sorted);
   };
 
-  // TODO
-  // [ ] disable price when selected cakes
+  useEffect(() => {
+    const { adminFilters } = filters;
+    if (admin && adminFilters === null) {
+      dispatch(
+        actions.setSearchFilters({
+          ...filters,
+          adminFilters: {
+            cake: true,
+            creates: true,
+          },
+        }),
+      );
+    }
+  }, []);
 
   useEffect(() => {
+    const { searchType, adminFilters, shouldUpdateWithNoQuery } = filters;
+
     const handleSearchProducts = async (): Promise<void> => {
       const filter: FilterProps = {};
-      if (!searchQuery.length && !updateWithNoQuery) return setSearchResults(null);
+      if (!searchQuery.length && !shouldUpdateWithNoQuery) return setSearchResults(null);
       /**
        * This filter allows the user to find all products where the products tags, title, tagline or
        * description matches that of a product.
        */
-      if (!updateWithNoQuery) {
-        filter.or = [
-          { tags: { matchPhrasePrefix: searchQuery } },
-          { title: { matchPhrasePrefix: searchQuery } },
-          { description: { matchPhrasePrefix: searchQuery } },
-        ];
-      } else {
+      if (searchQuery.length > 0) {
         if (searchType === "all") {
           filter.or = [
-            {
-              type: { eq: "Cake" },
-            },
-            {
-              type: { eq: "Creates" },
-            },
+            { tags: { matchPhrasePrefix: searchQuery } },
+            { title: { matchPhrasePrefix: searchQuery } },
+            { description: { matchPhrasePrefix: searchQuery } },
           ];
+        } else {
+          filter.or = [{ [searchType]: { matchPhrasePrefix: searchQuery } }];
         }
       }
 
-      if (type) {
-        filter.and = [{ type: { eq: type } }];
-      }
       /**
        * If there are any admin filters that have been passed through props, then they
        * need to be added to the filtering object.
@@ -174,13 +188,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         } else if (!cake && creates) {
           filter.and = [{ type: { eq: "Creates" } }];
         }
+      } else {
+        if (type) {
+          filter.and = [{ type: { eq: type } }];
+        }
       }
 
       try {
         const { data } = await API.graphql({
           query: searchProducts,
           variables: {
-            filter,
+            filter: !_.isEmpty(filter) ? filter : undefined,
             limit: 1000,
           },
           // @ts-ignore
@@ -197,11 +215,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     };
 
     handleSearchProducts();
-  }, [adminFilters, searchType, searchQuery, sortBy, sortDirection]);
+  }, [filters, searchQuery]);
 
-  // useEffect(() => {
-  //   sortSearchResults();
-  // }, [searchResults, sortBy, sortDirection]);
+  const {
+    searchType,
+    adminFilters,
+    sortBy,
+    sortDirection,
+    shouldUpdateWithNoQuery,
+  } = filters;
 
   return (
     <>
@@ -228,7 +250,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       <RefreshRounded
                         style={{ cursor: "pointer" }}
                         onClick={(): void => {
-                          setUpdateNoQuery(false);
+                          dispatch(
+                            actions.setSearchFilters({
+                              ...filters,
+                              shouldUpdateWithNoQuery: false,
+                            }),
+                          );
                           setSearchQuery("");
                           setSearchResults(null);
                         }}
@@ -237,9 +264,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   ),
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                  setUpdateNoQuery(false);
                   const query = e.target.value;
                   setSearchQuery(query);
+                  if (shouldUpdateWithNoQuery) {
+                    dispatch(
+                      actions.setSearchFilters({
+                        ...filters,
+                        shouldUpdateWithNoQuery: false,
+                      }),
+                    );
+                  }
                 }}
               />
             </Grid>
@@ -250,9 +284,21 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   variant="outlined"
                   value={searchType}
                   onChange={(e): void => {
-                    setUpdateNoQuery(false);
+                    if (shouldUpdateWithNoQuery) {
+                      dispatch(
+                        actions.setSearchFilters({
+                          ...filters,
+                          shouldUpdateWithNoQuery: false,
+                        }),
+                      );
+                    }
                     const searchType = e.target.value;
-                    setSearchType(searchType as SearchType);
+                    dispatch(
+                      actions.setSearchFilters({
+                        ...filters,
+                        searchType: searchType as SearchType,
+                      }),
+                    );
                   }}
                   fullWidth
                   margin="dense"
@@ -276,7 +322,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           </Grid>
           {admin && (
             <Grid container>
-              {!type && (
+              {adminFilters && (
                 <Grid item xs={4}>
                   <FormControl fullWidth>
                     <FormLabel style={{ marginTop: 12, textAlign: "left" }}>
@@ -288,19 +334,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                           <Checkbox
                             checked={adminFilters.cake}
                             onChange={(): void => {
-                              const updatedCake = !adminFilters.cake;
-                              const filters = {
+                              const updatedAdmin = {
                                 ...adminFilters,
-                                cake: updatedCake,
+                                cake: !adminFilters.cake,
                               };
-                              if (updatedCake) {
-                                setDisablePrice(true);
-                                setSortBy("createdAt");
-                              } else {
-                                setDisablePrice(false);
-                              }
-                              setUpdateNoQuery(true);
-                              setAdminFilters(filters);
+                              dispatch(
+                                actions.setSearchFilters({
+                                  ...filters,
+                                  shouldUpdateWithNoQuery: true,
+                                  adminFilters: updatedAdmin,
+                                }),
+                              );
                             }}
                             name="Cakes"
                           />
@@ -312,12 +356,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                           <Checkbox
                             checked={adminFilters.creates}
                             onChange={(): void => {
-                              const filters = {
+                              const updatedAdmin = {
                                 ...adminFilters,
                                 creates: !adminFilters.creates,
                               };
-                              setUpdateNoQuery(true);
-                              setAdminFilters(filters);
+                              dispatch(
+                                actions.setSearchFilters({
+                                  ...filters,
+                                  shouldUpdateWithNoQuery: true,
+                                  adminFilters: updatedAdmin,
+                                }),
+                              );
                             }}
                             name="Creations"
                           />
@@ -338,8 +387,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     name="SortBy"
                     value={sortBy}
                     onChange={(e): void => {
-                      setUpdateNoQuery(true);
-                      setSortBy(e.target.value);
+                      dispatch(
+                        actions.setSearchFilters({
+                          ...filters,
+                          shouldUpdateWithNoQuery: true,
+                          sortBy: e.target.value as SortBy,
+                        }),
+                      );
                     }}
                   >
                     <FormControlLabel
@@ -347,12 +401,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       control={<Radio />}
                       label="Date"
                     />
-                    <FormControlLabel
-                      value="price"
-                      control={<Radio />}
-                      disabled={disabledPrice}
-                      label="Price"
-                    />
+                    <FormControlLabel value="price" control={<Radio />} label="Price" />
                   </RadioGroup>
                 </FormControl>
               </Grid>
@@ -366,8 +415,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     name="sortAscending"
                     value={sortDirection}
                     onChange={(e): void => {
-                      setUpdateNoQuery(true);
-                      setSortDirection(e.target.value as SortDirection);
+                      dispatch(
+                        actions.setSearchFilters({
+                          ...filters,
+                          shouldUpdateWithNoQuery: true,
+                          sortDirection: e.target.value as SortDirection,
+                        }),
+                      );
                     }}
                   >
                     <FormControlLabel

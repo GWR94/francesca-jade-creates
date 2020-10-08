@@ -26,8 +26,8 @@ export interface ProductListState {
 }
 
 export interface FilterProps {
-  or?: unknown[];
-  and?: unknown[];
+  or: unknown[];
+  and: unknown[];
 }
 
 export type SearchType = "all" | "title" | "description" | "tags";

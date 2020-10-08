@@ -3,18 +3,13 @@ import { API } from "aws-amplify";
 import { listProducts } from "../graphql/queries";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import {
-  SearchProductsSuccessAction,
-  SearchProductsFailureAction,
-  SEARCH_PRODUCTS_SUCCESS,
-  SEARCH_PRODUCTS_FAILURE,
   FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
+  SET_FILTERS,
   FetchProductsFailureAction,
   FetchProductsSuccessAction,
-  HandleSortProductsAction,
-  HANDLE_SORT_PRODUCTS,
-  FILTER_PRODUCTS,
-  FilterProductsAction,
+  SetFiltersAction,
+  FilterActionProps,
 } from "../interfaces/products.redux.i";
 
 export const fetchProductsSuccess = (
@@ -28,27 +23,9 @@ export const fetchProductsFailure = (): FetchProductsFailureAction => ({
   type: FETCH_PRODUCTS_FAILURE,
 });
 
-export const searchProductsSuccess = (
-  products: ProductProps[],
-): SearchProductsSuccessAction => ({
-  type: SEARCH_PRODUCTS_SUCCESS,
-  products,
-});
-
-export const searchProductsFailure = (): SearchProductsFailureAction => ({
-  type: SEARCH_PRODUCTS_FAILURE,
-});
-
-export const handleSortProducts = (
-  sortMethod: "updatedAt" | "createdAt",
-): HandleSortProductsAction => ({
-  type: HANDLE_SORT_PRODUCTS,
-  sortMethod,
-});
-
-export const filterProducts = (filterType: "Cake" | "Creates"): FilterProductsAction => ({
-  type: FILTER_PRODUCTS,
-  filterType,
+export const setSearchFilters = (filters: FilterActionProps): SetFiltersAction => ({
+  type: SET_FILTERS,
+  filters,
 });
 
 export const getProducts = (type?: "Cake" | "Creates") => {
