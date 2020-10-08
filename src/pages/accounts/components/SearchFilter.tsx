@@ -19,17 +19,17 @@ import {
 import { API } from "aws-amplify";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { useDispatch, useSelector } from "react-redux";
+import _ from "underscore";
 import { SearchRounded, RefreshRounded } from "@material-ui/icons";
+import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
 import { searchFilterTheme, FONTS } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
-import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
 import { searchProducts } from "../../../graphql/queries";
 import { ProductProps } from "../interfaces/Product.i";
 import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
 import { FilterActionProps, SortBy } from "../../../interfaces/products.redux.i";
 import * as actions from "../../../actions/products.actions";
-import _ from "underscore";
 
 const breakpoints = createBreakpoints({});
 
@@ -52,11 +52,12 @@ const useStyles = makeStyles({
 
 /**
  * TODO
- * [ ] disable price when selected cakes
+ * [x] disable price when selected cakes - no longer needed (fixed)
  * [ ] Sort out success page
  * [ ] Sort out basket
- * [ ] Test filter properly
- * [ ] Fix hamburger icon
+ * [x] Test filter properly
+ * [x] Fix hamburger icon
+ * [x] Put nav links in container, and center logo
  */
 
 /**
@@ -151,6 +152,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     const { searchType, adminFilters, shouldUpdateWithNoQuery } = filters;
 
     const handleSearchProducts = async (): Promise<void> => {
+      //@ts-expect-error
       const filter: FilterProps = {};
       if (!searchQuery.length && !shouldUpdateWithNoQuery) return setSearchResults(null);
       /**

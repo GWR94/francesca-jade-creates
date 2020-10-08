@@ -5,6 +5,7 @@ import {
   withStyles,
   AppBar,
   ClickAwayListener,
+  Container,
 } from "@material-ui/core";
 import Headroom from "react-headroom";
 import { MenuRounded } from "@material-ui/icons";
@@ -21,6 +22,7 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
   public readonly state: NavBarState = {
     navOpen: false,
     mobile: window.innerWidth < 768,
+    centerImage: window.innerWidth < 980,
   };
 
   /**
@@ -29,7 +31,10 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
    */
   public componentDidMount(): void {
     window.addEventListener("resize", (e: Event): void => {
-      this.setState({ mobile: (e.target as Window).innerWidth < 768 });
+      this.setState({
+        mobile: (e.target as Window).innerWidth < 768,
+        centerImage: (e.target as Window).innerWidth < 980,
+      });
     });
   }
 
@@ -39,12 +44,15 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
    */
   public componentWillUnmount(): void {
     window.removeEventListener("resize", (e: Event): void => {
-      this.setState({ mobile: (e.target as Window).innerWidth < 768 });
+      this.setState({
+        mobile: (e.target as Window).innerWidth < 768,
+        centerImage: (e.target as Window).innerWidth < 980,
+      });
     });
   }
 
   public render(): JSX.Element {
-    const { navOpen, mobile } = this.state;
+    const { navOpen, mobile, centerImage } = this.state;
     const { admin, items, signOut, classes } = this.props;
     return (
       <>
@@ -60,8 +68,12 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
               position="relative"
               color="transparent"
             >
-              <div className={classes.main}>
-                <img src={logo} alt="Francesca Jade Creates" className={classes.logo} />
+              <Container className={classes.main}>
+                <img
+                  src={logo}
+                  alt="Francesca Jade Creates"
+                  className={centerImage ? classes.logo : classes.logoFixed}
+                />
                 {/* 
                   If there are any items in the shopping basket and the user is viewing the
                   site on a mobile, show the Badge component around the nav "hamburger" icon
@@ -90,7 +102,7 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
                     signOut={signOut}
                   />
                 )}
-              </div>
+              </Container>
               {/* 
                 If the user is on mobile and navOpen is true, then show the links. The links
                 can be collapsed/shown by clicking the hamburger icon.

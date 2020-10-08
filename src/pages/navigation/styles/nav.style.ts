@@ -18,7 +18,7 @@ export default createStyles({
     display: "inline-flex",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: "0 15px 0 20px",
+    margin: "0 auto",
   },
   menuIcon: {
     fontSize: "35px",
@@ -30,5 +30,11 @@ export default createStyles({
     width: 50,
     marginRight: 20,
     display: "inline-block",
+  },
+  logoFixed: {
+    height: 50,
+    width: 50,
+    position: "absolute",
+    left: "calc(50% - 25px)",
   },
 });

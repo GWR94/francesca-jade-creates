@@ -1,5 +1,5 @@
 import { createStyles } from "@material-ui/core";
-import { FONTS } from "../../../themes/index";
+import { COLORS, FONTS } from "../../../themes/index";
 
 export default createStyles({
   basket: {
@@ -32,5 +32,10 @@ export default createStyles({
       borderBottom: "15px solid #fff",
       clear: "both",
     },
+  },
+  basketDelete: {
+    paddingLeft: 5,
+    color: COLORS.ErrorRed,
+    display: "flex",
   },
 });

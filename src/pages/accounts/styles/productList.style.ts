@@ -6,7 +6,8 @@ const breakpoints = createBreakpoints({});
 
 export default createStyles({
   filterIcon: {
-    fontSize: "36px", //FIXME
+    fontSize: "40px",
+    padding: 0,
     color: COLORS.Pink,
     [breakpoints.down("md")]: {
       fontSize: "30px",
@@ -24,19 +25,19 @@ export default createStyles({
     borderBottomRightRadius: 5,
     background: "#fff",
     border: "2px solid #eee",
-    padding: 10,
+    padding: "6px 6px 2px",
     marginLeft: -2,
     [breakpoints.down("md")]: {
       marginLeft: -1,
       border: "1px solid #eee",
     },
     [breakpoints.down("sm")]: {
-      padding: 8,
+      padding: "4px 4px 0",
     },
     zIndex: 10,
   },
   gridContainer: {
-    [breakpoints.down("sm")]: {
+    [breakpoints.down("xs")]: {
       margin: "0 15px",
     },
   },

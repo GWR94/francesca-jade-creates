@@ -1,4 +1,3 @@
-import { History } from "history";
 import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 
 export interface NavBarProps {
@@ -19,4 +18,5 @@ export interface NavbarDispatchProps extends NavBarProps {
 export interface NavBarState {
   navOpen: boolean;
   mobile: boolean;
+  centerImage: boolean;
 }

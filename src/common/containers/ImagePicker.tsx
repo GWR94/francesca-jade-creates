@@ -14,6 +14,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { openSnackbar } from "../../utils/Notifier";
 import { COLORS } from "../../themes";
 import styles from "../styles/imagePicker.style";
+
 /**
  * TODO
  * [ ] Fix onPick not working when removing and adding an image

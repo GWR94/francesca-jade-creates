@@ -87,7 +87,6 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
           >
             View Basket
           </Button>
-          {/* // FIXME */}
           <Button
             size="small"
             color="primary"

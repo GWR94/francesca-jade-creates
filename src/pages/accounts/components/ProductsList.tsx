@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Drawer, Grid, makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { Warning } from "@material-ui/icons";
+import { MenuRounded, Warning } from "@material-ui/icons";
 // import { API, graphqlOperation } from "aws-amplify";
 import ProductCard from "../../../common/containers/ProductCard";
 import { ProductProps } from "../interfaces/Product.i";
@@ -104,7 +104,6 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     page: { min, max },
   } = state;
   const { items: products } = useSelector(({ products }: AppState) => products);
-  console.log(searchResults);
   const results = searchResults || products;
 
   return (
@@ -118,7 +117,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
         role="button"
         tabIndex={0}
       >
-        <i className={`fas fa-bars ${classes.filterIcon} animated infinite pulse`} />
+        <MenuRounded className={`${classes.filterIcon} animated infinite pulse`} />
       </div>
       <Grid container spacing={4}>
         {isLoading ? (
