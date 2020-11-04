@@ -2,6 +2,7 @@ import { Storage } from "aws-amplify";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
+
 /**
  * helper method to put cognito user attributes array into an object that can
  * be read and processed properly
