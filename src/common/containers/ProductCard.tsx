@@ -19,12 +19,7 @@ import {
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
-import {
-  MoreVert,
-  BrushOutlined,
-  CakeOutlined,
-  AddShoppingCartOutlined,
-} from "@material-ui/icons";
+import { MoreVert, AddShoppingCartOutlined } from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
 import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
@@ -126,24 +121,6 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           classes={{
             title: classes.headerContainer,
           }}
-          avatar={
-            // if loading return a skeleton of the potential product
-            isLoading ? (
-              <Skeleton
-                animation="wave"
-                variant="circle"
-                style={{
-                  marginLeft: -10,
-                }}
-                width={40}
-                height={40}
-              />
-            ) : type === "Cake" ? (
-              <CakeOutlined />
-            ) : (
-              <BrushOutlined />
-            )
-          }
           action={
             // if loading return a skeleton of the potential product
             admin && (
@@ -153,6 +130,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
                   e.stopPropagation();
                   setMenuOpen(true);
                 }}
+                className={classes.options}
               >
                 <MoreVert ref={anchorRef} />
               </IconButton>
@@ -175,36 +153,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           style={{
             textAlign: "center",
           }}
-        >
-          {isLoading ? (
-            <div
-              style={{
-                margin: "30px 0",
-              }}
-            >
-              <Skeleton
-                animation="wave"
-                height={10}
-                style={{
-                  marginBottom: 6,
-                }}
-              />
-              <Skeleton
-                animation="wave"
-                height={10}
-                width="80%"
-                style={{
-                  margin: "auto",
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <p className={classes.price}>{handleGetPrices()}</p>
-              {tags && <ChipContainer type={type} tags={tags} />}
-            </>
-          )}
-        </CardHeader>
+        />
         <CardContent
           classes={{
             root: classes.root,

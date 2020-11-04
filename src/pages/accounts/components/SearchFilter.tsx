@@ -17,12 +17,12 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { API } from "aws-amplify";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
+import { useDebounce } from "use-debounce";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "underscore";
 import { SearchRounded, RefreshRounded } from "@material-ui/icons";
 import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
-import { searchFilterTheme, FONTS } from "../../../themes";
+import { searchFilterTheme } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
 import { searchProducts } from "../../../graphql/queries";
 import { ProductProps } from "../interfaces/Product.i";
@@ -30,43 +30,23 @@ import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
 import { FilterActionProps, SortBy } from "../../../interfaces/products.redux.i";
 import * as actions from "../../../actions/products.actions";
-
-const breakpoints = createBreakpoints({});
-
-const useStyles = makeStyles({
-  container: {
-    background: "#fff",
-    padding: 24,
-    boxSizing: "border-box",
-    width: "400px",
-    margin: "0 auto",
-    fontFamily: FONTS.Title,
-    borderRadius: 6,
-    WebkitBorderRadius: 6,
-    MozBorderRadius: 6,
-    [breakpoints.down("xs")]: {
-      width: "100%",
-    },
-  },
-});
+import styles from "../styles/searchFilter.style";
 
 /**
  * TODO
- * [x] disable price when selected cakes - no longer needed (fixed)
- * [ ] Sort out success page
+ * [x] Sort out success page
  * [ ] Sort out basket
- * [x] Test filter properly
- * [x] Fix hamburger icon
- * [x] Put nav links in container, and center logo
+ * [ ] Fix errors for cakes ViewProduct
+ * [ ] Fix landing page styles on mobile
  */
 
 /**
  * Component which allows the user to filter out products to fit their needs.
- * @param {(query: string, filters: ProductFilters) => void} setQuery - Function to set the
+ * @param setQuery - Function to set the
  * filters and searchQuery into the parent where the search/filter process will begin.
- * @param {boolean} [admin = false] - Boolean value to show if the current authenticated user
+ * @param admin = false - Boolean value to show if the current authenticated user
  * is an admin.
- * @param {"Cake" | "Creates"} [type = null] - Optional type of product (if any) page where
+ * @param type = null - Optional type of product (if any) page where
  * the user has come from (i.e /cake or /creates)
  */
 const SearchFilter: React.FC<SearchFilterProps> = ({
@@ -74,31 +54,66 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   type = null,
   setSearchResults,
 }): JSX.Element => {
+  const useStyles = makeStyles(styles);
   const classes = useStyles();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
+  /**
+   * the debounced search query will only change its value 500 milliseconds
+   * after the user has finished typing
+   */
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const [searchResults, setSearch] = useState<ProductProps[] | null>([]);
 
   const dispatch = useDispatch();
 
+  // retrieve the filters set in the store with redux's useSelector
   const filters: FilterActionProps = useSelector(
     ({ products }: AppState) => products.filters,
   );
 
+  /**
+   * Function to find the minimum price from an array of variants and return
+   * it.
+   * @param variants - Array of variants which will be iterated
+   * through to find the minimum price out of all of the elements.
+   */
   const getMinPriceFromVariants = (variants: Variant[]): number => {
+    // set min to infinity so any number which runs with Math.min() will change value
     let min = Infinity;
+    /**
+     * iterate through each variant and check to see if the current variants prices
+     * are less than the current min, and overwrite it if it is.
+     */
     variants.forEach((variant) => {
       min = Math.min(min, variant.price.item + variant.price.postage);
     });
     return min;
   };
 
-  const sortSearchResults = (products = searchResults): void => {
+  /**
+   * Function to sort the input array of products, based on the sorting method that the user
+   * has set (createdAt or price), and the sort direction that the user has set (Descending/
+   * Ascending), and then return it.
+   * @param { ProductProps[] | null = searchResults} products - An unsorted array
+   * of products, which will be sorted and returned. If there is no parameter set for
+   * products, use the searchResults array as a default value.
+   */
+  const sortSearchResults = (products: ProductProps[] | null = searchResults): void => {
     const { sortBy, sortDirection } = filters;
+    // initialise an array to hold the values of the sorted products.
     let sorted: ProductProps[] = [];
     if (!products) return setSearchResults(null);
     if (sortBy === "price") {
+      /**
+       * create a variable for the cake - no need to filter as there are no set
+       * prices for them.
+       */
       const cakes = products.filter((product) => product.type === "Cake");
+      /**
+       * create a variable for the creations, and sort it based on the price, using the
+       * getMinPriceFromVariants function.
+       */
       const creates = products
         .filter((product) => product.type === "Creates")
         .sort((a: ProductProps, b: ProductProps) => {
@@ -111,14 +126,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             : 1;
         });
       /**
-       * place cakes after creates because cakes do not have a set price so they
-       * should be placed after.
+       * If the sortDirection is descending, place cakes after creates because cakes do not
+       * have a set price so they should be placed after. If it's ascending, reverse this.
        */
-
       sortDirection === "DESC"
         ? (sorted = [...creates, ...cakes])
         : (sorted = [...cakes, ...creates]);
     } else {
+      // sort the products based on the createdAt prop.
       sorted = products.sort((a, b) =>
         //@ts-expect-error
         a.createdAt > b.createdAt
@@ -133,6 +148,10 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     setSearchResults(sorted);
   };
 
+  /**
+   * If the user is an admin, and there are no adminFilters set into state, set them
+   * into state when the component mounts.
+   */
   useEffect(() => {
     const { adminFilters } = filters;
     if (admin && adminFilters === null) {
@@ -148,9 +167,18 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     }
   }, []);
 
+  /**
+   * Function to filter the products based on the users' input, which will be
+   * executed every time the searchQuery state or filters object (from redux)
+   * is changed.
+   */
   useEffect(() => {
     const { searchType, adminFilters, shouldUpdateWithNoQuery } = filters;
 
+    /**
+     * Function to transform the user input filters into a filters that can be
+     * used in the graphQL searchProducts query.
+     */
     const handleSearchProducts = async (): Promise<void> => {
       //@ts-expect-error
       const filter: FilterProps = {};
@@ -191,11 +219,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           filter.and = [{ type: { eq: "Creates" } }];
         }
       } else {
+        /**
+         * if there are no admin filters and there is a type, set the filter to return only
+         * that type.
+         */
         if (type) {
           filter.and = [{ type: { eq: type } }];
         }
       }
-
+      // execute the searchProducts query, with any filters if there are any
       try {
         const { data } = await API.graphql({
           query: searchProducts,
@@ -208,6 +240,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         });
 
         const products = data.searchProducts.items;
+        // sort the products, so they can be sorted and set into state inside that function.
         sortSearchResults(products);
       } catch (err) {
         setSearch(null);
@@ -215,9 +248,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         console.error(err);
       }
     };
-
+    // execute the function
     handleSearchProducts();
-  }, [filters, searchQuery]);
+  }, [filters, debouncedSearchQuery]);
 
   const {
     searchType,
@@ -305,14 +338,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   fullWidth
                   margin="dense"
                   label="From"
-                  style={{
-                    borderTopLeftRadius: 0,
-                    borderBottomLeftRadius: 0,
-                    borderLeft: "none",
-                    borderTopRightRadius: 4,
-                    borderBottomRightRadius: 4,
-                    marginLeft: -1,
-                  }}
+                  className={classes.select}
                 >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
@@ -380,9 +406,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             )}
             <Grid item xs={adminFilters ? 4 : 6}>
               <FormControl fullWidth>
-                <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
-                  Sort By
-                </FormLabel>
+                <FormLabel className={classes.formLabel}>Sort By</FormLabel>
                 <RadioGroup
                   aria-label="Sort By"
                   name="SortBy"
@@ -404,9 +428,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             </Grid>
             <Grid item xs={adminFilters ? 4 : 6}>
               <FormControl fullWidth>
-                <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
-                  Sort Direction
-                </FormLabel>
+                <FormLabel className={classes.formLabel}>Sort Direction</FormLabel>
                 <RadioGroup
                   aria-label="sort by ascending"
                   name="sortAscending"

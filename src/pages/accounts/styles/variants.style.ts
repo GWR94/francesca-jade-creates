@@ -42,6 +42,13 @@ export default createStyles({
     fontSize: "1rem",
     color: COLORS.ErrorRed,
     cursor: "pointer",
+    marginLeft: 5,
+  },
+  editIcon: {
+    fontSize: "0.8rem",
+    color: COLORS.InfoBlue,
+    cursor: "pointer",
+    marginLeft: 5,
   },
   renderedOptions: {
     display: "flex",
@@ -66,5 +73,17 @@ export default createStyles({
     borderRadius: 0,
     borderLeft: "0px solid transparent",
     borderRight: "0px solid transparent",
+  },
+  name: {
+    fontWeight: "bold",
+  },
+  feature: {
+    margin: "0 0 7px",
+  },
+  variantTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+    fontSize: "1.1rem",
   },
 });

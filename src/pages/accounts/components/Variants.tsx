@@ -28,7 +28,19 @@ import {
   Variant,
 } from "../interfaces/Variants.i";
 import { COLORS } from "../../../themes";
+import { getReadableStringFromArray, marks } from "../../../utils";
 
+/**
+ * TODO
+ * [ ] Add "there's unsaved information" popup when saving to avoid lost data.
+ * [ ] Check errors
+ */
+
+/**
+ * Class component which renders a set of inputs which allow an admin user to
+ * create a variant of a product so a customer can customise and fine-tune their
+ * order.
+ */
 class Variants extends Component<VariantsProps, VariantsState> {
   public readonly state: VariantsState = {
     dimensions: "",
@@ -36,14 +48,14 @@ class Variants extends Component<VariantsProps, VariantsState> {
       item: 0,
       postage: 0,
     },
-    name: "",
+    featureName: "",
     inputType: "",
     featureType: "",
     range: [0, 1],
     number: 1,
     array: [],
     features: [],
-    current: 1,
+    currentIdx: 1,
     variantName: "",
     errors: {
       number: "",
@@ -54,204 +66,274 @@ class Variants extends Component<VariantsProps, VariantsState> {
       postage: "",
       feature: "",
     },
-    isEditing: null,
+    variantIdx: null,
     instructions: "",
+    featureIdx: null,
+    featureDesc: "",
   };
 
-  private marks = [
-    {
-      value: 0,
-      label: 0,
-    },
-    {
-      value: 2,
-      label: 2,
-    },
-    {
-      value: 4,
-      label: 4,
-    },
-    {
-      value: 6,
-      label: 6,
-    },
-    {
-      value: 8,
-      label: 8,
-    },
-    {
-      value: 10,
-      label: 10,
-    },
-    {
-      value: 12,
-      label: 12,
-    },
-    {
-      value: 14,
-      label: 14,
-    },
-    {
-      value: 16,
-      label: 16,
-    },
-    {
-      value: 18,
-      label: 18,
-    },
-    {
-      value: 20,
-      label: 20,
-    },
-    {
-      value: 22,
-      label: 22,
-    },
-    {
-      value: 24,
-      label: 24,
-    },
-    {
-      value: 26,
-      label: 26,
-    },
-    {
-      value: 28,
-      label: 28,
-    },
-    {
-      value: 30,
-      label: 30,
-    },
-    {
-      value: 32,
-      label: 32,
-    },
-  ];
-
+  /**
+   * Method to add (or edit) a completed feature and set it into state so it
+   * can be eventually be saved as a full Variant in the parent component.
+   */
   private handleAddFeature = (): void => {
-    const { inputType, featureType, number, features, array, range, name } = this.state;
+    // destructure necessary values from state
+    const {
+      inputType,
+      featureType,
+      number,
+      features,
+      array,
+      range,
+      featureName,
+      featureIdx,
+      featureDesc,
+    } = this.state;
+
+    // initialise a variable to hold feature data
     let feature;
     switch (inputType) {
+      // if input type is number, use the necessary values from state and use number as value
       case "number":
-        feature = { name, value: { number }, featureType, inputType };
+        feature = {
+          name: featureName,
+          value: { number },
+          featureType,
+          inputType,
+          description: featureDesc,
+        };
         break;
+      // if input type is array, use the necessary values from state and use array as value
       case "array":
-        feature = { name, value: { array }, featureType, inputType };
+        feature = {
+          name: featureName,
+          value: { array },
+          featureType,
+          inputType,
+          description: featureDesc,
+        };
         break;
+      // if input type is range, use the necessary values from state and use range as value
       case "range":
-        feature = { name, value: { range }, featureType, inputType };
+        feature = {
+          name: featureName,
+          value: { range },
+          featureType,
+          inputType,
+          description: featureDesc,
+        };
         break;
       default:
-        return;
+        break;
     }
-    let match = false;
-    features.forEach((feature) => {
-      if (feature.name === name) match = true;
-    });
-    if (!match) {
+
+    // if featureIdx isn't null, then you will need to overwrite that value rather than create a new one
+    if (featureIdx !== null) {
+      // save features in a new value so it can be mutated
+      const updatedFeatures = features;
+      // mutate the value at the featureIdx to be the feature created above
+      updatedFeatures[featureIdx] = feature as Feature;
+      // update the features in state and set featureIdx to null so nothing will be overwritten later
       this.setState({
-        features: [...features, feature],
-        name: "",
-        number: 1,
-        range: [0, 1],
-        array: [],
-        inputType: "",
-        featureType: "",
+        features: updatedFeatures,
+        featureIdx: null,
       });
+    } else {
+      // if there is no featureIdx then a new value should be created if it doesn't already exist
+      // set match to be false, which will be changed if there is a match of names in the array
+      let match = false;
+      // iterate through the features array
+      features.forEach((feature) => {
+        // if the feature.name is the same as featureName, theres a match, so set match to true.
+        if (feature.name === featureName) match = true;
+      });
+      // if there is no match, add the feature to the features array.
+      if (!match) {
+        this.setState({
+          features: [...features, feature as Feature],
+        });
+      }
     }
+    // set state back to original state so features inputs are empty
+    this.setState({
+      featureName: "",
+      number: 1,
+      range: [0, 1],
+      array: [],
+      inputType: "",
+      featureType: "",
+      featureDesc: "",
+    });
   };
 
-  private renderCurrentFeatures = (chosenFeatures?: Feature[]): JSX.Element[] | null => {
+  /**
+   * Method to render an array of JSX which will contain unordered list, containing each
+   * individual feature, along with the values that are set.
+   * @param chosenFeatures - optional array of features which will be used if present
+   * @param showDelete - boolean value to determine if the delete icon should be shown
+   */
+  private renderCurrentFeatures = (
+    chosenFeatures?: Feature[],
+    showDelete = true,
+  ): JSX.Element[] | null => {
+    // initialise variable to hold features
     let features;
     if (!chosenFeatures) {
+      // if theres no chosen features passed as a parameter, use features in state
       features = this.state.features;
     } else {
+      // if chosen features is passed as a parameter, use it.
       features = chosenFeatures;
     }
     const { classes } = this.props;
     if (!features.length) return null;
+
+    /**
+     * Function to format featureType and their values into a human readable string
+     * so the admin can have an overview of what's being done with minimum effort.
+     * @param featureType
+     * @param value
+     */
+    const formatText = (featureType: FeatureType, value: number | number[]): string => {
+      switch (featureType) {
+        case "images":
+          return `image${value > 1 ? "s" : ""}`;
+        case "text": {
+          return `piece${value > 1 ? "s" : ""} of text.`;
+        }
+        default:
+          return "";
+      }
+    };
+    // create an array to store all of the JSX in.
     const data: JSX.Element[] = [];
+    // iterate through each feature in features array
     features.forEach((feature, i): void => {
+      // destructure all relevant properties
       const { name, featureType, inputType } = feature;
       let description;
+      // set description to be the values set from the user in a human readable format
       switch (inputType) {
         case "range": {
           const value = feature.value.range as number[];
-          description = `Between ${value[0]} and ${value[1]} -- ${featureType}`;
+          description = `User inputs between ${value[0]} and ${value[1]} ${formatText(
+            featureType,
+            value[1],
+          )}`;
           break;
         }
         case "number": {
           const value = feature.value.number as number;
-          description = `${value} only -- ${featureType}`;
+          description = `User inputs only ${value} ${formatText(featureType, value)}`;
           break;
         }
         case "array": {
           const value = feature.value.array as string[];
-          description = `Multiple choice: ${value.join(", ")}`;
+          description = `User picks one item from ${getReadableStringFromArray(value)} `;
           break;
         }
         default:
           return;
       }
+      // create the list item with the name and description created above
       data.push(
-        <li key={i}>
-          {name} - {description} (
-          <i
-            role="button"
-            tabIndex={0}
-            className={`fas fa-times ${classes.removeIcon}`}
-            onClick={(): void => {
-              const { features } = this.state;
-              this.setState({
-                features: [...features.slice(0, i), ...features.slice(i + 1)],
-              });
-            }}
-            style={{ cursor: "pointer" }}
-          />
-          )
+        <li
+          key={i}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexWrap: "nowrap",
+            maxWidth: 400,
+          }}
+        >
+          <p className={classes.feature}>
+            <span className={classes.name}>{name}</span> - {description}
+          </p>
+          {/* if showDelete is true (from params) then show both delete and edit icons */}
+          {showDelete && (
+            <div style={{ display: "inline-flex" }}>
+              <i
+                role="button"
+                tabIndex={0}
+                className={`fas fa-times ${classes.removeIcon}`}
+                onClick={(): void => {
+                  // removes current feature from features array
+                  const { features } = this.state;
+                  this.setState({
+                    features: [...features.slice(0, i), ...features.slice(i + 1)],
+                  });
+                }}
+              />
+              <i
+                role="button"
+                tabIndex={0}
+                className={`fas fa-pencil-alt ${classes.editIcon}`}
+                style={{ cursor: "pointer" }}
+                onClick={(): void => {
+                  // sets the value of the current variant into state so it can be edited and saved
+                  this.setState((prevState) => ({
+                    featureType: feature.featureType,
+                    inputType: feature.inputType,
+                    featureName: feature.name,
+                    range: feature.value?.range ?? prevState.range,
+                    number: feature.value?.number ?? prevState.number,
+                    array: feature.value?.array ?? [],
+                    featureIdx: i,
+                    featureDesc: feature?.description ?? "",
+                  }));
+                }}
+              />
+            </div>
+          )}
         </li>,
       );
     });
+    // return the jsx array to be rendered
     return data;
   };
 
+  /**
+   * Method to add (or update) a variant and place it into the variants array
+   * saved in state.
+   */
   private handleAddVariant = (): void => {
     const {
       price,
       dimensions,
       features,
-      current,
+      currentIdx,
       errors,
-      isEditing,
+      variantIdx,
       variantName,
       instructions,
     } = this.state;
     const { updateVariants, variants } = this.props;
 
+    // if there are errors, notify the user by setting them in state, which will be visually shown to user
     if (!dimensions) {
       return this.setState({
         errors: { ...errors, dimensions: "Please enter a dimension for your product." },
       });
     }
-    const updatedVariants = [...variants];
-    if (isEditing !== null) {
-      updatedVariants[isEditing] = {
-        dimensions,
-        price,
-        features,
-        variantName,
-        instructions,
-      };
+    // save updatedVariants into a variable so it can be easily mutated
+    const updatedVariants = variants;
+    // create a variable with the new variant data in it.
+    const variant = {
+      dimensions,
+      price,
+      features,
+      variantName,
+      instructions,
+    };
+    // if there is a variantIdx then the variant in that index needs to overwritten with the variant variable
+    if (variantIdx !== null) {
+      updatedVariants[variantIdx] = variant;
     } else {
-      updatedVariants.push({
-        dimensions,
-        price,
-        features,
-        variantName,
-        instructions,
-      });
+      // if there is no variantIdx, the variant needs to be pushed into variants array
+      updatedVariants.push(variant);
     }
+    // reset all inputs to be empty.
     this.setState({
       variantName: "",
       instructions: "",
@@ -260,27 +342,49 @@ class Variants extends Component<VariantsProps, VariantsState> {
         item: 0,
         postage: 0,
       },
-      name: "",
+      featureName: "",
       inputType: "",
       featureType: "",
       range: [0, 1],
       number: 1,
       array: [],
       features: [],
-      current: current + 1,
+      featureDesc: "",
+      currentIdx: currentIdx + 1,
     });
+    // update variants in parent with updateVariants function from props.
     updateVariants(updatedVariants);
   };
 
+  /**
+   * Method to render the inputs which will be used the create the parameters
+   * of the variant creation, based on the inputType.
+   */
   private renderType = (): JSX.Element | null => {
-    const { number, array, range, name, inputType, errors, isEditing } = this.state;
-    const { classes, size } = this.props;
+    // destructure relevant properties
+    const {
+      number,
+      array,
+      range,
+      featureName,
+      inputType,
+      errors,
+      featureIdx,
+    } = this.state;
+    const { classes } = this.props;
     switch (inputType) {
+      /**
+       * if the inputType is number, render a Slider component with one values. The value of
+       * this step determines the amount of featureName is required to complete the task.
+       * E.g. if featureName is images, and the slider is set to 4, the user would have
+       * to upload 4 images for it to be classed a valid input.
+       */
+
       case "number":
         return (
           <>
             <Typography id="range-slider" gutterBottom style={{ textAlign: "center" }}>
-              Number of {name}
+              Number of {featureName}
             </Typography>
             <Slider
               value={number}
@@ -290,23 +394,27 @@ class Variants extends Component<VariantsProps, VariantsState> {
               valueLabelDisplay="auto"
               onChange={(_e, number): void => this.setState({ number: number as number })}
               aria-labelledby="range-slider"
-              marks={this.marks.slice(1)}
+              marks={marks.slice(1)}
             />
             <Button
               variant="outlined"
               color="primary"
               onClick={this.handleAddFeature}
-              style={{ margin: "10px 0" }}
+              style={{ margin: "4px 0 10px" }}
             >
-              Add Feature
+              {featureIdx === null ? "Add Feature" : "Update Feature"}
             </Button>
           </>
         );
       case "range":
+        /**
+         * if the inputType is range, a slider with two values will be rendered. The lesser
+         * value will be stored in range[0] and the larger will be stored in range[2].
+         */
         return (
           <>
             <Typography id="range-slider" gutterBottom>
-              Range of {name}
+              Range of {featureName}
             </Typography>
             <Slider
               value={range}
@@ -316,27 +424,33 @@ class Variants extends Component<VariantsProps, VariantsState> {
               valueLabelDisplay="auto"
               onChange={(_e, range): void => this.setState({ range: range as number[] })}
               aria-labelledby="range-slider"
-              marks={this.marks}
+              marks={marks}
             />
             <Button
               variant="outlined"
               color="primary"
               onClick={this.handleAddFeature}
-              style={{ margin: "10px 0" }}
+              style={{ margin: "4px 0 10px" }}
+              disabled={range[0] === range[1] || range[1] < range[0]}
             >
-              Add Feature
+              {featureIdx === null ? "Add Feature" : "Update Feature"}
             </Button>
           </>
         );
       case "array":
+        /**
+         * If the inputType is array then a chip input will be rendered, where the user
+         * can add values into it. These values will normally be used to render a select
+         * component (dropdown).
+         */
         return (
           <>
             <ChipInput
-              label={`${name} Choices`}
+              label={`${featureName} Choices`}
               value={array}
               onAdd={(chip): void => this.setState({ array: [...array, chip] })}
               onDelete={(chip): void => {
-                const idx = array.findIndex((current) => current === chip);
+                const idx = array.findIndex((currentIdx) => currentIdx === chip);
                 this.setState({
                   array: [...array.slice(0, idx), ...array.slice(idx + 1)],
                 });
@@ -349,15 +463,15 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 inputRoot: classes.chipInput,
                 chip: this.props.type === "Cake" ? classes.chipCake : classes.chipCreates,
               }}
-              style={{ marginBottom: 10 }}
             />
             <Button
               variant="outlined"
               color="primary"
               onClick={this.handleAddFeature}
-              style={{ margin: "10px 0" }}
+              style={{ margin: "4px 0 10px" }}
+              disabled={array.length === 0}
             >
-              Add Feature
+              {featureIdx === null ? "Add Feature" : "Update Feature"}
             </Button>
           </>
         );
@@ -371,12 +485,13 @@ class Variants extends Component<VariantsProps, VariantsState> {
       dimensions,
       price,
       inputType,
-      name,
+      featureName,
       features,
       featureType,
-      isEditing,
+      variantIdx,
       variantName,
       instructions,
+      featureDesc,
     } = this.state;
     const { classes, setPrice, variants, size } = this.props;
 
@@ -470,28 +585,44 @@ class Variants extends Component<VariantsProps, VariantsState> {
         <Grid container style={{ marginBottom: 8 }}>
           <Grid item xs={12} sm={4}>
             <FormControl variant="outlined" className={classes.formControl} size={size}>
-              <InputLabel id="feature-type-label">User Action</InputLabel>
+              <InputLabel id="feature-type-label" variant="outlined">
+                User Action
+              </InputLabel>
               <Select
                 value={featureType}
                 fullWidth
                 labelId="feature-type-label"
                 id="feature-type"
-                label="Feature Type"
+                labelWidth={200}
+                label="User Action"
                 variant="outlined"
                 style={{
                   borderTopRightRadius: 0,
                   borderBottomRightRadius: 0,
                 }}
-                onChange={(e): void =>
-                  this.setState({ featureType: e.target.value as FeatureType })
-                }
+                onChange={(e): void => {
+                  const featureType = e.target.value as FeatureType;
+                  if (featureType === "images") {
+                    this.setState({
+                      featureName: "Images",
+                    });
+                  } else {
+                    this.setState({ featureName: "" });
+                  }
+                  if (featureType === "other") {
+                    this.setState({
+                      inputType: "array",
+                    });
+                  }
+                  this.setState({ featureType });
+                }}
               >
                 <MenuItem value="">
                   <em>Pick a Value</em>
                 </MenuItem>
                 <MenuItem value="images">User Uploads Image</MenuItem>
                 <MenuItem value="text">User Inputs Text</MenuItem>
-                <MenuItem value="dropdown">User Picks From Choice</MenuItem>
+                <MenuItem value="other">User Picks From Choice</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -499,7 +630,8 @@ class Variants extends Component<VariantsProps, VariantsState> {
             <TextField
               variant="outlined"
               label="Feature Name"
-              value={name}
+              value={featureName}
+              disabled={featureName === "Images"}
               size={size}
               InputProps={{
                 classes: {
@@ -507,19 +639,21 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 },
               }}
               fullWidth
-              onChange={(e): void => this.setState({ name: e.target.value })}
+              onChange={(e): void => this.setState({ featureName: e.target.value })}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl variant="outlined" className={classes.formControl} size={size}>
-              <InputLabel id="input-type-label">Required Values</InputLabel>
+              <InputLabel id="input-type-label" variant="outlined">
+                Required Values
+              </InputLabel>
               <Select
                 value={inputType}
                 fullWidth
                 labelId="input-type-label"
                 id="input-type"
-                disabled={name.length === 0}
-                label="Feature Type"
+                disabled={featureName.length === 0}
+                label="Required Values"
                 variant="outlined"
                 style={{
                   borderTopLeftRadius: 0,
@@ -534,9 +668,23 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 </MenuItem>
                 <MenuItem value="number">Requires Exact Number</MenuItem>
                 <MenuItem value="range">Requires Min & Max Range</MenuItem>
-                <MenuItem value="array">Multiple Choice</MenuItem>
+                {featureType === "other" && (
+                  <MenuItem value="array">Multiple Choice</MenuItem>
+                )}
               </Select>
             </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              value={featureDesc}
+              label="Description (optional)"
+              fullWidth
+              style={{ marginTop: 8 }}
+              size={size}
+              placeholder="Describe the feature"
+              onChange={(e): void => this.setState({ featureDesc: e.target.value })}
+              variant="outlined"
+            />
           </Grid>
         </Grid>
         <div className={classes.typeContainer}>{this.renderType()}</div>
@@ -545,17 +693,17 @@ class Variants extends Component<VariantsProps, VariantsState> {
         )}
         {dimensions.length > 0 && (
           <div className={classes.buttonContainer}>
-            {isEditing !== null && (
+            {variantIdx !== null && (
               <Button
                 variant="contained"
                 color="secondary"
                 style={{ margin: "20px 4px 0" }}
                 onClick={(): void =>
                   this.setState({
-                    isEditing: null,
+                    variantIdx: null,
                     dimensions: "",
                     featureType: "",
-                    name: "",
+                    featureName: "",
                     inputType: "",
                     features: [],
                   })
@@ -570,7 +718,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
               style={{ margin: "20px 4px 0" }}
               onClick={this.handleAddVariant}
             >
-              {isEditing !== null ? "Update Variant" : "Save Variant"}
+              {variantIdx !== null ? "Update Variant" : "Save Variant"}
             </Button>
           </div>
         )}
@@ -593,15 +741,16 @@ class Variants extends Component<VariantsProps, VariantsState> {
                         flexDirection: "column",
                       }}
                     >
-                      <Typography style={{ fontWeight: "bold" }}>
+                      <Typography className={classes.variantTitle}>
                         {variantName || `Variant ${i + 1}.`}
                       </Typography>
                       <Typography>
-                        Dimensions: <em>{dimensions}</em>
+                        <span className={classes.name}>Dimensions</span>:{" "}
+                        <em>{dimensions}</em>
                       </Typography>
                       {price.item > 0 && (
                         <Typography>
-                          Price:{" "}
+                          <span className={classes.name}>Price</span>:{" "}
                           <em>
                             £{price.item.toFixed(2)} + £{price.postage.toFixed(2)} P&P.
                           </em>
@@ -617,7 +766,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                       <>
                         <Typography style={{ fontWeight: "bold" }}>Features:</Typography>
                         <ul style={{ margin: 0 }}>
-                          {this.renderCurrentFeatures(features)}
+                          {this.renderCurrentFeatures(features, false)}
                         </ul>
                       </>
                     )}
@@ -641,7 +790,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
                             ];
                           }
                           updateVariants(updatedVariants);
-                          console.log(variants);
                         }}
                       >
                         <Tooltip title="Delete Variant">
@@ -651,7 +799,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                       <IconButton
                         color="primary"
                         onClick={(): void => {
-                          this.setState({ ...variant, isEditing: i });
+                          this.setState({ ...variant, variantIdx: i });
                         }}
                       >
                         <Tooltip title="Edit the current variant">
@@ -666,7 +814,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
                             features,
                             variantName,
                             instructions,
-                            isEditing: null,
+                            variantIdx: null,
                           });
                         }}
                       >

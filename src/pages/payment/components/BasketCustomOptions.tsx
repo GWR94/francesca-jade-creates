@@ -9,55 +9,46 @@ import {
   Select,
   MenuItem,
   makeStyles,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
   FormControl,
   InputLabel,
 } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
-import { Auth, Storage } from "aws-amplify";
 import { ExpandMore } from "@material-ui/icons";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import { COLORS, INTENT } from "../../../themes";
+import { COLORS } from "../../../themes";
 import { Feature } from "../../accounts/interfaces/Variants.i";
-import { openSnackbar } from "../../../utils/Notifier";
 import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
-import { getReadableStringFromArray } from "../../../utils";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import awsExports from "../../../aws-exports";
-import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
-import { S3Image } from "aws-amplify-react";
-import { S3ImageProps } from "../../accounts/interfaces/Product.i";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../store/store";
+import RenderInput from "./RenderInput";
 
+/**
+ * TODO
+ * [x] Show uploaded images when field is complete
+ * [x] Add Optional to all fields which are optional (range/minNum)
+ * [x] Add colour scheme to top of custom options
+ * [ ] Add styles to delete product dialog
+ * [ ] Check the images are deleting from s3 when removing them from array
+ */
+
+/**
+ * Functional component to allow a customer to enter their custom options for a
+ * chosen product variant and store the result into the redux store (basket.checkout)
+ */
 const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
+  currentVariant,
   setCustomOptions,
   customOptions,
-  currentVariant,
+  colorScheme,
 }) => {
   const [state, setState] = useState<CustomOptionsState>({
-    currentTextValue: "",
-    currentArrayValue: [],
-    currentImagesArray: [],
-    currentMultipleChoice: "",
-    uploadedImage: null,
-    uploadedImageArray: [],
-    imageCompleted: false,
-    confirmDialogOpen: false,
-    currentImageFile: null,
-    imageCount: 0,
     expanded: false,
+    currentNotesValue: "",
+    isCompleted: false,
+    currentColorScheme: "",
+    imageCompleted: false,
   });
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-
-  const sub = useSelector(({ user }: AppState) => user.id);
 
   const handlePanelChange = (panel: string) => (
     _event: React.ChangeEvent<{}>,
@@ -69,530 +60,115 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     });
   };
 
-  const renderInput = (feature: Feature, i: number): JSX.Element | null => {
-    const {
-      currentTextValue,
-      currentArrayValue,
-      currentMultipleChoice,
-      currentImagesArray,
-      uploadedImage,
-      currentImageFile,
-      imageCount,
-      confirmDialogOpen,
-      uploadedImageArray,
-    } = state;
-    const { featureType, inputType, value, name } = feature;
-    let renderedFeature: JSX.Element | null = null;
+  const { expanded, isCompleted, currentNotesValue, currentColorScheme } = state;
 
-    let maxNumber = -Infinity;
-    let minNumber = Infinity;
-    if (inputType === "range" && value.range !== undefined) {
-      maxNumber = value.range[1];
-      minNumber = value.range[0];
-    } else if (inputType === "number" && value.number !== undefined) {
-      maxNumber = value.number;
-    }
-
-    const checkImageCompletion = (): void => {
-      const { imageCount } = state;
-      if (imageCount < maxNumber) {
-        setState({ ...state, confirmDialogOpen: true });
-      } else {
-        const updatedCustomOptions = customOptions;
-        updatedCustomOptions[i] = {
-          Images: currentImagesArray,
-        };
-        setState({
-          ...state,
-          imageCompleted: true,
-          expanded: `panel${i + 1}`,
-          currentImagesArray: [],
-        });
-        setCustomOptions(updatedCustomOptions);
-      }
-    };
-
-    switch (featureType) {
-      case "text": {
-        renderedFeature =
-          inputType === "range" || (inputType === "number" && maxNumber > 1) ? (
-            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-              <Typography variant="subtitle2">
-                Please add {inputType === "range" ? "up to" : "exactly"} {maxNumber} items
-              </Typography>
-              <div style={{ display: "inline-flex" }}>
-                <ChipInput
-                  value={currentArrayValue}
-                  fullWidth
-                  variant="outlined"
-                  label={name}
-                  classes={{
-                    chip: classes.chip,
-                  }}
-                  // @ts-ignore
-                  placeholder="Press enter to add an item"
-                  onAdd={(chip): void => {
-                    if (currentArrayValue.length < maxNumber) {
-                      setState({
-                        ...state,
-                        currentArrayValue: [...currentArrayValue, chip],
-                      });
-                    } else {
-                      openSnackbar({
-                        severity: INTENT.Warning,
-                        message: `You can only add ${maxNumber} items.`,
-                      });
-                    }
-                  }}
-                  onDelete={(chip): void => {
-                    const updatedChips = currentArrayValue.filter(
-                      (value) => value !== chip,
-                    );
-                    setState({ ...state, currentArrayValue: updatedChips });
-                  }}
-                />
-                <Button
-                  onClick={(): void => {
-                    const updatedCustomOptions = customOptions;
-                    updatedCustomOptions[i] = {
-                      [name]: currentArrayValue,
-                    };
-                    setState({
-                      ...state,
-                      currentArrayValue: [],
-                      expanded: `panel${i + 1}`,
-                    });
-                    setCustomOptions(updatedCustomOptions);
-                  }}
-                  color="primary"
-                  disabled={
-                    inputType === "range"
-                      ? currentArrayValue.length < minNumber ||
-                        currentArrayValue.length > maxNumber
-                      : currentArrayValue.length !== maxNumber
-                  }
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-              <Typography variant="subtitle2">
-                Please add exactly {maxNumber} items
-              </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  width: "100%",
-                }}
-              >
-                <TextField
-                  value={currentTextValue}
-                  fullWidth
-                  label={name}
-                  variant="outlined"
-                  onChange={(e): void =>
-                    setState({ ...state, currentTextValue: e.target.value })
-                  }
-                />
-                <Button
-                  onClick={(): void => {
-                    const updatedCustomOptions = customOptions;
-                    updatedCustomOptions[i] = {
-                      [name]: currentTextValue,
-                    };
-                    setState({
-                      ...state,
-                      currentTextValue: "",
-                      expanded: `panel${i + 1}`,
-                    });
-                    setCustomOptions(updatedCustomOptions);
-                  }}
-                  color="primary"
-                  disabled={currentTextValue?.length === 0}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          );
-        break;
-      }
-      case "other":
-        if (value.array === undefined) return null;
-        renderedFeature = (
-          <div
-            style={{
-              display: "inline-flex",
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel id="demo-simple-select-outlined-label">{name}</InputLabel>
-              <Select
-                value={currentMultipleChoice}
-                label={name}
-                fullWidth
-                variant="outlined"
-                onChange={(e): void =>
-                  setState({ ...state, currentMultipleChoice: e.target.value as string })
-                }
-                style={{ minWidth: 220 }}
-              >
-                {value.array.map((val, i) => (
-                  <MenuItem value={val} key={i}>
-                    {val}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Button
-              onClick={(): void => {
-                const updatedCustomOptions = customOptions;
-                updatedCustomOptions[i] = {
-                  [name]: currentMultipleChoice,
-                };
-                setState({
-                  ...state,
-                  currentMultipleChoice: "",
-                  expanded: `panel${i + 1}`,
-                });
-                setCustomOptions(updatedCustomOptions);
-              }}
-              color="primary"
-              disabled={!currentMultipleChoice}
-            >
-              Next
-            </Button>
-          </div>
-        );
-        break;
-      case "images":
-        {
-          renderedFeature = (
-            <>
-              <div className={classes.uploadedImageContainer}>
-                {inputType === "range" ? (
-                  <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
-                    Please add up to {maxNumber} images and upload them in the order you
-                    wish to have them in.
-                  </Typography>
-                ) : (
-                  <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
-                    Please add {maxNumber} image{maxNumber === 1 ? "" : "s"}.
-                  </Typography>
-                )}
-                {!uploadedImage ? (
-                  <>
-                    <label
-                      htmlFor="raised-button-file"
-                      id="raised-button-label"
-                      className={classes.imageLabel}
-                    >
-                      <input
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        id="raised-button-file"
-                        type="file"
-                        onChange={(e): void => {
-                          if (e.target.files) {
-                            const file = e.target.files[0];
-                            const reader = new FileReader();
-                            reader.onload = async function (e): Promise<void> {
-                              if (e.target !== null) {
-                                const filename = `/customImages/${Date.now()}/${
-                                  file.name
-                                }`;
-                                // put the file into aws with aws-amplify's Storage package.
-                                const uploadedFile = await Storage.put(filename, file, {
-                                  contentType: file.type,
-                                  level: "public",
-                                });
-                                const { key } = uploadedFile as UploadedFile;
-                                // set the file to contain the correct data
-                                const s3 = {
-                                  key,
-                                  bucket: awsExports.aws_user_files_s3_bucket,
-                                  region: awsExports.aws_project_region,
-                                };
-                                setState({
-                                  ...state,
-                                  uploadedImage: e.target.result as string,
-                                  currentImageFile: s3,
-                                });
-                              } else {
-                                openSnackbar({
-                                  severity: INTENT.Danger,
-                                  message: "Could not retrieve file. Please try again.",
-                                });
-                              }
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                      <Typography variant="subtitle2">
-                        You have entered {imageCount} image{imageCount === 1 ? "" : "s"}.
-                      </Typography>
-                      {currentImagesArray.length < maxNumber && (
-                        <Button variant="contained" component="span" color="primary">
-                          Upload Image
-                        </Button>
-                      )}
-                    </label>
-                    {uploadedImageArray.length > 0 && (
-                      <>
-                        <Typography
-                          variant="subtitle2"
-                          gutterBottom
-                          style={{ marginTop: 10 }}
-                        >
-                          Uploaded Images:
-                        </Typography>
-                        <Splide
-                          options={{
-                            width: 220,
-                            arrows: uploadedImageArray.length > 1,
-                          }}
-                        >
-                          {uploadedImageArray.map((file, i) => {
-                            return (
-                              <SplideSlide key={i} style={{ width: "100%" }}>
-                                <S3Image
-                                  imgKey={file.key}
-                                  theme={{
-                                    photoImg: {
-                                      width: 220,
-                                    },
-                                  }}
-                                />
-                                {/* <img
-                                  src={file}
-                                  alt="Uploaded Image"
-                                  style={{
-                                    width: "100%",
-                                  }}
-                                /> */}
-                              </SplideSlide>
-                            );
-                          })}
-                        </Splide>
-                      </>
-                    )}
-                    {currentImagesArray.length >= 1 && (
-                      <div className={classes.buttonContainer} style={{ marginTop: 10 }}>
-                        <Button
-                          onClick={(): void =>
-                            setState({
-                              ...state,
-                              currentImagesArray: [],
-                              imageCount: 0,
-                              uploadedImageArray: [],
-                            })
-                          }
-                          color="secondary"
-                          variant="text"
-                        >
-                          Clear
-                        </Button>
-                        <Button
-                          onClick={checkImageCompletion}
-                          color="primary"
-                          variant="text"
-                          disabled={
-                            inputType === "number" &&
-                            currentImagesArray.length !== value.number
-                          }
-                        >
-                          Next
-                        </Button>
-                      </div>
-                    )}
-                    <Dialog
-                      open={confirmDialogOpen}
-                      onClose={(): void =>
-                        setState({ ...state, confirmDialogOpen: false })
-                      }
-                    >
-                      <DialogTitle>
-                        Do you want to have less than the recommended amount of images?
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText>
-                          You have uploaded {imageCount} images, when the recommended is{" "}
-                          {maxNumber}.
-                        </DialogContentText>
-                        <DialogContentText>
-                          Do you want to continue with the current amount?
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button
-                          onClick={(): void => {
-                            const updatedCustomOptions = customOptions;
-                            updatedCustomOptions[i] = {
-                              Images: currentImagesArray,
-                            };
-                            setState({
-                              ...state,
-                              imageCompleted: true,
-                              expanded: `panel${i + 1}`,
-                              currentImagesArray: [],
-                            });
-                            setCustomOptions(updatedCustomOptions);
-                          }}
-                        >
-                          Yes
-                        </Button>
-                        <Button
-                          onClick={(): void =>
-                            setState({ ...state, confirmDialogOpen: false })
-                          }
-                        >
-                          No
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </>
-                ) : (
-                  <>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Do you want to add this image?
-                    </Typography>
-                    <div className={classes.uploadedImageContainer}>
-                      <img
-                        src={uploadedImage}
-                        alt="Your uploaded image"
-                        className={classes.previewImage}
-                      />
-                    </div>
-                    <div className={classes.buttonContainer}>
-                      <Button
-                        onClick={(): void =>
-                          setState({
-                            ...state,
-                            currentImageFile: null,
-                            uploadedImage: null,
-                            uploadedImageArray: uploadedImageArray.slice(0, -1),
-                          })
-                        }
-                        color="secondary"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={(): void => {
-                          const updatedImages = [
-                            ...currentImagesArray,
-                            currentImageFile as S3ImageProps,
-                          ];
-                          setState({
-                            ...state,
-                            currentImagesArray: updatedImages,
-                            uploadedImage: null,
-                            uploadedImageArray: updatedImages,
-                            currentImageFile: null,
-                            imageCount: imageCount + 1,
-                          });
-                          if (updatedImages.length === maxNumber) {
-                            const updatedCustomOptions = customOptions;
-                            updatedCustomOptions[i] = {
-                              Images: updatedImages,
-                            };
-                            setState({
-                              ...state,
-                              currentImagesArray: [],
-                              imageCount: 0,
-                            });
-                            setCustomOptions(updatedCustomOptions);
-                          }
-                        }}
-                        color="primary"
-                      >
-                        Confirm
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          );
-        }
-        break;
-      default:
-        return null;
-    }
-    return renderedFeature;
-  };
-
-  const { expanded, currentArrayValue, currentTextValue, imageCompleted } = state;
+  const notesIdx = (currentVariant?.features.length ?? 0) + 1;
+  const colorIdx = currentVariant?.features.length ?? 0;
 
   return (
-    <div>
-      <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
-        Customisable Features
-      </Typography>
-      {currentVariant.features.map((feature: Feature, i: number) => {
-        const current =
-          typeof customOptions[i] === "object"
-            ? Object.values(customOptions[i])
-            : customOptions[i];
-        console.log(current);
-        return (
+    <div style={{ width: "100%", boxSizing: "border-box" }}>
+      {!isCompleted &&
+        currentVariant!.features.map((feature: Feature, i: number) => {
+          const optional =
+            (feature.inputType === "number" && feature.value.number === 0) ||
+            (feature.inputType === "range" && feature.value.range?.[0] === 0);
+          return (
+            <Accordion
+              expanded={expanded === `panel${i}`}
+              key={i}
+              TransitionProps={{ unmountOnExit: true }}
+              onChange={handlePanelChange(`panel${i}`)}
+              style={{ width: "100%", boxSizing: "border-box" }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMore />}
+                aria-controls={`panel${i}-content`}
+                id={`panel${i}-header`}
+              >
+                <Typography className={classes.heading}>{feature.name}</Typography>
+                <Typography className={classes.secondaryHeading}>
+                  {customOptions[i] !== undefined ||
+                  (feature.featureType === "images" && imageCompleted) ? (
+                    <span
+                      className={classes.statusTab}
+                      style={{ color: COLORS.SuccessGreen }}
+                    >
+                      Complete
+                    </span>
+                  ) : optional ? (
+                    <span
+                      className={classes.statusTab}
+                      style={{ color: COLORS.WarningOrange }}
+                    >
+                      Optional
+                    </span>
+                  ) : (
+                    <span
+                      style={{ color: COLORS.ErrorRed }}
+                      className={classes.statusTab}
+                    >
+                      Incomplete
+                    </span>
+                  )}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails classes={{ root: classes.accordionRoot }}>
+                <RenderInput
+                  feature={feature}
+                  i={i}
+                  setCustomOptions={(customOptions): void =>
+                    setCustomOptions(customOptions)
+                  }
+                  customOptions={customOptions}
+                  setExpanded={(expanded): void => setState({ ...state, expanded })}
+                  featuresLength={currentVariant?.features.length ?? 0}
+                />
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
+      {!isCompleted && (
+        <>
           <Accordion
-            expanded={expanded === `panel${i}`}
-            key={i}
+            expanded={expanded === `panel-color`}
             TransitionProps={{ unmountOnExit: true }}
-            onChange={handlePanelChange(`panel${i}`)}
+            onChange={handlePanelChange(`panel-color`)}
           >
             <AccordionSummary
               expandIcon={<ExpandMore />}
-              aria-controls={`panel${i}-content`}
-              id={`panel${i}-header`}
+              aria-controls="panel-color-content"
+              id="panel-color-header"
             >
-              <Typography className={classes.heading}>{feature.name}</Typography>
+              <Typography className={classes.heading}>Colour Scheme</Typography>
               <Typography className={classes.secondaryHeading}>
-                {customOptions[i] !== undefined ||
-                (feature.featureType === "images" && imageCompleted) ? (
-                  <span style={{ color: COLORS.SuccessGreen, fontStyle: "italic" }}>
-                    Complete
+                {customOptions[colorIdx] === undefined ? (
+                  <span className={classes.statusTab} style={{ color: COLORS.ErrorRed }}>
+                    Incomplete
                   </span>
                 ) : (
-                  <span style={{ color: COLORS.ErrorRed, fontStyle: "italic" }}>
-                    Incomplete
+                  <span
+                    className={classes.statusTab}
+                    style={{ color: COLORS.SuccessGreen }}
+                  >
+                    Complete
                   </span>
                 )}
               </Typography>
             </AccordionSummary>
             <AccordionDetails classes={{ root: classes.accordionRoot }}>
-              {customOptions[i] ? (
+              {customOptions[colorIdx] !== undefined ? (
                 <>
-                  {!Array.isArray(current) ? (
-                    <Typography>{current}</Typography>
-                  ) : (
-                    typeof current[0] === "string" && (
-                      <Typography>
-                        {getReadableStringFromArray(current as string[])}
-                      </Typography>
-                    )
-                  )}
+                  <Typography>{Object.values(customOptions[colorIdx])}</Typography>
                   <div className={classes.buttonContainer}>
                     <Button
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
-                        const prevValue = customOptions[i];
-                        updatedCustomOptions[i] = undefined;
+                        const prevValue = customOptions[colorIdx];
+                        updatedCustomOptions[colorIdx] = undefined;
                         setState({
                           ...state,
-                          currentTextValue:
-                            typeof prevValue === "string" ? prevValue : currentTextValue,
-                          // @ts-ignore
-                          currentArrayValue: Array.isArray(prevValue)
-                            ? prevValue
-                            : currentArrayValue,
+                          // @ts-expect-error
+                          currentColorScheme: Object.values(prevValue),
                         });
                         setCustomOptions(updatedCustomOptions);
                       }}
@@ -604,7 +180,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     <Button
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
-                        updatedCustomOptions[i] = undefined;
+                        updatedCustomOptions[colorIdx] = undefined;
                         setCustomOptions(updatedCustomOptions);
                       }}
                       variant="text"
@@ -615,12 +191,160 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   </div>
                 </>
               ) : (
-                renderInput(feature, i)
+                <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                  <Typography variant="subtitle2">
+                    Please select the colour scheme you wish to use for the frame.
+                  </Typography>
+                  <FormControl variant="outlined" className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-outlined-label">
+                      Colour Scheme
+                    </InputLabel>
+                    <Select
+                      value={currentColorScheme}
+                      label="Colour Scheme"
+                      fullWidth
+                      variant="outlined"
+                      onChange={(e): void =>
+                        setState({
+                          ...state,
+                          currentColorScheme: e.target.value as string,
+                        })
+                      }
+                      style={{ minWidth: 220 }}
+                    >
+                      {colorScheme.map((val, i) => (
+                        <MenuItem value={val} key={i}>
+                          {val}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <Button
+                    onClick={(): void => {
+                      const updatedCustomOptions = customOptions;
+                      updatedCustomOptions[colorIdx] = {
+                        "Color Scheme": currentColorScheme,
+                      };
+                      setState({
+                        ...state,
+                        currentColorScheme: "",
+                        expanded: `panel-color`,
+                      });
+                      setCustomOptions(updatedCustomOptions);
+                    }}
+                    color="primary"
+                    disabled={!currentColorScheme}
+                  >
+                    Next
+                  </Button>
+                </div>
               )}
             </AccordionDetails>
           </Accordion>
-        );
-      })}
+          <Accordion
+            expanded={expanded === `panel-notes`}
+            TransitionProps={{ unmountOnExit: true }}
+            onChange={handlePanelChange(`panel-notes`)}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              aria-controls="panel-notes-content"
+              id="panel-notes-header"
+            >
+              <Typography className={classes.heading}>Notes</Typography>
+              <Typography className={classes.secondaryHeading}>
+                {customOptions[notesIdx] === undefined ? (
+                  <span
+                    className={classes.statusTab}
+                    style={{ color: COLORS.WarningOrange }}
+                  >
+                    Optional
+                  </span>
+                ) : (
+                  <span
+                    className={classes.statusTab}
+                    style={{ color: COLORS.SuccessGreen }}
+                  >
+                    Complete
+                  </span>
+                )}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails classes={{ root: classes.accordionRoot }}>
+              {customOptions[notesIdx] !== undefined ? (
+                <>
+                  <Typography>{Object.values(customOptions[notesIdx])}</Typography>
+                  <div className={classes.buttonContainer}>
+                    <Button
+                      onClick={(): void => {
+                        const updatedCustomOptions = customOptions;
+                        const prevValue = customOptions[notesIdx];
+                        updatedCustomOptions[notesIdx] = undefined;
+                        setState({
+                          ...state,
+                          // @ts-expect-error
+                          currentNotesValue: Object.values(prevValue),
+                        });
+                        setCustomOptions(updatedCustomOptions);
+                      }}
+                      variant="text"
+                      color="primary"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={(): void => {
+                        const updatedCustomOptions = customOptions;
+                        updatedCustomOptions[notesIdx] = undefined;
+                        setCustomOptions(updatedCustomOptions);
+                      }}
+                      variant="text"
+                      color="secondary"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                  <Typography variant="subtitle2">
+                    Optionally add notes to add other bespoke customisation options or to
+                    notify about the chosen image placement etc.
+                  </Typography>
+                  <TextField
+                    value={currentNotesValue}
+                    fullWidth
+                    multiline
+                    label="Notes"
+                    variant="outlined"
+                    rows={3}
+                    onChange={(e): void =>
+                      setState({ ...state, currentNotesValue: e.target.value })
+                    }
+                  />
+                  <Button
+                    onClick={(): void => {
+                      const updatedCustomOptions = customOptions;
+                      updatedCustomOptions[notesIdx] = {
+                        Notes: currentNotesValue,
+                      };
+                      setState({
+                        ...state,
+                        expanded: false,
+                      });
+                      setCustomOptions(updatedCustomOptions);
+                    }}
+                    color="primary"
+                    disabled={currentNotesValue?.length === 0}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </AccordionDetails>
+          </Accordion>
+        </>
+      )}
     </div>
   );
 };

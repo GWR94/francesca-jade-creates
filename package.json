@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/jamesgower/typescript-react-boilerplate#readme",
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
+    "@babel/cli": "^7.12.1",
     "@babel/core": "^7.11.1",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
@@ -113,7 +113,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "history": "^4.10.1",
-    "material-ui-chip-input": "^2.0.0-beta.2",
+    "material-ui-chip-input": "^1.1.0",
     "node-sass": "^4.14.1",
     "normalize.css": "^8.0.1",
     "pure-react-carousel": "^1.27.1",
@@ -133,6 +133,7 @@
     "regenerator-runtime": "^0.13.7",
     "remove-focus-outline": "^1.2.1",
     "underscore": "^1.10.2",
+    "use-debounce": "^5.0.1",
     "uuid": "^7.0.3",
     "validate.js": "^0.13.1",
     "webpack-merge": "^4.2.2"

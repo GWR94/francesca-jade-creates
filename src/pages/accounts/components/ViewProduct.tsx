@@ -121,22 +121,6 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
     console.log("todo");
   };
 
-  // public getPriceValues = (): string => {
-  //   const {
-  //     product: { variants },
-  //   } = this.state;
-  //   let min = Infinity;
-  //   let max = -Infinity;
-  //   if (variants?.length) {
-  //     for (const variant of variants) {
-  //       min = Math.min(variant.price.item, min);
-  //       max = Math.max(variant.price.item, max);
-  //     }
-  //   }
-  //   if (min === max) return `£${min}`;
-  //   else if(min === Infinity || max === -Infinity) return `Variable Price - `
-  // };
-
   const history = useHistory();
   return isLoading || product === undefined ? (
     <Loading />
@@ -176,19 +160,6 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
             <div className={classes.variantContainer}>{handleViewVariants()}</div>
           </Grid>
         </Grid>
-        {/* <div className="view__price">
-          {product.setPrice ? (
-            <p>
-              The cost for {product.title} is £{product.price.item.toFixed(2)} + £
-              {price.postage.toFixed(2)} postage and packaging
-            </p>
-          ) : (
-            <p>
-              Please send a request with your personalisation preferences, and I will get
-              back to you as soon as possible with a quote.
-            </p>
-          )}
-        </div> */}
         <ThemeProvider theme={buttonTheme}>
           {sub ? (
             product.setPrice ? (

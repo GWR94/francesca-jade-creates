@@ -1,6 +1,7 @@
 import {
   BasketItemProps,
   CheckoutProductProps,
+  CustomOptionArrayType,
 } from "../pages/payment/interfaces/Basket.i";
 import {
   ADD_ITEM_TO_BASKET,
@@ -9,16 +10,18 @@ import {
   CLEAR_CHECKOUT,
   REMOVE_ITEM_FROM_BASKET,
   REMOVE_ITEM_FROM_CHECKOUT,
+  ADD_CUSTOM_OPTIONS_TO_PRODUCT,
+  SET_VARIANT,
   AddItemAction,
   AddToCheckoutAction,
   ClearBasketAction,
   ClearCheckoutAction,
   RemoveFromCheckoutAction,
   RemoveItemAction,
-  UPDATE_CUSTOM_OPTIONS,
-  UpdateCustomOptionsAction,
-  CustomOptionArrayType,
+  AddCustomOptionsToProductAction,
+  SetVariantAction,
 } from "../interfaces/basket.redux.i";
+import { Variant } from "../pages/accounts/interfaces/Variants.i";
 
 export const addToBasket = (item: BasketItemProps): AddItemAction => ({
   type: ADD_ITEM_TO_BASKET,
@@ -48,11 +51,17 @@ export const clearCheckout = (): ClearCheckoutAction => ({
   type: CLEAR_CHECKOUT,
 });
 
-export const updateCustomOptions = (
+export const setVariant = (id: string, variant: Variant): SetVariantAction => ({
+  type: SET_VARIANT,
+  id,
+  variant,
+});
+
+export const addCustomOptionsToProduct = (
   id: string,
   customOptions: CustomOptionArrayType,
-): UpdateCustomOptionsAction => ({
-  type: UPDATE_CUSTOM_OPTIONS,
+): AddCustomOptionsToProductAction => ({
+  type: ADD_CUSTOM_OPTIONS_TO_PRODUCT,
   id,
   customOptions,
 });

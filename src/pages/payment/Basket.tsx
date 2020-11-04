@@ -3,8 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Typography,
+  Button,
+  makeStyles,
+  Stepper,
+  Step,
+  StepLabel,
+} from "@material-ui/core";
 import { InfoOutlined } from "@material-ui/icons";
-import { Typography, Button, makeStyles, Grid, Hidden } from "@material-ui/core";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
 import Loading from "../../common/Loading";
@@ -12,7 +19,7 @@ import { BasketState } from "../../reducers/basket.reducer";
 import NonIdealState from "../../common/containers/NonIdealState";
 import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
-import { CustomOptionArrayType } from "./interfaces/Basket.i";
+import { CheckoutProductProps, CustomOptionArrayType } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
 import { INTENT } from "../../themes";
 import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
@@ -21,7 +28,7 @@ import { S3ImageProps } from "../accounts/interfaces/Product.i";
 import { UserState } from "../../reducers/user.reducer";
 import { getUser } from "../../graphql/queries";
 import { ProfileProps } from "../accounts/interfaces/Profile.i";
-import { getProductPrice } from "../../utils";
+import BasketCustomOptions from "./components/BasketCustomOptions";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
@@ -36,22 +43,25 @@ interface Props {
 /**
  * TODO
  * [ ] Fix image sent to stripe
+ * [ ] Switch yes and no buttons around for image confirm dialog
  */
 
 const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+
   const {
     items,
     checkout: { cost, products },
   } = useSelector(({ basket }: AppState): BasketState => basket);
-  const { id, email, emailVerified } = useSelector(
-    ({ user }: AppState): UserState => user,
-  );
-  console.log(email, emailVerified);
+  const { id, email } = useSelector(({ user }: AppState): UserState => user);
+
   const [isLoading, setLoading] = useState<boolean>(true);
-  const [isSubmitted, setSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setSubmitted] = useState<boolean>(false);
   const [user, setUser] = useState<ProfileProps | null>(null);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [currentIdx, setIndex] = useState<number>(0);
+  const [confirmedBasket, setConfirmedBasket] = useState<CheckoutProductProps[]>([]);
 
   let isMounted = false;
   const dispatch = useDispatch();
@@ -192,78 +202,105 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
     }
   };
 
+  const getStepContent = (stepIndex: number): JSX.Element => {
+    switch (stepIndex) {
+      case 0: {
+        return (
+          <div className={classes.itemContainer}>
+            <>
+              <Typography variant="subtitle1">
+                Please confirm each of the items in your basket, and choose the variant
+                you wish to purchase, if necessary.
+              </Typography>
+              <Typography style={{ marginBottom: 4 }}>
+                Confirm product <strong>{currentIdx + 1}</strong> of {items.length}:
+              </Typography>
+              <BasketItem
+                item={items[currentIdx]}
+                currentIdx={currentIdx}
+                items={items}
+                setIndex={setIndex}
+                handleConfirmProduct={(product: CheckoutProductProps): void =>
+                  setConfirmedBasket([...confirmedBasket, product])
+                }
+              />
+            </>
+            <div className={classes.stepButtonContainer}>
+              <Button
+                onClick={(): void => setActiveStep(activeStep - 1)}
+                color="secondary"
+                variant="contained"
+                disabled
+                className={classes.button}
+              >
+                Previous Step
+              </Button>
+              <Button
+                onClick={(): void => {
+                  setIndex(0);
+                  setActiveStep(activeStep + 1);
+                }}
+                color="primary"
+                variant="contained"
+                className={classes.button}
+              >
+                Next Step
+              </Button>
+            </div>
+          </div>
+        );
+      }
+      case 1: {
+        return (
+          <div className={classes.itemContainer}>
+            <Typography variant="h4">Add Custom Options</Typography>
+            <BasketCustomOptions currentVariant={products[currentIdx].variant} />
+          </div>
+        );
+      }
+      case 2:
+        return "Purchase items";
+      default:
+        return "Unknown stepIndex";
+    }
+  };
+
+  const steps = ["Confirm Products", "Add Custom Options", "Purchase Items"];
+
   return isLoading ? (
     <Loading />
   ) : (
-    <div className={classes.container}>
-      <Typography variant="h4">Shopping Basket</Typography>
-      <Typography variant="subtitle1">
-        Please choose a variant for your product (if necessary), and complete all of the
-        customisable features input.
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item sm={12} md={8}>
-          {items.length > 0 ? (
-            <div>
-              {items.map((item) => {
-                const uid = uuidv4();
-                return <BasketItem item={item} key={uid} />;
-              })}
-              <Button
-                variant="outlined"
-                onClick={handleCreateCheckout}
-                disabled={items.length > products.length}
-              >
-                {isSubmitted ? "Submitting..." : "Checkout"}
-              </Button>
-            </div>
-          ) : (
-            <NonIdealState
-              title="No items in basket"
-              Icon={<InfoOutlined />}
-              subtext="Please add items to the basket to see them in here"
-            />
-          )}
-        </Grid>
-        <Hidden smDown>
-          <Grid item md={4}>
-            <div className={classes.overviewContainer}>
-              <Typography className={classes.title}>Checkout Overview</Typography>
-              {products.length < items.length && (
-                <>
-                  <Typography>
-                    Completed Items: {products.length}/{items.length}
-                  </Typography>
-                  {items.map((item, i) => {
-                    return (
-                      products.findIndex((product) => product.id === item.id) === -1 && (
-                        <Typography key={i}>
-                          {`${item.title} - ${getProductPrice(item)}`}
-                        </Typography>
-                      )
-                    );
-                  })}
-                </>
-              )}
-              {products.length > 0 && (
-                <>
-                  <Typography className={classes.subtotal}>
-                    Completed Subtotal ({products.length} items):{" "}
-                    <span>£{cost.toFixed(2)}</span>
-                  </Typography>
-
-                  {products.map((product) => (
-                    <Typography>
-                      {product.title} - £{product.price.toFixed(2)} + £
-                      {product.shippingCost.toFixed(2)} P&P
-                    </Typography>
-                  ))}
-                </>
+    <div>
+      <div className={classes.container}>
+        <Typography variant="h4">Shopping Basket</Typography>
+        {items.length > 0 ? (
+          <>
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            <div style={{ height: "100%", width: "100%" }}>
+              {activeStep === steps.length ? (
+                <div>
+                  <Typography>All steps completed</Typography>
+                  <Button onClick={(): void => setActiveStep(0)}>Reset</Button>
+                </div>
+              ) : (
+                getStepContent(activeStep)
               )}
             </div>
-          </Grid>
-        </Hidden>
-      </Grid>
+          </>
+        ) : (
+          <NonIdealState
+            title="No items in basket"
+            Icon={<InfoOutlined />}
+            subtext="Please add items to the basket to see them in here"
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -204,6 +204,208 @@ export const onCreateOrder = /* GraphQL */ `
     }
   }
 `;
+export const onUpdateOrder = /* GraphQL */ `
+  subscription OnUpdateOrder {
+    onUpdateOrder {
+      id
+      products {
+        id
+        title
+        tagline
+        image {
+          bucket
+          region
+          key
+        }
+        variant {
+          variantName
+          instructions
+          dimensions
+          features {
+            name
+            inputType
+            description
+            featureType
+            price {
+              item
+              postage
+            }
+            value {
+              array
+              range
+              number
+            }
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
+        }
+        price
+        shippingCost
+        customOptions
+      }
+      stripePaymentIntent
+      user {
+        id
+        username
+        email
+        name
+        registered
+        orders {
+          items {
+            id
+            products {
+              id
+              title
+              tagline
+              image {
+                bucket
+                region
+                key
+              }
+              variant {
+                variantName
+                instructions
+                dimensions
+              }
+              price
+              shippingCost
+              customOptions
+            }
+            stripePaymentIntent
+            user {
+              id
+              username
+              email
+              name
+              registered
+              orders {
+                nextToken
+              }
+              profileImage {
+                bucket
+                region
+                key
+              }
+              shippingAddress {
+                city
+                country
+                address_line1
+                address_line2
+                address_postcode
+              }
+              savedProducts {
+                id
+                title
+                description
+                type
+                tagline
+              }
+              trackingInfo
+              createdAt
+              updatedAt
+            }
+            shippingAddress {
+              city
+              country
+              address_line1
+              address_line2
+              address_postcode
+            }
+            createdAt
+            paymentStatus
+            orderProcessed
+            userInfo {
+              emailAddress
+              name
+            }
+            shipped
+            updatedAt
+          }
+          nextToken
+        }
+        profileImage {
+          bucket
+          region
+          key
+        }
+        shippingAddress {
+          city
+          country
+          address_line1
+          address_line2
+          address_postcode
+        }
+        savedProducts {
+          id
+          title
+          description
+          image {
+            bucket
+            region
+            key
+          }
+          type
+          tagline
+          variants {
+            variantName
+            instructions
+            dimensions
+            features {
+              name
+              inputType
+              description
+              featureType
+              price {
+                item
+                postage
+              }
+              value {
+                array
+                range
+                number
+              }
+            }
+            price {
+              item
+              postage
+            }
+            images {
+              bucket
+              region
+              key
+            }
+          }
+        }
+        trackingInfo
+        createdAt
+        updatedAt
+      }
+      shippingAddress {
+        city
+        country
+        address_line1
+        address_line2
+        address_postcode
+      }
+      createdAt
+      paymentStatus
+      orderProcessed
+      userInfo {
+        emailAddress
+        name
+      }
+      shipped
+      updatedAt
+    }
+  }
+`;
 export const onCreateProduct = /* GraphQL */ `
   subscription OnCreateProduct {
     onCreateProduct {

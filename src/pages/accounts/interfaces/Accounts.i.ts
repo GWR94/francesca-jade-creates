@@ -46,10 +46,10 @@ export interface AccountsMapProps {
 }
 
 export interface AccountPageProps {
-  admin: boolean;
   currentTab?: CurrentTabTypes;
   sub?: string | null;
   userAttributes: UserAttributeProps | null;
+  admin: boolean;
   user: CognitoUserProps;
   setCurrentTab?: (tab: CurrentTabTypes) => void;
   history: History;

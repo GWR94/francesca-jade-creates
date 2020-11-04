@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Pagination as Page } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core";
+import useScreenWidth from "../hooks/useScreenWidth";
 
 interface PaginationProps {
   dataLength: number;
@@ -21,8 +22,8 @@ const useStyles = makeStyles({
  * Pagination component used for changing pages after a search of products has been
  * completed.
  * @param {number} page - the current page that the user is on
- * @param {(page: number) => void} setPage - function to set the current page
- * @param {number} maxPages - the maximum amount of pages available based on data.
+ * @param setPage - function to set the current page
+ * @param maxPages - the maximum amount of pages available based on data.
  */
 const Pagination: React.FunctionComponent<PaginationProps> = ({
   dataLength,
@@ -33,7 +34,7 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
   const classes = useStyles();
   const [page, setPage] = useState(defaultPageNum);
   const maxPages = Math.ceil(dataLength / numPerPage);
-
+  const desktop = useScreenWidth(600);
   return (
     <div className={classes.container}>
       <Page
@@ -46,8 +47,8 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
           });
         }}
         shape="rounded"
-        showFirstButton
-        showLastButton
+        showFirstButton={desktop}
+        showLastButton={desktop}
         count={maxPages}
       />
     </div>
