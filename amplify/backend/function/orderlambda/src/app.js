@@ -15,7 +15,6 @@ const AWS = require("aws-sdk");
 const app = express();
 
 let stripe;
-
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config(".env");
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
@@ -89,6 +88,12 @@ app.post("/orders/create-checkout-session", async (req, res) => {
   } catch (err) {
     res.status(502).json({ error: err });
   }
+});
+
+app.post("/orders/retrieve-session", async (req, res) => {
+  const { id } = req.body;
+  const session = await stripe.checkout.sessions.retrieve(id);
+  return res.status(200).json({ session });
 });
 
 app.post("/orders/set-order-processing", (req, res) => {
