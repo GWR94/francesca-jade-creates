@@ -9,6 +9,7 @@ export interface BasketItemProps {
   type: string;
   tagline: string;
   variants: Variant[];
+  customOptions: string[];
 }
 
 export interface CheckoutProductProps {
@@ -16,10 +17,10 @@ export interface CheckoutProductProps {
   title: string;
   tagline: string;
   image: S3ImageProps;
-  variant: Variant;
+  variant: Variant | null;
   price: number;
   shippingCost: number;
-  customOptions: CustomOptionArrayType;
+  customOptions?: CustomOptionArrayType;
 }
 
 export interface CustomOptionsState {
@@ -34,14 +35,17 @@ export interface CustomOptionsState {
   imageCompleted: boolean;
   confirmDialogOpen: boolean;
   uploadedImageArray: S3ImageProps[];
+  currentNotesValue: string;
+  isCompleted: boolean;
 }
 
 export type CustomOptionArrayType = {
-  [key: string]: string | S3ImageProps[] | string[] | undefined;
+  [key: string]: string | S3ImageProps[] | string[];
 }[];
 
 export interface CustomOptionsProps {
-  setCustomOptions: (customOptions: CustomOptionArrayType) => void;
-  currentVariant: Variant;
+  currentVariant: Variant | null;
+  setCustomOptions: (options: CustomOptionArrayType) => void;
   customOptions: CustomOptionArrayType;
+  colorScheme: string[];
 }

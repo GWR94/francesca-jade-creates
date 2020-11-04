@@ -1,7 +1,8 @@
-import { CustomOptionArrayType } from "./../pages/payment/components/BasketCustomOptions";
+import { Variant } from "../pages/accounts/interfaces/Variants.i";
 import {
   CheckoutProductProps,
   BasketItemProps,
+  CustomOptionArrayType,
 } from "../pages/payment/interfaces/Basket.i";
 
 // - Basket Actions - //
@@ -11,7 +12,8 @@ export const REMOVE_ITEM_FROM_BASKET = "REMOVE_ITEM_FROM_BASKET";
 export const ADD_ITEM_TO_CHECKOUT = "ADD_ITEM_TO_CHECKOUT";
 export const REMOVE_ITEM_FROM_CHECKOUT = "REMOVE_ITEM_FROM_CHECKOUT";
 export const CLEAR_CHECKOUT = "CLEAR_CHECKOUT";
-export const UPDATE_CUSTOM_OPTIONS = "UPDATE_CUSTOM_OPTIONS";
+export const ADD_CUSTOM_OPTIONS_TO_PRODUCT = "ADD_CUSTOM_OPTIONS_TO_PRODUCT";
+export const SET_VARIANT = "SET_VARIANT";
 
 export interface AddItemAction {
   type: typeof ADD_ITEM_TO_BASKET;
@@ -41,10 +43,16 @@ export interface RemoveFromCheckoutAction {
   itemID: string;
 }
 
-export interface UpdateCustomOptionsAction {
-  type: typeof UPDATE_CUSTOM_OPTIONS;
+export interface AddCustomOptionsToProductAction {
+  type: typeof ADD_CUSTOM_OPTIONS_TO_PRODUCT;
   id: string;
   customOptions: CustomOptionArrayType;
+}
+
+export interface SetVariantAction {
+  type: typeof SET_VARIANT;
+  id: string;
+  variant: Variant;
 }
 
 declare type BasketActionTypes =
@@ -54,7 +62,8 @@ declare type BasketActionTypes =
   | AddToCheckoutAction
   | RemoveFromCheckoutAction
   | ClearCheckoutAction
-  | UpdateCustomOptionsAction;
+  | AddCustomOptionsToProductAction
+  | SetVariantAction;
 
 // eslint-disable-next-line no-undef
 export { BasketActionTypes as default };

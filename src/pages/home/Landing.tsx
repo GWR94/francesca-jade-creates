@@ -1,5 +1,6 @@
 import { Grid, Typography, Container, makeStyles, Button } from "@material-ui/core";
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { BrushRounded, CakeRounded } from "@material-ui/icons";
 import { COLORS } from "../../themes";
 import cake from "../../img/cake3.svg";
@@ -9,6 +10,7 @@ import styles from "./styles/landing.style";
 const Landing: React.FC = (): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+  const history = useHistory();
   return (
     <Container>
       <Grid container>
@@ -24,7 +26,7 @@ const Landing: React.FC = (): JSX.Element => {
             of sparkle, to capture moments, share memories & celebrate loved ones
           </Typography>
           <Button
-            onClick={(): string => (window.location.href = "/creates")}
+            onClick={(): void => history.push("/creates")}
             className={classes.cakesButton}
             variant="contained"
           >
@@ -36,7 +38,7 @@ const Landing: React.FC = (): JSX.Element => {
             scratch with love and care - perfect for a gift/celebration to remember.
           </Typography>
           <Button
-            onClick={(): string => (window.location.href = "/cakes")}
+            onClick={(): void => history.push("/cakes")}
             className={classes.createsButton}
             variant="contained"
           >

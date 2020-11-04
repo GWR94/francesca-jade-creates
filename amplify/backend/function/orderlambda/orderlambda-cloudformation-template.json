@@ -68,8 +68,8 @@
         "Layers": [],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-francescajadecreates-prod-113437-deployment",
-          "S3Key": "amplify-builds/orderlambda-5a796872505865356b59-build.zip"
+          "S3Bucket": "amplify-francescajadecreates-staging-102644-deployment",
+          "S3Key": "amplify-builds/orderlambda-417278574d7a6f43554d-build.zip"
         }
       }
     },

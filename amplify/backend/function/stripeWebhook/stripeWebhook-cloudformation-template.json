@@ -89,8 +89,8 @@
         "Layers": [],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-francescajadecreates-prod-113437-deployment",
-          "S3Key": "amplify-builds/stripeWebhook-774e3753357662396d44-build.zip"
+          "S3Bucket": "amplify-francescajadecreates-staging-102644-deployment",
+          "S3Key": "amplify-builds/stripeWebhook-6e6979787654394f3055-build.zip"
         }
       }
     },

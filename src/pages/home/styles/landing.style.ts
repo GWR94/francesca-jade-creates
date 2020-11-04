@@ -6,7 +6,7 @@ const breakpoints = createBreakpoints({});
 
 export default createStyles({
   headingText: {
-    fontFamily: FONTS.Title,
+    fontFamily: FONTS.Text,
     fontSize: "2.8rem",
     fontWeight: "bold",
     [breakpoints.down("md")]: {
@@ -24,6 +24,7 @@ export default createStyles({
     fontSize: "1.2rem",
     margin: "10px",
     fontWeight: "bold",
+    fontFamily: FONTS.Text,
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },

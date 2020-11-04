@@ -82,6 +82,7 @@ const initialState: ProfileState = {
     error: "",
   },
   displayImage: null,
+  isDesktop: window.innerWidth > 600,
 };
 
 /**
@@ -94,7 +95,18 @@ class Profile extends Component<ProfileProps, ProfileState> {
   public componentDidMount(): void {
     // retrieve the users data when the component mounts
     this.handleRetrieveData();
+
+    window.addEventListener("resize", this.checkWindowDimensions);
   }
+
+  public componentWillUnmount(): void {
+    window.removeEventListener("resize", this.checkWindowDimensions);
+  }
+
+  private checkWindowDimensions = (): void => {
+    if (window.innerWidth > 600) return this.setState({ isDesktop: true });
+    return this.setState({ isDesktop: false });
+  };
 
   /**
    * Method to retrieve the users data from the database using the getUser graphQL
@@ -107,6 +119,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
       // get the sub (id) of the user from the user object.
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+      console.log(data);
       // set res to null so it can be changed if the criteria is met.
       let res: PhoneNumber | null = null;
       /**
@@ -135,6 +148,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
        * data to fit into state if necessary.
        */
       this.setState((prevState) => ({
+        ...prevState,
         username: {
           ...prevState.username,
           value: data.getUser?.username ?? username,
@@ -242,7 +256,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
     // if there are any errors, return so the user can change their errors before submitting
     if (errors) return;
     // if the user hasn't verified their email address, the handleVerifyEmail method should be called.
-    if (!email.verified || email.value !== userAttributes.email) {
+    if (!email.verified || email.value !== userAttributes?.email) {
       this.handleVerifyEmail(true);
       return;
     }
@@ -509,8 +523,10 @@ class Profile extends Component<ProfileProps, ProfileState> {
       shippingAddress,
       displayImage,
       dialogOpen,
+      isDesktop,
     } = this.state;
     const { user, classes, admin } = this.props;
+    const size = isDesktop ? "medium" : "small";
     return (
       <>
         <Container className="profile__container">
@@ -530,6 +546,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     <TextField
                       label="Username"
                       value={username.value}
+                      size={size}
                       variant="outlined"
                       fullWidth
                       onChange={(e): void =>
@@ -547,6 +564,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       label="Password"
                       type="password"
                       variant="outlined"
+                      size={size}
                       fullWidth
                       InputProps={{
                         endAdornment: isEditing && (
@@ -590,95 +608,44 @@ class Profile extends Component<ProfileProps, ProfileState> {
                 </OutlinedContainer>
                 <Typography variant="h6">Contact Preferences</Typography>
                 <Grid container direction="row" spacing={1} className="profile__row">
-                  <Grid item xs={12} md={6} style={{ position: "relative" }}>
-                    <TextField
-                      label="Email Address"
-                      helperText={email.error}
-                      error={!!email.error}
-                      variant="outlined"
-                      placeholder="Enter your email address"
-                      value={email.value}
-                      onChange={(e): void =>
-                        this.setState({
-                          email: {
-                            ...email,
-                            value: e.target.value,
-                            error: "",
-                          },
-                        })
-                      }
-                      disabled={!isEditing}
-                      fullWidth
-                    />
-                    <div
-                      className="profile__verified-tag"
-                      onClick={(): Promise<void> | null => {
-                        if (isEditing) return this.handleVerifyEmail();
-                        else return null;
-                      }}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      <ThemeProvider theme={greenAndRedTheme}>
-                        <Chip
-                          label={email.verified ? "Verified" : "Unverified"}
-                          size="small"
-                          color={email.verified ? "primary" : "secondary"}
-                          style={{ cursor: isEditing ? "pointer" : "not-allowed" }}
-                        />
-                      </ThemeProvider>
-                    </div>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Grid container>
-                      <Grid item xs={5}>
-                        <FormControl variant="outlined" fullWidth disabled={!isEditing}>
-                          <InputLabel disabled={!isEditing}>Phone Number</InputLabel>
-                          <Select
-                            value={phoneNumber.code}
-                            fullWidth
-                            variant="outlined"
-                            labelWidth={100}
-                            disabled={!isEditing}
-                            style={{
-                              borderTopRightRadius: 0,
-                              borderBottomRightRadius: 0,
-                            }}
-                          >
-                            {euroNumbers.map((num, i) => (
-                              <MenuItem
-                                key={i}
-                                value={num.value}
-                                onClick={(e): void => this.handlePhoneCodeChange(e)}
-                              >
-                                {num.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={7}>
-                        <OutlinedInput
-                          value={phoneNumber.value}
-                          onChange={(e): void =>
-                            this.setState({
-                              phoneNumber: {
-                                ...phoneNumber,
-                                value: e.target.value,
-                                error: "",
-                              },
-                            })
-                          }
-                          disabled={!isEditing}
-                          fullWidth
-                          classes={{
-                            notchedOutline: classes?.noLeftBorderInput,
-                          }}
-                          style={{ borderLeftColor: "transparent !important" }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                  <TextField
+                    label="Email Address"
+                    helperText={email.error}
+                    error={!!email.error}
+                    variant="outlined"
+                    size={size}
+                    placeholder="Enter your email address"
+                    value={email.value}
+                    onChange={(e): void =>
+                      this.setState({
+                        email: {
+                          ...email,
+                          value: e.target.value,
+                          error: "",
+                        },
+                      })
+                    }
+                    disabled={!isEditing}
+                    fullWidth
+                  />
+                  <div
+                    className="profile__verified-tag"
+                    onClick={(): Promise<void> | null => {
+                      if (isEditing) return this.handleVerifyEmail();
+                      else return null;
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <ThemeProvider theme={greenAndRedTheme}>
+                      <Chip
+                        label={email.verified ? "Verified" : "Unverified"}
+                        size="small"
+                        color={email.verified ? "primary" : "secondary"}
+                        style={{ cursor: isEditing ? "pointer" : "not-allowed" }}
+                      />
+                    </ThemeProvider>
+                  </div>
                   <Typography variant="h6">
                     Shipping Address{" "}
                     <span
@@ -694,6 +661,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       disabled={!isEditing}
                       value={shippingAddress.line1}
                       fullWidth
+                      size={size}
                       error={!!shippingAddress.error}
                       placeholder="Enter Address Line 1"
                       onChange={(e): void =>
@@ -712,6 +680,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       label="Address Line 2"
                       variant="outlined"
                       disabled={!isEditing}
+                      size={size}
                       fullWidth
                       value={shippingAddress.line2}
                       onChange={(e): void =>
@@ -734,6 +703,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       helperText={shippingAddress.error}
                       error={!!shippingAddress.error}
                       value={shippingAddress.city}
+                      size={size}
                       fullWidth
                       placeholder="Enter city"
                       onChange={(e): void =>
@@ -756,6 +726,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       disabled={!isEditing}
                       placeholder="Enter county"
                       fullWidth
+                      size={size}
                       onChange={(e): void =>
                         this.setState({
                           shippingAddress: {
@@ -773,6 +744,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       disabled={!isEditing}
                       value={shippingAddress.postcode}
                       variant="outlined"
+                      size={size}
                       fullWidth
                       type="text"
                       placeholder="Enter post code"

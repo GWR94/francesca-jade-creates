@@ -1,5 +1,5 @@
 import { createStyles } from "@material-ui/core";
-import { FONTS, COLORS } from "../../../themes/index";
+import { COLORS } from "../../../themes/index";
 
 export default createStyles({
   nav: {
@@ -12,7 +12,8 @@ export default createStyles({
     MozUserSelect: "none",
     WebkitUserSelect: "none",
     msUserSelect: "none",
-    // flexDirection: "column",
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
   },
   main: {
     display: "inline-flex",
@@ -24,6 +25,7 @@ export default createStyles({
     fontSize: "35px",
     display: "flex",
     alignContent: "center",
+    color: COLORS.Pink,
   },
   logo: {
     height: 50,

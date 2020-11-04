@@ -23,6 +23,7 @@ export enum COLORS {
   SuccessGreen = "#4caf50",
   LightGreen = "#59cf5e",
   InfoBlue = "#00b0ff",
+  WarningOrange = "#ff9800",
 }
 
 export enum BREAKPOINTS {

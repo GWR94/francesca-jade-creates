@@ -2,12 +2,6 @@ import React, { useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Badge, makeStyles } from "@material-ui/core";
-import navStyles from "../styles/links.style";
-import { AppState } from "../../../store/store";
-import { BasketItemProps } from "../../payment/interfaces/Basket.i";
-import AccountsMenu from "./AccountsMenu";
-import MiniBasketMenu from "./MiniBasketMenu";
-import { LinksProps } from "../interfaces/Links.i";
 import {
   AccountBoxRounded,
   BrushRounded,
@@ -15,13 +9,19 @@ import {
   HomeRounded,
   ShoppingCartRounded,
 } from "@material-ui/icons";
+import navStyles from "../styles/links.style";
+import { AppState } from "../../../store/store";
+import { BasketItemProps } from "../../payment/interfaces/Basket.i";
+import AccountsMenu from "./AccountsMenu";
+import MiniBasketMenu from "./MiniBasketMenu";
+import { LinksProps } from "../interfaces/Links.i";
 
 /**
  * Component containing all of the links to navigate around the site.
  * @param {boolean} [mobile = false] - Boolean value to say if the user is on a mobile device
  * @param {boolean} [admin = false] - Boolean value which says if the current user is an admin.
  * @param {() => void} closeNav - Function to close the navigation menu if it's open
- * @param {UserAttributesProps} - Object containing  user data.
+ * @param {UserAttributesProps} - Object containing  user datCrea.
  * @param {(tab: string) => void} setAccountsTab - Function to change the current tab in Account component
  * @param {() => void} signOut - Function to sign out the current user.
  */
@@ -79,7 +79,7 @@ const Links: React.FC<LinksProps> = ({
           onClick={closeNav}
         >
           <BrushRounded className={classes.navIcon} />
-          Creates
+          Creations
         </NavLink>
       </div>
       <div className={mobile ? classes.navMobile : classes.navRight}>

@@ -47,22 +47,6 @@ export default createStyles({
       fontSize: "0.8rem",
     },
   },
-  imageLabel: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  uploadedImageContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    maxWidth: 400,
-  },
-  previewImage: {
-    marginBottom: 8,
-    width: 220,
-  },
   variantsInputContainer: {
     width: "100%",
     margin: "8px 0",
@@ -72,22 +56,28 @@ export default createStyles({
     display: "inline-flex",
     justifyContent: "space-evenly",
   },
-  chip: {
-    background: COLORS.DarkPink,
-    "&:hover": {
-      background: COLORS.Pink,
-    },
-    "&:focus": {
-      background: COLORS.Pink,
-    },
-  },
   accordionRoot: {
     alignItems: "center",
     display: "flex",
     flexDirection: "column",
+    width: "100%",
+    boxSizing: "border-box",
   },
   formControl: {
     margin: 8,
     minWidth: 120,
+  },
+  button: {
+    margin: "0 5px",
+  },
+  stepButtonContainer: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "20px 0",
+  },
+  statusTab: {
+    fontStyle: "italic",
   },
 });

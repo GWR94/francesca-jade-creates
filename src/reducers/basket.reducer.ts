@@ -1,3 +1,4 @@
+import { SET_VARIANT } from "./../interfaces/basket.redux.i";
 import {
   BasketItemProps,
   CheckoutProductProps,
@@ -9,10 +10,10 @@ import BasketActionTypes, {
   REMOVE_ITEM_FROM_BASKET,
   REMOVE_ITEM_FROM_CHECKOUT,
   CLEAR_CHECKOUT,
-  UPDATE_CUSTOM_OPTIONS,
+  ADD_CUSTOM_OPTIONS_TO_PRODUCT,
 } from "../interfaces/basket.redux.i";
 
-const defaultBasketState = {
+const defaultBasketState: BasketState = {
   items: [],
   checkout: {
     products: [],
@@ -73,6 +74,21 @@ export default (state = defaultBasketState, action: BasketActionTypes): BasketSt
         },
       };
     }
+    case ADD_CUSTOM_OPTIONS_TO_PRODUCT: {
+      const { id, customOptions } = action;
+      const updatedProducts = state.checkout.products;
+      const idx = state.checkout?.products.findIndex(
+        (product: CheckoutProductProps) => product.id === id,
+      );
+      updatedProducts[idx].customOptions = customOptions;
+      return {
+        ...state,
+        checkout: {
+          ...state.checkout,
+          products: updatedProducts,
+        },
+      };
+    }
     case REMOVE_ITEM_FROM_CHECKOUT: {
       const idx: number = state.checkout.products.findIndex(
         (product: CheckoutProductProps) => product.id === action.itemID,
@@ -90,7 +106,7 @@ export default (state = defaultBasketState, action: BasketActionTypes): BasketSt
         },
       };
     }
-    case CLEAR_CHECKOUT: {
+    case CLEAR_CHECKOUT:
       return {
         ...state,
         checkout: {
@@ -98,18 +114,18 @@ export default (state = defaultBasketState, action: BasketActionTypes): BasketSt
           cost: 0,
         },
       };
-    }
-    case UPDATE_CUSTOM_OPTIONS: {
+    case SET_VARIANT: {
+      const { id, variant } = action;
       const idx = state.checkout.products.findIndex(
-        (product: CheckoutProductProps) => product.id === action.id,
+        (product: CheckoutProductProps) => product.id === id,
       );
-      const updatedProducts: CheckoutProductProps[] = state.checkout.products;
-      updatedProducts[idx].customOptions = action.customOptions;
+      const updatedProducts = state.checkout.products;
+      updatedProducts[idx].variant = variant;
       return {
         ...state,
         checkout: {
+          ...state.checkout,
           products: updatedProducts,
-          cost: getCostToFixed(updatedProducts),
         },
       };
     }

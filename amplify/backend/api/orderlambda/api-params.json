@@ -28,8 +28,8 @@
     "privacy": {
         "auth": 0,
         "unauth": 0,
-        "authRoleName": "amplify-francescajadecreates-prod-113437-authRole",
-        "unAuthRoleName": "amplify-francescajadecreates-prod-113437-unauthRole"
+        "authRoleName": "amplify-francescajadecreates-staging-102644-authRole",
+        "unAuthRoleName": "amplify-francescajadecreates-staging-102644-unauthRole"
     },
     "dependsOn": [
         {
@@ -49,5 +49,5 @@
             ]
         }
     ],
-    "uuid": "df00fa8d"
+    "uuid": "29c9d4ee"
 }

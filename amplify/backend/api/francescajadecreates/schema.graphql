@@ -30,7 +30,7 @@ type User
   )
   @auth(
     rules: [
-      { allow: owner, ownerField: "id", identityClaim: "sub" }
+      { allow: owner, identityField: "id" }
       { allow: private, provider: userPools, operations: [read] }
     ]
   ) {
@@ -49,12 +49,12 @@ type User
 type Order
   @auth(
     rules: [
-      { allow: owner, ownerField: "id", identityClaim: "sub" },
+      { allow: owner, identityField: "id" },
       { allow: private, provider: userPools, operations: [create, read] }
       { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
     ]
   )
-  @model(mutations: { create: "createOrder" }, queries: { list: "listOrders" }) {
+  @model(mutations: { create: "createOrder", update: "updateOrder" }, queries: { list: "listOrders" }) {
   id: String!
   products: [StripeProduct!]!
   stripePaymentIntent: String

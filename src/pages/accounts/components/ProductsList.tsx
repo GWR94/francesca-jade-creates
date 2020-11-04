@@ -9,21 +9,11 @@ import Pagination from "../../../common/Pagination";
 import SearchFilter from "./SearchFilter";
 import * as actions from "../../../actions/products.actions";
 import { AppState } from "../../../store/store";
-import {
-  ProductListProps,
-  ProductListState,
-  // SortDirection,
-} from "../interfaces/ProductList.i";
+import { ProductListProps, ProductListState } from "../interfaces/ProductList.i";
 import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import styles from "../styles/productList.style";
-// import { listProducts } from "../../../graphql/queries";
-
-/**
- * TODO
- * [ ] Change getProducts to only return each page (use next token for more)
- * [ ] Return less results on mobile
- */
+import useScreenWidth from "../../../hooks/useScreenWidth";
 
 /**
  * Component which allows the user to filter each of the products, and allow them
@@ -37,13 +27,15 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
+  const desktop = useScreenWidth(600);
+
   const [state, setState] = useState<ProductListState>({
     filterOpen: false,
     searchResults: null,
     isLoading: true,
     page: {
       min: 0,
-      max: 12,
+      max: desktop ? 12 : 6,
     },
     // nextToken: undefined,
     // nextNextToken: undefined,
@@ -148,7 +140,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       {results && results.length > 12 && (
         <Pagination
           dataLength={results.length}
-          numPerPage={12}
+          numPerPage={desktop ? 12 : 6}
           setPageValues={({ min, max }): void =>
             setState({ ...state, page: { min, max } })
           }

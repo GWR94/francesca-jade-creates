@@ -44,10 +44,17 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   const [isLoading, setLoading] = useState(true);
   // initialise a variable to store orders in state so they can be used through the component
   const [orders, setOrders] = useState<OrderProps[]>([]);
+
+  /**
+   * useScreenWidth hook is used to change styles based on whether screen
+   * is smaller/larger than input parameter
+   */
+  const desktop = useScreenWidth(600);
+
   // initialise a variable to keep track of the current orders rendered in the component
   const [pages, setPages] = useState({
     min: 0,
-    max: 10,
+    max: desktop ? 10 : 5,
   });
   // initialise a variable to check which accordion component is expanded
   const [expanded, setExpanded] = useState<string | boolean>(false);
@@ -66,33 +73,29 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   // get the users sub for use in graphQL or AWS methods.
   const sub = useSelector(({ user }: AppState) => user.id);
 
-  /**
-   * Function to retrieve the users data, and then the users' orders based
-   * on the current authenticated user.
-   */
-  const getOrders = async (): Promise<void> => {
-    try {
-      const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-      const orders = data.getUser.orders.items;
-      // set orders into state so it can be used throughout the component
-      setOrders(orders);
-    } catch (err) {
-      console.error(err);
-    }
-    // remove all loading UI effects.
-    setLoading(false);
-  };
-
   // get the users' orders as soon as the component mounts
   useEffect(() => {
+    /**
+     * Function to retrieve the users data, and then the users' orders based
+     * on the current authenticated user.
+     */
+    const getOrders = async (): Promise<void> => {
+      try {
+        const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
+        console.log(data, sub);
+        const orders = data.getUser.orders.items;
+        // set orders into state so it can be used throughout the component
+        console.log(orders);
+        setOrders(orders);
+      } catch (err) {
+        console.error(err);
+      }
+      // remove all loading UI effects.
+      setLoading(false);
+    };
+
     getOrders();
   }, []);
-
-  /**
-   * useScreenWidth hook is used to change styles based on whether screen
-   * is smaller/larger than input parameter
-   */
-  const desktop = useScreenWidth(600);
 
   /**
    * Function to open/close a panel inside the Accordion component.
@@ -126,8 +129,14 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
     <div className={classes.root}>
       <Accordion expanded={false}>
         <AccordionSummary>
-          <Typography className={classes.headingTitle}>Order Date</Typography>
-          <Typography className={classes.secondaryTitle}>Payment Status</Typography>
+          <Grid container style={{ marginRight: 30 }}>
+            <Grid item xs={6}>
+              <Typography className={classes.headingTitle}>Order Date</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography className={classes.secondaryTitle}>Payment Status</Typography>
+            </Grid>
+          </Grid>
         </AccordionSummary>
       </Accordion>
       {orders
@@ -149,29 +158,35 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
                 id={`panel${i}-header`}
                 style={{ alignItems: "center" }}
               >
-                <Typography className={classes.heading}>
-                  {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
-                </Typography>
-                <div className={classes.secondaryHeading}>
-                  <Typography className={classes.heading}>
-                    {getOrderPrice(order.products)}
-                  </Typography>
-                  {order.paymentStatus === "paid" ? (
-                    <Chip
-                      className={classes.paidTag}
-                      size="small"
-                      color="primary"
-                      label="Paid"
-                    />
-                  ) : (
-                    <Chip
-                      className={classes.unpaidTag}
-                      size="small"
-                      color="secondary"
-                      label="Unpaid"
-                    />
-                  )}
-                </div>
+                <Grid container style={{ marginRight: -30 }}>
+                  <Grid item xs={6}>
+                    <Typography className={classes.heading}>
+                      {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} style={{ display: "flex", justifyContent: "center" }}>
+                    <div className={classes.secondaryHeading}>
+                      <Typography className={classes.heading}>
+                        {getOrderPrice(order.products)}
+                      </Typography>
+                      {order.paymentStatus === "paid" ? (
+                        <Chip
+                          className={classes.paidTag}
+                          size="small"
+                          color="primary"
+                          label="Paid"
+                        />
+                      ) : (
+                        <Chip
+                          className={classes.unpaidTag}
+                          size="small"
+                          color="secondary"
+                          label="Unpaid"
+                        />
+                      )}
+                    </div>
+                  </Grid>
+                </Grid>
               </AccordionSummary>
               <div className={classes.detailsText}>
                 <Typography className={classes.orderId}>
@@ -282,7 +297,7 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
       )}
       <Pagination
         dataLength={orders.length}
-        numPerPage={10}
+        numPerPage={!desktop ? 5 : 10}
         setPageValues={({ min, max }): void => setPages({ min, max })}
       />
     </div>

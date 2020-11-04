@@ -91,6 +91,12 @@ app.post("/orders/create-checkout-session", async (req, res) => {
   }
 });
 
+app.post("/orders/retrieve-session", async (req, res) => {
+  const { id } = req.body;
+  const session = await stripe.checkout.sessions.retrieve(id);
+  return res.status(200).json({ session });
+});
+
 app.post("/orders/set-order-processing", (req, res) => {
   try {
     const { orderId, isProcessed } = req.body;

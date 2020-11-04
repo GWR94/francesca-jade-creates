@@ -190,21 +190,22 @@ class AppRouter extends Component<RouterProps, RouterState> {
    * users' data
    */
   private registerNewUser = async (signInData: SignInUserData): Promise<void> => {
+    console.log(signInData);
     /**
      * Get the id from signInData - it's in different locations based on what provider user
      * logged in with. This will be used to check if the user is already a part of the database
      * by checking the id against the getUser query.
      */
-    const input = {
-      id: signInData.id || signInData.signInUserSession.idToken.payload.sub,
-    };
+
+    const id =
+      signInData?.attributes?.sub ??
+      signInData?.id ??
+      signInData.signInUserSession?.idToken?.payload?.sub;
+
+    console.log(id);
     // check to see if the user is in the database
     try {
-      const { data } = await API.graphql(
-        graphqlOperation(getUser, {
-          input,
-        }),
-      );
+      const { data } = await API.graphql(graphqlOperation(getUser, { id }));
       // if there is no data.getUser, then the user is not in the database
       if (!data.getUser) {
         /**
@@ -213,9 +214,9 @@ class AppRouter extends Component<RouterProps, RouterState> {
          * information.
          */
         const registerUserInput = {
-          id: input.id,
+          id,
           username: signInData.username,
-          email: signInData.email || signInData.signInUserSession.idToken.payload.email,
+          email: signInData?.email ?? signInData.signInUserSession.idToken.payload.email,
           registered: true,
         };
         // execute the registerUser mutation to add the user to the database.
@@ -232,7 +233,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
       }
     } catch (err) {
       // log any errors
-      console.error("error registering new user");
+      console.error(err);
     }
   };
 
@@ -248,11 +249,11 @@ class AppRouter extends Component<RouterProps, RouterState> {
       // if the user is signing in, get the users' data.
       case "signIn":
         await this.getUserData();
-        // await this.registerNewUser(capsule.payload.data);
+        await this.registerNewUser(capsule.payload.data);
         break;
       // if the user is signing up, register the user
       case "signUp":
-        this.registerNewUser(capsule.payload.data);
+        console.log("user signed up");
         break;
       // if the user is signing out, remove the user object from state.
       case "signOut":
@@ -362,7 +363,9 @@ class AppRouter extends Component<RouterProps, RouterState> {
               />
               <Route
                 path="/account/:id"
-                component={(matchParams: RouteComponentProps<MatchParams>): JSX.Element =>
+                component={(
+                  matchParams: RouteComponentProps<{ id: string }>,
+                ): JSX.Element =>
                   this._admin ? (
                     <div className="content-container">
                       <UpdateProduct
@@ -377,7 +380,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                   )
                 }
               />
-              <Route path="/success" component={(): JSX.Element => <Success />} />
+              <Route path="/success" component={Success} />
               <Route component={NotFoundPage} />
             </Switch>
           )}
