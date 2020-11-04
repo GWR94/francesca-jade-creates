@@ -24,19 +24,11 @@ export interface CheckoutProductProps {
 }
 
 export interface CustomOptionsState {
-  currentTextValue: string;
-  currentArrayValue: string[];
-  currentImagesArray: S3ImageProps[];
-  currentMultipleChoice: string;
-  uploadedImage: string | null;
-  currentImageFile: S3ImageProps | null;
-  imageCount: number;
   expanded: string | false;
-  imageCompleted: boolean;
-  confirmDialogOpen: boolean;
-  uploadedImageArray: S3ImageProps[];
   currentNotesValue: string;
   isCompleted: boolean;
+  currentColorScheme: string;
+  imageCompleted: boolean;
 }
 
 export type CustomOptionArrayType = {

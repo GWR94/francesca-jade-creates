@@ -9,37 +9,22 @@ import {
   Select,
   MenuItem,
   makeStyles,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
   FormControl,
   InputLabel,
 } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
-import { S3Image } from "aws-amplify-react";
-import { Storage } from "aws-amplify";
 import { ExpandMore } from "@material-ui/icons";
-import { COLORS, INTENT } from "../../../themes";
+import { COLORS } from "../../../themes";
 import { Feature } from "../../accounts/interfaces/Variants.i";
-import { openSnackbar } from "../../../utils/Notifier";
 import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
-import { getReadableStringFromArray } from "../../../utils";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-// @ts-expect-error
-import awsExports from "../../../aws-exports";
-import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
-import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import RenderInput from "./RenderInput";
-import UploadedImages from "./UploadedImages";
 
 /**
  * TODO
  * [x] Show uploaded images when field is complete
  * [x] Add Optional to all fields which are optional (range/minNum)
- * [ ] Add colour scheme to top of custom options
+ * [x] Add colour scheme to top of custom options
  * [ ] Add styles to delete product dialog
  * [ ] Check the images are deleting from s3 when removing them from array
  */
@@ -59,7 +44,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     currentNotesValue: "",
     isCompleted: false,
     currentColorScheme: "",
-    updatedInputValue: null,
+    imageCompleted: false,
   });
 
   const useStyles = makeStyles(styles);
@@ -75,20 +60,10 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     });
   };
 
-  const {
-    expanded,
-    updatedInputValue,
-    imageCompleted,
-    isCompleted,
-    currentNotesValue,
-    currentColorScheme,
-    currentImagesArray,
-  } = state;
+  const { expanded, isCompleted, currentNotesValue, currentColorScheme } = state;
 
-  const notesIdx = currentVariant?.features?.length + 1 ?? 1;
-  const colorIdx = currentVariant?.features?.length ?? 0;
-
-  console.log(notesIdx, colorIdx);
+  const notesIdx = (currentVariant?.features.length ?? 0) + 1;
+  const colorIdx = currentVariant?.features.length ?? 0;
 
   return (
     <div style={{ width: "100%", boxSizing: "border-box" }}>
@@ -146,7 +121,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   }
                   customOptions={customOptions}
                   setExpanded={(expanded): void => setState({ ...state, expanded })}
-                  featuresLength={currentVariant?.features.length}
+                  featuresLength={currentVariant?.features.length ?? 0}
                 />
               </AccordionDetails>
             </Accordion>

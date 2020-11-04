@@ -16,6 +16,5 @@ export interface RenderInputProps {
   setCustomOptions: (options: CustomOptionArrayType) => void;
   customOptions: CustomOptionArrayType;
   setExpanded: (panel: string) => void;
-  updatedInputValue: unknown;
   featuresLength: number;
 }
