@@ -84,12 +84,6 @@
           ]
         }
       ]
-    },
-    "handleImage": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": []
     }
   },
   "hosting": {}

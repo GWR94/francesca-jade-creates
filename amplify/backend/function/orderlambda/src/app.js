@@ -15,7 +15,6 @@ const AWS = require("aws-sdk");
 const app = express();
 
 let stripe;
-
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config(".env");
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
