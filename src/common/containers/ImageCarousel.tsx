@@ -10,20 +10,7 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 import { S3Image } from "aws-amplify-react";
 import { API, Storage, graphqlOperation } from "aws-amplify";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
-import { green } from "@material-ui/core/colors";
-import {
-  Button,
-  CircularProgress,
-  createMuiTheme,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  makeStyles,
-  ThemeProvider,
-  Typography,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { updateProduct } from "../../graphql/mutations";
 import { openSnackbar } from "../../utils/Notifier";
 import { ImageCarouselProps, ImageCarouselState } from "./interfaces/ImageCarousel.i";
@@ -31,12 +18,6 @@ import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/imageCarousel.style";
 import DeleteImageDialog from "../alerts/DeleteImageDialog";
 
-// theme for green/success button
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
 /**
  * Class component for displaying, updating and removing images for a specific product.
  */
@@ -50,7 +31,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   handleUpdateImages,
 }) => {
   const [state, setState] = useState<ImageCarouselState>({
-    keyToDelete: null,
+    keyToDelete: "",
     isPlaying: true,
     imageLoading: true,
   });
@@ -175,7 +156,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       });
       // if the handleUpdateImages function is defined, execute it.
       if (handleUpdateImages) handleUpdateImages(updatedImages);
-      setState({ ...state, dialogOpen: false });
+      setDialogOpen(false);
     } catch (err) {
       /**
        * If there are any errors at any point in the function, notify the user with a
@@ -191,8 +172,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   const { keyToDelete, isPlaying, imageLoading } = state;
   return (
     <>
-      {/* @ts-expect-error */}
-      <div style={isCentered ? classes.centeredImageContainer : {}}>
+      <div className={isCentered ? classes.centeredImageContainer : ""}>
         {/* 
           If there is only one item in the images array, then there is no need to render
           the carousel component, so just place the image in a div.
@@ -252,9 +232,9 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                         onClick={(): void => {
                           setState({
                             ...state,
-                            dialogOpen: true,
                             keyToDelete: image.key,
                           });
+                          setDialogOpen(true);
                         }}
                       />
                     )}

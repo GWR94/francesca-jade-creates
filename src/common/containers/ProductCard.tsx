@@ -30,10 +30,23 @@ import ChipContainer from "../inputs/ChipContainer";
 import { INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 
-const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.Element => {
+/**
+ * Functional component which renders a card showing an overview of the chosen
+ * product.
+ * @param product - An object containing all of the relevant data which is needed to
+ * render the product card.
+ * @param admin - Boolean value to determine if the current authenticated user is an
+ * admin and can view admin only settings/inputs.
+ */
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  admin = false,
+}): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
+    // spread all styles from stylesheet
     ...styles,
+    // add styles based on product.type
     fab: {
       position: "absolute",
       bottom: 4,
@@ -97,14 +110,24 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
     }
   };
 
+  /**
+   * Function to return a string containing the minimum price that the product
+   * can be purchased with.
+   * @returns {string} string describing price of product
+   */
   const handleGetPrices = (): string => {
+    // set min to be infinity to any value will change the value
     let min = Infinity;
+    // if the variants array has 1 or more items, iterate through it and find the minimum value
     if (variants?.length) {
       for (const variant of variants) {
+        // set min to the minimum of the current iterations price or the current min value.
         min = Math.min(min, variant.price.item);
       }
     }
+    // if min still is infinity, there's no price so notify the user.
     if (min === Infinity) return `Variable Price - Request a Quote!`;
+    // otherwise return the min value.
     return `From £${min.toFixed(2)}`;
   };
 
@@ -112,9 +135,10 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
     <>
       <Card
         elevation={2}
-        onClick={(): void =>
-          history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`)
-        }
+        onClick={(): void => {
+          // push the user to the full product page when they click on the card
+          history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
+        }}
         className={classes.card}
       >
         <CardHeader
@@ -122,12 +146,17 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
             title: classes.headerContainer,
           }}
           action={
-            // if loading return a skeleton of the potential product
+            /**
+             * If the current authenticated user is an admin, show them extra options
+             * where they can edit or delete the current product from the card.
+             */
             admin && (
               <IconButton
                 aria-label="extra options"
                 onClick={(e): void => {
+                  // stop propagation to avoid unintended side effects
                   e.stopPropagation();
+                  // open menu
                   setMenuOpen(true);
                 }}
                 className={classes.options}
@@ -146,9 +175,11 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
                 }}
               />
             ) : (
+              // otherwise show the title
               title
             )
           }
+          // if isLoading is true, show the skeleton, otherwise show the tagline if there is one
           subheader={isLoading ? <Skeleton animation="wave" /> : tagline || ""}
           style={{
             textAlign: "center",
@@ -159,6 +190,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
             root: classes.root,
           }}
         >
+          {/* if isLoading is true, show a skeleton, otherwise show price and tags */}
           {isLoading ? (
             <div
               style={{
@@ -197,7 +229,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
-              imgKey={images.collection[0]?.key}
+              imgKey={images.collection[images.cover]?.key}
               theme={{
                 photoImg: isLoading
                   ? {
@@ -210,6 +242,7 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
                       justifyContent: "center",
                     },
               }}
+              // once the image has loaded, set loading to be false
               onLoad={(): void => setLoading(false)}
             />
             {/* if loading return a skeleton of the potential product */}
@@ -224,24 +257,30 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
               />
             )}
           </CardMedia>
+          {/* show the tooltip to the user if they're hovering over the Floating Action Button (Fab) */}
+          {/* render the Fab which allows the user to quickly add an item in their basket */}
           <Tooltip title="Add to Shopping Basket" arrow placement="top">
             <Fab
               aria-label="Add to shopping basket"
               className={classes.fab}
               onClick={(e): void => {
+                // stop propagation so there are no undesired effects
                 e.stopPropagation();
                 try {
+                  // dispatch the action to add current product to basket, and map the cover image to it.
                   dispatch(
                     actions.addToBasket({
                       ...product,
                       image: images.collection[images.cover],
                     }),
                   );
+                  // notify the user of successful action
                   openSnackbar({
                     message: `Added ${product.title} to basket.`,
                     severity: "success",
                   });
                 } catch (err) {
+                  // notify the user of failed action
                   openSnackbar({
                     message: `Unable to add ${product.title} to basket. Please try again.`,
                     severity: "error",
@@ -254,12 +293,15 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           </Tooltip>
         </CardContent>
       </Card>
+      {/* if the current authenticated user is an admin, show the menu */}
       {admin && (
         <>
           <Menu
+            // open if menuOpen is true
             open={menuOpen}
             anchorEl={anchorRef.current}
             onClose={(): void => setMenuOpen(false)}
+            // set correct transformOrigin for position of menu
             transformOrigin={{
               vertical: -32,
               horizontal: -20,
@@ -267,7 +309,9 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
           >
             <MenuItem
               onClick={(e): void => {
+                // stop propagation to avoid unintended side effects
                 e.stopPropagation();
+                // push to the edit product page
                 history.push(`/account/${product.id}`);
               }}
             >
@@ -275,8 +319,11 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
             </MenuItem>
             <MenuItem
               onClick={(e): void => {
+                // stop propagation to avoid unintended side effects
                 e.stopPropagation();
+                // close the menu
                 setMenuOpen(false);
+                // show the delete alert
                 setDeleteAlert(true);
               }}
             >
@@ -312,4 +359,4 @@ const Product: React.FC<ProductCardProps> = ({ product, admin = false }): JSX.El
   );
 };
 
-export default Product;
+export default ProductCard;

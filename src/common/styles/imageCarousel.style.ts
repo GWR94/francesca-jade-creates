@@ -2,6 +2,9 @@ import { createStyles } from "@material-ui/core";
 import { COLORS } from "../../themes/index";
 
 export default createStyles({
+  container: {
+    display: "block",
+  },
   centeredImageContainer: {
     display: "block",
     margin: "0 auto",

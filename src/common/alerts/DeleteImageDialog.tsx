@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
-  ThemeProvider,
   Button,
-  createMuiTheme,
-  CircularProgress,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  useMediaQuery,
 } from "@material-ui/core";
 import { S3Image } from "aws-amplify-react";
-import { green } from "@material-ui/core/colors";
+import { Skeleton } from "@material-ui/lab";
+import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 interface DeleteDialogProps {
   isOpen: boolean; // opens dialog when set to true
@@ -17,56 +19,84 @@ interface DeleteDialogProps {
   handleDeleteImage: () => void; // function to delete image from database
 }
 
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-  },
-});
-
+/**
+ * Functional component to render a Dialog component which shows the user
+ * the image that they have requested to delete, and actions to either delete
+ * the chosen image, or cancel the operation.
+ */
 const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
   isOpen,
   closeDialog,
   keyToDelete,
   handleDeleteImage,
 }) => {
+  // create state for loading
   const [isLoading, setLoading] = useState(true);
+
+  // create breakpoints to be used to determine if fullscreen is needed
+  const breakpoints = createBreakpoints({});
+  // store the boolean value in a variable
+  const fullscreen = useMediaQuery(breakpoints.down("sm"));
+
+  // any time the keyToDelete changes, set loading to be true.
+  useEffect(() => {
+    setLoading(true);
+  }, [keyToDelete]);
+
   return (
-    <Dialog open={isOpen} onClose={() => closeDialog}>
+    <Dialog
+      open={isOpen}
+      onClose={closeDialog}
+      fullScreen={fullscreen}
+      style={{ maxWidth: 500, margin: "0 auto" }}
+    >
       <DialogTitle style={{ padding: "12px", textAlign: "center" }}>
         Delete this image?
       </DialogTitle>
-      <div className="update__alert-container">
-        <p>
-          Are you sure you want to delete this image? Other images can be added at a later
-          date.
-        </p>
+      <DialogContent>
+        <DialogContentText style={{ textAlign: "center" }}>
+          Are you sure you want to delete this image?
+        </DialogContentText>
+        <DialogContentText style={{ textAlign: "center" }}>
+          Other images can be added at a later date.
+        </DialogContentText>
         <S3Image
           imgKey={keyToDelete}
           theme={{
-            photoImg: { maxWidth: "100%", marginBottom: "20px" },
+            photoImg: isLoading
+              ? {
+                  display: "none",
+                }
+              : {
+                  width: "auto",
+                  height: 400,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
           }}
+          onLoad={(): void => setLoading(false)}
         />
-        <ThemeProvider theme={theme}>
-          <div className="dialog__button-container">
-            <Button
-              color="secondary"
-              variant="contained"
-              onClick={closeDialog}
-              style={{ margin: "0 5px" }}
-            >
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={handleDeleteImage}
-              style={{ margin: "0 5px", color: "#fff" }}
-            >
-              Confirm
-            </Button>
-          </div>
-        </ThemeProvider>
-      </div>
+        {/* if loading return a skeleton of the potential product */}
+        {isLoading && (
+          <Skeleton
+            animation="wave"
+            variant="rect"
+            style={{
+              width: "100%",
+              height: 400,
+            }}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button color="secondary" onClick={closeDialog} style={{ margin: "0 5px" }}>
+          Cancel
+        </Button>
+        <Button color="primary" onClick={handleDeleteImage} style={{ margin: "0 5px" }}>
+          Confirm
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
