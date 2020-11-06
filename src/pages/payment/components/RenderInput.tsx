@@ -34,6 +34,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
   customOptions,
   setExpanded,
   featuresLength,
+  imageCompleted,
+  setImageCompleted,
 }): JSX.Element | null => {
   // make and use styles to be used in component
   const useStyles = makeStyles(styles);
@@ -45,7 +47,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
     confirmDialogOpen: false,
     uploadedImage: null,
     currentImageFile: null,
-    imageCompleted: false,
   });
 
   /**
@@ -64,13 +65,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
   }, [feature]);
 
   // destructure all relevant data from state
-  const {
-    currentImageFile,
-    confirmDialogOpen,
-    currentInputValue,
-    uploadedImage,
-    imageCompleted,
-  } = state;
+  const { currentImageFile, confirmDialogOpen, currentInputValue, uploadedImage } = state;
   // destructure all relevant data from feature.
   const { featureType, inputType, value, name } = feature;
 
@@ -122,8 +117,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
       };
       setState({
         ...state,
-        // set imageCompleted to true to show the completed tag on the accordion
-        imageCompleted: true,
         /**
          * set currentInputValue to null - it will be changed to the correct input
          * type when the feature is changed (when the user changes to another
@@ -131,6 +124,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
          */
         currentInputValue: null,
       });
+      // set imageCompleted to true to show the completed tag on the accordion
+      setImageCompleted(true);
       // open the next panel if i is less than features length, or color if not.
       setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
       // save customOptions to state in parent
@@ -446,11 +441,11 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           };
                           setState({
                             ...state,
-                            // set image completed to true to notify user its completed.
-                            imageCompleted: true,
                             // set input value to null, as it'll be changed when next feature is opened in accordion
                             currentInputValue: null,
                           });
+                          // set image completed to true to notify user its completed.
+                          setImageCompleted(true);
                           // open the next panel if i is less than features length, or color if not.
                           setExpanded(
                             i < featuresLength ? `panel${i + 1}` : `panel-color`,
@@ -529,10 +524,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                             Images: currentInputValue as S3ImageProps[],
                           };
                           // set imageCompleted to true to show the user the feature is completed
-                          setState({
-                            ...state,
-                            imageCompleted: true,
-                          });
+                          setImageCompleted(true);
                           // open the next panel if i is less than features length, or color if not.
                           setExpanded(
                             i < featuresLength ? `panel${i + 1}` : `panel-color`,
@@ -595,13 +587,13 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           };
                           setState({
                             ...state,
-                            // set imageCompleted to true to show the user the completed tag
-                            imageCompleted: true,
                             // set updatedImages into state so it can be shown to the user while on accordion section
                             currentInputValue: updatedImages,
                             // remove the current uploaded image from state
                             uploadedImage: null,
                           });
+                          // set imageCompleted to true to show the user the completed tag
+                          setImageCompleted(true);
                           // update custom options in parent
                           setCustomOptions(updatedCustomOptions);
                         } else {

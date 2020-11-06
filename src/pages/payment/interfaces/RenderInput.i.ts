@@ -6,7 +6,6 @@ export interface RenderInputState {
   currentInputValue: unknown;
   confirmDialogOpen: boolean;
   currentImageFile: S3ImageProps | null;
-  imageCompleted: boolean;
   uploadedImage: string | null;
 }
 
@@ -17,4 +16,6 @@ export interface RenderInputProps {
   customOptions: CustomOptionArrayType;
   setExpanded: (panel: string) => void;
   featuresLength: number;
+  imageCompleted: boolean;
+  setImageCompleted: (isCompleted: boolean) => void;
 }

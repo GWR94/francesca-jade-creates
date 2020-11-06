@@ -15,4 +15,5 @@ export interface ImageCarouselState {
   dialogOpen: boolean;
   keyToDelete: string | null;
   isPlaying: boolean;
+  imageLoading: boolean;
 }

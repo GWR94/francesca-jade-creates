@@ -10,14 +10,33 @@ import "pure-react-carousel/dist/react-carousel.es.css";
 import { S3Image } from "aws-amplify-react";
 import { API, Storage, graphqlOperation } from "aws-amplify";
 import { ChevronLeft, ChevronRight } from "@material-ui/icons";
-import { createStyles, makeStyles, withStyles } from "@material-ui/core";
+import { green } from "@material-ui/core/colors";
+import {
+  Button,
+  CircularProgress,
+  createMuiTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  makeStyles,
+  ThemeProvider,
+  Typography,
+} from "@material-ui/core";
 import { updateProduct } from "../../graphql/mutations";
 import { openSnackbar } from "../../utils/Notifier";
 import { ImageCarouselProps, ImageCarouselState } from "./interfaces/ImageCarousel.i";
 import { COLORS, INTENT } from "../../themes";
-import DeleteImageDialog from "../alerts/DeleteImageDialog";
 import styles from "../styles/imageCarousel.style";
+import DeleteImageDialog from "../alerts/DeleteImageDialog";
 
+// theme for green/success button
+const theme = createMuiTheme({
+  palette: {
+    primary: green,
+  },
+});
 /**
  * Class component for displaying, updating and removing images for a specific product.
  */
@@ -31,10 +50,12 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   handleUpdateImages,
 }) => {
   const [state, setState] = useState<ImageCarouselState>({
-    dialogOpen: false,
     keyToDelete: null,
     isPlaying: true,
+    imageLoading: true,
   });
+
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   // Ref of carousel so event listeners can be mounted/unmounted to it.
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
@@ -167,116 +188,115 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       });
     }
   };
-
-  const { dialogOpen, keyToDelete, isPlaying } = state;
+  const { keyToDelete, isPlaying, imageLoading } = state;
   return (
-    // @ts-expect-error
-    <div style={isCentered ? classes.centeredImageContainer : {}}>
-      {/* 
+    <>
+      {/* @ts-expect-error */}
+      <div style={isCentered ? classes.centeredImageContainer : {}}>
+        {/* 
           If there is only one item in the images array, then there is no need to render
           the carousel component, so just place the image in a div.
         */}
-      {images.length === 1 ? (
-        <div style={{ position: "relative" }}>
-          {deleteImages && (
-            /**
-             * if the user is allowed to delete images (is an admin), show a pulsing
-             * delete icon which shows the user that they can delete it
-             */
-            <i
-              className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
-              role="button"
-              tabIndex={0}
-              onClick={(): void => {
-                setState({
-                  ...state,
-                  dialogOpen: true,
-                  keyToDelete: images[0].key,
-                });
+        {images.length === 1 ? (
+          <div style={{ position: "relative" }}>
+            {deleteImages && (
+              /**
+               * if the user is allowed to delete images (is an admin), show a pulsing
+               * delete icon which shows the user that they can delete it
+               */
+              <i
+                className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
+                role="button"
+                tabIndex={0}
+                onClick={(): void => {
+                  setState({
+                    ...state,
+                    keyToDelete: images[0].key,
+                  });
+                  setDialogOpen(true);
+                }}
+              />
+            )}
+            <S3Image
+              imgKey={images[0].key}
+              theme={{
+                photoImg: {
+                  width: "100%",
+                },
               }}
             />
-          )}
-          <S3Image
-            imgKey={images[0].key}
-            theme={{
-              photoImg: {
-                width: "100%",
-              },
-            }}
-          />
-        </div>
-      ) : (
-        /**
-         * If there is more than one image in the array then the carousel needs to be
-         * rendered with each of the images mapped to a Slide component.
-         */
-        <div ref={carouselRef} style={{ position: "relative" }}>
-          <CarouselProvider
-            naturalSlideHeight={6}
-            naturalSlideWidth={5}
-            totalSlides={images.length}
-            visibleSlides={1}
-            step={1}
-            isPlaying={isPlaying && !dialogOpen}
-            infinite
-          >
-            <Slider>
-              {images.map((image, i) => (
-                <Slide index={i} key={i} style={{ position: "relative" }}>
-                  {deleteImages && (
-                    <i
-                      className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
-                      role="button"
-                      tabIndex={0}
-                      onClick={(): void => {
-                        setState({
-                          ...state,
-                          dialogOpen: true,
-                          keyToDelete: image.key,
-                        });
+          </div>
+        ) : (
+          /**
+           * If there is more than one image in the array then the carousel needs to be
+           * rendered with each of the images mapped to a Slide component.
+           */
+          <div ref={carouselRef} style={{ position: "relative" }}>
+            <CarouselProvider
+              naturalSlideHeight={6}
+              naturalSlideWidth={5}
+              totalSlides={images.length}
+              visibleSlides={1}
+              step={1}
+              isPlaying={isPlaying && !dialogOpen}
+              infinite
+            >
+              <Slider>
+                {images.map((image, i) => (
+                  <Slide index={i} key={i} style={{ position: "relative" }}>
+                    {deleteImages && (
+                      <i
+                        className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={(): void => {
+                          setState({
+                            ...state,
+                            dialogOpen: true,
+                            keyToDelete: image.key,
+                          });
+                        }}
+                      />
+                    )}
+                    <S3Image
+                      imgKey={image.key}
+                      theme={{
+                        photoImg: {
+                          width: "100%",
+                        },
                       }}
                     />
-                  )}
-                  <S3Image
-                    imgKey={image.key}
-                    theme={{
-                      photoImg: {
-                        width: "100%",
-                      },
-                    }}
-                  />
-                </Slide>
-              ))}
-            </Slider>
-            {/*  Buttons to control the playback of the carousel */}
-            <ButtonBack className={`${classes.backButton} animated pulse infinite`}>
-              <ChevronLeft
-                className={classes.svg}
-                style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
-              />
-            </ButtonBack>
-            <ButtonNext className={`${classes.forwardButton} animated pulse infinite`}>
-              <ChevronRight
-                className={classes.svg}
-                style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
-              />
-            </ButtonNext>
-          </CarouselProvider>
-        </div>
-      )}
+                  </Slide>
+                ))}
+              </Slider>
+              {/*  Buttons to control the playback of the carousel */}
+              <ButtonBack className={`${classes.backButton} animated pulse infinite`}>
+                <ChevronLeft
+                  className={classes.svg}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                />
+              </ButtonBack>
+              <ButtonNext className={`${classes.forwardButton} animated pulse infinite`}>
+                <ChevronRight
+                  className={classes.svg}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                />
+              </ButtonNext>
+            </CarouselProvider>
+          </div>
+        )}
+      </div>
       {/* 
           Dialog to confirm if the user wants to delete the image. Only opens when
           the user clicks the delete icon on the image. 
-        */}
-      {keyToDelete && (
-        <DeleteImageDialog
-          dialogOpen={dialogOpen}
-          closeDialog={(): void => setState({ ...state, dialogOpen: false })}
-          keyToDelete={keyToDelete}
-          handleDeleteImage={handleDeleteImage}
-        />
-      )}
-    </div>
+       */}
+      <DeleteImageDialog
+        isOpen={dialogOpen}
+        closeDialog={(): void => setDialogOpen(false)}
+        keyToDelete={keyToDelete}
+        handleDeleteImage={handleDeleteImage}
+      />
+    </>
   );
 };
 

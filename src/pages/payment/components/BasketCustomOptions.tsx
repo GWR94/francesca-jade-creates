@@ -60,7 +60,13 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     });
   };
 
-  const { expanded, isCompleted, currentNotesValue, currentColorScheme } = state;
+  const {
+    expanded,
+    isCompleted,
+    currentNotesValue,
+    currentColorScheme,
+    imageCompleted,
+  } = state;
 
   const notesIdx = (currentVariant?.features.length ?? 0) + 1;
   const colorIdx = currentVariant?.features.length ?? 0;
@@ -122,6 +128,10 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   customOptions={customOptions}
                   setExpanded={(expanded): void => setState({ ...state, expanded })}
                   featuresLength={currentVariant?.features.length ?? 0}
+                  imageCompleted={imageCompleted}
+                  setImageCompleted={(isCompleted: boolean): void =>
+                    setState({ ...state, imageCompleted: isCompleted })
+                  }
                 />
               </AccordionDetails>
             </Accordion>
