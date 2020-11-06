@@ -122,6 +122,9 @@ Parameters:
   adminQueries:
     Type: String
             
+  hostedUIProviderCreds:
+    Type: String
+              
   facebookAppId:
     Type: String
               
@@ -131,12 +134,12 @@ Parameters:
   amazonAppId:
     Type: String
               
-  hostedUIProviderCreds:
-    Type: String
-              
   oAuthMetadata:
     Type: String
-                        
+                          
+  serviceName:
+    Type: String
+            
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
 

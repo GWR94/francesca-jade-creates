@@ -14,7 +14,7 @@ import "animate.css/animate.min.css";
 import "normalize.css";
 import "./scss/styles.scss";
 import "@stripe/stripe-js";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import "@fortawesome/fontawesome-free/css/all.css";
 import configureStore from "./store/store";
 import { COLORS, rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
@@ -54,12 +54,12 @@ if (isLocalhost) {
     }
   });
 } else {
-  urlsIn.forEach((e): void => {
+  urlsIn.forEach((e: string): void => {
     if (hasHostname(e)) {
       oauth.redirectSignIn = e;
     }
   });
-  urlsOut.forEach((e): void => {
+  urlsOut.forEach((e: string): void => {
     if (hasHostname(e)) {
       oauth.redirectSignOut = e;
     }

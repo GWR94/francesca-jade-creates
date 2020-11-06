@@ -40,6 +40,7 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
       // @ts-ignore
       authMode: "API_KEY",
     });
+    console.log(data.getProduct);
     setProduct(data.getProduct);
     setLoading(false);
   };
@@ -102,7 +103,17 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
 
   const handleAddToBasket = (): AddItemAction | null => {
     if (!product) return null;
-    const { id, title, description, images, type, tagline, variants } = product;
+    const {
+      id,
+      title,
+      description,
+      images,
+      type,
+      tagline,
+      variants,
+      customOptions,
+    } = product;
+
     return dispatch(
       basketActions.addToBasket({
         id,
@@ -112,6 +123,7 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
         variants,
         type,
         tagline,
+        customOptions,
       }),
     );
   };
@@ -122,7 +134,8 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
   };
 
   const history = useHistory();
-  return isLoading || product === undefined ? (
+  if (!product) return null;
+  return isLoading ? (
     <Loading />
   ) : (
     <Container>

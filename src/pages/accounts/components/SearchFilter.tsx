@@ -57,6 +57,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
+  // create state for searchQuery to be held within.
   const [searchQuery, setSearchQuery] = useState<string>("");
   /**
    * the debounced search query will only change its value 500 milliseconds
@@ -103,6 +104,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     const { sortBy, sortDirection } = filters;
     // initialise an array to hold the values of the sorted products.
     let sorted: ProductProps[] = [];
+    // if there are no products, set searchResults to null to reset search to default results
     if (!products) return setSearchResults(null);
     if (sortBy === "price") {
       /**
@@ -115,7 +117,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
        * getMinPriceFromVariants function.
        */
       const creates = products
+        // filter products where product.type is creates
         .filter((product) => product.type === "Creates")
+        // sort them based on sort direction
         .sort((a: ProductProps, b: ProductProps) => {
           return getMinPriceFromVariants(a.variants) < getMinPriceFromVariants(b.variants)
             ? sortDirection === "DESC"
@@ -250,6 +254,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     };
     // execute the function
     handleSearchProducts();
+    // execute useEffect when any filter or debouncedSearchQuery is changed
   }, [filters, debouncedSearchQuery]);
 
   const {
@@ -266,6 +271,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         <div className={classes.container}>
           <Grid container spacing={0}>
             <Grid item xs={7}>
+              {/* create searchQuery text input */}
               <TextField
                 type="text"
                 value={searchQuery}
@@ -276,14 +282,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 size="small"
                 InputProps={{
                   startAdornment: (
+                    // show search icon at the start of input
                     <InputAdornment position="start">
                       <SearchRounded />
                     </InputAdornment>
                   ),
                   endAdornment: (
+                    // show refresh button at end of input
                     <InputAdornment position="end">
                       <RefreshRounded
                         style={{ cursor: "pointer" }}
+                        // when clicking button, it resets all inputs and puts search results back to default
                         onClick={(): void => {
                           dispatch(
                             actions.setSearchFilters({
@@ -291,7 +300,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                               shouldUpdateWithNoQuery: false,
                             }),
                           );
+                          // clear search query input
                           setSearchQuery("");
+                          // set searchResults to null so it will return to default state.
                           setSearchResults(null);
                         }}
                       />
@@ -299,8 +310,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   ),
                 }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                  // retrieve user input
                   const query = e.target.value;
+                  // set query into state
                   setSearchQuery(query);
+                  // if the shouldUpdateWithNoQuery boolean is true, change it to false in redux store
                   if (shouldUpdateWithNoQuery) {
                     dispatch(
                       actions.setSearchFilters({
@@ -313,12 +327,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               />
             </Grid>
             <Grid item xs={5}>
+              {/* create Select input to choose searchType filter */}
               <FormControl variant="outlined" fullWidth>
                 <InputLabel>From</InputLabel>
                 <Select
                   variant="outlined"
                   value={searchType}
                   onChange={(e): void => {
+                    // if the shouldUpdateWithNoQuery boolean is true, change it to false in redux store
                     if (shouldUpdateWithNoQuery) {
                       dispatch(
                         actions.setSearchFilters({
@@ -327,7 +343,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                         }),
                       );
                     }
+                    // retrieve the user input
                     const searchType = e.target.value;
+                    // set searchType in the redux store (filters)
                     dispatch(
                       actions.setSearchFilters({
                         ...filters,
@@ -340,6 +358,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   label="From"
                   className={classes.select}
                 >
+                  {/* create all MenuItem's for use inside the Select input */}
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
@@ -349,8 +368,10 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             </Grid>
           </Grid>
           <Grid container>
-            {adminFilters && (
+            {/* only show adminFilters checkboxes if admin boolean is true and adminFilters isn't null */}
+            {admin && adminFilters && (
               <Grid item xs={4}>
+                {/* create Checkbox component for selecting adminFilters (cake/creates filters) */}
                 <FormControl fullWidth>
                   <FormLabel style={{ marginTop: 12, textAlign: "center" }}>
                     Include
@@ -358,13 +379,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   <FormGroup>
                     <FormControlLabel
                       control={
+                        // create Checkbox for cake
                         <Checkbox
                           checked={adminFilters.cake}
                           onChange={(): void => {
+                            // turn true to false and vice versa when changing
                             const updatedAdmin = {
                               ...adminFilters,
                               cake: !adminFilters.cake,
                             };
+                            // update adminFilters and shouldUpdateWithNoQuery in redux store
                             dispatch(
                               actions.setSearchFilters({
                                 ...filters,
@@ -380,13 +404,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     />
                     <FormControlLabel
                       control={
+                        // create Checkbox for creates
                         <Checkbox
                           checked={adminFilters.creates}
                           onChange={(): void => {
+                            // turn true to false and vice versa when changing
                             const updatedAdmin = {
                               ...adminFilters,
                               creates: !adminFilters.creates,
                             };
+                            // update adminFilters and shouldUpdateWithNoQuery in redux store
                             dispatch(
                               actions.setSearchFilters({
                                 ...filters,
@@ -404,7 +431,12 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 </FormControl>
               </Grid>
             )}
-            <Grid item xs={adminFilters ? 4 : 6}>
+            {/* 
+              If adminFilters is not null and admin is true, set the width to 4, otherwise 6 as
+              it will need to fill rest of container.
+             */}
+            <Grid item xs={admin && adminFilters ? 4 : 6}>
+              {/* Create RadioGroup (radio buttons) for sort by filter */}
               <FormControl fullWidth>
                 <FormLabel className={classes.formLabel}>Sort By</FormLabel>
                 <RadioGroup
@@ -412,6 +444,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="SortBy"
                   value={sortBy}
                   onChange={(e): void => {
+                    // set sortBy and shouldUpdateWithNoQuery in redux store
                     dispatch(
                       actions.setSearchFilters({
                         ...filters,
@@ -421,12 +454,18 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     );
                   }}
                 >
+                  {/* Create Radio buttons for each filter */}
                   <FormControlLabel value="createdAt" control={<Radio />} label="Date" />
                   <FormControlLabel value="price" control={<Radio />} label="Price" />
                 </RadioGroup>
               </FormControl>
             </Grid>
+            {/* 
+              If adminFilters is not null and admin is true, set the width to 4, otherwise 6 as
+              it will need to fill rest of container.
+             */}
             <Grid item xs={adminFilters ? 4 : 6}>
+              {/* Create RadioGroup (radio buttons) for sort direction filter */}
               <FormControl fullWidth>
                 <FormLabel className={classes.formLabel}>Sort Direction</FormLabel>
                 <RadioGroup
@@ -434,6 +473,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   name="sortAscending"
                   value={sortDirection}
                   onChange={(e): void => {
+                    // set sortDirection and shouldUpdateWithNoQuery in redux store
                     dispatch(
                       actions.setSearchFilters({
                         ...filters,
@@ -443,6 +483,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     );
                   }}
                 >
+                  {/* Create Radio buttons for each filter */}
                   <FormControlLabel value="DESC" control={<Radio />} label="Descending" />
                   <FormControlLabel value="ASC" control={<Radio />} label="Ascending" />
                 </RadioGroup>

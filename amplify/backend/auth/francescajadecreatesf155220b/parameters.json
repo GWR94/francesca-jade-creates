@@ -68,5 +68,6 @@
     ],
     "userPoolGroups": true,
     "adminQueries": false,
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\",\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://staging.dgbwgsahmq4wg.amplifyapp.com/\",\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\",\"https://staging.dgbwgsahmq4wg.amplifyapp.com/\"]}",
+    "serviceName": "Cognito"
 }

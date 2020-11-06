@@ -12,7 +12,7 @@ export interface ImageCarouselProps {
 }
 
 export interface ImageCarouselState {
-  dialogOpen: boolean;
-  keyToDelete: string | null;
+  keyToDelete: string;
   isPlaying: boolean;
+  imageLoading: boolean;
 }
