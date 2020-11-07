@@ -27,6 +27,23 @@ export default createStyles({
       right: 6,
     },
   },
+  starIcon: {
+    position: "absolute",
+    top: 5,
+    left: 5,
+    color: "#ffc240",
+    cursor: "pointer",
+    fontSize: 25,
+    zIndex: 10,
+    height: 20,
+    width: 20,
+    display: "block",
+    "&:hover": {
+      fontSize: 30,
+      top: 3,
+      left: 6,
+    },
+  },
   svg: {
     fontSize: "50px !important",
     color: COLORS.Pink,

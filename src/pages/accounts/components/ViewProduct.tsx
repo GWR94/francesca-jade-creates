@@ -165,6 +165,7 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
           <Grid item xs={12} sm={product.type === "Cake" ? 12 : 5}>
             <ImageCarousel
               images={product.images.collection}
+              cover={product.images.cover}
               type={productType}
               isCentered
             />

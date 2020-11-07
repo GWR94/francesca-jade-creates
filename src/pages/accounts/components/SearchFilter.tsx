@@ -36,7 +36,8 @@ import styles from "../styles/searchFilter.style";
  * TODO
  * [x] Sort out success page
  * [ ] Sort out basket
- * [ ] Fix errors for cakes ViewProduct
+ * [x] Fix errors for cakes ViewProduct
+ * [ ] Fix general styling on ViewProduct
  * [ ] Fix landing page styles on mobile
  */
 

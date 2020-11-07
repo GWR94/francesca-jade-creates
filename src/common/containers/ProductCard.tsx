@@ -31,6 +31,11 @@ import { INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 
 /**
+ * TODO
+ * [ ] Fix dots appearing above everything (inc nav)
+ */
+
+/**
  * Functional component which renders a card showing an overview of the chosen
  * product.
  * @param product - An object containing all of the relevant data which is needed to

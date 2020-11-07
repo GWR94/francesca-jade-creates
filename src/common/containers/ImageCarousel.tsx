@@ -19,7 +19,13 @@ import styles from "../styles/imageCarousel.style";
 import DeleteImageDialog from "../alerts/DeleteImageDialog";
 
 /**
- * Class component for displaying, updating and removing images for a specific product.
+ * TODO
+ * [ ] Put tags inline in confirm dialog
+ */
+
+/**
+ * Class component for displaying, updating and removing images for a specific product's
+ * images. Images will be rendered inside a
  */
 const ImageCarousel: React.FC<ImageCarouselProps> = ({
   type,
@@ -29,14 +35,17 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   isCentered,
   deleteImages,
   handleUpdateImages,
+  cover,
 }) => {
   const [state, setState] = useState<ImageCarouselState>({
     keyToDelete: "",
     isPlaying: true,
     imageLoading: true,
+    coverImageIdx: cover,
   });
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [isPlaying, setPlaying] = useState<boolean>(false);
 
   // Ref of carousel so event listeners can be mounted/unmounted to it.
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
@@ -69,6 +78,28 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
     },
   });
 
+  const handleCoverImageUpdate = async (idx: number): Promise<void> => {
+    setState({
+      ...state,
+      coverImageIdx: idx,
+    });
+    const { data } = await API.graphql(
+      graphqlOperation(updateProduct, {
+        input: {
+          id,
+          images: {
+            collection: images,
+            cover: idx,
+          },
+        },
+      }),
+    );
+    if (!data)
+      openSnackbar({ severity: "error", message: "Unable to update cover image" });
+    else
+      openSnackbar({ severity: "success", message: "Successfully updated cover image." });
+  };
+
   const classes = useStyles();
 
   /**
@@ -79,10 +110,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   useEffect(() => {
     if (images.length > 1 && carouselRef.current) {
       carouselRef.current.addEventListener("mouseenter", (): void => {
-        setState({ ...state, isPlaying: false });
+        setPlaying(false);
       });
       carouselRef.current.addEventListener("mouseleave", (): void => {
-        setState({ ...state, isPlaying: true });
+        setPlaying(true);
       });
     }
     return (): void => {
@@ -92,10 +123,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        */
       if (images.length > 1 && carouselRef.current) {
         carouselRef.current.removeEventListener("mouseenter", (): void => {
-          setState({ ...state, isPlaying: false });
+          setPlaying(false);
         });
         carouselRef.current.removeEventListener("mouseleave", (): void => {
-          setState({ ...state, isPlaying: true });
+          setPlaying(true);
         });
       }
     };
@@ -106,9 +137,8 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
    * image from the database and sever the link between the image and the current
    * product.
    */
-  const handleDeleteImage = async (): Promise<void> => {
-    // destructure the key to delete!bet wi
-    const { keyToDelete } = state;
+  const handleDeleteImage = async (keyToDelete: string): Promise<void> => {
+    console.log(keyToDelete);
     /**
      * if there is no value in keyToDelete, then the operation cannot be completed,
      * so notify the user of this with a danger snackbar, and return from the function.
@@ -169,7 +199,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       });
     }
   };
-  const { keyToDelete, isPlaying, imageLoading } = state;
+  const { keyToDelete, imageLoading, coverImageIdx } = state;
   return (
     <>
       <div className={isCentered ? classes.centeredImageContainer : ""}>
@@ -225,18 +255,29 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                 {images.map((image, i) => (
                   <Slide index={i} key={i} style={{ position: "relative" }}>
                     {deleteImages && (
-                      <i
-                        className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
-                        role="button"
-                        tabIndex={0}
-                        onClick={(): void => {
-                          setState({
-                            ...state,
-                            keyToDelete: image.key,
-                          });
-                          setDialogOpen(true);
-                        }}
-                      />
+                      <>
+                        <i
+                          className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
+                          role="button"
+                          tabIndex={0}
+                          onClick={(): void => {
+                            setState({
+                              ...state,
+                              keyToDelete: image.key,
+                            });
+                            console.log(image.key);
+                            setDialogOpen(true);
+                          }}
+                        />
+                        <i
+                          className={`${classes.starIcon} ${
+                            coverImageIdx === i ? "fas" : "far"
+                          } fa-star animated infinite pulse`}
+                          role="button"
+                          tabIndex={0}
+                          onClick={(): Promise<void> => handleCoverImageUpdate(i)}
+                        />
+                      </>
                     )}
                     <S3Image
                       imgKey={image.key}
@@ -274,7 +315,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
         isOpen={dialogOpen}
         closeDialog={(): void => setDialogOpen(false)}
         keyToDelete={keyToDelete}
-        handleDeleteImage={handleDeleteImage}
+        handleDeleteImage={(key): Promise<void> => handleDeleteImage(key)}
       />
     </>
   );

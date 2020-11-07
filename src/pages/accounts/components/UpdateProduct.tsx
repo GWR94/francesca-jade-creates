@@ -693,6 +693,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               <div className={classes.carouselContainer}>
                 <ImageCarousel
                   images={images.collection}
+                  cover={images.cover}
                   deleteImages
                   update={update}
                   id={product.id}

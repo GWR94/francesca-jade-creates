@@ -4,7 +4,7 @@ import { AddItemAction } from "../../../interfaces/basket.redux.i";
 import { ProductProps } from "./Product.i";
 
 export interface ViewProps {
-  id: string;
+  id?: string;
   addToBasket?: (product: BasketItemProps) => AddItemAction;
   store?: Store; // test - mock-redux-store
   type: "Cake" | "Creates";
