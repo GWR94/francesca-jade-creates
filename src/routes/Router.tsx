@@ -285,11 +285,34 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 component={(): JSX.Element => (
                   <div className="content-container">
                     <Container>
-                      <Typography variant="h4" style={{ paddingTop: 12 }}>
+                      <Typography
+                        variant="h4"
+                        style={{
+                          paddingTop: 12,
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          fontSize: "2.2rem",
+                        }}
+                      >
                         Creations
                       </Typography>
-                      <Typography variant="subtitle1">-- Placeholder --</Typography>
-                      <Typography variant="subtitle2">
+                      <Typography
+                        style={{
+                          textAlign: "center",
+                          fontSize: "1rem",
+                          margin: "10px 0",
+                        }}
+                      >
+                        -- Placeholder --
+                      </Typography>
+                      <Typography
+                        style={{
+                          textAlign: "center",
+                          fontSize: "1rem",
+                          fontStyle: "italic",
+                          margin: "10px 0 20px",
+                        }}
+                      >
                         To filter the products please click the pink button on the left
                         hand side, and filter the results to your preferences.
                       </Typography>
@@ -321,11 +344,34 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 component={(): JSX.Element => (
                   <div className="content-container">
                     <Container>
-                      <Typography variant="h4" style={{ paddingTop: 12 }}>
+                      <Typography
+                        variant="h4"
+                        style={{
+                          paddingTop: 12,
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          fontSize: "2.2rem",
+                        }}
+                      >
                         Cakes
                       </Typography>
-                      <Typography variant="subtitle1">-- Placeholder --</Typography>
-                      <Typography variant="subtitle2">
+                      <Typography
+                        style={{
+                          textAlign: "center",
+                          fontSize: "1rem",
+                          margin: "10px 0",
+                        }}
+                      >
+                        -- Placeholder --
+                      </Typography>
+                      <Typography
+                        style={{
+                          textAlign: "center",
+                          fontSize: "1rem",
+                          fontStyle: "italic",
+                          margin: "10px 0 20px",
+                        }}
+                      >
                         To filter the products please click the pink button on the left
                         hand side, and filter the results to your preferences.
                       </Typography>

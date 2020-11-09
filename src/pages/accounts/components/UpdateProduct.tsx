@@ -40,6 +40,11 @@ import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 
+/**
+ * TODO
+ * [ ] Add uncompressed and compressed images to s3
+ */
+
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
     isLoading: true,
@@ -533,7 +538,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     ) : (
       <>
         <div className={classes.mainContainer}>
-          <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }}>
+          <Typography
+            variant="h4"
+            className={classes.title}
+            style={{ marginTop: update ? 20 : 0 }}
+          >
             {update ? "Update Product" : "Create Product"}
           </Typography>
           {!update && (
@@ -570,7 +579,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             initialValue={description}
             apiKey={process.env.TINY_API_KEY}
             init={{
-              height: 500,
+              height: 300,
               width: "100%",
               marginBottom: 10,
               menubar: false,
@@ -586,31 +595,33 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             }}
             onChange={this.handleEditorChange}
           />
-          <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
-            <RadioGroup
-              aria-label="Product Type"
-              name="ProductType"
-              value={type}
-              onChange={(e): void => this.handleFormItem(e, "type")}
-              row
-              style={{ justifyContent: "space-around", margin: 0 }}
-            >
-              <FormControlLabel
-                value="Cake"
-                classes={{
-                  root: classes.root,
-                }}
-                control={<Radio />}
-                label="Cake"
-              />
-              <FormControlLabel
-                value="Creates"
-                classes={{ root: classes.root }}
-                control={<Radio />}
-                label="Creates"
-              />
-            </RadioGroup>
-          </OutlinedContainer>
+          <div style={{ margin: "10px 0", width: "100%" }}>
+            <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
+              <RadioGroup
+                aria-label="Product Type"
+                name="ProductType"
+                value={type}
+                onChange={(e): void => this.handleFormItem(e, "type")}
+                row
+                style={{ justifyContent: "space-around", margin: 0 }}
+              >
+                <FormControlLabel
+                  value="Cake"
+                  classes={{
+                    root: classes.root,
+                  }}
+                  control={<Radio />}
+                  label="Cake"
+                />
+                <FormControlLabel
+                  value="Creates"
+                  classes={{ root: classes.root }}
+                  control={<Radio />}
+                  label="Creates"
+                />
+              </RadioGroup>
+            </OutlinedContainer>
+          </div>
           <ChipInput
             value={customOptions || []}
             fullWidth
@@ -683,39 +694,44 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               />
             </div>
           </Alert>
-          <OutlinedContainer
-            label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
-            labelWidth={images.collection.length <= 1 ? 84 : 90}
-            padding={12}
-            error={!!errors.image}
-          >
-            {images.collection.length > 0 && (
-              <div className={classes.carouselContainer}>
-                <ImageCarousel
-                  images={images.collection}
-                  cover={images.cover}
-                  deleteImages
-                  update={update}
-                  id={product.id}
-                  type={type}
-                  handleUpdateImages={(collection: S3ImageProps[]): void => {
-                    this.setState({
-                      product: { ...product, images: { ...product.images, collection } },
-                    });
-                  }}
-                />
-              </div>
-            )}
-            <ImagePicker
-              setImageFile={(file): void => {
-                this.handleImageCompress(file, file.name);
-                this.setState({ errors: { ...errors, image: null } });
-              }}
-              cropImage
-              update={update}
-              type={product.type}
-            />
-          </OutlinedContainer>
+          <div style={{ margin: "10px 0", width: "100%" }}>
+            <OutlinedContainer
+              label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
+              labelWidth={images.collection.length <= 1 ? 84 : 90}
+              padding={12}
+              error={!!errors.image}
+            >
+              {images.collection.length > 0 && (
+                <div className={classes.carouselContainer}>
+                  <ImageCarousel
+                    images={images.collection}
+                    cover={images.cover}
+                    deleteImages
+                    update={update}
+                    id={product.id}
+                    type={type}
+                    handleUpdateImages={(collection: S3ImageProps[]): void => {
+                      this.setState({
+                        product: {
+                          ...product,
+                          images: { ...product.images, collection },
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              <ImagePicker
+                setImageFile={(file): void => {
+                  this.handleImageCompress(file, file.name);
+                  this.setState({ errors: { ...errors, image: null } });
+                }}
+                cropImage
+                update={update}
+                type={product.type}
+              />
+            </OutlinedContainer>
+          </div>
           {errors.image && <p className={classes.errorText}>{errors.image}</p>}
           <ChipInput
             value={tags || []}

@@ -40,10 +40,11 @@ import euroNumbers from "../../../utils/europeanCodes";
 import ImagePicker from "../../../common/containers/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
-import { greenAndRedTheme, styles, INTENT, PLACEHOLDERS } from "../../../themes";
+import { greenAndRedTheme, INTENT, PLACEHOLDERS } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import { AppState } from "../../../store/store";
+import styles from "../styles/profile.style";
 
 /**
  * Set the initial state to be empty/nullish values so they can be set to their correct
@@ -529,18 +530,20 @@ class Profile extends Component<ProfileProps, ProfileState> {
     const size = isDesktop ? "medium" : "small";
     return (
       <>
-        <Container className="profile__container">
+        <Container>
           {isLoading ? (
             <Loading size={100} />
           ) : (
             <>
-              <div className="profile__container animated fadeIn">
-                <Typography variant="h4">Profile</Typography>
-                <Typography variant="subtitle1">
+              <div className={`${classes.container} animated fadeIn`}>
+                <Typography variant="h4" className={classes.title}>
+                  Profile
+                </Typography>
+                <Typography className={classes.info}>
                   Here is an overview of your profile. To make changes click the
                   &quot;Edit Profile&quot; button at the bottom of the page.
                 </Typography>
-                <Typography variant="h6">Login Credentials</Typography>
+                <Typography className={classes.heading}>Login Credentials</Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -588,73 +591,74 @@ class Profile extends Component<ProfileProps, ProfileState> {
                       }}
                     />
                   </Grid>
-                </Grid>
-                <OutlinedContainer
-                  label="Display Image"
-                  labelWidth={80}
-                  padding={0}
-                  disabled={!isEditing}
-                >
-                  <ImagePicker
-                    savedS3Image={displayImage}
-                    profile
-                    savedImage={user?.picture ?? PLACEHOLDERS.DisplayImage}
-                    disabled={!isEditing}
-                    setImageFile={(newDisplayImage): void => {
-                      if (newDisplayImage) this.setState({ newDisplayImage });
-                    }}
-                    showPreview
-                  />
-                </OutlinedContainer>
-                <Typography variant="h6">Contact Preferences</Typography>
-                <Grid container direction="row" spacing={1} className="profile__row">
-                  <TextField
-                    label="Email Address"
-                    helperText={email.error}
-                    error={!!email.error}
-                    variant="outlined"
-                    size={size}
-                    placeholder="Enter your email address"
-                    value={email.value}
-                    onChange={(e): void =>
-                      this.setState({
-                        email: {
-                          ...email,
-                          value: e.target.value,
-                          error: "",
-                        },
-                      })
-                    }
-                    disabled={!isEditing}
-                    fullWidth
-                  />
-                  <div
-                    className="profile__verified-tag"
-                    onClick={(): Promise<void> | null => {
-                      if (isEditing) return this.handleVerifyEmail();
-                      else return null;
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <ThemeProvider theme={greenAndRedTheme}>
-                      <Chip
-                        label={email.verified ? "Verified" : "Unverified"}
-                        size="small"
-                        color={email.verified ? "primary" : "secondary"}
-                        style={{ cursor: isEditing ? "pointer" : "not-allowed" }}
-                      />
-                    </ThemeProvider>
-                  </div>
-                  <Typography variant="h6">
-                    Shipping Address{" "}
-                    <span
-                      style={{ color: "darkgray", fontStyle: "italic", fontSize: "14px" }}
-                    >
-                      (optional)
-                    </span>
-                  </Typography>
                   <Grid item xs={12}>
+                    <OutlinedContainer
+                      label="Display Image"
+                      labelWidth={80}
+                      padding={0}
+                      disabled={!isEditing}
+                    >
+                      <ImagePicker
+                        savedS3Image={displayImage}
+                        profile
+                        savedImage={user?.picture ?? PLACEHOLDERS.DisplayImage}
+                        disabled={!isEditing}
+                        setImageFile={(newDisplayImage): void => {
+                          if (newDisplayImage) this.setState({ newDisplayImage });
+                        }}
+                        showPreview
+                      />
+                    </OutlinedContainer>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography className={classes.heading}>
+                      Contact Preferences
+                    </Typography>
+                    <TextField
+                      label="Email Address"
+                      helperText={email.error}
+                      error={!!email.error}
+                      variant="outlined"
+                      size={size}
+                      placeholder="Enter your email address"
+                      value={email.value}
+                      onChange={(e): void =>
+                        this.setState({
+                          email: {
+                            ...email,
+                            value: e.target.value,
+                            error: "",
+                          },
+                        })
+                      }
+                      className={classes.input}
+                      disabled={!isEditing}
+                      fullWidth
+                    />
+                    <div
+                      className={classes.verifiedTag}
+                      onClick={(): Promise<void> | null => {
+                        if (isEditing) return this.handleVerifyEmail();
+                        else return null;
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <ThemeProvider theme={greenAndRedTheme}>
+                        <Chip
+                          label={email.verified ? "Verified" : "Unverified"}
+                          size="small"
+                          color={email.verified ? "primary" : "secondary"}
+                          style={{ cursor: isEditing ? "pointer" : "not-allowed" }}
+                        />
+                      </ThemeProvider>
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography className={classes.heading}>
+                      Shipping Address{" "}
+                      <span className={classes.optionalText}>(optional)</span>
+                    </Typography>
                     <TextField
                       label="Address Line 1"
                       variant="outlined"
@@ -761,29 +765,25 @@ class Profile extends Component<ProfileProps, ProfileState> {
                     />
                   </Grid>
                 </Grid>
-                <div className="profile__button-container">
-                  <ThemeProvider theme={greenAndRedTheme}>
+                <div className={classes.buttonContainer}>
+                  <Button
+                    variant="contained"
+                    className={classes.buttonBottom}
+                    onClick={(): void => this.setState({ isEditing: !isEditing })}
+                    color={!isEditing ? "primary" : "secondary"}
+                  >
+                    {isEditing ? "Cancel" : "Edit Profile"}
+                  </Button>
+                  {isEditing && (
                     <Button
-                      size="large"
                       variant="contained"
-                      className={classes?.buttonBottom}
-                      onClick={(): void => this.setState({ isEditing: !isEditing })}
-                      color={!isEditing ? "primary" : "secondary"}
+                      className={classes.buttonBottom}
+                      color="primary"
+                      onClick={this.checkUpdateCredentials}
                     >
-                      {isEditing ? "Cancel" : "Edit Profile"}
+                      Update Profile
                     </Button>
-                    {isEditing && (
-                      <Button
-                        size="large"
-                        variant="contained"
-                        className={classes?.buttonBottom}
-                        color="primary"
-                        onClick={this.checkUpdateCredentials}
-                      >
-                        Update Profile
-                      </Button>
-                    )}
-                  </ThemeProvider>
+                  )}
                 </div>
               </div>
             </>

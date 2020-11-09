@@ -8,7 +8,7 @@ export default createStyles({
   centeredImageContainer: {
     display: "block",
     margin: "0 auto",
-    maxWidth: 300,
+    maxWidth: 600,
   },
   deleteIcon: {
     position: "absolute",

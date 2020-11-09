@@ -60,4 +60,9 @@ export default createStyles({
   tinyEditor: {
     borderRadius: 5,
   },
+  title: {
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: "2.2rem",
+  },
 });

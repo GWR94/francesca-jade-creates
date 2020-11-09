@@ -224,32 +224,6 @@ export const rootTheme = createMuiTheme({
         },
       },
     },
-    MuiTypography: {
-      subtitle1: {
-        fontSize: "1.0rem",
-        textAlign: "center",
-        marginBottom: 8,
-      },
-      subtitle2: {
-        textAlign: "center",
-        fontSize: "0.8rem",
-        fontWeight: "lighter",
-        fontStyle: "italic",
-        marginBottom: 20,
-      },
-      h4: {
-        [breakpoints.down("md")]: {
-          fontSize: "1.8rem",
-        },
-        fontSize: "2.2rem",
-        textAlign: "center",
-        marginBottom: 10,
-        fontWeight: "bold",
-      },
-      h6: {
-        margin: "14px 0 12px 5px",
-      },
-    },
     MuiDrawer: {
       paper: {
         margin: "0 auto",
@@ -334,23 +308,5 @@ export const searchFilterTheme = createMuiTheme({
         padding: "3px 10px",
       },
     },
-  },
-});
-
-export const styles = createStyles({
-  noLeftBorderInput: {
-    borderLeftColor: "transparent",
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
-    marginLeft: "-1px",
-  },
-  noRightBorderInput: {
-    borderRightColor: "transparent",
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    marginRight: "-1px",
-  },
-  buttonBottom: {
-    margin: "20px 4px 40px",
   },
 });

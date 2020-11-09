@@ -111,7 +111,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       >
         <MenuRounded className={`${classes.filterIcon} animated infinite pulse`} />
       </div>
-      <Grid container spacing={4}>
+      <Grid container spacing={4} style={{ width: "100%" }}>
         {isLoading ? (
           <Loading small />
         ) : results.length > 0 ? (

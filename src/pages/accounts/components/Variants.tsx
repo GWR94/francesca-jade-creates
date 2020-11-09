@@ -496,339 +496,349 @@ class Variants extends Component<VariantsProps, VariantsState> {
     const { classes, setPrice, variants, size } = this.props;
 
     return (
-      <OutlinedContainer label="Variants" labelWidth={50} padding={24}>
-        <Typography gutterBottom>
-          Please complete all of the required fields then add the products&apos;
-          customisable features for each variant.
-        </Typography>
-        <Grid container spacing={1}>
-          <Grid item xs={12} sm={7}>
-            <TextField
-              variant="outlined"
-              label="Name (optional)"
-              fullWidth
-              size={size}
-              value={variantName}
-              onChange={(e): void => this.setState({ variantName: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={12} sm={5}>
-            <TextField
-              variant="outlined"
-              label="Dimensions"
-              fullWidth
-              size={size}
-              value={dimensions}
-              onChange={(e): void => this.setState({ dimensions: e.target.value })}
-              style={{ marginBottom: 8 }}
-            />
-          </Grid>
-        </Grid>
-        <TextField
-          variant="outlined"
-          value={instructions}
-          size={size}
-          rows={3}
-          rowsMax={5}
-          onChange={(e): void => this.setState({ instructions: e.target.value })}
-          label="Instructions (optional)"
-          fullWidth
-          multiline
-          placeholder="Enter any instructions that may be needed to complete the purchase"
-          style={{ marginBottom: 8 }}
-        />
-
-        {setPrice && (
+      <div style={{ margin: "10px 0", width: "100%" }}>
+        <OutlinedContainer label="Variants" labelWidth={50} padding={24}>
+          <Typography gutterBottom>
+            Please complete all of the required fields then add the products&apos;
+            customisable features for each variant.
+          </Typography>
           <Grid container spacing={1}>
-            <Grid item xs={6} sm={6}>
-              <FormControl fullWidth variant="outlined" size={size}>
-                <InputLabel htmlFor="item-adornment">Product Cost</InputLabel>
-                <OutlinedInput
-                  id="item-adornment"
-                  value={price.item}
-                  type="number"
-                  onChange={(e): void => {
-                    this.setState({
-                      price: { ...price, item: parseFloat(e.target.value) },
-                    });
+            <Grid item xs={12} sm={7}>
+              <TextField
+                variant="outlined"
+                label="Name (optional)"
+                fullWidth
+                size={size}
+                value={variantName}
+                onChange={(e): void => this.setState({ variantName: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={5}>
+              <TextField
+                variant="outlined"
+                label="Dimensions"
+                fullWidth
+                size={size}
+                value={dimensions}
+                onChange={(e): void => this.setState({ dimensions: e.target.value })}
+                style={{ marginBottom: 8 }}
+              />
+            </Grid>
+          </Grid>
+          <TextField
+            variant="outlined"
+            value={instructions}
+            size={size}
+            rows={3}
+            rowsMax={5}
+            onChange={(e): void => this.setState({ instructions: e.target.value })}
+            label="Instructions (optional)"
+            fullWidth
+            multiline
+            placeholder="Enter any instructions that may be needed to complete the purchase"
+            style={{ marginBottom: 8 }}
+          />
+
+          {setPrice && (
+            <Grid container spacing={1}>
+              <Grid item xs={6} sm={6}>
+                <FormControl fullWidth variant="outlined" size={size}>
+                  <InputLabel htmlFor="item-adornment">Product Cost</InputLabel>
+                  <OutlinedInput
+                    id="item-adornment"
+                    value={price.item}
+                    type="number"
+                    onChange={(e): void => {
+                      this.setState({
+                        price: { ...price, item: parseFloat(e.target.value) },
+                      });
+                    }}
+                    style={{ marginBottom: 8 }}
+                    startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                    labelWidth={90}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <FormControl fullWidth variant="outlined" size={size}>
+                  <InputLabel htmlFor="postage-adornment">Shipping Cost</InputLabel>
+                  <OutlinedInput
+                    id="postage-adornment"
+                    value={price.postage}
+                    type="number"
+                    onChange={(e): void =>
+                      this.setState({
+                        price: { ...price, postage: parseFloat(e.target.value) },
+                      })
+                    }
+                    style={{ marginBottom: 8 }}
+                    startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                    labelWidth={90}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          )}
+          <Typography variant="subtitle2" style={{ marginBottom: 6, marginLeft: 5 }}>
+            Enter the name of the customisable option and choose a value type to reveal
+            the input.
+          </Typography>
+          <Grid container style={{ marginBottom: 8 }}>
+            <Grid item xs={12} sm={4}>
+              <FormControl variant="outlined" className={classes.formControl} size={size}>
+                <InputLabel id="feature-type-label" variant="outlined">
+                  User Action
+                </InputLabel>
+                <Select
+                  value={featureType}
+                  fullWidth
+                  labelId="feature-type-label"
+                  id="feature-type"
+                  labelWidth={200}
+                  label="User Action"
+                  variant="outlined"
+                  style={{
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
                   }}
-                  style={{ marginBottom: 8 }}
-                  startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                  labelWidth={90}
-                />
+                  onChange={(e): void => {
+                    const featureType = e.target.value as FeatureType;
+                    if (featureType === "images") {
+                      this.setState({
+                        featureName: "Images",
+                      });
+                    } else {
+                      this.setState({ featureName: "" });
+                    }
+                    if (featureType === "other") {
+                      this.setState({
+                        inputType: "array",
+                      });
+                    }
+                    this.setState({ featureType });
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>Pick a Value</em>
+                  </MenuItem>
+                  <MenuItem value="images">User Uploads Image</MenuItem>
+                  <MenuItem value="text">User Inputs Text</MenuItem>
+                  <MenuItem value="other">User Picks From Choice</MenuItem>
+                </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6} sm={6}>
-              <FormControl fullWidth variant="outlined" size={size}>
-                <InputLabel htmlFor="postage-adornment">Shipping Cost</InputLabel>
-                <OutlinedInput
-                  id="postage-adornment"
-                  value={price.postage}
-                  type="number"
+            <Grid item xs={12} sm={4}>
+              <TextField
+                variant="outlined"
+                label="Feature Name"
+                value={featureName}
+                disabled={featureName === "Images"}
+                size={size}
+                InputProps={{
+                  classes: {
+                    notchedOutline: size === "medium" ? classes.input : "",
+                  },
+                }}
+                fullWidth
+                onChange={(e): void => this.setState({ featureName: e.target.value })}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <FormControl variant="outlined" className={classes.formControl} size={size}>
+                <InputLabel id="input-type-label" variant="outlined">
+                  Required Values
+                </InputLabel>
+                <Select
+                  value={inputType}
+                  fullWidth
+                  labelId="input-type-label"
+                  id="input-type"
+                  disabled={featureName.length === 0}
+                  label="Required Values"
+                  variant="outlined"
+                  style={{
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                  }}
                   onChange={(e): void =>
+                    this.setState({ inputType: e.target.value as InputType })
+                  }
+                >
+                  <MenuItem value="">
+                    <em>Pick a Value</em>
+                  </MenuItem>
+                  <MenuItem value="number">Requires Exact Number</MenuItem>
+                  <MenuItem value="range">Requires Min & Max Range</MenuItem>
+                  {featureType === "other" && (
+                    <MenuItem value="array">Multiple Choice</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                value={featureDesc}
+                label="Description (optional)"
+                fullWidth
+                style={{ marginTop: 8 }}
+                size={size}
+                placeholder="Describe the feature"
+                onChange={(e): void => this.setState({ featureDesc: e.target.value })}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <div className={classes.typeContainer}>{this.renderType()}</div>
+          {features.length > 0 && (
+            <ul style={{ margin: 0 }}>{this.renderCurrentFeatures()}</ul>
+          )}
+          {dimensions.length > 0 && (
+            <div className={classes.buttonContainer}>
+              {variantIdx !== null && (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  style={{ margin: "20px 4px 0" }}
+                  onClick={(): void =>
                     this.setState({
-                      price: { ...price, postage: parseFloat(e.target.value) },
+                      variantIdx: null,
+                      dimensions: "",
+                      featureType: "",
+                      featureName: "",
+                      inputType: "",
+                      features: [],
                     })
                   }
-                  style={{ marginBottom: 8 }}
-                  startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                  labelWidth={90}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-        )}
-        <Typography variant="subtitle2" style={{ marginBottom: 6, marginLeft: 5 }}>
-          Enter the name of the customisable option and choose a value type to reveal the
-          input.
-        </Typography>
-        <Grid container style={{ marginBottom: 8 }}>
-          <Grid item xs={12} sm={4}>
-            <FormControl variant="outlined" className={classes.formControl} size={size}>
-              <InputLabel id="feature-type-label" variant="outlined">
-                User Action
-              </InputLabel>
-              <Select
-                value={featureType}
-                fullWidth
-                labelId="feature-type-label"
-                id="feature-type"
-                labelWidth={200}
-                label="User Action"
-                variant="outlined"
-                style={{
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                }}
-                onChange={(e): void => {
-                  const featureType = e.target.value as FeatureType;
-                  if (featureType === "images") {
-                    this.setState({
-                      featureName: "Images",
-                    });
-                  } else {
-                    this.setState({ featureName: "" });
-                  }
-                  if (featureType === "other") {
-                    this.setState({
-                      inputType: "array",
-                    });
-                  }
-                  this.setState({ featureType });
-                }}
-              >
-                <MenuItem value="">
-                  <em>Pick a Value</em>
-                </MenuItem>
-                <MenuItem value="images">User Uploads Image</MenuItem>
-                <MenuItem value="text">User Inputs Text</MenuItem>
-                <MenuItem value="other">User Picks From Choice</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              variant="outlined"
-              label="Feature Name"
-              value={featureName}
-              disabled={featureName === "Images"}
-              size={size}
-              InputProps={{
-                classes: {
-                  notchedOutline: size === "medium" ? classes.input : "",
-                },
-              }}
-              fullWidth
-              onChange={(e): void => this.setState({ featureName: e.target.value })}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <FormControl variant="outlined" className={classes.formControl} size={size}>
-              <InputLabel id="input-type-label" variant="outlined">
-                Required Values
-              </InputLabel>
-              <Select
-                value={inputType}
-                fullWidth
-                labelId="input-type-label"
-                id="input-type"
-                disabled={featureName.length === 0}
-                label="Required Values"
-                variant="outlined"
-                style={{
-                  borderTopLeftRadius: 0,
-                  borderBottomLeftRadius: 0,
-                }}
-                onChange={(e): void =>
-                  this.setState({ inputType: e.target.value as InputType })
-                }
-              >
-                <MenuItem value="">
-                  <em>Pick a Value</em>
-                </MenuItem>
-                <MenuItem value="number">Requires Exact Number</MenuItem>
-                <MenuItem value="range">Requires Min & Max Range</MenuItem>
-                {featureType === "other" && (
-                  <MenuItem value="array">Multiple Choice</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              value={featureDesc}
-              label="Description (optional)"
-              fullWidth
-              style={{ marginTop: 8 }}
-              size={size}
-              placeholder="Describe the feature"
-              onChange={(e): void => this.setState({ featureDesc: e.target.value })}
-              variant="outlined"
-            />
-          </Grid>
-        </Grid>
-        <div className={classes.typeContainer}>{this.renderType()}</div>
-        {features.length > 0 && (
-          <ul style={{ margin: 0 }}>{this.renderCurrentFeatures()}</ul>
-        )}
-        {dimensions.length > 0 && (
-          <div className={classes.buttonContainer}>
-            {variantIdx !== null && (
+                >
+                  Cancel
+                </Button>
+              )}
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 style={{ margin: "20px 4px 0" }}
-                onClick={(): void =>
-                  this.setState({
-                    variantIdx: null,
-                    dimensions: "",
-                    featureType: "",
-                    featureName: "",
-                    inputType: "",
-                    features: [],
-                  })
-                }
+                onClick={this.handleAddVariant}
               >
-                Cancel
+                {variantIdx !== null ? "Update Variant" : "Save Variant"}
               </Button>
-            )}
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ margin: "20px 4px 0" }}
-              onClick={this.handleAddVariant}
-            >
-              {variantIdx !== null ? "Update Variant" : "Save Variant"}
-            </Button>
-          </div>
-        )}
-        <Grid container spacing={1}>
-          {variants?.length > 0 &&
-            variants.map((variant, i) => {
-              const { dimensions, price, features, variantName, instructions } = variant;
-              return (
-                <Grid item xs={12} sm={6} key={i}>
-                  <div
-                    style={{
-                      padding: 12,
-                      border: `1px solid ${COLORS.BorderGray}`,
-                      borderRadius: 5,
-                    }}
-                  >
+            </div>
+          )}
+          <Grid container spacing={1}>
+            {variants?.length > 0 &&
+              variants.map((variant, i) => {
+                const {
+                  dimensions,
+                  price,
+                  features,
+                  variantName,
+                  instructions,
+                } = variant;
+                return (
+                  <Grid item xs={12} sm={6} key={i}>
                     <div
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
+                        padding: 12,
+                        border: `1px solid ${COLORS.BorderGray}`,
+                        borderRadius: 5,
                       }}
                     >
-                      <Typography className={classes.variantTitle}>
-                        {variantName || `Variant ${i + 1}.`}
-                      </Typography>
-                      <Typography>
-                        <span className={classes.name}>Dimensions</span>:{" "}
-                        <em>{dimensions}</em>
-                      </Typography>
-                      {price.item > 0 && (
-                        <Typography>
-                          <span className={classes.name}>Price</span>:{" "}
-                          <em>
-                            £{price.item.toFixed(2)} + £{price.postage.toFixed(2)} P&P.
-                          </em>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <Typography className={classes.variantTitle}>
+                          {variantName || `Variant ${i + 1}.`}
                         </Typography>
-                      )}
-                      {instructions && (
                         <Typography>
-                          Instructions: <em>{instructions}</em>
+                          <span className={classes.name}>Dimensions</span>:{" "}
+                          <em>{dimensions}</em>
                         </Typography>
+                        {price.item > 0 && (
+                          <Typography>
+                            <span className={classes.name}>Price</span>:{" "}
+                            <em>
+                              £{price.item.toFixed(2)} + £{price.postage.toFixed(2)} P&P.
+                            </em>
+                          </Typography>
+                        )}
+                        {instructions && (
+                          <Typography>
+                            Instructions: <em>{instructions}</em>
+                          </Typography>
+                        )}
+                      </div>
+                      {features.length > 0 && (
+                        <>
+                          <Typography style={{ fontWeight: "bold" }}>
+                            Features:
+                          </Typography>
+                          <ul style={{ margin: 0 }}>
+                            {this.renderCurrentFeatures(features, false)}
+                          </ul>
+                        </>
                       )}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-evenly",
+                        }}
+                      >
+                        <IconButton
+                          color="secondary"
+                          onClick={(): void => {
+                            const { updateVariants } = this.props;
+                            let updatedVariants: Variant[];
+                            if (variants.length === 0) {
+                              updatedVariants = [];
+                            } else {
+                              updatedVariants = [
+                                ...variants.slice(0, i),
+                                ...variants.slice(i + 1),
+                              ];
+                            }
+                            updateVariants(updatedVariants);
+                          }}
+                        >
+                          <Tooltip title="Delete Variant">
+                            <DeleteRounded />
+                          </Tooltip>
+                        </IconButton>
+                        <IconButton
+                          color="primary"
+                          onClick={(): void => {
+                            this.setState({ ...variant, variantIdx: i });
+                          }}
+                        >
+                          <Tooltip title="Edit the current variant">
+                            <EditRounded />
+                          </Tooltip>
+                        </IconButton>
+                        <IconButton
+                          onClick={(): void => {
+                            this.setState({
+                              dimensions,
+                              price,
+                              features,
+                              variantName,
+                              instructions,
+                              variantIdx: null,
+                            });
+                          }}
+                        >
+                          <Tooltip title="Copy to new variant">
+                            <FileCopyRounded />
+                          </Tooltip>
+                        </IconButton>
+                      </div>
                     </div>
-                    {features.length > 0 && (
-                      <>
-                        <Typography style={{ fontWeight: "bold" }}>Features:</Typography>
-                        <ul style={{ margin: 0 }}>
-                          {this.renderCurrentFeatures(features, false)}
-                        </ul>
-                      </>
-                    )}
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-evenly",
-                      }}
-                    >
-                      <IconButton
-                        color="secondary"
-                        onClick={(): void => {
-                          const { updateVariants } = this.props;
-                          let updatedVariants: Variant[];
-                          if (variants.length === 0) {
-                            updatedVariants = [];
-                          } else {
-                            updatedVariants = [
-                              ...variants.slice(0, i),
-                              ...variants.slice(i + 1),
-                            ];
-                          }
-                          updateVariants(updatedVariants);
-                        }}
-                      >
-                        <Tooltip title="Delete Variant">
-                          <DeleteRounded />
-                        </Tooltip>
-                      </IconButton>
-                      <IconButton
-                        color="primary"
-                        onClick={(): void => {
-                          this.setState({ ...variant, variantIdx: i });
-                        }}
-                      >
-                        <Tooltip title="Edit the current variant">
-                          <EditRounded />
-                        </Tooltip>
-                      </IconButton>
-                      <IconButton
-                        onClick={(): void => {
-                          this.setState({
-                            dimensions,
-                            price,
-                            features,
-                            variantName,
-                            instructions,
-                            variantIdx: null,
-                          });
-                        }}
-                      >
-                        <Tooltip title="Copy to new variant">
-                          <FileCopyRounded />
-                        </Tooltip>
-                      </IconButton>
-                    </div>
-                  </div>
-                </Grid>
-              );
-            })}
-        </Grid>
-      </OutlinedContainer>
+                  </Grid>
+                );
+              })}
+          </Grid>
+        </OutlinedContainer>
+      </div>
     );
   }
 }

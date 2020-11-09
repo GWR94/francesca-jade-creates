@@ -32,7 +32,6 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
   const useStyles = makeStyles({
     container: {
       borderRadius: 4,
-      margin: "10px 0",
       width: "100%",
       boxSizing: "border-box",
       "&:hover": {
