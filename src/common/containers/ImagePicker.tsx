@@ -15,11 +15,6 @@ import { openSnackbar } from "../../utils/Notifier";
 import { COLORS } from "../../themes";
 import styles from "../styles/imagePicker.style";
 
-/**
- * TODO
- * [ ] Fix onPick not working when removing and adding an image
- */
-
 const initialState: ImagePickerState = {
   imagePreview: null,
   src: null,
@@ -31,6 +26,7 @@ const initialState: ImagePickerState = {
   },
   croppedImage: null,
   cropperOpen: false,
+  originalFileName: "",
 };
 
 /**
@@ -43,53 +39,12 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
 
   public imageRef: HTMLImageElement | undefined;
 
-  // set the props to be the style if they are present, or use the default theme
-  public styles = {
-    formContainer: {
-      margin: 0,
-      paddingBottom: 10,
-    },
-    formSection: {
-      width: "200px",
-      minWidth: "200px",
-      boxShadow: "none",
-      padding: 0,
-      margin: 0,
-    },
-    sectionBody: {
-      display: "none",
-    },
-    sectionHeader: {
-      display: "none",
-    },
-    photoPickerButton: {
-      background: null,
-      boxShadow:
-        "0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)",
-      display: "block",
-      padding: "6px 16px",
-      minWidth: "64px",
-      boxSizing: "border-box",
-      fontSize: "0.9375rem",
-      transition:
-        "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      fontWeight: 500,
-      lineHeight: 1.75,
-      borderRadius: "4px",
-      letterSpacing: "0.02857em",
-      textTransform: "uppercase",
-      marginTop: 10,
-    },
-  };
-
   /**
    * Set the image to be the imageRef when it first loads
    * @param {HTMLImageElement} image
    */
   public onImageLoaded = (image: HTMLImageElement): void => {
     this.imageRef = image;
-    console.log(image);
   };
 
   /**
@@ -111,16 +66,17 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
    * @param {Crop} crop - the dimensions of the desired area.
    */
   public makeClientCrop = async (crop: Crop): Promise<void> => {
+    const { originalFileName } = this.state;
     if (this.imageRef && crop.width && crop.height) {
       // get the blob data
       const croppedImage: Blob = await this.getCroppedImg(
         this.imageRef,
         crop,
-        "newFile.jpeg",
+        originalFileName,
       );
       // convert to file to be saved to S3
-      const file = new File([croppedImage], "croppedImage.jpeg", {
-        type: "image/jpeg",
+      const file = new File([croppedImage], originalFileName, {
+        type: croppedImage.type,
         lastModified: Date.now(),
       });
       // set the cropped image file to the state so it can be saved to S3 when creating the product.
@@ -240,12 +196,13 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
               setImagePreview && setImagePreview(url);
             }}
             onPick={(file): void => {
+              this.setState({ originalFileName: file.name });
               !cropImage && setImageFile(file);
             }}
             theme={{
-              ...this.styles,
+              ...styles,
               photoPickerButton: {
-                ...this.styles.photoPickerButton,
+                ...styles.photoPickerButton,
                 background: type === "Cake" ? COLORS.Pink : COLORS.Purple,
               },
             }}

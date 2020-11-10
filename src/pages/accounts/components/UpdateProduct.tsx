@@ -43,6 +43,7 @@ import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 /**
  * TODO
  * [ ] Add uncompressed and compressed images to s3
+ * [ ] Remove all useScreenWidth / windowDimensions hooks
  */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
@@ -161,12 +162,12 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
   private handleImageCompress = (blobToUpload: ImageFile, filename: string): void => {
-    console.log(filename);
     const compressor = new Compress({
-      targetSize: 0.8, // target size in MB
-      quality: 1.0,
+      targetSize: 0.5, // target size in MB
+      quality: 0.5,
       autoRotate: false,
     });
+    const originalImage = blobToUpload;
     try {
       compressor
         .compress([blobToUpload])
@@ -176,9 +177,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
            * to be the compressed file (photo.data);
            */
           const { photo } = conversions[0];
-          const fileToUpload: FileToUpload = blobToUpload;
-          fileToUpload.file = photo.data;
-          Object.defineProperty(fileToUpload, "name", {
+          console.log(conversions);
+          const compressedImage = {};
+          compressedImage.file = photo.data;
+          Object.defineProperty(compressedImage, "name", {
             writable: true,
             value: blobToUpload.name,
           });
@@ -186,7 +188,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
            * If everything else was successful, then attempt to upload it to S3 with
            * the handleImageUpload function.
            */
-          return this.handleImageUpload(fileToUpload);
+          this.handleImageUpload(compressedImage, originalImage);
         });
     } catch (err) {
       // console log errors -> Should be removed before production // FIXME
@@ -199,7 +201,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {File} fileToUpload - The compressed image to upload to S3 (Usually
    * returned file from handleImageCompress function.)
    */
-  private handleImageUpload = async (fileToUpload: FileToUpload): Promise<void> => {
+  private handleImageUpload = async (
+    fileToUpload: FileToUpload,
+    blobToUpload: FileToUpload,
+  ): Promise<void> => {
+    console.log(fileToUpload, blobToUpload);
     const { product } = this.state;
     const { update } = this.props;
     try {
@@ -211,15 +217,22 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Get the identityId from the current auth user, and create the filename from
        * all of the relevant parts of data.
        */
-      const filename = `products/${Date.now()}-${fileToUpload.name}`;
+      const compressedFileName = `products/compressed-${Date.now()}-${fileToUpload.name}`;
+      const originalFileName = `products/${Date.now()}-${fileToUpload.name}`;
       /**
        * Create uploadedImage file using AWS's Storage API, which puts the selected
        * image into the cloud (S3).
        */
-      let uploadedImage;
+      let compressedFile;
+      let originalFile;
       if (fileToUpload.file) {
-        uploadedImage = await Storage.put(filename, fileToUpload.file, {
+        compressedFile = await Storage.put(compressedFileName, fileToUpload.file, {
           contentType: fileToUpload?.file.type,
+        });
+      }
+      if (blobToUpload) {
+        originalFile = await Storage.put(originalFileName, blobToUpload, {
+          contentType: blobToUpload.type,
         });
       }
       /**
@@ -227,12 +240,20 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * the created product to retrieve the image from - so therefore place in the
        * product which is being created/updated.
        */
-      const { key } = uploadedImage as UploadedFile;
-      const file = {
-        key,
+      const { key: compressedKey } = compressedFile as UploadedFile;
+      const compressedS3 = {
+        key: compressedKey,
         bucket: awsExports.aws_user_files_s3_bucket,
         region: awsExports.aws_project_region,
       };
+
+      const { key: originalKey } = originalFile as UploadedFile;
+      const originalS3 = {
+        key: originalKey,
+        bucket: awsExports.aws_user_files_s3_bucket,
+        region: awsExports.aws_project_region,
+      };
+
       /**
        * If the update prop is true, then update that product with the new S3Image data
        * (file).
@@ -243,7 +264,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             input: {
               id: product.id,
               images: {
-                collection: [...product.images.collection, file],
+                collection: [...product.images.collection, originalS3],
                 cover: product.images?.cover ?? 0,
               },
             },
@@ -259,7 +280,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           ...product,
           images: {
             ...product.images,
-            collection: [...product.images.collection, file],
+            collection: [...product.images.collection, originalS3],
           },
         },
         imageConfirmOpen: false,
@@ -538,11 +559,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     ) : (
       <>
         <div className={classes.mainContainer}>
-          <Typography
-            variant="h4"
-            className={classes.title}
-            style={{ marginTop: update ? 20 : 0 }}
-          >
+          <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }}>
             {update ? "Update Product" : "Create Product"}
           </Typography>
           {!update && (

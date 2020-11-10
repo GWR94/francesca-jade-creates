@@ -37,7 +37,6 @@ import {
 import { listOrders } from "../../../graphql/queries";
 import { S3ImageProps } from "../interfaces/Product.i";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
-import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/orders.style";
 import { COLORS } from "../../../themes";
 
@@ -75,10 +74,10 @@ const AdminOrders = (): JSX.Element => {
   const classes = useStyles();
 
   /**
-   * useScreenWidth hook is used to change styles based on whether screen
+   * useMediaQuery hook is used to change styles based on whether screen
    * is smaller/larger than input parameter
    */
-  const desktop = useScreenWidth(600);
+  const desktop = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
 

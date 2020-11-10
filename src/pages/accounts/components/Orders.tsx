@@ -11,6 +11,7 @@ import {
   Grid,
   makeStyles,
   Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import dayjs from "dayjs";
 import { ExpandMoreRounded } from "@material-ui/icons";
@@ -24,7 +25,6 @@ import Loading from "../../../common/Loading";
 import Pagination from "../../../common/Pagination";
 import { getUser } from "../../../graphql/queries";
 import { AppState } from "../../../store/store";
-import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/orders.style";
 import { S3ImageProps } from "../interfaces/Product.i";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
@@ -46,10 +46,10 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   const [orders, setOrders] = useState<OrderProps[]>([]);
 
   /**
-   * useScreenWidth hook is used to change styles based on whether screen
+   * useMediaQuery hook is used to change styles based on whether screen
    * is smaller/larger than input parameter
    */
-  const desktop = useScreenWidth(600);
+  const desktop = useMediaQuery("(min-width: 600px)");
 
   // initialise a variable to keep track of the current orders rendered in the component
   const [pages, setPages] = useState({

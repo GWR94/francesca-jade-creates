@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Pagination as Page } from "@material-ui/lab";
-import { makeStyles } from "@material-ui/core";
-import useScreenWidth from "../hooks/useScreenWidth";
+import { makeStyles, useMediaQuery } from "@material-ui/core";
 
 interface PaginationProps {
   dataLength: number;
@@ -34,7 +33,7 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
   const classes = useStyles();
   const [page, setPage] = useState(defaultPageNum);
   const maxPages = Math.ceil(dataLength / numPerPage);
-  const desktop = useScreenWidth(600);
+  const desktop = useMediaQuery("(min-width: 600px)");
   return (
     <div className={classes.container}>
       <Page

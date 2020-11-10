@@ -536,9 +536,7 @@ class Profile extends Component<ProfileProps, ProfileState> {
           ) : (
             <>
               <div className={`${classes.container} animated fadeIn`}>
-                <Typography variant="h4" className={classes.title}>
-                  Profile
-                </Typography>
+                <Typography variant="h4">Profile</Typography>
                 <Typography className={classes.info}>
                   Here is an overview of your profile. To make changes click the
                   &quot;Edit Profile&quot; button at the bottom of the page.

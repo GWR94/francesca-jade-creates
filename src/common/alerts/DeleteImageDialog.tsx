@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -38,7 +38,6 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
   // store the boolean value in a variable
   const fullscreen = useMediaQuery(breakpoints.down("sm"));
 
-  console.log(keyToDelete);
   // any time the keyToDelete changes, set loading to be true.
   // useEffect(() => {
   //   setLoading(true);

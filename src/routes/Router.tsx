@@ -41,6 +41,11 @@ import background from "../img/pinkbg2.png";
 
 export const history = createBrowserHistory();
 
+/**
+ * TODO
+ * [ ] Check & fix loading spinner off centre
+ */
+
 class AppRouter extends Component<RouterProps, RouterState> {
   public readonly state: RouterState = {
     user: null,
@@ -289,27 +294,21 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         variant="h4"
                         style={{
                           paddingTop: 12,
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          fontSize: "2.2rem",
                         }}
                       >
                         Creations
                       </Typography>
                       <Typography
+                        variant="subtitle1"
                         style={{
-                          textAlign: "center",
-                          fontSize: "1rem",
                           margin: "10px 0",
                         }}
                       >
                         -- Placeholder --
                       </Typography>
                       <Typography
+                        variant="subtitle2"
                         style={{
-                          textAlign: "center",
-                          fontSize: "1rem",
-                          fontStyle: "italic",
                           margin: "10px 0 20px",
                         }}
                       >
@@ -348,27 +347,21 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         variant="h4"
                         style={{
                           paddingTop: 12,
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          fontSize: "2.2rem",
                         }}
                       >
                         Cakes
                       </Typography>
                       <Typography
+                        variant="subtitle1"
                         style={{
-                          textAlign: "center",
-                          fontSize: "1rem",
                           margin: "10px 0",
                         }}
                       >
                         -- Placeholder --
                       </Typography>
                       <Typography
+                        variant="subtitle2"
                         style={{
-                          textAlign: "center",
-                          fontSize: "1rem",
-                          fontStyle: "italic",
                           margin: "10px 0 20px",
                         }}
                       >

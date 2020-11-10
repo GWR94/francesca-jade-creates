@@ -43,12 +43,12 @@ import styles from "../styles/searchFilter.style";
 
 /**
  * Component which allows the user to filter out products to fit their needs.
- * @param setQuery - Function to set the
- * filters and searchQuery into the parent where the search/filter process will begin.
  * @param admin = false - Boolean value to show if the current authenticated user
  * is an admin.
  * @param type = null - Optional type of product (if any) page where
  * the user has come from (i.e /cake or /creates)
+ * @param setSearchResults - Function to update the search results into state inside
+ * the parent component.
  */
 const SearchFilter: React.FC<SearchFilterProps> = ({
   admin,

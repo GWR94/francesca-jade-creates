@@ -13,6 +13,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  useMediaQuery,
 } from "@material-ui/core";
 import { ExpandMore, LocalShipping, MonetizationOn } from "@material-ui/icons";
 import * as actions from "../../../actions/basket.actions";
@@ -22,7 +23,6 @@ import {
   CheckoutProductProps,
   CustomOptionArrayType,
 } from "../interfaces/Basket.i";
-import useScreenWidth from "../../../hooks/useScreenWidth";
 import styles from "../styles/basket.style";
 import { AppState } from "../../../store/store";
 import { Variant } from "../../accounts/interfaces/Variants.i";
@@ -62,13 +62,24 @@ const BasketItem: React.FC<BasketProps> = ({
   };
   const [state, setState] = useState<BasketItemState>(initialState);
 
-  const desktop = useScreenWidth(600);
+  // useMediaQuery changes boolean to true if window is larger than 600px
+  const desktop = useMediaQuery("(min-width: 600px)");
+  // make styles to be used in component from stylesheet
   const useStyles = makeStyles(styles);
+  // create classes variable to retrieve styles in component
   const classes = useStyles();
+  // create useDispatch hook so actions can be dispatched to redux store
   const dispatch = useDispatch();
+  // create ref for basket so animations can be triggered from it
   const basket = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
-
+  // retrieve products and cost from redux store.
   const { products, cost } = useSelector(({ basket }: AppState) => basket.checkout);
+
+  /**
+   * When the component mounts, or the currentVariant state changes, check to see if
+   * the new variants array is 1. If it is, then set the current variant to be the first
+   * index in the array (as there's only one item in it) - if not, then do nothing.
+   */
   useEffect(() => {
     if (variants.length === 1) {
       setState({
@@ -83,20 +94,35 @@ const BasketItem: React.FC<BasketProps> = ({
     }
   }, [state.currentVariant]);
 
+  /**
+   * Function to delete an item from the basket, and show an animation which
+   * moves it out of view in the screen.
+   */
   const handleDeleteBasketItem = (): void => {
+    // add the animation to the component so it zooms out of view
     basket.current?.classList.add("zoomOut");
+    // dispatch the action after the animation has finished, which will remove it from basket.
     setTimeout((): RemoveItemAction => {
       // basket.current.classList.remove("zoomOut"); // FIXME - May be needed?
       return dispatch(actions.removeFromBasket(id));
     }, 500);
   };
 
+  /**
+   * Function to change the current variant, it's index and customOptions in state
+   * based upon the newly selected variant by the user.
+   * @param event - Event object containing data to determine what has been selected
+   * from the input.
+   */
   const handleVariantChange = (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>,
   ): void => {
+    // retrieve the index that the user clicked on
     const index = parseInt(event.target.value as string);
+    // store the new variant in a variable so it can be set into state
     const updatedVariant = variants[index];
     setState({
+      // set both index and currentVariant into state
       ...state,
       variantIndex: index,
       currentVariant: updatedVariant,
@@ -133,9 +159,10 @@ const BasketItem: React.FC<BasketProps> = ({
       }
     }
   };
-
+  // destructure all relevant pieces of state
   const { isLoading, variantIndex, currentVariant, customOptions, isCompleted } = state;
 
+  // set disabled to be true if there's no current variable or all required fields aren't completed
   const disabled =
     currentVariant === null ||
     customOptions

@@ -13,8 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/scss/image-gallery.scss";
-import { v4 as uuidv4 } from "uuid";
-import ImageCarousel from "../../../common/containers/ImageCarousel";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";

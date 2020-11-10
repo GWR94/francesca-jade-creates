@@ -156,6 +156,23 @@ export const rootTheme = createMuiTheme({
         },
       },
     },
+    MuiTypography: {
+      h4: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: "2rem",
+      },
+      subtitle1: {
+        fontSize: "1rem",
+        textAlign: "center",
+      },
+      subtitle2: {
+        textAlign: "center",
+        fontSize: "0.9rem",
+        fontStyle: "italic",
+        fontWeight: "normal",
+      },
+    },
     MuiBadge: {
       root: {
         marginRight: 4,

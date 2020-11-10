@@ -21,6 +21,8 @@ import DeleteImageDialog from "../alerts/DeleteImageDialog";
 /**
  * TODO
  * [ ] Put tags inline in confirm dialog
+ * [ ] Make sure all absolute positioned divs are below navbar
+ * [x] Test deleting images without compressed version
  */
 
 /**
@@ -161,7 +163,11 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * remove the image from the database by providing the key to delete to
        * aws-amplify Storage library
        */
+      console.log(keyToDelete);
       await Storage.remove(keyToDelete);
+      const arr = keyToDelete.split("/");
+      const compressedKey = [arr[0], "/compressed-", ...arr.slice(1)].join("");
+      await Storage.remove(compressedKey);
 
       /**
        * If the update prop is set to true, then the link from the image to the product

@@ -1,6 +1,7 @@
+import { useDebounce } from "use-debounce";
 import { useEffect, useState } from "react";
 
-export default (targetWidth): boolean => {
+export default (targetWidth: number): boolean => {
   const [width, setWidth] = useState(window.innerWidth);
 
   useEffect((): (() => void) => {

@@ -22,11 +22,6 @@ const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
         width: "100%",
       },
     },
-    title: {
-      fontWeight: "bold",
-      textAlign: "center",
-      fontSize: "2rem",
-    },
     subtitle: {
       textAlign: "center",
       margin: "0 5px",
@@ -36,7 +31,7 @@ const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
   return (
     <>
       <div className={classes.container}>
-        <Typography className={classes.title}>Current Products</Typography>
+        <Typography variant="h4">Current Products</Typography>
         <Typography className={classes.subtitle} style={{ marginBottom: 10 }}>
           Here are a list of all of the products that customers can see when browsing the
           site.
