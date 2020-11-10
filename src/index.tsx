@@ -18,7 +18,7 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import configureStore from "./store/store";
 import { COLORS, rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
-import { isLocalhost, hasLocalhost, hasHostname } from "./utils";
+import { isLocalhost, hasLocalhost, hasHostname, hasAmplifyApp } from "./utils";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
@@ -45,23 +45,27 @@ const oauth = {
 if (isLocalhost) {
   urlsIn.forEach((e: string): void => {
     if (hasLocalhost(e)) {
-      oauth.redirectSignIn = e;
+      oauth.redirectSignIn = e; // will be localhost
     }
   });
   urlsOut.forEach((e: string): void => {
     if (hasLocalhost(e)) {
-      oauth.redirectSignOut = e;
+      oauth.redirectSignOut = e; // will be localhost
     }
   });
 } else {
   urlsIn.forEach((e: string): void => {
-    if (hasHostname(e)) {
-      oauth.redirectSignIn = e;
+    if (hasHostname(e) && hasAmplifyApp(e)) {
+      oauth.redirectSignIn = e; // will be staging.xxxxxx.amplifyapp.com
+    } else {
+      oauth.redirectSignIn = e; // will be francescajadecreates.co.uk
     }
   });
   urlsOut.forEach((e: string): void => {
-    if (hasHostname(e)) {
-      oauth.redirectSignOut = e;
+    if (hasHostname(e) && hasAmplifyApp(e)) {
+      oauth.redirectSignOut = e; // will be staging.xxxxxx.amplifyapp.com
+    } else {
+      oauth.redirectSignOut = e; // will be francescajadecreates.co.uk
     }
   });
 }

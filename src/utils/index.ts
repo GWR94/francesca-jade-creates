@@ -116,6 +116,9 @@ export const hasLocalhost = (hostname: string): boolean =>
 export const hasHostname = (hostname: string): boolean =>
   Boolean(hostname.includes(window.location.hostname));
 
+export const hasAmplifyApp = (hostname: string): boolean =>
+  Boolean(hostname.includes("amplifyapp"));
+
 export const isLocalhost = hasLocalhost(window.location.hostname);
 
 /**
