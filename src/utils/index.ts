@@ -33,6 +33,19 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
 };
 
 /**
+ * Function to return the compressed s3 image key for the user inputted
+ * key.
+ * @param key - The s3 key that the user wishes to return a compressed
+ * image key of.
+ * @returns {string} - The s3 key of the compressed image.
+ */
+export const getCompressedKey = (key: string): string => {
+  const arr = key.split("/");
+  const compressedKey = [arr[0], "/compressed-", ...arr.slice(1)].join("");
+  return compressedKey;
+};
+
+/**
  * Marks for range/number sliders in Variants component.
  */
 export const marks = [

@@ -11,6 +11,11 @@ export default createStyles({
     flexDirection: "column",
     justifyContent: "space-between",
     position: "relative",
+    margin: "0 auto",
+    maxWidth: 350,
+    [breakpoints.only("xs")]: {
+      width: 280,
+    },
   },
   media: {
     overflow: "hidden",

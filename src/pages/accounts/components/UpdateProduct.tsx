@@ -79,8 +79,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     customSwitch: false,
   };
 
-  public desktop = useMediaQuery("(min-width: 600px)");
-
   public async componentDidMount(): Promise<void> {
     const { update } = this.props;
     /**
@@ -155,7 +153,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    */
   private handleImageCompress = (blobToUpload: ImageFile, filename: string): void => {
     const compressor = new Compress({
-      targetSize: 0.5, // target size in MB
+      targetSize: 0.3, // target size in MB
       quality: 0.5,
       autoRotate: false,
     });

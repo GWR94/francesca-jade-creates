@@ -28,13 +28,15 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
 
   const desktop = useMediaQuery("(min-width: 600px)");
 
+  console.log(desktop);
+
   const [state, setState] = useState<ProductListState>({
     filterOpen: false,
     searchResults: null,
     isLoading: true,
     page: {
       min: 0,
-      max: desktop ? 12 : 6,
+      max: window.innerWidth > 600 ? 12 : 6,
     },
     // nextToken: undefined,
     // nextNextToken: undefined,
@@ -113,7 +115,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       {isLoading ? (
         <Loading small />
       ) : results.length > 0 ? (
-        <Grid container spacing={4}>
+        <Grid container spacing={desktop ? 4 : 2}>
           {results.slice(min, max).map(
             (product: ProductProps): JSX.Element => (
               <Grid

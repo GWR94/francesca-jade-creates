@@ -17,6 +17,7 @@ import { ImageCarouselProps, ImageCarouselState } from "./interfaces/ImageCarous
 import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/imageCarousel.style";
 import DeleteImageDialog from "../alerts/DeleteImageDialog";
+import { getCompressedKey } from "../../utils";
 
 /**
  * TODO
@@ -177,8 +178,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * aws-amplify Storage library
        */
       await Storage.remove(keyToDelete);
-      const arr = keyToDelete.split("/");
-      const compressedKey = [arr[0], "/compressed-", ...arr.slice(1)].join("");
+      const compressedKey = getCompressedKey(keyToDelete);
       await Storage.remove(compressedKey);
 
       /**
