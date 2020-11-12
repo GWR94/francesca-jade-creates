@@ -1,6 +1,5 @@
 import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { wrap } from "underscore";
 import { FONTS } from "../../../themes/index";
 
 const breakpoints = createBreakpoints({});
@@ -8,38 +7,26 @@ const breakpoints = createBreakpoints({});
 export default createStyles({
   container: {
     fontFamily: FONTS.Title,
-    width: 860,
     justifyContent: "space-evenly",
+    width: 980,
     margin: "0 auto",
     paddingTop: 20,
+    [breakpoints.down("md")]: {
+      width: 820,
+    },
     [breakpoints.down("sm")]: {
-      width: "100%",
+      width: "90%",
     },
   },
-  variantContainer: {
-    width: "100%",
-    display: "inline-flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
+  tagline: {
+    textAlign: "center",
+    color: "rgba(0,0,0,0.6)",
   },
-  variant: {
-    width: "50%",
-    margin: "10px 0",
-  },
-  variantTitle: {
-    fontSize: "1rem",
-    fontWeight: "bold",
-  },
-  customFeatures: {
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "nowrap",
-  },
-  info: {
-    fontStyle: "italic",
-  },
-  break: {
-    flexBasis: "100%",
-    height: 0,
+  thumbnail: {
+    border: "2px solid red !important",
+    padding: "20px !important",
+    "&:active": {
+      border: "2px solid green !important",
+    },
   },
 });

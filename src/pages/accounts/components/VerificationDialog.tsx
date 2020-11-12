@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  DialogContentText,
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import { openSnackbar } from "../../../utils/Notifier";
@@ -53,9 +54,9 @@ const VerificationDialog: React.FC<Props> = ({
         >
           <DialogTitle>Enter Verification Code</DialogTitle>
           <DialogContent>
-            <p className="verify__text">
+            <DialogContentText>
               Please enter the verification code sent to {email.value}
-            </p>
+            </DialogContentText>
             <TextField
               type="text"
               value={code}
@@ -65,15 +66,15 @@ const VerificationDialog: React.FC<Props> = ({
               onChange={(e): void => setCode(e.target.value)}
             />
             <DialogActions>
+              <Button color="secondary" onClick={closeDialog} style={{ margin: "0 4px" }}>
+                Verify Later
+              </Button>
               <Button
                 color="primary"
                 onClick={(): Promise<void> => handleVerificationCode("email")}
                 style={{ margin: "0 4px" }}
               >
                 Verify Email
-              </Button>
-              <Button color="secondary" onClick={closeDialog} style={{ margin: "0 4px" }}>
-                Verify Later
               </Button>
             </DialogActions>
           </DialogContent>

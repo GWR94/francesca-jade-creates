@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import {
   Card,
@@ -27,8 +27,17 @@ import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
 import ChipContainer from "../inputs/ChipContainer";
-import { INTENT } from "../../themes";
+import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
+import { getCompressedKey } from "../../utils";
+import AWS from "aws-sdk";
+
+/**
+ * TODO
+ * [ ] Check cover image index always changes if image is delete
+ * [ ] Change ADD ANOTHER IMAGE to ADD IMAGE when theres no images in carousel
+ * [ ] Change cover photos to photos in confirm dialog
+ */
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -140,6 +149,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
         }}
         className={classes.card}
+        // depending on the product type, place a border on top of the card with a color
+        style={{
+          borderTop: `3px solid ${
+            type === "Cake" ? COLORS.LightPink : COLORS.LightPurple
+          }`,
+        }}
       >
         <CardHeader
           classes={{
@@ -170,8 +185,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             isLoading ? (
               <Skeleton
                 animation="wave"
+                width="60%"
                 style={{
-                  marginRight: 14,
+                  margin: "auto auto 10px",
                 }}
               />
             ) : (
@@ -200,8 +216,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Skeleton
                 animation="wave"
                 height={10}
+                width="80%"
                 style={{
-                  marginBottom: 6,
+                  margin: "auto auto 6px auto",
                 }}
               />
               <Skeleton
@@ -209,7 +226,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 height={10}
                 width="80%"
                 style={{
-                  margin: "auto",
+                  margin: "auto auto 6px auto",
                 }}
               />
             </div>
@@ -229,7 +246,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
-              imgKey={images.collection[images.cover]?.key}
+              imgKey={getCompressedKey(images.collection[images.cover].key)}
               theme={{
                 photoImg: isLoading
                   ? {
@@ -252,7 +269,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="rect"
                 style={{
                   width: "100%",
-                  height: 400,
+                  height: 440,
                 }}
               />
             )}

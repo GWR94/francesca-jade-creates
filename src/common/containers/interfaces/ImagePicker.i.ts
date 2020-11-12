@@ -29,4 +29,5 @@ export interface ImagePickerState {
   crop: Crop;
   croppedImage: ImageFile | null;
   cropperOpen: boolean;
+  originalFileName: string;
 }

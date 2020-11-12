@@ -12,6 +12,7 @@ import {
   createMuiTheme,
   Typography,
   withStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle } from "@material-ui/lab";
@@ -39,6 +40,12 @@ import { Variant } from "../interfaces/Variants.i";
 import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
+
+/**
+ * TODO
+ * [x] Add uncompressed and compressed images to s3
+ * [ ] Remove all useScreenWidth / windowDimensions hooks
+ */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
@@ -70,7 +77,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     },
     percentUploaded: 0,
     customSwitch: false,
-    isDesktop: window.innerWidth > 600,
   };
 
   public async componentDidMount(): Promise<void> {
@@ -97,22 +103,12 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         console.error(err); //FIXME
       }
     }
-    window.addEventListener("resize", this.checkWindowDimensions);
     /**
      * Set isLoading to true, as the rest of the component can be rendered with the correct
      * data.
      */
     this.setState({ isLoading: false });
   }
-
-  public componentWillUnmount(): void {
-    window.removeEventListener("resize", this.checkWindowDimensions);
-  }
-
-  public checkWindowDimensions = (): void => {
-    if (window.innerWidth > 600) return this.setState({ isDesktop: true });
-    return this.setState({ isDesktop: false });
-  };
 
   /**
    * A function which sets the value from the "e" parameter into the products' state named
@@ -156,12 +152,12 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
   private handleImageCompress = (blobToUpload: ImageFile, filename: string): void => {
-    console.log(filename);
     const compressor = new Compress({
-      targetSize: 0.8, // target size in MB
-      quality: 1.0,
+      targetSize: 0.3, // target size in MB
+      quality: 0.5,
       autoRotate: false,
     });
+    const originalImage = blobToUpload;
     try {
       compressor
         .compress([blobToUpload])
@@ -171,9 +167,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
            * to be the compressed file (photo.data);
            */
           const { photo } = conversions[0];
-          const fileToUpload: FileToUpload = blobToUpload;
-          fileToUpload.file = photo.data;
-          Object.defineProperty(fileToUpload, "name", {
+          console.log(conversions);
+          const compressedImage = {};
+          compressedImage.file = photo.data;
+          Object.defineProperty(compressedImage, "name", {
             writable: true,
             value: blobToUpload.name,
           });
@@ -181,7 +178,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
            * If everything else was successful, then attempt to upload it to S3 with
            * the handleImageUpload function.
            */
-          return this.handleImageUpload(fileToUpload);
+          this.handleImageUpload(compressedImage, originalImage);
         });
     } catch (err) {
       // console log errors -> Should be removed before production // FIXME
@@ -194,7 +191,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {File} fileToUpload - The compressed image to upload to S3 (Usually
    * returned file from handleImageCompress function.)
    */
-  private handleImageUpload = async (fileToUpload: FileToUpload): Promise<void> => {
+  private handleImageUpload = async (
+    fileToUpload: FileToUpload,
+    blobToUpload: FileToUpload,
+  ): Promise<void> => {
+    console.log(fileToUpload, blobToUpload);
     const { product } = this.state;
     const { update } = this.props;
     try {
@@ -206,28 +207,37 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * Get the identityId from the current auth user, and create the filename from
        * all of the relevant parts of data.
        */
-      const filename = `products/${Date.now()}-${fileToUpload.name}`;
+      const compressedFileName = `products/compressed-${Date.now()}-${fileToUpload.name}`;
+      const originalFileName = `products/${Date.now()}-${fileToUpload.name}`;
       /**
-       * Create uploadedImage file using AWS's Storage API, which puts the selected
-       * image into the cloud (S3).
+       * Upload images using AWS's Storage API, which puts the compressed and uncompressed
+       * images into the cloud (S3).
        */
-      let uploadedImage;
+      let originalFile;
       if (fileToUpload.file) {
-        uploadedImage = await Storage.put(filename, fileToUpload.file, {
+        // upload the compressed file to s3
+        await Storage.put(compressedFileName, fileToUpload.file, {
           contentType: fileToUpload?.file.type,
         });
       }
+      if (blobToUpload) {
+        // upload the original file to s3
+        originalFile = await Storage.put(originalFileName, blobToUpload, {
+          contentType: blobToUpload.type,
+        });
+      }
       /**
-       * Retrieve the key from uploadedImage, as it will be used as a reference for
+       * Retrieve the key from originalFile, as it will be used as a reference for
        * the created product to retrieve the image from - so therefore place in the
        * product which is being created/updated.
        */
-      const { key } = uploadedImage as UploadedFile;
-      const file = {
-        key,
+      const { key: originalKey } = originalFile as UploadedFile;
+      const originalS3 = {
+        key: originalKey,
         bucket: awsExports.aws_user_files_s3_bucket,
         region: awsExports.aws_project_region,
       };
+
       /**
        * If the update prop is true, then update that product with the new S3Image data
        * (file).
@@ -238,7 +248,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             input: {
               id: product.id,
               images: {
-                collection: [...product.images.collection, file],
+                collection: [...product.images.collection, originalS3],
                 cover: product.images?.cover ?? 0,
               },
             },
@@ -254,7 +264,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           ...product,
           images: {
             ...product.images,
-            collection: [...product.images.collection, file],
+            collection: [...product.images.collection, originalS3],
           },
         },
         imageConfirmOpen: false,
@@ -570,7 +580,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             initialValue={description}
             apiKey={process.env.TINY_API_KEY}
             init={{
-              height: 500,
+              height: 300,
               width: "100%",
               marginBottom: 10,
               menubar: false,
@@ -586,31 +596,33 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             }}
             onChange={this.handleEditorChange}
           />
-          <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
-            <RadioGroup
-              aria-label="Product Type"
-              name="ProductType"
-              value={type}
-              onChange={(e): void => this.handleFormItem(e, "type")}
-              row
-              style={{ justifyContent: "space-around", margin: 0 }}
-            >
-              <FormControlLabel
-                value="Cake"
-                classes={{
-                  root: classes.root,
-                }}
-                control={<Radio />}
-                label="Cake"
-              />
-              <FormControlLabel
-                value="Creates"
-                classes={{ root: classes.root }}
-                control={<Radio />}
-                label="Creates"
-              />
-            </RadioGroup>
-          </OutlinedContainer>
+          <div style={{ margin: "10px 0", width: "100%" }}>
+            <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
+              <RadioGroup
+                aria-label="Product Type"
+                name="ProductType"
+                value={type}
+                onChange={(e): void => this.handleFormItem(e, "type")}
+                row
+                style={{ justifyContent: "space-around", margin: 0 }}
+              >
+                <FormControlLabel
+                  value="Cake"
+                  classes={{
+                    root: classes.root,
+                  }}
+                  control={<Radio />}
+                  label="Cake"
+                />
+                <FormControlLabel
+                  value="Creates"
+                  classes={{ root: classes.root }}
+                  control={<Radio />}
+                  label="Creates"
+                />
+              </RadioGroup>
+            </OutlinedContainer>
+          </div>
           <ChipInput
             value={customOptions || []}
             fullWidth
@@ -683,38 +695,44 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               />
             </div>
           </Alert>
-          <OutlinedContainer
-            label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
-            labelWidth={images.collection.length <= 1 ? 84 : 90}
-            padding={12}
-            error={!!errors.image}
-          >
-            {images.collection.length > 0 && (
-              <div className={classes.carouselContainer}>
-                <ImageCarousel
-                  images={images.collection}
-                  deleteImages
-                  update={update}
-                  id={product.id}
-                  type={type}
-                  handleUpdateImages={(collection: S3ImageProps[]): void => {
-                    this.setState({
-                      product: { ...product, images: { ...product.images, collection } },
-                    });
-                  }}
-                />
-              </div>
-            )}
-            <ImagePicker
-              setImageFile={(file): void => {
-                this.handleImageCompress(file, file.name);
-                this.setState({ errors: { ...errors, image: null } });
-              }}
-              cropImage
-              update={update}
-              type={product.type}
-            />
-          </OutlinedContainer>
+          <div style={{ margin: "10px 0", width: "100%" }}>
+            <OutlinedContainer
+              label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
+              labelWidth={images.collection.length <= 1 ? 84 : 90}
+              padding={12}
+              error={!!errors.image}
+            >
+              {images.collection.length > 0 && (
+                <div className={classes.carouselContainer}>
+                  <ImageCarousel
+                    images={images.collection}
+                    cover={images.cover}
+                    deleteImages
+                    update={update}
+                    id={product.id}
+                    type={type}
+                    handleUpdateImages={(collection: S3ImageProps[]): void => {
+                      this.setState({
+                        product: {
+                          ...product,
+                          images: { ...product.images, collection },
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              <ImagePicker
+                setImageFile={(file): void => {
+                  this.handleImageCompress(file, file.name);
+                  this.setState({ errors: { ...errors, image: null } });
+                }}
+                cropImage
+                update={update}
+                type={product.type}
+              />
+            </OutlinedContainer>
+          </div>
           {errors.image && <p className={classes.errorText}>{errors.image}</p>}
           <ChipInput
             value={tags || []}

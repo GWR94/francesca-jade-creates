@@ -41,6 +41,11 @@ import background from "../img/pinkbg2.png";
 
 export const history = createBrowserHistory();
 
+/**
+ * TODO
+ * [ ] Check & fix loading spinner off centre
+ */
+
 class AppRouter extends Component<RouterProps, RouterState> {
   public readonly state: RouterState = {
     user: null,
@@ -285,11 +290,28 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 component={(): JSX.Element => (
                   <div className="content-container">
                     <Container>
-                      <Typography variant="h4" style={{ paddingTop: 12 }}>
+                      <Typography
+                        variant="h4"
+                        style={{
+                          paddingTop: 12,
+                        }}
+                      >
                         Creations
                       </Typography>
-                      <Typography variant="subtitle1">-- Placeholder --</Typography>
-                      <Typography variant="subtitle2">
+                      <Typography
+                        variant="subtitle1"
+                        style={{
+                          margin: "10px 0",
+                        }}
+                      >
+                        -- Placeholder --
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        style={{
+                          margin: "10px 0 20px",
+                        }}
+                      >
                         To filter the products please click the pink button on the left
                         hand side, and filter the results to your preferences.
                       </Typography>
@@ -321,11 +343,28 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 component={(): JSX.Element => (
                   <div className="content-container">
                     <Container>
-                      <Typography variant="h4" style={{ paddingTop: 12 }}>
+                      <Typography
+                        variant="h4"
+                        style={{
+                          paddingTop: 12,
+                        }}
+                      >
                         Cakes
                       </Typography>
-                      <Typography variant="subtitle1">-- Placeholder --</Typography>
-                      <Typography variant="subtitle2">
+                      <Typography
+                        variant="subtitle1"
+                        style={{
+                          margin: "10px 0",
+                        }}
+                      >
+                        -- Placeholder --
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        style={{
+                          margin: "10px 0 20px",
+                        }}
+                      >
                         To filter the products please click the pink button on the left
                         hand side, and filter the results to your preferences.
                       </Typography>

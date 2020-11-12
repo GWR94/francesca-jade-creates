@@ -8,6 +8,7 @@ export interface ImageCarouselProps {
   id?: string;
   update?: boolean;
   isCentered?: boolean;
+  cover: number;
   classes?: { [key: string]: string };
 }
 
@@ -15,4 +16,5 @@ export interface ImageCarouselState {
   keyToDelete: string;
   isPlaying: boolean;
   imageLoading: boolean;
+  coverImageIdx: number;
 }

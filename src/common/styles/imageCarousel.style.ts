@@ -8,7 +8,7 @@ export default createStyles({
   centeredImageContainer: {
     display: "block",
     margin: "0 auto",
-    maxWidth: 300,
+    maxWidth: 600,
   },
   deleteIcon: {
     position: "absolute",
@@ -17,7 +17,7 @@ export default createStyles({
     color: "#ff0062",
     cursor: "pointer",
     fontSize: 25,
-    zIndex: 10,
+    zIndex: 1,
     height: 20,
     width: 20,
     display: "block",
@@ -25,6 +25,23 @@ export default createStyles({
       fontSize: 30,
       top: 3,
       right: 6,
+    },
+  },
+  starIcon: {
+    position: "absolute",
+    top: 5,
+    left: 5,
+    color: "#ffc240",
+    cursor: "pointer",
+    fontSize: 25,
+    zIndex: 1,
+    height: 20,
+    width: 20,
+    display: "block",
+    "&:hover": {
+      fontSize: 30,
+      top: 3,
+      left: 6,
     },
   },
   svg: {

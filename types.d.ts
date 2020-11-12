@@ -1,5 +1,6 @@
 declare module "client-compress";
 declare module "@splidejs/react-splide";
+declare module "*/aws-exports";
 
 //@ts-expect-error
 declare global {

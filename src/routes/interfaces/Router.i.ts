@@ -1,6 +1,5 @@
-import { FetchProductsSuccessAction } from "./../../interfaces/products.redux.i";
-import { fetchProductsSuccess } from "./../../actions/products.actions";
 import { CognitoUserSession, CognitoUserPool } from "amazon-cognito-identity-js";
+import { FetchProductsSuccessAction } from "../../interfaces/products.redux.i";
 import { ClearUserAction, SetUserAction } from "../../interfaces/user.redux.i";
 import { ClearBasketAction } from "../../interfaces/basket.redux.i";
 import {
@@ -39,7 +38,7 @@ export interface RouterProps {
   ) => SetUserAction;
   clearUser: () => ClearUserAction;
   fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
-  products: ProductProps[];
+  products?: ProductProps[];
   sub: string | null;
 }
 export interface RouterStateProps {

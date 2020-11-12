@@ -27,6 +27,7 @@ class Notifier extends React.Component {
   }
 
   public openSnackbar = ({ message, severity }: SnackbarInput): void => {
+    this.handleSnackbarClose();
     this.setState({ message, severity, open: true });
   };
 
@@ -37,7 +38,7 @@ class Notifier extends React.Component {
     return (
       <Snackbar
         open={open}
-        autoHideDuration={6000}
+        autoHideDuration={2500}
         onClose={this.handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >

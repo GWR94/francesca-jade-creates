@@ -25,6 +25,7 @@ module.exports = {
       "BUCKET_REGION",
       "BUCKET_NAME",
       "TINY_API_KEY",
+      "IMAGE_S3_BUCKET",
     ]),
   ],
   output: {

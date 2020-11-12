@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Grid, makeStyles } from "@material-ui/core";
+import { Drawer, Grid, makeStyles, useMediaQuery } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded, Warning } from "@material-ui/icons";
 // import { API, graphqlOperation } from "aws-amplify";
@@ -13,7 +13,6 @@ import { ProductListProps, ProductListState } from "../interfaces/ProductList.i"
 import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import styles from "../styles/productList.style";
-import useScreenWidth from "../../../hooks/useScreenWidth";
 
 /**
  * Component which allows the user to filter each of the products, and allow them
@@ -27,7 +26,9 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
-  const desktop = useScreenWidth(600);
+  const desktop = useMediaQuery("(min-width: 600px)");
+
+  console.log(desktop);
 
   const [state, setState] = useState<ProductListState>({
     filterOpen: false,
@@ -35,7 +36,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     isLoading: true,
     page: {
       min: 0,
-      max: desktop ? 12 : 6,
+      max: window.innerWidth > 600 ? 12 : 6,
     },
     // nextToken: undefined,
     // nextNextToken: undefined,
@@ -111,11 +112,11 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       >
         <MenuRounded className={`${classes.filterIcon} animated infinite pulse`} />
       </div>
-      <Grid container spacing={4}>
-        {isLoading ? (
-          <Loading small />
-        ) : results.length > 0 ? (
-          results.slice(min, max).map(
+      {isLoading ? (
+        <Loading small />
+      ) : results.length > 0 ? (
+        <Grid container spacing={desktop ? 4 : 2}>
+          {results.slice(min, max).map(
             (product: ProductProps): JSX.Element => (
               <Grid
                 item
@@ -128,15 +129,15 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
                 <ProductCard admin={admin} product={product} />
               </Grid>
             ),
-          )
-        ) : (
-          <NonIdealState
-            title="No Results Found!"
-            Icon={<Warning />}
-            subtext="Please edit your search to return results."
-          />
-        )}
-      </Grid>
+          )}
+        </Grid>
+      ) : (
+        <NonIdealState
+          title="No Results Found!"
+          Icon={<Warning />}
+          subtext="Please edit your search to return results."
+        />
+      )}
       {results && results.length > 12 && (
         <Pagination
           dataLength={results.length}

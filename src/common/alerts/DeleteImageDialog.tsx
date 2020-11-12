@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,7 +16,7 @@ interface DeleteDialogProps {
   isOpen: boolean; // opens dialog when set to true
   closeDialog: () => void; // closes dialog
   keyToDelete: string; // key of image that is to be deleted
-  handleDeleteImage: () => void; // function to delete image from database
+  handleDeleteImage: (key: string) => Promise<void>; // function to delete image from database
 }
 
 /**
@@ -39,9 +39,9 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
   const fullscreen = useMediaQuery(breakpoints.down("sm"));
 
   // any time the keyToDelete changes, set loading to be true.
-  useEffect(() => {
-    setLoading(true);
-  }, [keyToDelete]);
+  // useEffect(() => {
+  //   setLoading(true);
+  // }, [keyToDelete]);
 
   return (
     <Dialog
@@ -93,7 +93,14 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
         <Button color="secondary" onClick={closeDialog} style={{ margin: "0 5px" }}>
           Cancel
         </Button>
-        <Button color="primary" onClick={handleDeleteImage} style={{ margin: "0 5px" }}>
+        <Button
+          color="primary"
+          onClick={(): Promise<void> => {
+            console.log(keyToDelete);
+            handleDeleteImage(keyToDelete);
+          }}
+          style={{ margin: "0 5px" }}
+        >
           Confirm
         </Button>
       </DialogActions>

@@ -40,11 +40,45 @@ span.bp3-popover-target {
 }
 
 .headroom-wrapper {
-  height: 54px !important;
+  height: 53px !important;
 }
 
 .navbar-collapse {
   .nav__link {
     margin: 0 auto !important;
+  }
+}
+
+// image carousel overrides
+.image-gallery-thumbnail {
+  &:focus, &:hover, &:active {
+    border: 4px solid #ffa3f9;
+  }
+}
+
+.image-gallery-thumbnail.active {
+  border: 4px solid #fd4ef2 ;
+  &:focus, &:hover, &:active {
+    border: 4px solid #ffa3f9;
+  }
+}
+
+.image-gallery-left-nav .image-gallery-svg, .image-gallery-right-nav .image-gallery-svg {
+  height: 60px;
+  width: 30px;
+  color: #fff;
+  &:hover {
+    color: #fd4ef2;
+    transition: color .5s;
+  }
+}
+
+.image-gallery-fullscreen-button .image-gallery-svg, .image-gallery-play-button .image-gallery-svg {
+  height: 18px;
+  width: 18px;
+  color: #fff;
+  &:hover {
+    color: #fd4ef2;
+    transition: color .5s
   }
 }

@@ -10,9 +10,8 @@ export interface ProfileProps extends ProfileStateProps {
   history: History;
   user: CognitoUserProps;
   // styles object containing classNames.
-  classes?: {
-    noLeftBorderInput: string;
-    buttonBottom: string;
+  classes: {
+    [key: string]: string;
   };
 }
 
