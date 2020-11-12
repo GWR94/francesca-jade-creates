@@ -9,6 +9,7 @@ import {
   DialogActions,
   Typography,
   makeStyles,
+  DialogContentText,
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import { openSnackbar } from "../../../utils/Notifier";
@@ -82,8 +83,10 @@ const PasswordChange: React.FC<PasswordProps> = ({
           severity: "success",
           message: "Successfully changed password.",
         });
+        closeDialog();
       }
     } catch (err) {
+      console.error(err);
       openSnackbar({
         severity: "error",
         message: "Error updating password. Please check you input the correct password.",
@@ -101,65 +104,63 @@ const PasswordChange: React.FC<PasswordProps> = ({
   } = state;
 
   return (
-    <>
-      <Dialog className={classes.container} open={open} onClose={closeDialog}>
-        <DialogTitle>Change your Password</DialogTitle>
-        <DialogContent>
-          <Typography variant="subtitle1">
-            Please enter your old password, and set a new password below.
-          </Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={6}>
-              <PasswordInput
-                value={oldPassword}
-                error={oldPasswordError}
-                setValue={(oldPassword): void =>
-                  setState({ ...state, oldPassword, error: "" })
-                }
-                label="Old Password"
-                labelWidth={90}
-                placeholder="Enter old password..."
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <PasswordInput
-                value={newPassword}
-                error={error || newPasswordError}
-                setValue={(newPassword): void =>
-                  setState({ ...state, newPassword, error: "" })
-                }
-                label="New Password"
-                labelWidth={95}
-                placeholder="Enter new password..."
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                className={classes.input}
-                value={repeatPassword}
-                label="Repeat Password"
-                placeholder="Repeat new password..."
-                onChange={(e): void =>
-                  setState({ ...state, repeatPassword: e.target.value, error: "" })
-                }
-                variant="outlined"
-                type="password"
-              />
-            </Grid>
+    <Dialog className={classes.container} open={open} onClose={closeDialog}>
+      <DialogTitle>Change your Password</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Please enter your old password, and set a new password below.
+        </DialogContentText>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <PasswordInput
+              value={oldPassword}
+              error={oldPasswordError}
+              setValue={(oldPassword): void =>
+                setState({ ...state, oldPassword, error: "" })
+              }
+              label="Old Password"
+              labelWidth={90}
+              placeholder="Enter old password..."
+            />
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <PasswordInput
+              value={newPassword}
+              error={error || newPasswordError}
+              setValue={(newPassword): void =>
+                setState({ ...state, newPassword, error: "" })
+              }
+              label="New Password"
+              labelWidth={95}
+              placeholder="Enter new password..."
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              className={classes.input}
+              value={repeatPassword}
+              label="Repeat Password"
+              placeholder="Repeat new password..."
+              onChange={(e): void =>
+                setState({ ...state, repeatPassword: e.target.value, error: "" })
+              }
+              variant="outlined"
+              type="password"
+            />
+          </Grid>
+        </Grid>
 
-          <span className={classes.error}>{error}</span>
-          <DialogActions>
-            <Button color="secondary" onClick={closeDialog}>
-              Cancel
-            </Button>
-            <Button color="primary" onClick={handlePasswordUpdate}>
-              Change Password
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-    </>
+        <span className={classes.error}>{error}</span>
+        <DialogActions>
+          <Button color="secondary" onClick={closeDialog}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={handlePasswordUpdate}>
+            Change Password
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
   );
 };
 

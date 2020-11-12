@@ -27,7 +27,8 @@ import DeleteImageDialog from "../alerts/DeleteImageDialog";
 
 /**
  * Class component for displaying, updating and removing images for a specific product's
- * images. Images will be rendered inside a
+ * images. Images will be rendered inside a carousel component, and will have the option
+ * to delete and save as cover photo by clicking on the relevant icons on the image.
  */
 const ImageCarousel: React.FC<ImageCarouselProps> = ({
   type,
@@ -52,6 +53,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   // Ref of carousel so event listeners can be mounted/unmounted to it.
   const carouselRef = React.useRef<HTMLDivElement | null>(null);
 
+  // make the styles to be used in the component
   const useStyles = makeStyles({
     ...styles,
     backButton: {
@@ -80,11 +82,20 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
     },
   });
 
+  /**
+   * Function to change the cover image of the current product (the image
+   * that will be shown if only one image is allowed - i.e on a card or
+   * as a thumbnail).
+   * @param idx - the index of the image that the user wishes to make the
+   * cover photo.
+   */
   const handleCoverImageUpdate = async (idx: number): Promise<void> => {
+    // set the cover image into state so the user knows that it's the cover photo
     setState({
       ...state,
       coverImageIdx: idx,
     });
+    // execute the updateProduct mutation with the correct cover image
     const { data } = await API.graphql(
       graphqlOperation(updateProduct, {
         input: {
@@ -96,12 +107,15 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
         },
       }),
     );
+    // if there's an error, notify the user
     if (!data)
       openSnackbar({ severity: "error", message: "Unable to update cover image" });
+    // if there is data, notify the user of success.
     else
       openSnackbar({ severity: "success", message: "Successfully updated cover image." });
   };
 
+  // create the styles by executing the useStyles function.
   const classes = useStyles();
 
   /**
@@ -140,7 +154,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
    * product.
    */
   const handleDeleteImage = async (keyToDelete: string): Promise<void> => {
-    console.log(keyToDelete);
     /**
      * if there is no value in keyToDelete, then the operation cannot be completed,
      * so notify the user of this with a danger snackbar, and return from the function.
@@ -163,7 +176,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * remove the image from the database by providing the key to delete to
        * aws-amplify Storage library
        */
-      console.log(keyToDelete);
       await Storage.remove(keyToDelete);
       const arr = keyToDelete.split("/");
       const compressedKey = [arr[0], "/compressed-", ...arr.slice(1)].join("");
@@ -216,23 +228,36 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
         {images.length === 1 ? (
           <div style={{ position: "relative" }}>
             {deleteImages && (
-              /**
-               * if the user is allowed to delete images (is an admin), show a pulsing
-               * delete icon which shows the user that they can delete it
-               */
-              <i
-                className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
-                role="button"
-                tabIndex={0}
-                onClick={(): void => {
-                  setState({
-                    ...state,
-                    keyToDelete: images[0].key,
-                  });
-                  setDialogOpen(true);
-                }}
-              />
+              <>
+                {/*
+                  if the user is allowed to delete images (is an admin), show a pulsing
+                  delete icon which shows the user that they can delete it
+                 */}
+                <i
+                  className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={(): void => {
+                    setState({
+                      ...state,
+                      keyToDelete: images[0].key,
+                    });
+                    setDialogOpen(true);
+                  }}
+                />
+                {/*
+                  If the user is an admin, show them that the current image is saved as
+                  the cover image (as it's the only image for the product.) The star will
+                  be filled.
+                */}
+                <i
+                  className={`${classes.starIcon} fas fa-star animated infinite pulse`}
+                  role="button"
+                  tabIndex={0}
+                />
+              </>
             )}
+            {/* Show the image to the user */}
             <S3Image
               imgKey={images[0].key}
               theme={{
@@ -248,6 +273,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
            * rendered with each of the images mapped to a Slide component.
            */
           <div ref={carouselRef} style={{ position: "relative" }}>
+            {/* Create the CarouselProvider with the correct inputs */}
             <CarouselProvider
               naturalSlideHeight={6}
               naturalSlideWidth={5}
@@ -257,11 +283,17 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
               isPlaying={isPlaying && !dialogOpen}
               infinite
             >
+              {/* Render a slider component to hold the (soon to be) mapped Slides */}
               <Slider>
+                {/* Map the images from props into a Slide component */}
                 {images.map((image, i) => (
                   <Slide index={i} key={i} style={{ position: "relative" }}>
                     {deleteImages && (
                       <>
+                        {/*
+                          if the user is allowed to delete images (is an admin), show a pulsing
+                          delete icon which shows the user that they can delete it
+                        */}
                         <i
                           className={`${classes.deleteIcon} fas fa-times animated infinite pulse`}
                           role="button"
@@ -275,6 +307,12 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                             setDialogOpen(true);
                           }}
                         />
+                        {/*
+                          If the user is an admin and the current index is the same as coverImageIdx
+                          from state, then show the user a filled in star to notify the user that
+                          it's the cover image. If it's not the same as coverImageIdx then show an
+                          empty star.
+                        */}
                         <i
                           className={`${classes.starIcon} ${
                             coverImageIdx === i ? "fas" : "far"
@@ -285,6 +323,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                         />
                       </>
                     )}
+                    {/* show the current image */}
                     <S3Image
                       imgKey={image.key}
                       theme={{

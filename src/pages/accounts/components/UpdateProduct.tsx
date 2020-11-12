@@ -12,6 +12,7 @@ import {
   createMuiTheme,
   Typography,
   withStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle } from "@material-ui/lab";
@@ -42,7 +43,7 @@ import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 
 /**
  * TODO
- * [ ] Add uncompressed and compressed images to s3
+ * [x] Add uncompressed and compressed images to s3
  * [ ] Remove all useScreenWidth / windowDimensions hooks
  */
 
@@ -76,8 +77,9 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     },
     percentUploaded: 0,
     customSwitch: false,
-    isDesktop: window.innerWidth > 600,
   };
+
+  public desktop = useMediaQuery("(min-width: 600px)");
 
   public async componentDidMount(): Promise<void> {
     const { update } = this.props;
@@ -103,22 +105,12 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         console.error(err); //FIXME
       }
     }
-    window.addEventListener("resize", this.checkWindowDimensions);
     /**
      * Set isLoading to true, as the rest of the component can be rendered with the correct
      * data.
      */
     this.setState({ isLoading: false });
   }
-
-  public componentWillUnmount(): void {
-    window.removeEventListener("resize", this.checkWindowDimensions);
-  }
-
-  public checkWindowDimensions = (): void => {
-    if (window.innerWidth > 600) return this.setState({ isDesktop: true });
-    return this.setState({ isDesktop: false });
-  };
 
   /**
    * A function which sets the value from the "e" parameter into the products' state named
@@ -220,33 +212,27 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       const compressedFileName = `products/compressed-${Date.now()}-${fileToUpload.name}`;
       const originalFileName = `products/${Date.now()}-${fileToUpload.name}`;
       /**
-       * Create uploadedImage file using AWS's Storage API, which puts the selected
-       * image into the cloud (S3).
+       * Upload images using AWS's Storage API, which puts the compressed and uncompressed
+       * images into the cloud (S3).
        */
-      let compressedFile;
       let originalFile;
       if (fileToUpload.file) {
-        compressedFile = await Storage.put(compressedFileName, fileToUpload.file, {
+        // upload the compressed file to s3
+        await Storage.put(compressedFileName, fileToUpload.file, {
           contentType: fileToUpload?.file.type,
         });
       }
       if (blobToUpload) {
+        // upload the original file to s3
         originalFile = await Storage.put(originalFileName, blobToUpload, {
           contentType: blobToUpload.type,
         });
       }
       /**
-       * Retrieve the key from uploadedImage, as it will be used as a reference for
+       * Retrieve the key from originalFile, as it will be used as a reference for
        * the created product to retrieve the image from - so therefore place in the
        * product which is being created/updated.
        */
-      const { key: compressedKey } = compressedFile as UploadedFile;
-      const compressedS3 = {
-        key: compressedKey,
-        bucket: awsExports.aws_user_files_s3_bucket,
-        region: awsExports.aws_project_region,
-      };
-
       const { key: originalKey } = originalFile as UploadedFile;
       const originalS3 = {
         key: originalKey,

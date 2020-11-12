@@ -23,7 +23,7 @@ export default createStyles({
   verifiedTag: {
     position: "absolute",
     right: "14px",
-    top: "-10px",
+    top: "22px",
   },
   buttonBottom: {
     marginBottom: 40,

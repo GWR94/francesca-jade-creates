@@ -62,7 +62,7 @@ export class NavBar extends React.Component<NavbarDispatchProps, NavBarState> {
             Headroom hides the NavBar when scrolling "down", and re-shows it when the
             user scrolls "up".
            */}
-          <Headroom wrapperStyle={{ position: "relative", zIndex: 3, height: "50px" }}>
+          <Headroom wrapperStyle={{ position: "relative", zIndex: 2, height: "50px" }}>
             <AppBar
               className={`${classes.nav} animated slideInDown`}
               position="relative"

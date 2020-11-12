@@ -27,13 +27,8 @@ import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
 import ChipContainer from "../inputs/ChipContainer";
-import { INTENT } from "../../themes";
+import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
-
-/**
- * TODO
- * [ ] Fix dots appearing above everything (inc nav)
- */
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -145,6 +140,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
         }}
         className={classes.card}
+        // depending on the product type, place a border on top of the card with a color
+        style={{
+          borderTop: `3px solid ${
+            type === "Cake" ? COLORS.LightPink : COLORS.LightPurple
+          }`,
+        }}
       >
         <CardHeader
           classes={{

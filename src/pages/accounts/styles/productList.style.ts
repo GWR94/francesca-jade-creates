@@ -34,7 +34,7 @@ export default createStyles({
     [breakpoints.down("sm")]: {
       padding: "4px 4px 0",
     },
-    zIndex: 10,
+    zIndex: 1,
   },
   gridContainer: {
     [breakpoints.down("xs")]: {
