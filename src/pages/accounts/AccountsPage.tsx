@@ -8,7 +8,6 @@ import {
   ShoppingCartTwoTone,
   CreateTwoTone,
 } from "@material-ui/icons";
-import { History } from "history";
 import { AppState } from "../../store/store";
 import { ProductProps } from "./interfaces/Product.i";
 import {

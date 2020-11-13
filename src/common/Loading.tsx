@@ -1,6 +1,5 @@
 import React from "react";
 import { CircularProgress, makeStyles } from "@material-ui/core";
-import { COLORS } from "../themes";
 
 interface LoadingProps {
   size?: number;

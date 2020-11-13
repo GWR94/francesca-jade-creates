@@ -1,5 +1,7 @@
+// give unauth and auth roles pemission to view products folder
+
 import React, { useEffect, useState } from "react";
-import { API } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import {
   Container,
   Button,
@@ -13,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/scss/image-gallery.scss";
+import AWS from "aws-sdk";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";
@@ -24,6 +27,7 @@ import { ProductProps, S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/viewProduct.style";
 import { Variant } from "../interfaces/Variants.i";
 import ViewVariants from "./ViewVariants";
+import { getCompressedKey } from "../../../utils";
 
 const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Element => {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -32,6 +36,21 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
   const sub = useSelector(({ user }: AppState) => user.id);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+  const s3 = new AWS.S3({
+    endpoint: "s3-eu-west-2.amazonaws.com",
+    signatureVersion: "v4",
+    region: "eu-west-2",
+    accessKeyId: process.env.ACCESS_KEY_AWS,
+    secretAccessKey: process.env.SECRET_KEY_AWS,
+  });
+
+  const getSignedS3Url = async (key: string, level = "public"): Promise<string> => {
+    const url = s3.getSignedUrl("getObject", {
+      Bucket: process.env.IMAGE_S3_BUCKET,
+      Key: `${level}/${key}`,
+    });
+    return url;
+  };
 
   const getCurrentProduct = async (): Promise<void> => {
     const { data } = await API.graphql({
@@ -45,10 +64,11 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
     });
     setProduct(data.getProduct);
     const images: { [key: string]: string }[] = [];
-    data.getProduct.images.collection.map((image: S3ImageProps) => {
+    data.getProduct.images.collection.map(async (image: S3ImageProps) => {
+      const compressedKey = getCompressedKey(image.key);
       images.push({
-        original: `https://${process.env.IMAGE_S3_BUCKET}.s3.${process.env.BUCKET_REGION}.amazonaws.com/public/${image.key}`,
-        thumbnail: `https://${process.env.IMAGE_S3_BUCKET}.s3.${process.env.BUCKET_REGION}.amazonaws.com/public/${image.key}`,
+        original: await getSignedS3Url(image.key),
+        thumbnail: await getSignedS3Url(compressedKey),
         thumbnailClass: "thumbnail",
       });
     });

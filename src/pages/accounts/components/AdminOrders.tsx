@@ -58,8 +58,18 @@ const AdminOrders = (): JSX.Element => {
   const [inputError, setInputError] = useState<string>("");
   const [isSending, setSending] = useState<boolean>(false);
 
+  let isMounted = false;
   useEffect(() => {
-    getOrders();
+    // isMounted is used for suppressing react error of updating unmounted component
+    isMounted = true;
+
+    // if the component is mounted, execute the getOrders function
+    if (isMounted) getOrders();
+
+    return (): void => {
+      // set isMounted to false when the component is unmounted.
+      isMounted = false;
+    };
   }, []);
 
   dayjs.extend(localizedFormat);

@@ -30,7 +30,6 @@ import ChipContainer from "../inputs/ChipContainer";
 import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
-import AWS from "aws-sdk";
 
 /**
  * TODO
