@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Accordion,
@@ -27,6 +27,7 @@ import RenderInput from "./RenderInput";
  * [x] Add colour scheme to top of custom options
  * [ ] Add styles to delete product dialog
  * [ ] Check the images are deleting from s3 when removing them from array
+ * [ ] Notify the user images will be lost if navigating away from accordion
  */
 
 /**
@@ -67,6 +68,10 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     currentColorScheme,
     imageCompleted,
   } = state;
+
+  useEffect(() => {
+    console.log(customOptions);
+  }, [customOptions]);
 
   const notesIdx = (currentVariant?.features.length ?? 0) + 1;
   const colorIdx = currentVariant?.features.length ?? 0;

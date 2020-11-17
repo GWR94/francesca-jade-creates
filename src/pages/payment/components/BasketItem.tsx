@@ -33,8 +33,10 @@ interface BasketItemState {
   isLoading: boolean;
   currentVariant: Variant | null;
   variantIndex: number | "";
-  customOptions: CustomOptionArrayType | undefined;
+  customOptions: CustomOptionArrayType;
   isCompleted: boolean;
+  expanded: boolean;
+  isEditing: boolean;
 }
 
 interface BasketProps {
@@ -42,15 +44,18 @@ interface BasketProps {
   currentIdx: number;
   items: BasketItemProps[];
   setIndex: (num: number) => void;
-  handleConfirmProduct: (product: CheckoutProductProps) => void;
 }
+
+/**
+ * TODO
+ * [ ] Fix individual image - set center
+ */
 
 const BasketItem: React.FC<BasketProps> = ({
   item,
   currentIdx,
   items,
   setIndex,
-  handleConfirmProduct,
 }: BasketProps): JSX.Element => {
   const { id, title, image, variants, tagline } = item as BasketItemProps;
   const initialState: BasketItemState = {
@@ -59,7 +64,10 @@ const BasketItem: React.FC<BasketProps> = ({
     variantIndex: "",
     customOptions: [],
     isCompleted: false,
+    expanded: true,
+    isEditing: false,
   };
+
   const [state, setState] = useState<BasketItemState>(initialState);
 
   // useMediaQuery changes boolean to true if window is larger than 600px
@@ -81,7 +89,7 @@ const BasketItem: React.FC<BasketProps> = ({
    * index in the array (as there's only one item in it) - if not, then do nothing.
    */
   useEffect(() => {
-    if (variants.length === 1) {
+    if (variants.length === 1 && state.customOptions.length === 0) {
       setState({
         ...state,
         currentVariant: variants[0],
@@ -134,33 +142,42 @@ const BasketItem: React.FC<BasketProps> = ({
     });
   };
 
-  const handleCustomCompletion = (): void => {
-    const { customOptions, currentVariant } = state;
-    if (customOptions?.every((option) => option !== undefined)) {
-      setState({ ...state, isCompleted: true });
-      if (
-        products.findIndex((product) => product.id === id) === -1 &&
-        currentVariant !== null
-      ) {
-        dispatch(
-          actions.addToCheckout({
-            id,
-            title,
-            tagline,
-            image,
-            variant: currentVariant,
-            price: currentVariant.price.item,
-            shippingCost: currentVariant.price.postage,
-            customOptions,
-          }),
-        );
-      } else {
-        dispatch(actions.addCustomOptionsToProduct(id, customOptions));
-      }
-    }
-  };
+  // const handleCustomCompletion = (): void => {
+  //   const { customOptions, currentVariant } = state;
+  //   if (customOptions?.every((option) => option !== undefined)) {
+  //     setState({ ...state, isCompleted: true });
+  //     if (
+  //       products.findIndex((product) => product.id === id) === -1 &&
+  //       currentVariant !== null
+  //     ) {
+  //       dispatch(
+  //         actions.addToCheckout({
+  //           id,
+  //           title,
+  //           tagline,
+  //           image,
+  //           variant: currentVariant,
+  //           price: currentVariant.price.item,
+  //           shippingCost: currentVariant.price.postage,
+  //           customOptions,
+  //         }),
+  //       );
+  //     } else {
+  //       dispatch(actions.addCustomOptionsToProduct(id, customOptions));
+  //     }
+  //   }
+  // };
+
   // destructure all relevant pieces of state
-  const { isLoading, variantIndex, currentVariant, customOptions, isCompleted } = state;
+  const {
+    isLoading,
+    variantIndex,
+    currentVariant,
+    customOptions,
+    isCompleted,
+    expanded,
+    isEditing,
+  } = state;
 
   // set disabled to be true if there's no current variable or all required fields aren't completed
   const disabled =
@@ -243,11 +260,11 @@ const BasketItem: React.FC<BasketProps> = ({
         </div>
 
         {currentVariant && (
-          <Accordion
-            expanded={!isCompleted} //FIXME
-            onClick={(): void => setState({ ...state, isCompleted: false })}
-          >
-            <AccordionSummary expandIcon={<ExpandMore />}>
+          <Accordion expanded={expanded}>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              onClick={(): void => setState({ ...state, expanded: !expanded })}
+            >
               <Typography className={classes.header}>Customisable Features</Typography>
             </AccordionSummary>
             <AccordionDetails classes={{ root: classes.accordionRoot }}>
@@ -256,7 +273,7 @@ const BasketItem: React.FC<BasketProps> = ({
                 setCustomOptions={(customOptions: CustomOptionArrayType): void =>
                   setState({ ...state, customOptions })
                 }
-                customOptions={customOptions || []}
+                customOptions={customOptions!}
                 colorScheme={item.customOptions}
               />
             </AccordionDetails>
@@ -268,11 +285,13 @@ const BasketItem: React.FC<BasketProps> = ({
           color="primary"
           variant="outlined"
           onClick={(): void => {
-            setIndex(currentIdx - 1);
+            const updatedIdx = currentIdx - 1;
+            setIndex(updatedIdx);
             setState({
               ...state,
-              currentVariant: products[currentIdx - 1].variant,
-              customOptions: products[currentIdx - 1].customOptions,
+              currentVariant: products[updatedIdx].variant,
+              customOptions: products[updatedIdx]?.customOptions ?? [],
+              isEditing: true,
             });
           }}
           className={classes.button}
@@ -295,54 +314,70 @@ const BasketItem: React.FC<BasketProps> = ({
           disabled={disabled}
           variant="outlined"
           style={{
-            color: !disabled ? COLORS.SuccessGreen : "rgba(0, 0, 0, 0.26)",
+            color: !disabled
+              ? items.length === products.length
+                ? COLORS.InfoBlue
+                : COLORS.SuccessGreen
+              : "rgba(0, 0, 0, 0.26)",
           }}
           className={classes.button}
           size="small"
           onClick={(): void => {
             const { id, title, tagline, image } = item;
-            dispatch(
-              actions.addToCheckout({
-                id,
-                title,
-                tagline,
-                image,
-                price: currentVariant!.price.item,
-                shippingCost: currentVariant!.price.postage,
-                variant: currentVariant,
-                customOptions,
-              }),
-            );
+            const match = products.find((product) => product.id === id);
+            if (!match) {
+              dispatch(
+                actions.addToCheckout({
+                  id,
+                  title,
+                  tagline,
+                  image,
+                  price: currentVariant!.price.item,
+                  shippingCost: currentVariant!.price.postage,
+                  variant: currentVariant,
+                  customOptions,
+                }),
+              );
+            } else {
+              console.log(customOptions);
+              if (customOptions) {
+                dispatch(actions.addCustomOptionsToProduct(id, customOptions));
+              }
+            }
             if (currentIdx + 1 < items.length) {
-              setIndex(currentIdx + 1);
+              const updatedIdx = currentIdx + 1;
+              setIndex(updatedIdx);
+              const nextProduct = products[updatedIdx];
+              if (nextProduct !== undefined) {
+                setState({
+                  ...state,
+                  currentVariant: nextProduct?.variant ?? null,
+                  variantIndex: "",
+                  customOptions: nextProduct?.customOptions ?? [],
+                  isEditing: false,
+                });
+              } else {
+                setState({
+                  ...state,
+                  currentVariant: null,
+                  variantIndex: "",
+                  customOptions: [],
+                  isEditing: false,
+                });
+              }
+            } else {
               setState({
                 ...state,
-                currentVariant: null,
-                variantIndex: "",
-                customOptions: [],
+                isCompleted: true,
+                expanded: false,
+                isEditing: false,
               });
-            } else {
-              setState({ ...state, isCompleted: true });
             }
           }}
         >
-          Confirm
+          {isEditing || items.length === products.length ? "Update" : "Confirm"}
         </Button>
       </div>
-      {isCompleted && (
-        <div className={classes.container}>
-          <Typography variant="h5">Checkout Overview</Typography>
-          {products.map((product) => (
-            <>
-              <Typography>{product.title}</Typography>
-              <Typography>
-                £{product.price.toFixed(2)} + £{product.shippingCost} Postage & Packaging
-              </Typography>
-            </>
-          ))}
-          <Typography>Total: £{cost.toFixed(2)}</Typography>
-        </div>
-      )}
     </>
   );
 };

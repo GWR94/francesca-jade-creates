@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API, Auth, graphqlOperation, Storage } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -15,20 +15,18 @@ import { InfoOutlined } from "@material-ui/icons";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
 import Loading from "../../common/Loading";
-import { BasketState } from "../../reducers/basket.reducer";
 import NonIdealState from "../../common/containers/NonIdealState";
 import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
-import { CheckoutProductProps, CustomOptionArrayType } from "./interfaces/Basket.i";
+import { CustomOptionArrayType, BasketProps, BasketState } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
-import { INTENT } from "../../themes";
-import { UserAttributeProps } from "../accounts/interfaces/Accounts.i";
+import { COLORS, INTENT } from "../../themes";
 import { createOrder } from "../../graphql/mutations";
 import { S3ImageProps } from "../accounts/interfaces/Product.i";
 import { UserState } from "../../reducers/user.reducer";
 import { getUser } from "../../graphql/queries";
-import { ProfileProps } from "../accounts/interfaces/Profile.i";
-import BasketCustomOptions from "./components/BasketCustomOptions";
+import { BasketState as BasketStoreState } from "../../reducers/basket.reducer";
+import { getCompressedKey, getSignedS3Url } from "../../utils/index";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
@@ -36,48 +34,72 @@ if (process.env.NODE_ENV === "production") {
 } else {
   stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string);
 }
-interface Props {
-  userAttributes: UserAttributeProps | null;
-}
 
 /**
  * TODO
  * [ ] Fix image sent to stripe
  * [ ] Switch yes and no buttons around for image confirm dialog
+ * [ ] Fix basket
+ * [ ] Fix accordion not closing/opening once completed
  */
 
-const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
+/**
+ * Functional component that allows a customer to check, validate, confirm
+ * customisable features, and then purchase the products that they currently
+ * have in their basket via Stripe. Once the user has completed their purchase
+ * they will be redirected back to this page with a confirmation message (or
+ * failure if there was any payment errors).
+ * @param userAttributes - Object containing relevant data for the user such
+ * as their sub (id), email address, phone number etc.
+ */
+const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
+  // make styles from the external styles object
   const useStyles = makeStyles(styles);
+  // execute the useStyles function into a variable to use those styles
   const classes = useStyles();
 
+  /**
+   * use the useSelector hook to get access to relevant data from the basket
+   * and user redux stores'
+   */
   const {
-    items,
-    checkout: { cost, products },
-  } = useSelector(({ basket }: AppState): BasketState => basket);
+    items: basketItems, // rename items to basketItems so it's clearer
+    checkout: { cost, products }, // get checkout products and accumulative cost
+  } = useSelector(({ basket }: AppState): BasketStoreState => basket);
   const { id, email } = useSelector(({ user }: AppState): UserState => user);
 
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [isSubmitting, setSubmitted] = useState<boolean>(false);
-  const [user, setUser] = useState<ProfileProps | null>(null);
-  const [activeStep, setActiveStep] = useState<number>(0);
-  const [currentIdx, setIndex] = useState<number>(0);
-  const [confirmedBasket, setConfirmedBasket] = useState<CheckoutProductProps[]>([]);
+  // create state for the product and initialise it with blank input values
+  const [state, setState] = useState<BasketState>({
+    isLoading: true,
+    isSubmitting: false,
+    user: null,
+    activeStep: 0,
+    currentIdx: 0,
+  });
 
-  let isMounted = false;
+  // store the useDispatch hook into a variable so it can be used within the component
   const dispatch = useDispatch();
 
+  /**
+   * Function to retrieve the current authenticated users' data from the
+   * database, and store it into state as "user".
+   */
   const getUserInfo = async (): Promise<void> => {
+    // use the getUser graphQL query with the users' id to retrieve the data
     const { data } = await API.graphql(graphqlOperation(getUser, { id }));
-    setUser(data.getUser);
+    // store it in state and remove loading UI effects
+    setState({ ...state, user: data.getUser, isLoading: false });
   };
 
+  // isMounted is for suppressing React error for updating state on unmounted component
+  let isMounted = false;
   useEffect(() => {
-    // isMounted is for suppressing React error for updating state on unmounted component
+    // set isMounted to true when the component mounts
     isMounted = true;
-    // clear the checkout basket when the user navigates to the page to clear up old data
     if (isMounted) {
+      // clear the checkout basket when the user navigates to the page to clear up old data
       dispatch(actions.clearCheckout());
-      setLoading(false);
+      // get the users' data and set it into state within the getUserInfo function
       getUserInfo();
     }
     return (): void => {
@@ -86,35 +108,15 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
   }, []);
 
   /**
-   * A function to convert an object of S3 data into a url which can be used
-   * for an image src.
-   * @param s3 {S3ImageProps} - object containing the key, region and bucket
-   * data which is needed to create a src url.
-   */
-  const convertS3ObjectToUrl = async (
-    s3: S3ImageProps,
-    policy: "public" | "private" = "public",
-  ): Promise<string> => {
-    const { key, bucket, region } = s3 as S3ImageProps;
-    const { identityId } = await Auth.currentCredentials();
-    switch (policy) {
-      case "public":
-        return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
-      case "private": {
-        return `https://${bucket}.s3.${region}.amazonaws.com/private/${identityId}/${key}`;
-      }
-    }
-  };
-
-  /**
    * Function to handle the creation of a checkout session via stripe checkout.
    * The function takes the current user's checked-out basket with all of it's
    * data, and creates a checkout session where the user can complete payment.
    */
   const handleCreateCheckout = async (): Promise<void> => {
+    const { user } = state;
     try {
       // show ui loading effects
-      setSubmitted(true);
+      setState({ ...state, isSubmitting: true });
       // connect to stripe via awaiting stripePromise
       const stripe = await stripePromise;
       // create a unique id for the order
@@ -133,6 +135,7 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
       }));
 
       if (!userAttributes) {
+        // If there are no userAttributes, then the session can't be created, so notify the user
         return openSnackbar({
           severity: INTENT.Danger,
           message: "Unable to create session. Please try again.",
@@ -145,10 +148,10 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
        * lambda function)
        */
       const input = {
-        id: orderId,
+        id: orderId, // pass the unique orderId to be used as id
         products: updatedProducts,
         createdAt: new Date(),
-        orderUserId: id,
+        orderUserId: id, // use the
         paymentStatus: "unpaid",
         orderProcessed: false,
         shippingAddress: {
@@ -166,6 +169,7 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
 
       // execute the createOrder mutation with the input as the parameter.
       await API.graphql(graphqlOperation(createOrder, { input }));
+
       /**
        * if there was no issue with the mutation, execute the lambda function
        * which creates a checkout session so the user can purchase their items.
@@ -174,7 +178,12 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
         body: {
           products: updatedProducts.map((product) => ({
             ...product,
-            image: convertS3ObjectToUrl(product.image),
+            /**
+             * First, get the compressed key for product.image.key, as you don't need
+             * the full resolution image. Then use that compressed key to get a signed
+             * S3 url, so it can be shown within stripe's checkout.
+             */
+            image: getSignedS3Url(getCompressedKey(product.image.key)),
           })),
           email,
           orderId,
@@ -190,19 +199,20 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
           severity: INTENT.Danger,
           message: result?.error.message ?? "Unable to create session. Please try again.",
         });
-        setSubmitted(false);
+        setState({ ...state, isSubmitting: false });
       }
     } catch (err) {
       openSnackbar({
         severity: INTENT.Danger,
         message: "Unable to create session. Please try again.",
       });
-      setSubmitted(false);
+      setState({ ...state, isSubmitting: false });
       console.error(err);
     }
   };
 
-  const getStepContent = (stepIndex: number): JSX.Element => {
+  const getStepContent = (stepIndex: number): JSX.Element | null => {
+    const { currentIdx, activeStep } = state;
     switch (stepIndex) {
       case 0: {
         return (
@@ -213,21 +223,18 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
                 you wish to purchase, if necessary.
               </Typography>
               <Typography style={{ marginBottom: 4 }}>
-                Confirm product <strong>{currentIdx + 1}</strong> of {items.length}:
+                Confirm product <strong>{currentIdx + 1}</strong> of {basketItems.length}:
               </Typography>
               <BasketItem
-                item={items[currentIdx]}
+                item={basketItems[currentIdx]}
                 currentIdx={currentIdx}
-                items={items}
-                setIndex={setIndex}
-                handleConfirmProduct={(product: CheckoutProductProps): void =>
-                  setConfirmedBasket([...confirmedBasket, product])
-                }
+                items={basketItems}
+                setIndex={(idx: number): void => setState({ ...state, currentIdx: idx })}
               />
             </>
             <div className={classes.stepButtonContainer}>
               <Button
-                onClick={(): void => setActiveStep(activeStep - 1)}
+                onClick={(): void => setState({ ...state, activeStep: activeStep - 1 })}
                 color="secondary"
                 variant="contained"
                 disabled
@@ -237,9 +244,9 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
               </Button>
               <Button
                 onClick={(): void => {
-                  setIndex(0);
-                  setActiveStep(activeStep + 1);
+                  setState({ ...state, currentIdx: 0, activeStep: activeStep + 1 });
                 }}
+                disabled={basketItems.length !== products.length}
                 color="primary"
                 variant="contained"
                 className={classes.button}
@@ -253,27 +260,69 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
       case 1: {
         return (
           <div className={classes.itemContainer}>
-            <Typography variant="h4">Add Custom Options</Typography>
-            <BasketCustomOptions currentVariant={products[currentIdx].variant} />
+            <Typography variant="h4">Confirm Products</Typography>
+            <Typography variant="subtitle1">
+              Please confirm the items in your checkout basket, and make any changes if
+              necessary.
+            </Typography>
+            {products.map((product, i) => (
+              <div className={classes.checkoutContainer}>
+                <Typography variant="body1">{product.title}</Typography>
+                <Typography
+                  variant="caption"
+                  style={{ color: COLORS.TextGray, marginLeft: 20 }}
+                >
+                  £{product.price.toFixed(2)} + £{product.shippingCost.toFixed(2)} P&P
+                </Typography>
+              </div>
+            ))}
+            <Typography
+              style={{ textTransform: "uppercase", fontWeight: "bold", marginBottom: 10 }}
+            >
+              Total: £{cost.toFixed(2)}
+            </Typography>
+            <div className={classes.stepButtonContainer}>
+              <Button
+                onClick={(): void => setState({ ...state, activeStep: activeStep - 1 })}
+                color="secondary"
+                variant="contained"
+                disabled
+                className={classes.button}
+              >
+                Previous Step
+              </Button>
+              <Button
+                onClick={(): void => {
+                  setState({ ...state, currentIdx: 0 });
+                  handleCreateCheckout();
+                }}
+                disabled={basketItems.length !== products.length}
+                color="primary"
+                variant="contained"
+                className={classes.button}
+              >
+                Purchase Items
+              </Button>
+            </div>
           </div>
         );
       }
       case 2:
         return "Purchase items";
       default:
-        return "Unknown stepIndex";
+        return null;
     }
   };
 
-  const steps = ["Confirm Products", "Add Custom Options", "Purchase Items"];
-
+  const steps = ["Add Custom Options", "Purchase Items", "Purchase Completed"];
+  const { isLoading, activeStep } = state;
   return isLoading ? (
     <Loading />
   ) : (
     <div>
       <div className={classes.container}>
         <Typography variant="h4">Shopping Basket</Typography>
-        {items.length > 0 ? (
+        {basketItems.length > 0 ? (
           <>
             <Stepper activeStep={activeStep} alternativeLabel>
               {steps.map((label) => (
@@ -286,7 +335,9 @@ const Basket: React.FC<Props> = ({ userAttributes }): JSX.Element => {
               {activeStep === steps.length ? (
                 <div>
                   <Typography>All steps completed</Typography>
-                  <Button onClick={(): void => setActiveStep(0)}>Reset</Button>
+                  <Button onClick={(): void => setState({ ...state, activeStep: 0 })}>
+                    Reset
+                  </Button>
                 </div>
               ) : (
                 getStepContent(activeStep)

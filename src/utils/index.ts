@@ -1,4 +1,5 @@
-import { Storage } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
+import AWS from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
@@ -30,6 +31,22 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
     // FIXME - remove console.error for production
     console.error(err);
   }
+};
+
+export const getSignedS3Url = async (key: string, level = "public"): Promise<string> => {
+  const credentials = await Auth.currentCredentials();
+  const s3 = new AWS.S3({
+    endpoint: "s3-eu-west-2.amazonaws.com",
+    signatureVersion: "v4",
+    region: "eu-west-2",
+    credentials,
+  });
+
+  const url = s3.getSignedUrl("getObject", {
+    Bucket: process.env.IMAGE_S3_BUCKET,
+    Key: `${level}/${key}`,
+  });
+  return url;
 };
 
 /**

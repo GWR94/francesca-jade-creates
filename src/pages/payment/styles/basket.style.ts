@@ -155,4 +155,7 @@ export default createStyles({
     // textAlign: "center",
     width: "100%",
   },
+  checkoutContainer: {
+    marginBottom: 10,
+  },
 });

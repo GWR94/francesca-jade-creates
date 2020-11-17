@@ -20,7 +20,6 @@ import { INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
-//@ts-expect-error
 import awsExports from "../../../aws-exports";
 import styles from "../styles/renderInput.style";
 import UploadedImages from "./UploadedImages";
@@ -147,10 +146,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there's a description, show it to the user */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             {/* Notify the user how many inputs they're expected to complete */}
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
               Please add {inputType === "range" ? "up to" : "exactly"} {maxNumber} items
             </Typography>
             <div style={{ display: "inline-flex" }}>
@@ -218,10 +219,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there is a description, show it to the user */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             {/* Notify the user of how many inputs they are expected to fill */}
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
               Please add exactly {maxNumber} item {maxNumber === 1 ? "" : "s"}
             </Typography>
             <div
@@ -277,7 +280,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there is a description, show it to the user. */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             <div
               style={{
@@ -342,6 +347,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
      */
     case "images":
       {
+        console.log("image");
         renderedFeature = (
           <>
             <div className={classes.uploadedImageContainer}>
@@ -416,7 +422,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                       }}
                     />
                     {/* Notify the user how many images they've uploaded */}
-                    <Typography variant="subtitle2">
+                    <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
                       You have entered{" "}
                       {(currentInputValue as S3ImageProps[])?.length ?? 0} image
                       {(currentInputValue as S3ImageProps[])?.length === 1 ? "" : "s"}.
