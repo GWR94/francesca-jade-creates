@@ -161,6 +161,34 @@ export const rootTheme = createMuiTheme({
         fontWeight: "bold",
         textAlign: "center",
         fontSize: "2rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.8rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.6rem",
+        },
+      },
+      h5: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: "1.8rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.6rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.4rem",
+        },
+      },
+      h6: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: "1.5rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.3rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.2rem",
+        },
       },
       subtitle1: {
         fontSize: "1rem",

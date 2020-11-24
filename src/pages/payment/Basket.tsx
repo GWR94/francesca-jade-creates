@@ -22,7 +22,6 @@ import { CustomOptionArrayType, BasketProps, BasketState } from "./interfaces/Ba
 import * as actions from "../../actions/basket.actions";
 import { COLORS, INTENT } from "../../themes";
 import { createOrder } from "../../graphql/mutations";
-import { S3ImageProps } from "../accounts/interfaces/Product.i";
 import { UserState } from "../../reducers/user.reducer";
 import { getUser } from "../../graphql/queries";
 import { BasketState as BasketStoreState } from "../../reducers/basket.reducer";
@@ -41,6 +40,8 @@ if (process.env.NODE_ENV === "production") {
  * [ ] Switch yes and no buttons around for image confirm dialog
  * [ ] Fix basket
  * [ ] Fix accordion not closing/opening once completed
+ * [ ] Fix single image throwing error when uploaded alone
+ * [ ] Fix payment error showing up when first loading success page
  */
 
 /**
@@ -98,7 +99,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     isMounted = true;
     if (isMounted) {
       // clear the checkout basket when the user navigates to the page to clear up old data
-      dispatch(actions.clearCheckout());
+      dispatch(actions.clearCheckout()); // FIXME
       // get the users' data and set it into state within the getUserInfo function
       getUserInfo();
     }
@@ -113,6 +114,11 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
    * data, and creates a checkout session where the user can complete payment.
    */
   const handleCreateCheckout = async (): Promise<void> => {
+    const compressedKey = getCompressedKey(products[0].image.key);
+    const url = getSignedS3Url(compressedKey);
+
+    console.log(url);
+    return;
     const { user } = state;
     try {
       // show ui loading effects
@@ -151,7 +157,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         id: orderId, // pass the unique orderId to be used as id
         products: updatedProducts,
         createdAt: new Date(),
-        orderUserId: id, // use the
+        orderUserId: id, // use the users id (sub) so orders are linked to the user
         paymentStatus: "unpaid",
         orderProcessed: false,
         shippingAddress: {
@@ -214,6 +220,10 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   const getStepContent = (stepIndex: number): JSX.Element | null => {
     const { currentIdx, activeStep } = state;
     switch (stepIndex) {
+      /**
+       * the first step is the user confirms the products in their basket,
+       * and confirm the custom options for them.
+       */
       case 0: {
         return (
           <div className={classes.itemContainer}>
@@ -265,7 +275,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               Please confirm the items in your checkout basket, and make any changes if
               necessary.
             </Typography>
-            {products.map((product, i) => (
+            {products.map((product) => (
               <div className={classes.checkoutContainer}>
                 <Typography variant="body1">{product.title}</Typography>
                 <Typography
@@ -276,10 +286,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 </Typography>
               </div>
             ))}
-            <Typography
-              style={{ textTransform: "uppercase", fontWeight: "bold", marginBottom: 10 }}
-            >
-              Total: £{cost.toFixed(2)}
+            <Typography style={{ fontWeight: "bold", marginBottom: 10 }}>
+              TOTAL: £{cost.toFixed(2)}
             </Typography>
             <div className={classes.stepButtonContainer}>
               <Button

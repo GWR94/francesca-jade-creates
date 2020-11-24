@@ -1,5 +1,3 @@
-// give unauth and auth roles pemission to view products folder
-
 import React, { useEffect, useState } from "react";
 import { API, Auth } from "aws-amplify";
 import {
@@ -10,6 +8,12 @@ import {
   makeStyles,
   Typography,
   Grid,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -26,16 +30,60 @@ import { ProductProps, S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/viewProduct.style";
 import ViewVariants from "./ViewVariants";
 import { getCompressedKey, getSignedS3Url } from "../../../utils";
+import QuoteDialog from "./QuoteDialog";
 
-const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Element => {
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [product, setProduct] = useState<ProductProps>();
-  const [images, setImages] = useState<{ [key: string]: string }[]>([]);
+interface ViewProductState {
+  // create boolean state value for loading to show/hide UI loading effects
+  isLoading: boolean;
+  // store the product in state so it can be accessed throughout component
+  product: ProductProps | null;
+  // FIXME
+  images: { [key: string]: string }[];
+  quoteDialogOpen: boolean;
+}
+
+/**
+ * TODO
+ * [ ] Remove API_KEY auth, give unauth and auth permission for certain actions
+ * ? Look at adding pictures per variant and viewing them when changing
+ */
+
+/**
+ * Functional component to view the selected products data, including their variants,
+ * customisable features, images, description etc.
+ * @param id - The id of the product that is currently being viewed by the user
+ * @param type - The type of product that the user is trying to view ("Cake" or
+ * "Creates").
+ */
+const ViewProduct: React.FC<ViewProps> = ({
+  id,
+  type: productType,
+}): JSX.Element | null => {
+  // create state for a loading boolean which will show/hide loading UI effects.
+  const [state, setState] = useState<ViewProductState>({
+    isLoading: true,
+    product: null,
+    images: [],
+    quoteDialogOpen: false,
+  });
+
+  // get the users' id (sub) to check the current authenticated user
   const sub = useSelector(({ user }: AppState) => user.id);
+  // execute makeStyles based on external styles and store function in variable.
   const useStyles = makeStyles(styles);
+  // execute the useStyles function and store result in variable.
   const classes = useStyles();
 
+  /**
+   * Function to get the data of the chosen product and store it into state.
+   * The function will be executed as the component mounts, so all of the relevant
+   * data will be available in state before the first render.
+   */
   const getCurrentProduct = async (): Promise<void> => {
+    /**
+     * Execute the getProduct graphQL query to retrieve the products data, and
+     * destructure the data property from the result.
+     */
     const { data } = await API.graphql({
       query: getProduct,
       variables: {
@@ -43,30 +91,60 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
         limit: 100,
       },
       // @ts-ignore
-      authMode: "API_KEY",
+      authMode: "API_KEY", // FIXME
     });
-    setProduct(data.getProduct);
+    // create an array to store the images in
     const images: { [key: string]: string }[] = [];
+    /**
+     * Iterate through the images collection from the getProduct query, and
+     * push to results images array, modifying them where necessary.
+     */
     data.getProduct.images.collection.map(async (image: S3ImageProps) => {
+      // get the compressed image key by using the util function
       const compressedKey = getCompressedKey(image.key);
+      // retrieve the full resolution signed image url
+      const originalURL = await getSignedS3Url(image.key);
+      // get the compressed thumbnail singed image url
+      const thumbnailURL = await getSignedS3Url(compressedKey);
+      // push the urls into the images array
       images.push({
-        original: await getSignedS3Url(image.key),
-        thumbnail: await getSignedS3Url(compressedKey),
+        original: originalURL,
+        thumbnail: thumbnailURL,
         thumbnailClass: "thumbnail",
       });
     });
-    setImages(images);
-    setLoading(false);
+    // update the state with all values
+    setState({
+      ...state,
+      images,
+      isLoading: false,
+      product: data.getProduct,
+    });
   };
 
+  /**
+   * When the component mounts, run the getCurrentProduct function so all
+   * relevant data is stored before the component is rendered.
+   */
   useEffect(() => {
     getCurrentProduct();
   }, []);
 
+  // store the useDispatch hook into a variable so it can be used throughout
   const dispatch = useDispatch();
+  // store the useHistory hook into a variable so it can be used throughout
+  const history = useHistory();
 
+  /**
+   * Function to add the current product into the basket redux store, so it can
+   * be purchased from anywhere around the site.
+   */
   const handleAddToBasket = (): AddItemAction | null => {
+    // destructure product from state
+    const { product } = state;
+    // check to see the product exists, if it doesn't, return null
     if (!product) return null;
+    // destructure relevant properties from product
     const {
       id,
       title,
@@ -77,7 +155,10 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
       variants,
       customOptions,
     } = product;
-
+    /**
+     * Dispatch the addToBasket action, which will add the product passed
+     * as the parameter into the basket redux store.
+     */
     return dispatch(
       basketActions.addToBasket({
         id,
@@ -92,93 +173,94 @@ const ViewProduct: React.FC<ViewProps> = ({ id, type: productType }): JSX.Elemen
     );
   };
 
-  const handleQuoteQuery = (): void => {
-    // TODO
-    console.log("todo");
-  };
-
-  const history = useHistory();
+  const { product, isLoading, images, quoteDialogOpen } = state;
   if (!product) return null;
   return isLoading ? (
     <Loading />
   ) : (
-    <Container className={classes.container}>
-      <Typography variant="h4">{product.title}</Typography>
-      {product.tagline && (
-        <Typography variant="h6" className={classes.tagline}>
-          {product.tagline}
-        </Typography>
-      )}
-      <ThemeProvider theme={chipTheme}>
-        <div className="view__tags">
-          {product.tags.map(
-            (tag: string, i: number): JSX.Element => (
-              <Chip
-                key={i}
-                size="small"
-                color={productType === "Cake" ? "primary" : "secondary"}
-                style={{ margin: "0px 4px 4px", color: "#fff" }}
-                label={tag}
-              />
-            ),
-          )}
-        </div>
-      </ThemeProvider>
-      <div
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: product.description }}
-        style={{ marginBottom: 10 }}
-      />
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          {/* <ImageCarousel
-              images={product.images.collection}
-              cover={product.images.cover}
-              type={productType}
-              isCentered
-            /> */}
-          <ImageGallery items={images} thumbnailPosition="left" />
+    <>
+      <Container className={classes.container}>
+        <Typography variant="h4">{product.title}</Typography>
+        {product.tagline && (
+          <Typography variant="h6" className={classes.tagline}>
+            {product.tagline}
+          </Typography>
+        )}
+        <ThemeProvider theme={chipTheme}>
+          <div className={classes.tagsContainer}>
+            {product.tags.map(
+              (tag: string, i: number): JSX.Element => (
+                <Chip
+                  key={i}
+                  size="small"
+                  className={classes.chip}
+                  color={productType === "Creates" ? "primary" : "secondary"}
+                  label={tag}
+                />
+              ),
+            )}
+          </div>
+        </ThemeProvider>
+        <div
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: product.description }}
+          style={{ marginBottom: 10 }}
+        />
+        <Divider style={{ marginBottom: 16 }} variant="middle" />
+        <Grid container spacing={2} alignItems="center" justify="center">
+          <Grid item xs={12} sm={7}>
+            <ImageGallery items={images} thumbnailPosition="left" />
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <ViewVariants
+              variants={product.variants}
+              customOptions={product.customOptions}
+              type={product.type}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <ViewVariants variants={product.variants} />
-        </Grid>
-      </Grid>
-      <ThemeProvider theme={buttonTheme}>
-        {sub ? (
-          product.setPrice ? (
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ color: "#fff" }}
-              onClick={handleAddToBasket}
-              startIcon={<i className="fas fa-shopping-cart view__icon" />}
-            >
-              Add to Basket
-            </Button>
+        <Divider style={{ marginTop: 16 }} variant="middle" />
+        <div className={classes.buttonContainer}>
+          {sub ? (
+            product.setPrice ? (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={handleAddToBasket}
+                startIcon={<i className={`fas fa-shopping-cart ${classes.viewIcon}`} />}
+              >
+                Add to Basket
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.button}
+                onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
+                startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
+              >
+                Request a Quote
+              </Button>
+            )
           ) : (
             <Button
-              color="primary"
               variant="contained"
-              style={{ color: "#fff" }}
-              onClick={handleQuoteQuery}
-              startIcon={<i className="fas fa-credit-card view__icon" />}
+              color="primary"
+              className={classes.button}
+              onClick={(): void => history.push("/login")}
+              startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
             >
-              Request a Quote
+              Login to Purchase
             </Button>
-          )
-        ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ color: "#fff" }}
-            onClick={(): void => history.push("/login")}
-            startIcon={<i className="fas fa-user view__icon" />}
-          >
-            Login to Purchase
-          </Button>
-        )}
-      </ThemeProvider>
-    </Container>
+          )}
+        </div>
+      </Container>
+      <QuoteDialog
+        open={quoteDialogOpen}
+        onClose={(): void => setState({ ...state, quoteDialogOpen: false })}
+      />
+    </>
   );
 };
 

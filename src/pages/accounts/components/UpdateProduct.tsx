@@ -12,7 +12,6 @@ import {
   createMuiTheme,
   Typography,
   withStyles,
-  useMediaQuery,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle } from "@material-ui/lab";
@@ -40,12 +39,6 @@ import { Variant } from "../interfaces/Variants.i";
 import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
-
-/**
- * TODO
- * [x] Add uncompressed and compressed images to s3
- * [ ] Remove all useScreenWidth / windowDimensions hooks
- */
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
@@ -77,6 +70,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     },
     percentUploaded: 0,
     customSwitch: false,
+    isDesktop: window.innerWidth > 600,
   };
 
   public async componentDidMount(): Promise<void> {
@@ -151,7 +145,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * A function which compressed the input image to a preferred size if necessary.
    * @param {File} fileToUpload: The image which the user wishes to compress.
    */
-  private handleImageCompress = (blobToUpload: ImageFile, filename: string): void => {
+  private handleImageCompress = (blobToUpload: ImageFile): void => {
     const compressor = new Compress({
       targetSize: 0.3, // target size in MB
       quality: 0.5,
@@ -168,7 +162,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
            */
           const { photo } = conversions[0];
           console.log(conversions);
-          const compressedImage = {};
+          const compressedImage: { file?: File } = {};
           compressedImage.file = photo.data;
           Object.defineProperty(compressedImage, "name", {
             writable: true,
@@ -463,7 +457,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
          * add all of the products values to the input variable for use in the createProduct
          * graphql mutation
          */
-
         graphqlOperation(createProduct, {
           input: {
             title,
@@ -724,7 +717,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               )}
               <ImagePicker
                 setImageFile={(file): void => {
-                  this.handleImageCompress(file, file.name);
+                  this.handleImageCompress(file);
                   this.setState({ errors: { ...errors, image: null } });
                 }}
                 cropImage

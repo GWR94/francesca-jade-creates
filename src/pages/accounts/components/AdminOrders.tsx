@@ -521,7 +521,7 @@ const AdminOrders = (): JSX.Element => {
                           </Typography>
                           <div className={classes.buttonContainer}>
                             {options.some((option) =>
-                              option.hasOwnProperty("Images"),
+                              option?.hasOwnProperty("Images"),
                             ) && (
                               <Button
                                 variant="text"

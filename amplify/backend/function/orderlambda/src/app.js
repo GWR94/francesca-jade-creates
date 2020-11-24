@@ -35,17 +35,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-const ddb = new AWS.DynamoDB.DocumentClient();
-
-const sesConfig = {
-  accessKeyId: process.env.ACCESS_KEY_AWS,
-  secretAccessKey: process.env.SECRET_KEY_AWS,
-  region: "eu-west-1",
-  adminEmail: "contact@francescajadecreates.co.uk",
-};
-
-const ses = new AWS.SES(sesConfig);
-
 const url =
   process.env.NODE_ENV !== "production"
     ? "http://localhost:3000"
@@ -97,6 +86,10 @@ app.post("/orders/retrieve-session", async (req, res) => {
 });
 
 app.post("/orders/set-order-processing", (req, res) => {
+  const { credentials } = req.body;
+  const ddb = new AWS.DynamoDB.DocumentClient({
+    credentials,
+  });
   try {
     const { orderId, isProcessed } = req.body;
     const params = {
@@ -118,7 +111,20 @@ app.post("/orders/set-order-processing", (req, res) => {
 });
 
 app.post("/orders/send-shipping-information", (req, res) => {
-  const { order, trackingInfo } = req.body;
+  const { order, trackingInfo, credentials } = req.body;
+
+  const sesConfig = {
+    region: "eu-west-1",
+    adminEmail: "contact@francescajadecreates.co.uk",
+    credentials,
+  };
+
+  const ddb = new AWS.DynamoDB.DocumentClient({
+    credentials,
+  });
+
+  const ses = new AWS.SES(sesConfig);
+
   try {
     const params = {
       TableName: process.env.ORDERS_TABLE,

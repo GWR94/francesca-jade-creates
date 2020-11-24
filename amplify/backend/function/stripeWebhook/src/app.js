@@ -26,14 +26,6 @@ AWS.config.update({
   region: "eu-west-2",
 });
 
-const sesConfig = {
-  accessKeyId: process.env.ACCESS_KEY_AWS,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  region: "eu-west-1",
-  adminEmail: "contact@francescajadecreates.co.uk",
-};
-
-const ses = new AWS.SES(sesConfig);
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 // declare a new express app
@@ -50,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
   endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
 }
-const paymentTable = process.env.PAYMENT_TABLE;
+const ordersTable = process.env.ORDERS_TABLE;
 
 // Enable CORS for all methods
 app.use(function (req, res, next) {
@@ -63,6 +55,14 @@ app.use(function (req, res, next) {
 });
 
 const emailHandler = (req, res) => {
+  const sesConfig = {
+    region: "eu-west-1",
+    adminEmail: "contact@francescajadecreates.co.uk",
+    accessKeyId: process.env.ACCESS_KEY_AWS,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  };
+
+  const ses = new AWS.SES(sesConfig);
   const { data, stripe } = req;
   ses.sendEmail(
     {
@@ -169,7 +169,7 @@ const checkoutHandler = (req, res, next) => {
       try {
         const data = event.data.object;
         const paramsPayment = {
-          TableName: paymentTable,
+          TableName: ordersTable,
           Key: {
             id: data.metadata.orderId,
           },

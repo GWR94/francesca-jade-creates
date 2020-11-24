@@ -43,6 +43,11 @@ import { AppState } from "../../../store/store";
 import styles from "../styles/profile.style";
 
 /**
+ * TODO
+ * [ ] Fix profile borders being hidden on mobile
+ */
+
+/**
  * Set the initial state to be empty/nullish values so they can be set to their correct
  * values once handleRetrieveData has been called during componentDidMount().
  */

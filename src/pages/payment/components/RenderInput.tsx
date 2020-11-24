@@ -33,8 +33,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
   customOptions,
   setExpanded,
   featuresLength,
-  imageCompleted,
-  setImageCompleted,
 }): JSX.Element | null => {
   // make and use styles to be used in component
   const useStyles = makeStyles(styles);
@@ -46,6 +44,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
     confirmDialogOpen: false,
     uploadedImage: null,
     currentImageFile: null,
+    imageCompleted: false,
   });
 
   /**
@@ -54,8 +53,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
    * causing conflicting errors (i.e an array for a string input, or vice versa).
    */
   useEffect(() => {
-    const { featureType } = feature;
-    if (featureType === "") {
+    const { featureType, inputType } = feature;
+    console.log(featureType, inputType);
+    if (featureType === "text" && inputType !== "range") {
       setState({ ...state, currentInputValue: "" });
     } else {
       // if featureType is other, dropdown or images, the input value will need to be an array
@@ -114,17 +114,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
       updatedCustomOptions[i] = {
         Images: imagesArr,
       };
-      setState({
-        ...state,
-        /**
-         * set currentInputValue to null - it will be changed to the correct input
-         * type when the feature is changed (when the user changes to another
-         * feature in the accordion)
-         */
-        currentInputValue: null,
-      });
       // set imageCompleted to true to show the completed tag on the accordion
-      setImageCompleted(true);
+      setState({ ...state, imageCompleted: true });
       // open the next panel if i is less than features length, or color if not.
       setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
       // save customOptions to state in parent
@@ -167,9 +158,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 placeholder="Press enter to add an item"
                 onAdd={(chip): void => {
                   if ((currentInputValue as string[]).length < maxNumber) {
+                    const updatedInputValue = currentInputValue as string[];
+                    updatedInputValue.push(chip);
+                    console.log(updatedInputValue);
                     setState({
                       ...state,
-                      currentInputValue: [...(currentInputValue as string[]), chip],
+                      currentInputValue: updatedInputValue,
                     });
                   } else {
                     openSnackbar({
@@ -191,10 +185,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string[],
                   };
-                  setState({
-                    ...state,
-                    currentInputValue: null,
-                  });
                   // open the next panel if i is less than features length, or color if not.
                   setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
@@ -294,7 +284,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
             >
               {/* Render the select */}
               <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="demo-simple-select-outlined-label">{name}</InputLabel>
+                <InputLabel>{name}</InputLabel>
                 <Select
                   value={currentInputValue}
                   label={name}
@@ -323,10 +313,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string,
                   };
-                  setState({
-                    ...state,
-                    currentInputValue: null,
-                  });
                   // open the next panel if i is less than features length, or color if not.
                   setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
@@ -347,7 +333,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
      */
     case "images":
       {
-        console.log("image");
         renderedFeature = (
           <>
             <div className={classes.uploadedImageContainer}>
@@ -447,11 +432,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           };
                           setState({
                             ...state,
-                            // set input value to null, as it'll be changed when next feature is opened in accordion
-                            currentInputValue: null,
+                            // set image completed to true to notify user its completed.
+                            imageCompleted: true,
                           });
-                          // set image completed to true to notify user its completed.
-                          setImageCompleted(true);
                           // open the next panel if i is less than features length, or color if not.
                           setExpanded(
                             i < featuresLength ? `panel${i + 1}` : `panel-color`,
@@ -519,6 +502,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           // close the confirm dialog by changing the boolean value to false
                           setState({ ...state, confirmDialogOpen: false })
                         }
+                        color="secondary"
                       >
                         No
                       </Button>
@@ -529,14 +513,19 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           updatedCustomOptions[i] = {
                             Images: currentInputValue as S3ImageProps[],
                           };
-                          // set imageCompleted to true to show the user the feature is completed
-                          setImageCompleted(true);
                           // open the next panel if i is less than features length, or color if not.
                           setExpanded(
                             i < featuresLength ? `panel${i + 1}` : `panel-color`,
                           );
                           setCustomOptions(updatedCustomOptions);
+                          // set imageCompleted to true to show the user the feature is completed
+                          setState({
+                            ...state,
+                            imageCompleted: true,
+                            confirmDialogOpen: false,
+                          });
                         }}
+                        color="primary"
                       >
                         Yes
                       </Button>
@@ -597,9 +586,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
                             currentInputValue: updatedImages,
                             // remove the current uploaded image from state
                             uploadedImage: null,
+                            // set imageCompleted to true to show the user the completed tag
+                            imageCompleted: true,
                           });
-                          // set imageCompleted to true to show the user the completed tag
-                          setImageCompleted(true);
                           // update custom options in parent
                           setCustomOptions(updatedCustomOptions);
                         } else {
@@ -629,34 +618,35 @@ const RenderInput: React.FC<RenderInputProps> = ({
     default:
       return null;
   }
+
+  console.log(customOptions[i]);
   const current =
     typeof customOptions[i] === "object"
       ? // if the current customOptions index is an object, get the values from it with Object.values().
-        Object.values(customOptions[i])
+        Object.values(customOptions[i])[0]
       : // if not, get the value.
         customOptions[i];
 
+  const key = customOptions[i] !== undefined && Object.keys(customOptions[i])[0];
+
+  const { imageCompleted } = state;
   return (
     <div style={{ width: "100%" }}>
       {customOptions[i] ? (
         <>
           {/* If current is not an array, display the information to users */}
-          {!Array.isArray(current) ? (
-            <Typography>{current}</Typography>
-          ) : (
-            // if the first index of current is of type string, show it to the user in a readable fashion
-            typeof current[0] === "string" && (
-              <Typography>{getReadableStringFromArray(current as string[])}</Typography>
-            )
-          )}
+          <Typography variant="subtitle2">
+            {!Array.isArray(current)
+              ? current
+              : typeof current[0] === "string" &&
+                getReadableStringFromArray(current as string[])}
+          </Typography>
           {/* 
             if imageComplete is true and the current index of customOptions key is 
             "Images" show the images within the UploadedImages component
            */}
-          {imageCompleted && Object.keys(customOptions[i])[0] === "Images" && (
-            <UploadedImages
-              images={Object.values(customOptions[i])[0] as S3ImageProps[]}
-            />
+          {imageCompleted && key === "Images" && (
+            <UploadedImages images={current as S3ImageProps[]} />
           )}
           <div className={classes.buttonContainer}>
             <Button

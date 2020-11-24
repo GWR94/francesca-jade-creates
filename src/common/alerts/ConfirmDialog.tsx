@@ -69,7 +69,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </p>
         <p>
           <strong>Price: </strong>
-          {getProductPrice(product, true)}
+          {getProductPrice(product.variants, true)}
         </p>
         <p>
           <strong>Tags: </strong>

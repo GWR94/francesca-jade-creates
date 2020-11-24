@@ -71,8 +71,8 @@ export default createStyles({
   },
   input: {
     borderRadius: 0,
-    borderLeft: "0px solid transparent",
-    borderRight: "0px solid transparent",
+    borderLeft: "0px solid transparent", //FIXME
+    borderRight: "0px solid transparent", //FIXME
   },
   name: {
     fontWeight: "bold",

@@ -12,7 +12,7 @@ export default createStyles({
     margin: "0 auto",
     paddingTop: 20,
     [breakpoints.down("md")]: {
-      width: 820,
+      width: "100%",
     },
     [breakpoints.down("sm")]: {
       width: "90%",
@@ -28,5 +28,25 @@ export default createStyles({
     "&:active": {
       border: "2px solid green !important",
     },
+  },
+  tagsContainer: {
+    display: "flex",
+    justifyContent: "center",
+    margin: "14px 0",
+  },
+  chip: {
+    margin: "0 4px 4px",
+    color: "#fff",
+  },
+  viewIcon: {
+    marginRight: 5,
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "center",
+    width: "100%",
+  },
+  button: {
+    margin: "10px 10px 30px",
   },
 });
