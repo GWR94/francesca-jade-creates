@@ -32,8 +32,8 @@ const useStyles = makeStyles({
 /**
  * A component which follows material-ui's outlined input where you can add tags
  * to an individual product.
- * @param {string[]} tags - Array of string containing the labels for each tag
- * @param {"Cake" | "Creates"} type - The type of product which the tags are for.
+ * @param tags - Array of string containing the labels for each tag
+ * @param type - The type of product which the tags are for.
  */
 const ChipContainer: React.SFC<ChipContainerProps> = ({ tags, type }): JSX.Element => {
   // use styles

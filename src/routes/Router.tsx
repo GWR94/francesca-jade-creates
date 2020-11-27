@@ -38,6 +38,7 @@ import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import Success from "../pages/payment/components/Success";
 import background from "../img/pinkbg2.png";
+import Footer from "../pages/navigation/Footer";
 
 export const history = createBrowserHistory();
 
@@ -271,7 +272,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
 
   public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
-
+    console.log(user);
     return (
       <Router history={history}>
         <div
@@ -282,146 +283,149 @@ class AppRouter extends Component<RouterProps, RouterState> {
           {isLoading ? (
             <Loading size={100} />
           ) : (
-            <Switch>
-              <Route path="/" exact component={Landing} />
-              <Route
-                path="/creates"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Creations
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Creates" admin={this._admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/basket"
-                history={history}
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Basket userAttributes={userAttributes} />
-                  </div>
-                )}
-              />
-              <Route
-                path="/creates/:id"
-                component={(_: { match: { params: { id: string } } }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Creates" />
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Cakes
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Cake" admin={this._admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes/:id"
-                component={(_: { match: { params: { id: string } } }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Cake" />
-                  </div>
-                )}
-              />
-              <Route path="/login" history={history} component={Login} />
-              <Route
-                path="/account"
-                exact
-                component={(): JSX.Element =>
-                  user ? (
+            <>
+              <Switch>
+                <Route path="/" exact component={Landing} />
+                <Route
+                  path="/creates"
+                  exact
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <AccountsPage
-                        admin={this._admin}
-                        history={history}
-                        user={user}
-                        userAttributes={userAttributes}
-                      />
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Creations
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Creates" admin={this._admin} />
+                      </Container>
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route
-                path="/account/:id"
-                component={(
-                  matchParams: RouteComponentProps<{ id: string }>,
-                ): JSX.Element =>
-                  this._admin ? (
+                  )}
+                />
+                <Route
+                  path="/basket"
+                  history={history}
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <UpdateProduct
-                        history={history}
-                        update
-                        id={matchParams.match.params.id}
-                        admin={this._admin}
-                      />
+                      <Basket userAttributes={userAttributes} />
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route path="/success" component={Success} />
-              <Route component={NotFoundPage} />
-            </Switch>
+                  )}
+                />
+                <Route
+                  path="/creates/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Creates" />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes"
+                  exact
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Cakes
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Cake" admin={this._admin} />
+                      </Container>
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Cake" />
+                    </div>
+                  )}
+                />
+                <Route path="/login" history={history} component={Login} />
+                <Route
+                  path="/account"
+                  exact
+                  component={(): JSX.Element =>
+                    user ? (
+                      <div className="content-container">
+                        <AccountsPage
+                          admin={this._admin}
+                          history={history}
+                          user={user}
+                          userAttributes={userAttributes}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/account/:id"
+                  component={(
+                    matchParams: RouteComponentProps<{ id: string }>,
+                  ): JSX.Element =>
+                    this._admin ? (
+                      <div className="content-container">
+                        <UpdateProduct
+                          history={history}
+                          update
+                          id={matchParams.match.params.id}
+                          admin={this._admin}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route path="/success" component={Success} />
+                <Route component={NotFoundPage} />
+              </Switch>
+              <Footer />
+            </>
           )}
         </div>
       </Router>

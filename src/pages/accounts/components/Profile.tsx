@@ -96,10 +96,10 @@ const Profile: React.FC<ProfileProps> = ({
   userAttributes,
   sub,
   classes,
-  admin,
 }): JSX.Element => {
+  // set state to be initial state when the component mounts.
   const [state, setState] = useState<ProfileState>({ ...initialState });
-
+  // use the useMediaQuery hook to determine if the screen is less than 600px (returns boolean)
   const desktop = useMediaQuery("(min-width: 600px)");
 
   /**
@@ -155,7 +155,6 @@ const Profile: React.FC<ProfileProps> = ({
   const handleRetrieveData = async (): Promise<void> => {
     const { username } = state;
     try {
-      // get the sub (id) of the user from the user object.
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
       console.log(data);

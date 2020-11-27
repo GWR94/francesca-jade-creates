@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { API, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import {
   Container,
   Button,
@@ -9,11 +9,6 @@ import {
   Typography,
   Grid,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  TextField,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -24,7 +19,7 @@ import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";
 import { AddItemAction } from "../../../interfaces/basket.redux.i";
 import { ViewProps } from "../interfaces/ViewProduct.i";
-import { chipTheme, buttonTheme } from "../../../common/styles/viewProduct.style";
+import { chipTheme } from "../../../common/styles/viewProduct.style";
 import { AppState } from "../../../store/store";
 import { ProductProps, S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/viewProduct.style";
@@ -126,8 +121,13 @@ const ViewProduct: React.FC<ViewProps> = ({
    * When the component mounts, run the getCurrentProduct function so all
    * relevant data is stored before the component is rendered.
    */
+  let isMounted = false;
   useEffect(() => {
-    getCurrentProduct();
+    isMounted = true;
+    if (isMounted) getCurrentProduct();
+    return (): void => {
+      isMounted = false;
+    };
   }, []);
 
   // store the useDispatch hook into a variable so it can be used throughout
@@ -174,26 +174,44 @@ const ViewProduct: React.FC<ViewProps> = ({
   };
 
   const { product, isLoading, images, quoteDialogOpen } = state;
+  console.log(state.images);
+  // if there is no product, return null as nothing can be rendered
   if (!product) return null;
+  // destructure all relevant data from product
+  const {
+    tagline,
+    title,
+    description,
+    tags,
+    setPrice,
+    variants,
+    customOptions,
+    type,
+  } = product;
   return isLoading ? (
     <Loading />
   ) : (
-    <>
-      <Container className={classes.container}>
-        <Typography variant="h4">{product.title}</Typography>
-        {product.tagline && (
+    <Container className={classes.container}>
+      {/* Render a large title and a smaller tagline to briefly describe the product */}
+      <div>
+        <Typography variant="h4" className={classes.title}>
+          {title}
+        </Typography>
+        {tagline && (
           <Typography variant="h6" className={classes.tagline}>
-            {product.tagline}
+            {tagline}
           </Typography>
         )}
+        {/* Map all of the tags into a chip to show to the user */}
         <ThemeProvider theme={chipTheme}>
           <div className={classes.tagsContainer}>
-            {product.tags.map(
+            {tags.map(
               (tag: string, i: number): JSX.Element => (
                 <Chip
                   key={i}
                   size="small"
                   className={classes.chip}
+                  // change the color based on the productType
                   color={productType === "Creates" ? "primary" : "secondary"}
                   label={tag}
                 />
@@ -201,66 +219,82 @@ const ViewProduct: React.FC<ViewProps> = ({
             )}
           </div>
         </ThemeProvider>
-        <div
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: product.description }}
-          style={{ marginBottom: 10 }}
-        />
-        <Divider style={{ marginBottom: 16 }} variant="middle" />
-        <Grid container spacing={2} alignItems="center" justify="center">
-          <Grid item xs={12} sm={7}>
-            <ImageGallery items={images} thumbnailPosition="left" />
-          </Grid>
-          <Grid item xs={12} sm={5}>
-            <ViewVariants
-              variants={product.variants}
-              customOptions={product.customOptions}
-              type={product.type}
-            />
-          </Grid>
+      </div>
+      {/* Set the jsx from description to innerHTML of the description div */}
+      <div
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: description }}
+        style={{ marginBottom: 10 }}
+      />
+      <Divider style={{ marginBottom: 16 }} variant="middle" />
+      <Grid container spacing={2} alignItems="center" justify="center">
+        <Grid item xs={12} sm={7} style={{ marginBottom: 30 }}>
+          {/* Render the images from the product */}
+          <ImageGallery
+            items={images}
+            thumbnailPosition="left"
+            showNav={images.length > 1}
+            showPlayButton={images.length > 1}
+          />
         </Grid>
-        <Divider style={{ marginTop: 16 }} variant="middle" />
-        <div className={classes.buttonContainer}>
-          {sub ? (
-            product.setPrice ? (
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={handleAddToBasket}
-                startIcon={<i className={`fas fa-shopping-cart ${classes.viewIcon}`} />}
-              >
-                Add to Basket
-              </Button>
+        <Grid item xs={12} sm={5} style={{ marginBottom: 30 }}>
+          {/* Describe the product and show variants in ViewVariants component */}
+          <ViewVariants variants={variants} customOptions={customOptions} type={type} />
+          <div className={classes.buttonContainer}>
+            {sub ? (
+              /**
+               * If there is a users' sub (user is logged in) and setPrice is true, then
+               * a button to add the current item to the basket should be rendered
+               */
+              setPrice ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleAddToBasket}
+                  startIcon={<i className={`fas fa-shopping-cart ${classes.viewIcon}`} />}
+                >
+                  Add to Basket
+                </Button>
+              ) : (
+                /**
+                 * If there is no set price, then the user cannot add the item to the basket,
+                 * they must instead request a quote, so render a button for it.
+                 */
+                <Button
+                  color="primary"
+                  variant="contained"
+                  className={classes.button}
+                  // open the QuoteDialog component on click
+                  onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
+                  startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
+                >
+                  Request a Quote
+                </Button>
+              )
             ) : (
+              // If there is no sub, then the user isn't logged in, so they must first do that.
               <Button
-                color="primary"
                 variant="contained"
+                color="primary"
                 className={classes.button}
-                onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
-                startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
+                // redirect to login page on click
+                onClick={(): void => history.push("/login")}
+                startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
               >
-                Request a Quote
+                Login to Purchase
               </Button>
-            )
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={(): void => history.push("/login")}
-              startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
-            >
-              Login to Purchase
-            </Button>
-          )}
-        </div>
-      </Container>
+            )}
+          </div>
+        </Grid>
+      </Grid>
+      {/* Render the dialog to allow the user to request a quote */}
       <QuoteDialog
         open={quoteDialogOpen}
         onClose={(): void => setState({ ...state, quoteDialogOpen: false })}
+        cake={product.title}
       />
-    </>
+    </Container>
   );
 };
 

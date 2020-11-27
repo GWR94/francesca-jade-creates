@@ -19,6 +19,7 @@ export enum COLORS {
   BorderGray = "#C4C4C4",
   DisabledGray = "#BABABA",
   AltBorderGray = "#dadada",
+  PaleWhite = "#fcfcfc",
   TextGray = "#828282",
   SuccessGreen = "#4caf50",
   LightGreen = "#59cf5e",

@@ -7,16 +7,20 @@ const breakpoints = createBreakpoints({});
 export default createStyles({
   container: {
     fontFamily: FONTS.Title,
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    // minHeight: "calc(100vh - 54px)",
     justifyContent: "space-evenly",
     width: 980,
     margin: "0 auto",
     paddingTop: 20,
     [breakpoints.down("md")]: {
-      width: "100%",
-    },
-    [breakpoints.down("sm")]: {
       width: "90%",
     },
+  },
+  title: {
+    marginBottom: 8,
   },
   tagline: {
     textAlign: "center",
@@ -42,11 +46,10 @@ export default createStyles({
     marginRight: 5,
   },
   buttonContainer: {
+    marginTop: 30,
     display: "flex",
     justifyContent: "center",
     width: "100%",
   },
-  button: {
-    margin: "10px 10px 30px",
-  },
+  button: {},
 });

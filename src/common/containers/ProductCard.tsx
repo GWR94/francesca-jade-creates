@@ -220,28 +220,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   margin: "auto auto 6px auto",
                 }}
               />
-              <Skeleton
-                animation="wave"
-                height={10}
-                width="80%"
-                style={{
-                  margin: "auto auto 6px auto",
-                }}
-              />
             </div>
           ) : (
-            <>
-              <p className={classes.price}>{handleGetPrices()}</p>
-              {tags && (
-                <div
-                  style={{
-                    marginBottom: 10,
-                  }}
-                >
-                  <ChipContainer type={type} tags={tags} />
-                </div>
-              )}
-            </>
+            <p className={classes.price}>{handleGetPrices()}</p>
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image

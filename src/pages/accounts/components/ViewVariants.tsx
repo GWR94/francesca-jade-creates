@@ -13,19 +13,7 @@ import _ from "underscore";
 import { v4 as uuidv4 } from "uuid";
 import { Feature, Variant } from "../interfaces/Variants.i";
 import styles from "../styles/viewVariants.style";
-
-interface ViewVariantsProps {
-  // array of
-  variants: Variant[];
-  customOptions: string[];
-  type: "Cake" | "Creates";
-}
-
-interface ViewVariantsState {
-  currentVariant: Variant | null;
-  variantIdx: string;
-  userShouldPickVariant: boolean;
-}
+import { ViewVariantsProps, ViewVariantsState } from "../interfaces/ViewVariants.i";
 
 /**
  * Functional component to view all of the variants of the chosen product, and all
@@ -70,7 +58,7 @@ const ViewVariants = ({
       <Typography variant="h6" style={{ textAlign: "center" }}>
         Product Description
       </Typography>
-      {userShouldPickVariant && (
+      {userShouldPickVariant && variants.length > 1 && (
         <div>
           <Typography variant="subtitle2">
             Please select a variant to view the product details.
@@ -139,12 +127,28 @@ const ViewVariants = ({
                 </Typography>
               </div>
             </div>
-            <Typography className={classes.title}>Customisable Features</Typography>
-            <ul style={{ margin: 0, paddingLeft: 33 }}>
-              {currentVariant.features.map((feature) => {
-                return <li style={{ fontStyle: "italic" }}>{feature.name}</li>;
-              })}
-            </ul>
+            {currentVariant.features.length > 0 && (
+              <div style={{ marginBottom: 6 }}>
+                <Typography className={classes.title}>Customisable Features</Typography>
+                <ul style={{ margin: 0, paddingLeft: 33 }}>
+                  {currentVariant.features.map((feature) => {
+                    return <li style={{ fontStyle: "italic" }}>{feature.name}</li>;
+                  })}
+                </ul>
+              </div>
+            )}
+            {customOptions.length > 0 && (
+              <>
+                <Typography className={classes.title}>
+                  {type === "Creates" ? "Color Scheme" : "Cake Features"}
+                </Typography>
+                <ul style={{ margin: 0, paddingLeft: 33 }}>
+                  {customOptions.map((option) => {
+                    return <li style={{ fontStyle: "italic" }}>{option}</li>;
+                  })}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       )}

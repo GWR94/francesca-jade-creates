@@ -10,7 +10,6 @@ export interface UpdateProps {
     [key: string]: string;
   };
   setCurrentTab?: (tab: string) => void;
-  // type: "Cake" | "Creates";
 }
 
 export interface UpdateState {

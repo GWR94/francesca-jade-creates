@@ -96,3 +96,24 @@ export const buttercreamArr = [
 ];
 
 export const dripArr = ["Milk Chocolate", "White Chocolate", "Dark Chocolate"];
+
+export const jamArr = [
+  "Apricot",
+  "Plum",
+  "Blueberry",
+  "Strawberry",
+  "Raspberry",
+  "Blackberry",
+  "Rhubarb",
+  "Lemon",
+  "Apple",
+  "Gooseberry",
+  "Blood Orange",
+  "Pineapple",
+  "Blackcurrant",
+  "Pumpkin",
+  "Redcurrant",
+  "Spiced Apple",
+];
+
+export const phoneNumberReg = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
