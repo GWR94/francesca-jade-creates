@@ -1,12 +1,13 @@
 export interface QuoteDialogState {
   email: string;
-  phoneNumber: string;
+  name: string;
   sponge: string;
   buttercream: string;
   drip: string;
   jam: string;
   size: CakeSize;
   requests: string;
+  isSubmitting: boolean;
   toppings: string;
   errors: {
     [key: string]: string;

@@ -19,17 +19,17 @@ import {
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
-import { MoreVert, AddShoppingCartOutlined } from "@material-ui/icons";
+import { MoreVert, AddShoppingCartOutlined, HelpOutline } from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
 import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
-import ChipContainer from "../inputs/ChipContainer";
 import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
+import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
 
 /**
  * TODO
@@ -72,7 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const classes = useStyles();
   // destructure product for ease of variable use
-  const { id, images, title, type, tags, tagline, variants } = product;
+  const { id, images, title, type, tagline, variants } = product;
   // boolean which shows/hides delete alert visibility
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
   // boolean which opens dropdown menu for admin options
@@ -83,6 +83,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const history = useHistory();
   // create anchorRef to allow a point to fit the anchor point for the menu
   const anchorRef = React.useRef<SVGSVGElement>(null);
+  // boolean value which controls quote dialog open/closed
+  const [quoteDialogOpen, setQuoteDialogOpen] = useState(false);
   // connect with redux via hook.
   const dispatch = useDispatch();
 
@@ -263,29 +265,37 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={(e): void => {
                 // stop propagation so there are no undesired effects
                 e.stopPropagation();
-                try {
-                  // dispatch the action to add current product to basket, and map the cover image to it.
-                  dispatch(
-                    actions.addToBasket({
-                      ...product,
-                      image: images.collection[images.cover],
-                    }),
-                  );
-                  // notify the user of successful action
-                  openSnackbar({
-                    message: `Added ${product.title} to basket.`,
-                    severity: "success",
-                  });
-                } catch (err) {
-                  // notify the user of failed action
-                  openSnackbar({
-                    message: `Unable to add ${product.title} to basket. Please try again.`,
-                    severity: "error",
-                  });
+                if (type === "Creates") {
+                  try {
+                    // dispatch the action to add current product to basket, and map the cover image to it.
+                    dispatch(
+                      actions.addToBasket({
+                        ...product,
+                        image: images.collection[images.cover],
+                      }),
+                    );
+                    // notify the user of successful action
+                    openSnackbar({
+                      message: `Added ${product.title} to basket.`,
+                      severity: "success",
+                    });
+                  } catch (err) {
+                    // notify the user of failed action
+                    openSnackbar({
+                      message: `Unable to add ${product.title} to basket. Please try again.`,
+                      severity: "error",
+                    });
+                  }
+                } else {
+                  setQuoteDialogOpen(true);
                 }
               }}
             >
-              <AddShoppingCartOutlined />
+              {type === "Cake" ? (
+                <HelpOutline fontSize="large" />
+              ) : (
+                <AddShoppingCartOutlined />
+              )}
             </Fab>
           </Tooltip>
         </CardContent>
@@ -350,6 +360,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </DialogActions>
           </Dialog>
+          <QuoteDialog
+            open={quoteDialogOpen}
+            onClose={(): void => setQuoteDialogOpen(false)}
+            cake={product.title}
+          />
         </>
       )}
     </>

@@ -135,7 +135,7 @@ export default createStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "20px 0",
+    paddingBottom: "20px",
   },
   priceTitle: {
     fontSize: "1.1rem",

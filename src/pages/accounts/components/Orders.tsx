@@ -54,7 +54,7 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   // initialise a variable to keep track of the current orders rendered in the component
   const [pages, setPages] = useState({
     min: 0,
-    max: desktop ? 10 : 5,
+    max: 12,
   });
   // initialise a variable to check which accordion component is expanded
   const [expanded, setExpanded] = useState<string | boolean>(false);
@@ -297,7 +297,7 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
       )}
       <Pagination
         dataLength={orders.length}
-        numPerPage={!desktop ? 5 : 10}
+        numPerPage={12}
         setPageValues={({ min, max }): void => setPages({ min, max })}
       />
     </div>

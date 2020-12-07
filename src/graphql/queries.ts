@@ -58,6 +58,7 @@ export const getUser = /* GraphQL */ `
                 id
                 stripePaymentIntent
                 createdAt
+                stripeOrderId
                 paymentStatus
                 orderProcessed
                 shipped
@@ -106,6 +107,7 @@ export const getUser = /* GraphQL */ `
             address_postcode
           }
           createdAt
+          stripeOrderId
           paymentStatus
           orderProcessed
           userInfo {
@@ -264,6 +266,7 @@ export const listOrders = /* GraphQL */ `
                 address_postcode
               }
               createdAt
+              stripeOrderId
               paymentStatus
               orderProcessed
               userInfo {
@@ -331,6 +334,7 @@ export const listOrders = /* GraphQL */ `
           address_postcode
         }
         createdAt
+        stripeOrderId
         paymentStatus
         orderProcessed
         userInfo {
@@ -463,12 +467,14 @@ export const searchProducts = /* GraphQL */ `
     $sort: SearchableProductSortInput
     $limit: Int
     $nextToken: String
+    $from: Int
   ) {
     searchProducts(
       filter: $filter
       sort: $sort
       limit: $limit
       nextToken: $nextToken
+      from: $from
     ) {
       items {
         id

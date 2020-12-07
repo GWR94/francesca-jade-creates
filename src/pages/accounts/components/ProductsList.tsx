@@ -42,7 +42,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     isLoading: true,
     page: {
       min: 0,
-      max: window.innerWidth > 600 ? 12 : 6,
+      max: desktop ? 12 : 6,
     },
     // nextToken: undefined,
     // nextNextToken: undefined,
@@ -150,7 +150,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
       {results && results.length > 12 && (
         <Pagination
           dataLength={results.length}
-          numPerPage={desktop ? 12 : 6}
+          numPerPage={12}
           setPageValues={({ min, max }): void =>
             setState({ ...state, page: { min, max } })
           }

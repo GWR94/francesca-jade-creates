@@ -10,6 +10,7 @@ import {
   Stepper,
   Step,
   StepLabel,
+  CircularProgress,
 } from "@material-ui/core";
 import { InfoOutlined } from "@material-ui/icons";
 import { AppState } from "../../store/store";
@@ -21,7 +22,7 @@ import styles from "./styles/basket.style";
 import { CustomOptionArrayType, BasketProps, BasketState } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
 import { COLORS, INTENT } from "../../themes";
-import { createOrder } from "../../graphql/mutations";
+import { createOrder, updateOrder } from "../../graphql/mutations";
 import { UserState } from "../../reducers/user.reducer";
 import { getUser } from "../../graphql/queries";
 import { BasketState as BasketStoreState } from "../../reducers/basket.reducer";
@@ -42,6 +43,7 @@ if (process.env.NODE_ENV === "production") {
  * [ ] Fix accordion not closing/opening once completed
  * [ ] Fix single image throwing error when uploaded alone
  * [ ] Fix payment error showing up when first loading success page
+ * [ ] Fix delete button causing error
  */
 
 /**
@@ -114,11 +116,6 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
    * data, and creates a checkout session where the user can complete payment.
    */
   const handleCreateCheckout = async (): Promise<void> => {
-    const compressedKey = getCompressedKey(products[0].image.key);
-    const url = getSignedS3Url(compressedKey);
-
-    console.log(url);
-    return;
     const { user } = state;
     try {
       // show ui loading effects
@@ -147,6 +144,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           message: "Unable to create session. Please try again.",
         });
       }
+
       /**
        * create an input object for creating a new order with the graphql createOrder
        * mutation. Other fields will be added to the database (such as stripePaymentIntent
@@ -176,11 +174,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
       // execute the createOrder mutation with the input as the parameter.
       await API.graphql(graphqlOperation(createOrder, { input }));
 
-      /**
-       * if there was no issue with the mutation, execute the lambda function
-       * which creates a checkout session so the user can purchase their items.
-       */
-      const response = await API.post("orderlambda", "/orders/create-checkout-session", {
+      const params = {
         body: {
           products: updatedProducts.map((product) => ({
             ...product,
@@ -194,11 +188,34 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           email,
           orderId,
         },
-      });
+      };
+
+      /**
+       * if there was no issue with the mutation, execute the lambda function
+       * which creates a checkout session so the user can purchase their items.
+       */
+      const response = await API.post(
+        "orderlambda",
+        "/orders/create-checkout-session",
+        params,
+      );
+      try {
+        await API.graphql(
+          graphqlOperation(updateOrder, {
+            input: {
+              id: orderId,
+              stripeOrderId: response.id,
+            },
+          }),
+        );
+      } catch (err) {
+        console.error(err);
+      }
       // pass the session's id to stripe so it can be viewed by the user.
       const result = await stripe?.redirectToCheckout({
         sessionId: response.id,
       });
+
       // if there are any errors, notify the user.
       if (result?.error) {
         openSnackbar({
@@ -218,7 +235,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   };
 
   const getStepContent = (stepIndex: number): JSX.Element | null => {
-    const { currentIdx, activeStep } = state;
+    const { currentIdx, activeStep, isSubmitting } = state;
     switch (stepIndex) {
       /**
        * the first step is the user confirms the products in their basket,
@@ -228,9 +245,10 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         return (
           <div className={classes.itemContainer}>
             <>
-              <Typography variant="subtitle1">
+              <Typography variant="subtitle1" style={{ marginBottom: 12 }}>
                 Please confirm each of the items in your basket, and choose the variant
-                you wish to purchase, if necessary.
+                you wish to purchase, if necessary. Then please complete all of the
+                required fields to personalise your product.
               </Typography>
               <Typography style={{ marginBottom: 4 }}>
                 Confirm product <strong>{currentIdx + 1}</strong> of {basketItems.length}:
@@ -309,7 +327,11 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 variant="contained"
                 className={classes.button}
               >
-                Purchase Items
+                {isSubmitting ? (
+                  <CircularProgress color="inherit" style={{ color: "#fff" }} size={20} />
+                ) : (
+                  "Purchase Items"
+                )}
               </Button>
             </div>
           </div>

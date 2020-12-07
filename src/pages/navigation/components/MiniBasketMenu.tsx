@@ -16,7 +16,7 @@ interface MiniBasketProps {
   closeNav: () => void;
 }
 
-const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
+const MiniBasketMenu: React.FC<MiniBasketProps> = ({
   basketOpen,
   basketRef,
   setBasketOpen,
@@ -47,14 +47,19 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
     >
       <div className={classes.basket}>
         <Typography
-          variant="h6"
-          style={{ textAlign: "center", margin: 0, fontWeight: "bold" }}
+          variant="h5"
+          style={{
+            textAlign: "center",
+            margin: "4px 0",
+            fontWeight: "bold",
+            fontSize: "1.4rem",
+          }}
         >
           Basket
         </Typography>
         {items.length > 0 ? (
           items.map((item, i) => (
-            <div style={{ display: "flex", marginRight: 22 }} key={i}>
+            <div key={i} style={{ display: "flex" }}>
               <Typography style={{ width: "100%" }}>{item.title}</Typography>
               <i
                 className={`fas fa-times ${classes.basketDelete}`}
@@ -72,7 +77,8 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
         <div
           style={{
             display: "flex",
-            justifyContent: "space-around",
+            justifyContent: "center",
+            marginTop: 10,
           }}
         >
           <Button
@@ -86,18 +92,6 @@ const MiniBasketMenu: React.SFC<MiniBasketProps> = ({
             }}
           >
             View Basket
-          </Button>
-          <Button
-            size="small"
-            color="primary"
-            onClick={(): void => {
-              history.push("/checkout");
-              closeNav();
-              setBasketOpen(false);
-              setMenuOpen(false);
-            }}
-          >
-            Checkout
           </Button>
         </div>
       </div>

@@ -45,6 +45,7 @@ export default createStyles({
     fontFamily: FONTS.Title,
     justifyContent: "center",
     alignItems: "center",
+    boxSizing: "border-box",
     cursor: "pointer",
     color: "black !important",
     fontWeight: "bold",
@@ -53,7 +54,6 @@ export default createStyles({
     textTransform: "uppercase",
     "&:hover": {
       paddingTop: 2,
-      boxSizing: "border-box",
       textDecoration: "none",
       borderBottom: `2px solid ${COLORS.LightPink}`,
     },
@@ -74,6 +74,7 @@ export default createStyles({
     boxSizing: "border-box",
     textTransform: "uppercase",
     "&:hover": {
+      paddingBottom: 2,
       textDecoration: "none",
       borderBottom: `2px solid ${COLORS.LightPink}`,
     },

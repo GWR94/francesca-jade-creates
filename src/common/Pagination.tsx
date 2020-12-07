@@ -20,9 +20,10 @@ const useStyles = makeStyles({
 /**
  * Pagination component used for changing pages after a search of products has been
  * completed.
- * @param {number} page - the current page that the user is on
- * @param setPage - function to set the current page
- * @param maxPages - the maximum amount of pages available based on data.
+ * @param dataLength - the maximum amount of items the user can view
+ * @param numPerPage - the amount of orders that should be shown to the user
+ * @param setPageValues - function to set the page min & max values
+ * @param defaultPageNum? - the page to show when mounting
  */
 const Pagination: React.FunctionComponent<PaginationProps> = ({
   dataLength,
@@ -32,8 +33,9 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
 }): JSX.Element => {
   const classes = useStyles();
   const [page, setPage] = useState(defaultPageNum);
-  const maxPages = Math.ceil(dataLength / numPerPage);
   const desktop = useMediaQuery("(min-width: 600px)");
+  const numPage = desktop ? numPerPage : numPerPage / 2;
+  const maxPages = Math.ceil(dataLength / numPage);
   return (
     <div className={classes.container}>
       <Page
@@ -41,8 +43,8 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
         onChange={(_e: React.ChangeEvent<unknown>, value: number): void => {
           setPage(value);
           setPageValues({
-            min: value === 1 ? 0 : (value - 1) * numPerPage,
-            max: value === 1 ? 12 : (value - 1) * numPerPage + numPerPage,
+            min: value === 1 ? 0 : (value - 1) * numPage,
+            max: value === 1 ? numPage : (value - 1) * numPage + numPage,
           });
         }}
         shape="rounded"

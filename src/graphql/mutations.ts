@@ -229,6 +229,7 @@ export const registerUser = /* GraphQL */ `
                 id
                 stripePaymentIntent
                 createdAt
+                stripeOrderId
                 paymentStatus
                 orderProcessed
                 shipped
@@ -277,6 +278,7 @@ export const registerUser = /* GraphQL */ `
             address_postcode
           }
           createdAt
+          stripeOrderId
           paymentStatus
           orderProcessed
           userInfo {
@@ -406,6 +408,7 @@ export const updateUser = /* GraphQL */ `
                 id
                 stripePaymentIntent
                 createdAt
+                stripeOrderId
                 paymentStatus
                 orderProcessed
                 shipped
@@ -454,6 +457,7 @@ export const updateUser = /* GraphQL */ `
             address_postcode
           }
           createdAt
+          stripeOrderId
           paymentStatus
           orderProcessed
           userInfo {
@@ -642,6 +646,7 @@ export const createOrder = /* GraphQL */ `
               address_postcode
             }
             createdAt
+            stripeOrderId
             paymentStatus
             orderProcessed
             userInfo {
@@ -718,6 +723,7 @@ export const createOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
+      stripeOrderId
       paymentStatus
       orderProcessed
       userInfo {
@@ -847,6 +853,7 @@ export const updateOrder = /* GraphQL */ `
               address_postcode
             }
             createdAt
+            stripeOrderId
             paymentStatus
             orderProcessed
             userInfo {
@@ -923,6 +930,7 @@ export const updateOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
+      stripeOrderId
       paymentStatus
       orderProcessed
       userInfo {

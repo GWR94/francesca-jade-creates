@@ -43,11 +43,14 @@ interface BasketProps {
 }
 
 /**
- * TODO
- * [x] Fix individual image - set center
- * [ ] Set submitting to show ui loading effects
+ * Functional component to render one item (product) that is in the customers' shopping basket. The component
+ * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
+ * add their own customisable options for the product that they're attempting to purchase.
+ * @param item - the data for the current item that will be rendered inside the component
+ * @param currentIdx - the index for the current item in the items array
+ * @param items - the array of items (products), which hold all of the relevant data for each product
+ * @param setIndex - function to update the currentIdx in the parent component.
  */
-
 const BasketItem: React.FC<BasketProps> = ({
   item,
   currentIdx,

@@ -45,6 +45,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
     uploadedImage: null,
     currentImageFile: null,
     imageCompleted: false,
+    maxNumber: 0,
+    minNumber: 0,
   });
 
   /**
@@ -54,7 +56,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
    */
   useEffect(() => {
     const { featureType, inputType } = feature;
-    console.log(featureType, inputType);
     if (featureType === "text" && inputType !== "range") {
       setState({ ...state, currentInputValue: "" });
     } else {
@@ -63,34 +64,28 @@ const RenderInput: React.FC<RenderInputProps> = ({
     }
   }, [feature]);
 
+  useEffect(() => {
+    const { value } = feature;
+    const maxNumber = value.range?.[1]! ?? value.number!;
+    const minNumber = value.range?.[0]! ?? null;
+    setState({ ...state, maxNumber, minNumber });
+  }, []);
+
   // destructure all relevant data from state
   const { currentImageFile, confirmDialogOpen, currentInputValue, uploadedImage } = state;
   // destructure all relevant data from feature.
   const { featureType, inputType, value, name } = feature;
+  const { maxNumber, minNumber } = state;
 
   // initialise variable to store jsx in.
   let renderedFeature: JSX.Element | null = null;
-
-  // initialise min and max values
-  let maxNumber = -Infinity;
-  let minNumber = Infinity;
-  /**
-   * If the inputType is range, and a value for range exists, save the
-   * min and max to their respective values.
-   */
-  if (inputType === "range" && value.range !== undefined) {
-    maxNumber = value.range[1];
-    minNumber = value.range[0];
-  } else if (inputType === "number" && value.number !== undefined) {
-    // if the inputType is number, set the number to be maxNumber.
-    maxNumber = value.number;
-  }
 
   /**
    * Function to check if the user has input the recommended amount of
    * images, based on the max range or number set for the current feature.
    */
   const checkImageCompletion = (): void => {
+    const { maxNumber } = state;
     /**
      * store the currentInputValue into a variable, and cast it to S3ImageProps[]
      * so the array length can be checked.
@@ -157,6 +152,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 }}
                 placeholder="Press enter to add an item"
                 onAdd={(chip): void => {
+                  console.log(maxNumber);
                   if ((currentInputValue as string[]).length < maxNumber) {
                     const updatedInputValue = currentInputValue as string[];
                     updatedInputValue.push(chip);

@@ -46,13 +46,13 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
  * URL for.
  * @param level - protection level - i.e public, private or protected.
  */
-export const getSignedS3Url = async (key: string, level = "public"): Promise<string> => {
-  const credentials = await Auth.currentCredentials();
+export const getSignedS3Url = (key: string, level = "public"): string => {
   const s3 = new AWS.S3({
     endpoint: "s3-eu-west-2.amazonaws.com",
     signatureVersion: "v4",
     region: "eu-west-2",
-    credentials,
+    accessKeyId: process.env.ACCESS_KEY_AWS,
+    secretAccessKey: process.env.SECRET_KEY_AWS,
   });
 
   const url = s3.getSignedUrl("getObject", {

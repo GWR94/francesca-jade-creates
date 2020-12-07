@@ -36,7 +36,16 @@ class AccountsPage extends Component<AccountPageProps, {}> {
   private deleteProductListener: PushSubscription;
   private updateProductListener: PushSubscription;
 
-  public componentDidMount(): void {
+  public constructor(props: AccountPageProps) {
+    super(props);
+    const { setCurrentTab } = this.props;
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get("page");
+    if (page && page !== "adminOrders") {
+      setCurrentTab!(page as CurrentTabTypes);
+      // remove query from url
+      window.history.pushState({}, document.title, window.location.pathname);
+    }
     const { admin } = this.props;
     if (admin) this.handleSubscriptions();
   }

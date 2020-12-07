@@ -1,4 +1,4 @@
-import { API, graphqlOperation } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import AWS from "aws-sdk";
 import {
@@ -26,6 +26,7 @@ import {
 } from "@material-ui/core";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { useSelector } from "react-redux";
 import {
   AttachMoney,
   CancelScheduleSend,
@@ -38,6 +39,16 @@ import { S3ImageProps } from "../interfaces/Product.i";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import styles from "../styles/orders.style";
 import { COLORS } from "../../../themes";
+import { AppState } from "../../../store/store";
+import Pagination from "../../../common/Pagination";
+
+/**
+ * TODO
+ * [ ] Fix shipping references title overflowing in dialog
+ * [ ] Allow two of the same inputs for chip on Orders
+ * [x] Add loading UI spinner to purchase items button in Orders
+ * [ ] Fix success page
+ */
 
 /**
  * Functional component to render a table of all of the orders that have been
@@ -56,27 +67,42 @@ const AdminOrders = (): JSX.Element => {
    */
   const getOrders = async (): Promise<void> => {
     const { data } = await API.graphql(graphqlOperation(listOrders));
-    setOrders(data.listOrders.items);
+    const items: any[] = data.listOrders.items;
+    const sorted = items.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+    setOrders(sorted);
   };
 
-  // the index of the current expanded accordion which is open (false if nothing is open)
-  const [expanded, setExpanded] = useState<string | boolean>(false);
-  // boolean value to show/hide loading UI effects
-  const [isLoading, setLoading] = useState<boolean>(false);
-  // boolean value to determine if the shipping dialog is open
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  // value to hold the current selected value on the tracking select.
-  const [trackingSelect, setTrackingInfo] = useState<string>("");
-  // value to hold the current input value
-  const [inputValue, setInputValue] = useState<string>("");
-  // value to track the current tracking array values.
-  const [trackingArray, setMultipleTracking] = useState<{ [key: string]: string }[]>([]);
-  // state to keep track of the current order
-  const [currentOrder, setCurrentOrder] = useState<OrderProps | null>(null);
-  // value to hold any potential errors
-  const [inputError, setInputError] = useState<string>("");
-  // boolean value to show/hide loading UI effects while sending email
-  const [isSending, setSending] = useState<boolean>(false);
+  interface AdminOrdersState {
+    expanded: boolean | string;
+    isLoading: boolean;
+    dialogOpen: boolean;
+    trackingSelect: string;
+    inputValue: string;
+    trackingArray: { [key: string]: string }[];
+    currentOrder: OrderProps | null;
+    inputError: string;
+    isSending: boolean;
+    showPages: {
+      min: number;
+      max: number;
+    };
+  }
+
+  const [state, setState] = useState<AdminOrdersState>({
+    expanded: false,
+    isLoading: false,
+    dialogOpen: false,
+    trackingSelect: "",
+    inputValue: "",
+    trackingArray: [],
+    currentOrder: null,
+    inputError: "",
+    isSending: false,
+    showPages: {
+      min: 0,
+      max: 12,
+    },
+  });
 
   let isMounted = false;
   useEffect(() => {
@@ -91,6 +117,8 @@ const AdminOrders = (): JSX.Element => {
       isMounted = false;
     };
   }, []);
+
+  const { username } = useSelector(({ user }: AppState) => user);
 
   // extend localizedFormat extension for dayjs to format dates correctly
   dayjs.extend(localizedFormat);
@@ -123,7 +151,7 @@ const AdminOrders = (): JSX.Element => {
     isExpanded: boolean,
   ): void => {
     // Opens panel if its closed, or closes it if it's open.
-    setExpanded(isExpanded ? panel : false);
+    setState({ ...state, expanded: isExpanded ? panel : false });
   };
 
   /**
@@ -229,21 +257,21 @@ const AdminOrders = (): JSX.Element => {
    * orderProcessed was true, it will now be false, and vice versa.
    * @param order - The order to update with the updated order values.
    */
-  const handleSetOrder = (order: OrderProps): void => {
+  const handleSetOrder = async (order: OrderProps): Promise<void> => {
     try {
       // set loading to true so loading UI effects are shown to user
-      setLoading(true);
+      setState({ ...state, isLoading: true });
       // set a timeout so UI effects don't instantly stop
+      // execute lambda function to update the database
+      await API.post("orderlambda", "/orders/set-order-processing", {
+        body: {
+          isProcessed: order.orderProcessed ? !order.orderProcessed : true,
+          orderId: order.id,
+        },
+      });
       setTimeout(async () => {
-        // execute lambda function to update the database
-        await API.post("orderlambda", "/orders/set-order-processing", {
-          body: {
-            isProcessed: order.orderProcessed ? !order.orderProcessed : true,
-            orderId: order.id,
-          },
-        });
         // set loading to be false to remove UI loading effects
-        setLoading(false);
+        setState({ ...state, isLoading: false });
         // reload the window to show updated data to user
         window.location.reload();
       }, 1000);
@@ -258,12 +286,15 @@ const AdminOrders = (): JSX.Element => {
    * to it's initial (empty) values.
    */
   const closeDialog = (): void => {
-    // close the dialog
-    setDialogOpen(false);
-    // set array to be empty
-    setMultipleTracking([]);
-    // set input to be an empty string
-    setInputValue("");
+    setState({
+      ...state,
+      // close the dialog
+      dialogOpen: false,
+      // set array to be empty
+      trackingArray: [],
+      // set input to be an empty string
+      inputValue: "",
+    });
   };
 
   /**
@@ -274,35 +305,45 @@ const AdminOrders = (): JSX.Element => {
    * the confirmation email.
    */
   const handleSendConfirmation = async (order: OrderProps): Promise<void> => {
+    const { trackingArray, inputValue } = state;
     try {
       // set sending to true so loading UI effects are shown
-      setSending(true);
-      // execute the lambda function with relevant data from state
-      const response = await API.post(
-        "orderlambda",
-        "/orders/send-shipping-information",
-        {
-          body: {
-            // add order to body
-            order,
-            trackingInfo:
-              // if there is an array of tracking numbers, use that
-              trackingArray.length > 0
-                ? trackingArray
-                : // else if there is a value for an individual tracking number, use it
-                inputValue.length > 0
-                ? inputValue
-                : // return null if theres neither an array nor value
-                  null,
+      setState({ ...state, isSending: true });
+
+      const getSum = (total: number, product: GraphQlProduct): number =>
+        total + product.price * 100 + product.shippingCost * 100;
+
+      const cost = order.products.reduce(getSum, 0) / 100;
+      try {
+        const response = await API.post(
+          "orderlambda",
+          "/orders/send-shipping-information",
+          {
+            body: {
+              // add order to body
+              order,
+              trackingInfo:
+                // if there is an array of tracking numbers, use that
+                trackingArray.length > 0
+                  ? trackingArray
+                  : // else if there is a value for an individual tracking number, use it
+                  inputValue.length > 0
+                  ? inputValue
+                  : // return null if theres neither an array nor value
+                    null,
+              username,
+              cost,
+            },
           },
-        },
-      );
+        );
+        console.log(response);
+      } catch (err) {
+        console.error(err);
+      }
       // remove loading UI effects
-      setSending(false);
+      setState({ ...state, isSending: false });
       // close the dialog
       closeDialog();
-      // FIXME - should be removed after testing
-      console.log(response);
     } catch (err) {
       // FIXME - should be removed after testing
       console.error(err);
@@ -316,6 +357,7 @@ const AdminOrders = (): JSX.Element => {
    * to.
    */
   const renderShippingInput = (order: OrderProps): JSX.Element | null => {
+    const { trackingSelect, inputValue, trackingArray, inputError } = state;
     let jsx: JSX.Element | null = null;
     switch (trackingSelect) {
       // if trackingSelect is "all" render a single text field
@@ -325,8 +367,12 @@ const AdminOrders = (): JSX.Element => {
             variant="outlined"
             label="Tracking Number"
             value={inputValue}
+            error={!!inputError}
+            helperText={inputError}
             fullWidth
-            onChange={(e): void => setInputValue(e.target.value)}
+            onChange={(e): void => {
+              setState({ ...state, inputValue: e.target.value, inputError: "" });
+            }}
             style={{ marginTop: 8 }}
           />
         );
@@ -345,10 +391,11 @@ const AdminOrders = (): JSX.Element => {
                 // set label to be the current products title
                 label={`${order.products[trackingArray.length].title}`}
                 onChange={(e): void => {
-                  // remove any errors when the input value is updated
-                  setInputError("");
-                  // set the input value into state
-                  setInputValue(e.target.value);
+                  setState({
+                    ...state,
+                    inputError: "",
+                    inputValue: e.target.value,
+                  });
                 }}
                 value={inputValue}
                 // only show errors if there are errors present
@@ -363,26 +410,31 @@ const AdminOrders = (): JSX.Element => {
                 onClick={(): void => {
                   const title = order.products[trackingArray.length].title;
                   if (!trackingArray.length) {
-                    setMultipleTracking([
-                      ...trackingArray,
-                      {
-                        [title]: inputValue,
-                      },
-                    ]);
-                    setInputValue("");
-                    return;
+                    return setState({
+                      ...state,
+                      trackingArray: [
+                        ...trackingArray, // FIXME - test removal
+                        {
+                          [title]: inputValue,
+                        },
+                      ],
+                      inputValue: "",
+                    });
                   }
                   trackingArray.forEach((tracking) => {
                     if (
                       Object.keys(tracking).findIndex((item) => item === title) === -1
                     ) {
-                      setMultipleTracking([
-                        ...trackingArray,
-                        {
-                          [title]: inputValue,
-                        },
-                      ]);
-                      setInputValue("");
+                      setState({
+                        ...state,
+                        trackingArray: [
+                          ...trackingArray,
+                          {
+                            [title]: inputValue,
+                          },
+                        ],
+                        inputValue: "",
+                      });
                     }
                   });
                 }}
@@ -402,6 +454,20 @@ const AdminOrders = (): JSX.Element => {
     return jsx;
   };
 
+  // destructure values from state for use in component
+  const {
+    expanded,
+    isLoading,
+    dialogOpen,
+    currentOrder,
+    trackingSelect,
+    trackingArray,
+    isSending,
+    showPages: { min, max },
+  } = state;
+
+  const mobile = useMediaQuery("(max-width: 600px)");
+
   return (
     <>
       <Container>
@@ -417,7 +483,7 @@ const AdminOrders = (): JSX.Element => {
             </Grid>
           </AccordionSummary>
         </Accordion>
-        {orders.map((order, i) => {
+        {orders.slice(min, max).map((order, i) => {
           return (
             <Accordion
               expanded={expanded === `panel${i}`}
@@ -552,7 +618,7 @@ const AdminOrders = (): JSX.Element => {
                   variant="contained"
                   color="secondary"
                   className={classes.paymentButton}
-                  onClick={(): void => handleSetOrder(order)}
+                  onClick={(): void => setState({ ...state, currentOrder: order })}
                   disabled={order.paymentStatus !== "paid"}
                   size="small"
                 >
@@ -575,8 +641,11 @@ const AdminOrders = (): JSX.Element => {
                   className={classes.paymentButton}
                   disabled={order.paymentStatus !== "paid"}
                   onClick={(): void => {
-                    setCurrentOrder(order);
-                    setDialogOpen(true);
+                    setState({
+                      ...state,
+                      currentOrder: order,
+                      dialogOpen: true,
+                    });
                   }}
                 >
                   Add Shipping Info
@@ -585,6 +654,13 @@ const AdminOrders = (): JSX.Element => {
             </Accordion>
           );
         })}
+        <Pagination
+          dataLength={orders.length}
+          numPerPage={mobile ? 6 : 12}
+          setPageValues={({ min, max }): void =>
+            setState({ ...state, showPages: { ...state.showPages, min, max } })
+          }
+        />
       </Container>
       <Dialog
         open={dialogOpen && currentOrder !== null}
@@ -599,7 +675,9 @@ const AdminOrders = (): JSX.Element => {
               <InputLabel>Tracking Data</InputLabel>
               <Select
                 value={trackingSelect}
-                onChange={(e): void => setTrackingInfo(e.target.value as string)}
+                onChange={(e): void =>
+                  setState({ ...state, trackingSelect: e.target.value as string })
+                }
                 label="Tracking Data"
                 fullWidth
               >
@@ -620,10 +698,13 @@ const AdminOrders = (): JSX.Element => {
                   <i
                     className={`fas fa-times animated pulse infinite ${classes.deleteIcon}`}
                     onClick={(): void =>
-                      setMultipleTracking([
-                        ...trackingArray.slice(0, i),
-                        ...trackingArray.slice(i + 1),
-                      ])
+                      setState({
+                        ...state,
+                        trackingArray: [
+                          ...trackingArray.slice(0, i),
+                          ...trackingArray.slice(i + 1),
+                        ],
+                      })
                     }
                     tabIndex={0}
                     role="button"
