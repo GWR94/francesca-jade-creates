@@ -28,6 +28,7 @@ import RenderInput from "./RenderInput";
  * [x] Add styles to delete product dialog
  * [ ] Check the images are deleting from s3 when removing them from array
  * [ ] Notify the user images will be lost if navigating away from accordion
+ * [ ] Remove ability to highlight unnecessary text
  */
 
 /**

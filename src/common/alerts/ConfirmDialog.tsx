@@ -89,7 +89,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             }}
           />
         ) : (
-          <ImageCarousel images={images.collection} type={type} />
+          <ImageCarousel images={images.collection} cover={images.cover} type={type} />
         )}
         <DialogActions>
           <Button color="secondary" onClick={closeModal} style={{ margin: "6px 4px" }}>

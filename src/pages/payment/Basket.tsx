@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API, Auth, graphqlOperation } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -12,6 +12,7 @@ import {
   StepLabel,
   CircularProgress,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import { InfoOutlined } from "@material-ui/icons";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
@@ -37,13 +38,12 @@ if (process.env.NODE_ENV === "production") {
 
 /**
  * TODO
- * [ ] Fix image sent to stripe
- * [ ] Switch yes and no buttons around for image confirm dialog
- * [ ] Fix basket
- * [ ] Fix accordion not closing/opening once completed
- * [ ] Fix single image throwing error when uploaded alone
- * [ ] Fix payment error showing up when first loading success page
+ * [x] Fix basket
+ * [ ] Create and link cancel page back to basket
+ * [x] Fix payment error showing up when first loading success page
  * [ ] Fix delete button causing error
+ * [ ] Fix accordion closing at wrong time
+ * [ ] Change confirm dialog title text for images
  */
 
 /**
@@ -78,10 +78,13 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     user: null,
     activeStep: 0,
     currentIdx: 0,
+    session: null,
   });
 
   // store the useDispatch hook into a variable so it can be used within the component
   const dispatch = useDispatch();
+  // store the useHistory hook into a variable so it can be used to navigate
+  const history = useHistory();
 
   /**
    * Function to retrieve the current authenticated users' data from the
@@ -99,11 +102,33 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   useEffect(() => {
     // set isMounted to true when the component mounts
     isMounted = true;
+
+    const handleRetrieveSession = async (sessionId: string): Promise<void> => {
+      const { session } = await API.post("orderlambda", "/orders/retrieve-session", {
+        body: { id: sessionId },
+      });
+      setState({
+        ...state,
+        session,
+        activeStep: session.payment_status === "paid" ? 2 : -1,
+        isLoading: false,
+      });
+      // remove session id from url
+      return window.history.pushState({}, document.title, window.location.pathname);
+    };
+
     if (isMounted) {
-      // clear the checkout basket when the user navigates to the page to clear up old data
-      dispatch(actions.clearCheckout()); // FIXME
-      // get the users' data and set it into state within the getUserInfo function
-      getUserInfo();
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get("session_id");
+      console.log(sessionId);
+      if (sessionId) {
+        handleRetrieveSession(sessionId);
+      } else {
+        // clear the checkout basket when the user navigates to the page to clear up old data
+        dispatch(actions.clearCheckout()); // FIXME
+        // get the users' data and set it into state within the getUserInfo function
+        getUserInfo();
+      }
     }
     return (): void => {
       isMounted = false;
@@ -245,10 +270,12 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         return (
           <div className={classes.itemContainer}>
             <>
-              <Typography variant="subtitle1" style={{ marginBottom: 12 }}>
-                Please confirm each of the items in your basket, and choose the variant
-                you wish to purchase, if necessary. Then please complete all of the
-                required fields to personalise your product.
+              <Typography variant="subtitle1" gutterBottom>
+                Please confirm each of the items in your basket, and if necessary choose
+                the variant you wish to purchase.
+              </Typography>
+              <Typography variant="subtitle1" style={{ marginBottom: 20 }}>
+                Please complete all of the required fields to personalise your product.
               </Typography>
               <Typography style={{ marginBottom: 4 }}>
                 Confirm product <strong>{currentIdx + 1}</strong> of {basketItems.length}:
@@ -337,8 +364,33 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           </div>
         );
       }
-      case 2:
-        return "Purchase items";
+      case 2: {
+        const { session } = state;
+        return (
+          <div className={classes.successContainer}>
+            <Typography variant="h4" gutterBottom>
+              Purchase Completed
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Thank you for your purchase!
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              You should receive a confirmation email at {session.customer_email} shortly.
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Your order ID is {session.metadata.orderId}
+            </Typography>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={(): void => history.push("/account?page=orders")}
+              style={{ width: 120 }}
+            >
+              Track Order
+            </Button>
+          </div>
+        );
+      }
       default:
         return null;
     }
@@ -351,7 +403,9 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   ) : (
     <div>
       <div className={classes.container}>
-        <Typography variant="h4">Shopping Basket</Typography>
+        <Typography variant="h4" style={{ marginTop: 10 }}>
+          Shopping Basket
+        </Typography>
         {basketItems.length > 0 ? (
           <>
             <Stepper activeStep={activeStep} alternativeLabel>

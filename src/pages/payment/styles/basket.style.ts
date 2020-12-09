@@ -80,6 +80,15 @@ export default createStyles({
       width: "95%",
     },
   },
+  successContainer: {
+    width: "100%",
+    display: "flex",
+    height: "100%",
+    flexDirection: "column",
+    minHeight: 400,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
   outerContainer: {
     display: "flex",
     flexDirection: "column",

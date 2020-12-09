@@ -1,4 +1,4 @@
-import { API, Auth, graphqlOperation } from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import AWS from "aws-sdk";
 import {
@@ -61,20 +61,9 @@ const AdminOrders = (): JSX.Element => {
   // initialise state to store orders in as an empty array (which will be filled when component mounts)
   const [orders, setOrders] = useState<OrderProps[]>([]);
 
-  /**
-   * Function to retrieve all of the latest orders via the graphql query "listOrders".
-   * This function will be executed when the component mounts
-   */
-  const getOrders = async (): Promise<void> => {
-    const { data } = await API.graphql(graphqlOperation(listOrders));
-    const items: any[] = data.listOrders.items;
-    const sorted = items.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
-    setOrders(sorted);
-  };
-
   interface AdminOrdersState {
     expanded: boolean | string;
-    isLoading: boolean;
+    isSettingStatus: boolean;
     dialogOpen: boolean;
     trackingSelect: string;
     inputValue: string;
@@ -82,6 +71,7 @@ const AdminOrders = (): JSX.Element => {
     currentOrder: OrderProps | null;
     inputError: string;
     isSending: boolean;
+    isLoading: boolean;
     showPages: {
       min: number;
       max: number;
@@ -90,7 +80,7 @@ const AdminOrders = (): JSX.Element => {
 
   const [state, setState] = useState<AdminOrdersState>({
     expanded: false,
-    isLoading: false,
+    isSettingStatus: false,
     dialogOpen: false,
     trackingSelect: "",
     inputValue: "",
@@ -98,20 +88,39 @@ const AdminOrders = (): JSX.Element => {
     currentOrder: null,
     inputError: "",
     isSending: false,
+    isLoading: true,
     showPages: {
       min: 0,
       max: 12,
     },
   });
 
+  /**
+   * Function to retrieve all of the latest orders via the graphql query "listOrders".
+   * This function will be executed when the component mounts
+   */
+  const getOrders = async (): Promise<void> => {
+    // retrieve the orders data via the listOrders graphql query
+    const { data } = await API.graphql(graphqlOperation(listOrders));
+    // store the actual items into a variable
+    const items: OrderProps[] = data.listOrders.items;
+    // sort the items via their createdAt data (descending)
+    const sorted = items.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+    // set orders into state
+    setOrders(sorted);
+    // create a small timeout so the spinner doesn't stop instantly if on fast connection
+    setTimeout(() => {
+      // remove loading UI effects
+      setState({ ...state, isLoading: false });
+    }, 500);
+  };
+
   let isMounted = false;
   useEffect(() => {
     // isMounted is used for suppressing react error of updating unmounted component
     isMounted = true;
-
     // if the component is mounted, execute the getOrders function
     if (isMounted) getOrders();
-
     return (): void => {
       // set isMounted to false when the component is unmounted.
       isMounted = false;
@@ -260,7 +269,7 @@ const AdminOrders = (): JSX.Element => {
   const handleSetOrder = async (order: OrderProps): Promise<void> => {
     try {
       // set loading to true so loading UI effects are shown to user
-      setState({ ...state, isLoading: true });
+      setState({ ...state, isSettingStatus: true });
       // set a timeout so UI effects don't instantly stop
       // execute lambda function to update the database
       await API.post("orderlambda", "/orders/set-order-processing", {
@@ -271,7 +280,7 @@ const AdminOrders = (): JSX.Element => {
       });
       setTimeout(async () => {
         // set loading to be false to remove UI loading effects
-        setState({ ...state, isLoading: false });
+        setState({ ...state, isSettingStatus: false });
         // reload the window to show updated data to user
         window.location.reload();
       }, 1000);
@@ -457,12 +466,13 @@ const AdminOrders = (): JSX.Element => {
   // destructure values from state for use in component
   const {
     expanded,
-    isLoading,
+    isSettingStatus,
     dialogOpen,
     currentOrder,
     trackingSelect,
     trackingArray,
     isSending,
+    isLoading,
     showPages: { min, max },
   } = state;
 
@@ -471,6 +481,7 @@ const AdminOrders = (): JSX.Element => {
   return (
     <>
       <Container>
+        {/* Create accordion to show the accordions values */}
         <Accordion expanded={false}>
           <AccordionSummary>
             <Grid container style={{ marginRight: 30 }}>
@@ -483,188 +494,223 @@ const AdminOrders = (): JSX.Element => {
             </Grid>
           </AccordionSummary>
         </Accordion>
-        {orders.slice(min, max).map((order, i) => {
-          return (
-            <Accordion
-              expanded={expanded === `panel${i}`}
-              onChange={handlePanelChange(`panel${i}`)}
-              key={i}
-              TransitionProps={{
-                unmountOnExit: true,
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreRounded />}
-                aria-controls={`panel${i}-content`}
-                id={`panel${i}-header`}
-                style={{ alignItems: "center" }}
+        {/* If isLoading is true, show the loading spinner while data is retrieved */}
+        {isLoading ? (
+          <CircularProgress
+            color="inherit"
+            style={{ color: "#000", display: "block", margin: "100px auto 80px" }}
+            size={60}
+          />
+        ) : (
+          // Map all of the orders into their own accordion component
+          orders.slice(min, max).map((order, i) => {
+            return (
+              <Accordion
+                expanded={expanded === `panel${i}`}
+                onChange={handlePanelChange(`panel${i}`)}
+                key={i}
+                TransitionProps={{
+                  unmountOnExit: true,
+                }}
               >
-                <Grid container style={{ marginRight: -30 }}>
-                  <Grid item xs={6}>
-                    <Typography className={classes.heading}>
-                      {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
-                    </Typography>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreRounded />}
+                  aria-controls={`panel${i}-content`}
+                  id={`panel${i}-header`}
+                  style={{ alignItems: "center" }}
+                >
+                  <Grid container style={{ marginRight: -30 }}>
+                    <Grid item xs={6}>
+                      <Typography className={classes.heading}>
+                        {/* Render a minimal format if the user is on mobile, full format if not */}
+                        {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={6}
+                      style={{ display: "flex", justifyContent: "center" }}
+                    >
+                      <div className={classes.secondaryHeading}>
+                        {/* If order is paid, render a green success chip */}
+                        {order.paymentStatus === "paid" ? (
+                          <Chip
+                            className={classes.chipSuccess}
+                            size="small"
+                            color="primary"
+                            label={desktop ? "Paid" : <AttachMoney />}
+                          />
+                        ) : (
+                          // If the order is not paid, render a red danger chip
+                          <Chip
+                            className={classes.chipDanger}
+                            size="small"
+                            color="secondary"
+                            label={desktop ? "Unpaid" : <MoneyOff />}
+                          />
+                        )}
+                        {/* If order is shipped, render a green success chip */}
+                        {order.shipped ? (
+                          <Chip
+                            className={classes.chipSuccess}
+                            size="small"
+                            color="primary"
+                            label={desktop ? "Shipped" : <Send />}
+                          />
+                        ) : (
+                          // If order is not shipped, render a red danger chip
+                          <Chip
+                            className={classes.chipDanger}
+                            size="small"
+                            color="secondary"
+                            label={desktop ? "Not Shipped" : <CancelScheduleSend />}
+                          />
+                        )}
+                      </div>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6} style={{ display: "flex", justifyContent: "center" }}>
-                    <div className={classes.secondaryHeading}>
-                      {order.paymentStatus === "paid" ? (
-                        <Chip
-                          className={classes.chipSuccess}
-                          size="small"
-                          color="primary"
-                          label={desktop ? "Paid" : <AttachMoney />}
-                        />
-                      ) : (
-                        <Chip
-                          className={classes.chipDanger}
-                          size="small"
-                          color="secondary"
-                          label={desktop ? "Unpaid" : <MoneyOff />}
-                        />
-                      )}
-                      {order.shipped ? (
-                        <Chip
-                          className={classes.chipSuccess}
-                          size="small"
-                          color="primary"
-                          label={desktop ? "Shipped" : <Send />}
-                        />
-                      ) : (
-                        <Chip
-                          className={classes.chipDanger}
-                          size="small"
-                          color="secondary"
-                          label={desktop ? "Not Shipped" : <CancelScheduleSend />}
-                        />
-                      )}
-                    </div>
-                  </Grid>
-                </Grid>
-              </AccordionSummary>
-              <div className={classes.detailsText}>
-                <Typography className={classes.orderId}>
-                  Total Cost:
-                  <span className={classes.data}>{getOrderPrice(order.products)}</span>
-                </Typography>
-                <Typography className={classes.orderId}>
-                  Order ID:
-                  <span className={classes.data}>{order.id}</span>
-                </Typography>
-              </div>
-              <AccordionDetails>
-                <Grid container spacing={desktop ? 1 : 0}>
-                  {order.products.map((product, i) => {
-                    const {
-                      title,
-                      price,
-                      shippingCost,
-                      variant,
-                      customOptions,
-                    } = product;
-                    const options: { [key: string]: string | string[] }[] = [];
-                    customOptions.forEach((option) => options.push(JSON.parse(option)));
-                    return (
-                      <Grid item xs={12} sm={order.products.length <= 1 ? 12 : 6} key={i}>
-                        <div key={i} className={classes.variantContainer}>
-                          <Typography
-                            className={classes.details}
-                            style={{ textAlign: "center", textDecoration: "underline" }}
-                          >
-                            {title}
-                          </Typography>
-                          <Typography className={classes.details}>
-                            Cost:{" "}
-                            <span className={classes.data}>
-                              £{price.toFixed(2)} + £{shippingCost.toFixed(2)} P&P
-                            </span>
-                          </Typography>
-                          <Typography className={classes.details}>
-                            {variant.dimensions}
-                          </Typography>
-                          <Typography className={classes.details}>
-                            Dimensions:{" "}
-                            <span className={classes.data}>{variant.dimensions}</span>
-                          </Typography>
-                          <div className={classes.buttonContainer}>
-                            {options.some((option) =>
-                              option?.hasOwnProperty("Images"),
-                            ) && (
-                              <Button
-                                variant="text"
-                                onClick={(): void => {
-                                  downloadProductImages(product);
-                                }}
-                                size="small"
-                                color="primary"
-                                style={{ marginTop: 12 }}
-                              >
-                                Download Custom Images
-                              </Button>
-                            )}
+                </AccordionSummary>
+                {/* Render all of the details from the order */}
+                <div className={classes.detailsText}>
+                  <Typography className={classes.orderId}>
+                    Total Cost:
+                    <span className={classes.data}>{getOrderPrice(order.products)}</span>
+                  </Typography>
+                  <Typography className={classes.orderId}>
+                    Order ID:
+                    <span className={classes.data}>{order.id}</span>
+                  </Typography>
+                </div>
+                <AccordionDetails>
+                  <Grid container spacing={desktop ? 1 : 0}>
+                    {order.products.map((product, i) => {
+                      const {
+                        title,
+                        price,
+                        shippingCost,
+                        variant,
+                        customOptions,
+                      } = product;
+                      const options: { [key: string]: string | string[] }[] = [];
+                      customOptions.forEach((option) => options.push(JSON.parse(option)));
+                      return (
+                        <Grid
+                          item
+                          xs={12}
+                          sm={order.products.length <= 1 ? 12 : 6}
+                          key={i}
+                        >
+                          <div key={i} className={classes.variantContainer}>
+                            <Typography
+                              className={classes.details}
+                              style={{ textAlign: "center", textDecoration: "underline" }}
+                            >
+                              {title}
+                            </Typography>
+                            <Typography className={classes.details}>
+                              Cost:{" "}
+                              <span className={classes.data}>
+                                £{price.toFixed(2)} + £{shippingCost.toFixed(2)} P&P
+                              </span>
+                            </Typography>
+                            <Typography className={classes.details}>
+                              {variant.dimensions}
+                            </Typography>
+                            <Typography className={classes.details}>
+                              Dimensions:{" "}
+                              <span className={classes.data}>{variant.dimensions}</span>
+                            </Typography>
+                            <div className={classes.buttonContainer}>
+                              {options.some((option) =>
+                                option?.hasOwnProperty("Images"),
+                              ) && (
+                                <Button
+                                  variant="text"
+                                  onClick={(): void => {
+                                    downloadProductImages(product);
+                                  }}
+                                  size="small"
+                                  color="primary"
+                                  style={{ marginTop: 12 }}
+                                >
+                                  Download Custom Images
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              </AccordionDetails>
-              {order.paymentStatus !== "paid" && (
-                <Typography className={classes.orderText}>
-                  Note: Order not paid (yet)
-                </Typography>
-              )}
-              <AccordionActions>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  className={classes.paymentButton}
-                  onClick={(): void => setState({ ...state, currentOrder: order })}
-                  disabled={order.paymentStatus !== "paid"}
-                  size="small"
-                >
-                  {isLoading ? (
-                    <CircularProgress
-                      size={20}
-                      style={{ color: "#fff" }}
-                      color="inherit"
-                    />
-                  ) : order.orderProcessed ? (
-                    "Set Unprocessed"
-                  ) : (
-                    "Set Processing"
-                  )}
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  className={classes.paymentButton}
-                  disabled={order.paymentStatus !== "paid"}
-                  onClick={(): void => {
-                    setState({
-                      ...state,
-                      currentOrder: order,
-                      dialogOpen: true,
-                    });
-                  }}
-                >
-                  Add Shipping Info
-                </Button>
-              </AccordionActions>
-            </Accordion>
-          );
-        })}
-        <Pagination
-          dataLength={orders.length}
-          numPerPage={mobile ? 6 : 12}
-          setPageValues={({ min, max }): void =>
-            setState({ ...state, showPages: { ...state.showPages, min, max } })
-          }
-        />
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </AccordionDetails>
+                {/* Notify the admin if the orders have not been paid for */}
+                {order.paymentStatus !== "paid" && (
+                  <Typography className={classes.orderText}>
+                    Note: Order not paid (yet)
+                  </Typography>
+                )}
+                {/* Render the items to control setting processing or sending tracking info */}
+                <AccordionActions>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.paymentButton}
+                    onClick={(): void => {
+                      if (currentOrder) handleSetOrder(currentOrder);
+                    }}
+                    disabled={order.paymentStatus !== "paid"}
+                    size="small"
+                  >
+                    {isSettingStatus ? (
+                      <CircularProgress
+                        size={20}
+                        style={{ color: "#fff" }}
+                        color="inherit"
+                      />
+                    ) : order.orderProcessed ? (
+                      "Set Unprocessed"
+                    ) : (
+                      "Set Processing"
+                    )}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    className={classes.paymentButton}
+                    disabled={order.paymentStatus !== "paid"}
+                    onClick={(): void => {
+                      setState({
+                        ...state,
+                        currentOrder: order,
+                        dialogOpen: true,
+                      });
+                    }}
+                  >
+                    Add Shipping Info
+                  </Button>
+                </AccordionActions>
+              </Accordion>
+            );
+          })
+        )}
+        {/* Render the pagination if there is more than 6 orders in array */}
+        {orders.length > 6 && (
+          <Pagination
+            dataLength={orders.length}
+            numPerPage={12}
+            setPageValues={({ min, max }): void =>
+              setState({ ...state, showPages: { ...state.showPages, min, max } })
+            }
+          />
+        )}
       </Container>
+      {/* Render Dialog that allows the admin to enter shipping information */}
       <Dialog
+        // only allow it to be open if the is a value in currentOrder and dialogOpen is true
         open={dialogOpen && currentOrder !== null}
         onClose={closeDialog}
+        // set fullscreen to true if screen width is less than 600px
         fullScreen={!desktop}
       >
         <DialogTitle>Enter Shipping References</DialogTitle>

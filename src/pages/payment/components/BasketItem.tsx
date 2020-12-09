@@ -21,26 +21,9 @@ import { RemoveItemAction } from "../../../interfaces/basket.redux.i";
 import { BasketItemProps, CustomOptionArrayType } from "../interfaces/Basket.i";
 import styles from "../styles/basket.style";
 import { AppState } from "../../../store/store";
-import { Variant } from "../../accounts/interfaces/Variants.i";
 import { COLORS } from "../../../themes";
 import BasketCustomOptions from "./BasketCustomOptions";
-
-interface BasketItemState {
-  isLoading: boolean;
-  currentVariant: Variant | null;
-  variantIndex: number | "";
-  customOptions: CustomOptionArrayType;
-  isCompleted: boolean;
-  expanded: boolean;
-  isEditing: boolean;
-}
-
-interface BasketProps {
-  item: BasketItemProps;
-  currentIdx: number;
-  items: BasketItemProps[];
-  setIndex: (num: number) => void;
-}
+import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
 /**
  * Functional component to render one item (product) that is in the customers' shopping basket. The component
@@ -56,7 +39,7 @@ const BasketItem: React.FC<BasketProps> = ({
   currentIdx,
   items,
   setIndex,
-}: BasketProps): JSX.Element => {
+}): JSX.Element => {
   const { id, variants } = item as BasketItemProps;
   const initialState: BasketItemState = {
     isLoading: true,

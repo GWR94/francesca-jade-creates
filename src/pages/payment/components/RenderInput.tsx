@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   makeStyles,
 } from "@material-ui/core";
@@ -481,16 +480,17 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     onClose={(): void => setState({ ...state, confirmDialogOpen: false })}
                   >
                     <DialogTitle>
-                      Do you want to have less than the recommended amount of images?
+                      Continue with {(currentInputValue as S3ImageProps[])?.length}{" "}
+                      images?
                     </DialogTitle>
                     <DialogContent>
-                      <DialogContentText>
+                      <Typography variant="subtitle1" gutterBottom>
                         You have uploaded {(currentInputValue as S3ImageProps[])?.length}{" "}
                         images, when the recommended is {maxNumber}.
-                      </DialogContentText>
-                      <DialogContentText>
+                      </Typography>
+                      <Typography variant="subtitle1" gutterBottom>
                         Do you want to continue with the current amount?
-                      </DialogContentText>
+                      </Typography>
                     </DialogContent>
                     <DialogActions>
                       <Button
@@ -615,7 +615,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
       return null;
   }
 
-  console.log(customOptions[i]);
   const current =
     typeof customOptions[i] === "object"
       ? // if the current customOptions index is an object, get the values from it with Object.values().

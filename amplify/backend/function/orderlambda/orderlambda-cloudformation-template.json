@@ -69,7 +69,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-francescajadecreates-staging-102644-deployment",
-          "S3Key": "amplify-builds/orderlambda-72675254504873393058-build.zip"
+          "S3Key": "amplify-builds/orderlambda-70794446784558633735-build.zip"
         }
       }
     },

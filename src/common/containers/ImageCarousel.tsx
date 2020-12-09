@@ -217,7 +217,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       });
     }
   };
-  const { keyToDelete, imageLoading, coverImageIdx } = state;
+  const { keyToDelete, coverImageIdx } = state;
   return (
     <>
       <div className={isCentered ? classes.centeredImageContainer : ""}>
