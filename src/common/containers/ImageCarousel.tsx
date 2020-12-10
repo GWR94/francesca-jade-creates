@@ -20,13 +20,6 @@ import DeleteImageDialog from "../alerts/DeleteImageDialog";
 import { getCompressedKey } from "../../utils";
 
 /**
- * TODO
- * [ ] Put tags inline in confirm dialog
- * [ ] Make sure all absolute positioned divs are below navbar
- * [x] Test deleting images without compressed version
- */
-
-/**
  * Class component for displaying, updating and removing images for a specific product's
  * images. Images will be rendered inside a carousel component, and will have the option
  * to delete and save as cover photo by clicking on the relevant icons on the image.

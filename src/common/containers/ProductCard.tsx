@@ -16,6 +16,7 @@ import {
   Menu,
   Fab,
   Tooltip,
+  Typography,
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
@@ -26,17 +27,10 @@ import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
-import { COLORS, INTENT } from "../../themes";
+import { COLORS, FONTS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
-
-/**
- * TODO
- * [ ] Check cover image index always changes if image is delete
- * [ ] Change ADD ANOTHER IMAGE to ADD IMAGE when theres no images in carousel
- * [ ] Change cover photos to photos in confirm dialog
- */
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -337,19 +331,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
               Delete Product
             </MenuItem>
           </Menu>
-          <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
-            <DialogTitle>
-              Delete &quot;
-              {title}
-              &quot;?
-            </DialogTitle>
+          <Dialog
+            open={deleteAlertOpen}
+            onClose={(): void => setDeleteAlert(false)}
+            style={{
+              fontFamily: `${FONTS.Title}, sans-serif`,
+              padding: "20px",
+              width: 400,
+              margin: "0 auto",
+            }}
+          >
+            <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
             <DialogContent>
-              <p>
+              <Typography variant="subtitle1" gutterBottom>
                 Are you sure you want to delete &quot;
                 {title}
                 &quot;?
-              </p>
-              <p>This cannot be undone.</p>
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                This cannot be undone.
+              </Typography>
+              <S3Image
+                imgKey={product.images.collection[product.images.cover].key}
+                theme={{
+                  photoImg: {
+                    width: 300,
+                    margin: "0 auto",
+                    display: "block",
+                  },
+                }}
+              />
             </DialogContent>
             <DialogActions>
               <Button color="primary" onClick={(): void => setDeleteAlert(false)}>

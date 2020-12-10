@@ -9,21 +9,27 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import Headroom from "react-headroom";
+import { useSelector } from "react-redux";
 import { MenuRounded } from "@material-ui/icons";
 import logo from "../../img/logo.png";
-import { NavbarDispatchProps } from "./interfaces/NavBar.i";
 import styles from "./styles/nav.style";
 import Links from "./components/Links";
+import { AppState } from "../../store/store";
+import { COLORS } from "../../themes";
+
+interface NavBarProps {
+  signOut: () => void;
+  admin: boolean;
+}
 
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
+ *
+ * TODO
+ * [ ] Change color of badge to match one in collapsed navbar (light pink)
  */
-const NavBar: React.FC<NavbarDispatchProps> = ({
-  admin,
-  items,
-  signOut,
-}): JSX.Element => {
+const NavBar: React.FC<NavBarProps> = ({ admin, signOut }): JSX.Element => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -31,6 +37,7 @@ const NavBar: React.FC<NavbarDispatchProps> = ({
   const mobile = useMediaQuery("(max-width: 767px)");
   const centerImage = useMediaQuery("(max-width: 979px)");
 
+  const items = useSelector(({ basket }: AppState) => basket.items);
   return (
     <>
       {/* ClickAwayListener closes the NavBar when clicking away from itself */}
@@ -58,13 +65,18 @@ const NavBar: React.FC<NavbarDispatchProps> = ({
                  */}
               {mobile && (
                 <Badge
-                  badgeContent={items?.length ?? 0}
+                  badgeContent={items.length}
                   color="primary"
-                  className={classes.badge}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  style={{ marginTop: 6, color: COLORS.LightPink }}
                 >
                   <MenuRounded
                     onClick={(): void => setNavOpen(!navOpen)}
                     className={classes.menuIcon}
+                    style={{ marginTop: -6 }}
                   />
                 </Badge>
               )}

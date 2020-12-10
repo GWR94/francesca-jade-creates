@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import validate from "validate.js";
 import { connect } from "react-redux";
@@ -29,7 +29,7 @@ import {
   ProfileStateProps,
 } from "../interfaces/Profile.i";
 import { updateUser } from "../../../graphql/mutations";
-import { UploadedFile } from "../interfaces/NewProduct.i";
+import { ImageProps, UploadedFile } from "../interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
 import euroNumbers from "../../../utils/europeanCodes";
@@ -41,11 +41,6 @@ import { openSnackbar } from "../../../utils/Notifier";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import { AppState } from "../../../store/store";
 import styles from "../styles/profile.style";
-
-/**
- * TODO
- * [ ] Fix profile borders being hidden on mobile
- */
 
 /**
  * Set the initial state to be empty/nullish values so they can be set to their correct
@@ -256,9 +251,13 @@ const Profile: React.FC<ProfileProps> = ({
         // create the filename based on the id, date and image name
         const filename = `${identityId}/${Date.now()}/${newDisplayImage.name}`;
         // put the file into aws with aws-amplify's Storage package.
-        const uploadedFile = await Storage.put(filename, newDisplayImage.file, {
-          contentType: newDisplayImage.type,
-        });
+        const uploadedFile = await Storage.put(
+          filename,
+          (newDisplayImage as ImageProps).file,
+          {
+            contentType: newDisplayImage.type,
+          },
+        );
         const { key } = uploadedFile as UploadedFile;
         // set the file to contain the correct data
         file = {
@@ -497,30 +496,11 @@ const Profile: React.FC<ProfileProps> = ({
     onUpdateProfile();
   };
 
-  /**
-   * Function to update the state with the user input code that they have recieved from the
-   * sendVerificationCode() method.
-   * @param {MouseEvent<HTMLLIElement>} e - React MouseEvent containing the data which will then be
-   * set into state so it can be checked against the correct code in another method.
-   */
-  const handlePhoneCodeChange = (e: React.MouseEvent<HTMLLIElement>): void => {
-    setState(
-      (prevState): ProfileState => ({
-        ...prevState,
-        phoneNumber: {
-          ...prevState.phoneNumber,
-          code: (e.target as HTMLInputElement).value,
-        },
-      }),
-    );
-  };
-
   const {
     isLoading,
     isEditing,
     username,
     email,
-    phoneNumber,
     shippingAddress,
     displayImage,
     dialogOpen,

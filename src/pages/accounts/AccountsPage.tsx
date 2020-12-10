@@ -31,7 +31,12 @@ import {
   AccountPageProps,
 } from "./interfaces/Accounts.i";
 
+/**
+ * Class component to group together all of the components that are used to control the users'
+ * account, such as Profile and Orders for customers, and admin panels for admins.
+ */
 class AccountsPage extends Component<AccountPageProps, {}> {
+  // declare product listeners with no value as they'll be added in constructor
   private createProductListener: PushSubscription;
   private deleteProductListener: PushSubscription;
   private updateProductListener: PushSubscription;
@@ -39,18 +44,23 @@ class AccountsPage extends Component<AccountPageProps, {}> {
   public constructor(props: AccountPageProps) {
     super(props);
     const { setCurrentTab } = this.props;
+    // set up urlParams so params can be searched
     const urlParams = new URLSearchParams(window.location.search);
+    // try and return the page parameter
     const page = urlParams.get("page");
+    // if one exists, and doesn't equal adminOrders, set that page as current tab
     if (page && page !== "adminOrders") {
       setCurrentTab!(page as CurrentTabTypes);
       // remove query from url
       window.history.pushState({}, document.title, window.location.pathname);
     }
     const { admin } = this.props;
+    // if the user is an admin, execute handle subscriptions function
     if (admin) this.handleSubscriptions();
   }
 
   public componentWillUnmount(): void {
+    // remove all listeners when the component unmounts
     this.createProductListener?.unsubscribe();
     this.deleteProductListener?.unsubscribe();
     this.updateProductListener?.unsubscribe();
@@ -61,11 +71,17 @@ class AccountsPage extends Component<AccountPageProps, {}> {
     const { fetchProductsSuccess } = this.props;
     if (!fetchProductsSuccess) return;
 
+    /**
+     * whenever the admin adds a product, it should be updated into state via
+     * subscribing to the onCreateProduct subscription
+     */
     this.createProductListener = API.graphql(
       graphqlOperation(onCreateProduct, { owner: sub }),
     ).subscribe({
       next: (productData: ProductData): void => {
+        // get products from store (in props)
         const { products } = this.props;
+        // retrieve the new product from productData
         const createdProduct = productData.value.data.onCreateProduct;
         const prevProducts = products
           ? products.filter(
@@ -77,6 +93,10 @@ class AccountsPage extends Component<AccountPageProps, {}> {
       },
     });
 
+    /**
+     * Whenever the admin updates a product, it should be updated into state
+     * by subscribing to the onUpdateProduct subscription.
+     */
     this.updateProductListener = API.graphql(
       graphqlOperation(onUpdateProduct, { owner: sub }),
     ).subscribe({
@@ -116,14 +136,7 @@ class AccountsPage extends Component<AccountPageProps, {}> {
     let tab: JSX.Element | null;
     switch (currentTab) {
       case "profile":
-        tab = (
-          <Profile
-            userAttributes={userAttributes}
-            user={user}
-            history={history}
-            admin={admin}
-          />
-        );
+        tab = <Profile userAttributes={userAttributes} user={user} history={history} />;
         break;
       case "products":
         tab = <AdminProducts admin={admin} />;

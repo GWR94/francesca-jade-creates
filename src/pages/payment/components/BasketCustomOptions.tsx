@@ -98,6 +98,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
             (feature.inputType === "range" && feature.value.range?.[0] === 0);
           return (
             <Accordion
+              // expand if expanded is the current panel
               expanded={expanded === `panel${i}`}
               key={i}
               TransitionProps={{ unmountOnExit: false }}
@@ -113,6 +114,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 <Typography className={classes.secondaryHeading}>
                   {customOptions[i] !== undefined ||
                   (feature.featureType === "images" && imageCompleted) ? (
+                    // if completed show "Completed" in green text
                     <span
                       className={classes.statusTab}
                       style={{ color: COLORS.SuccessGreen }}
@@ -120,6 +122,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       Complete
                     </span>
                   ) : optional ? (
+                    // if optional show "Optional" in orange text
                     <span
                       className={classes.statusTab}
                       style={{ color: COLORS.WarningOrange }}
@@ -127,6 +130,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       Optional
                     </span>
                   ) : (
+                    // if not completed show "Incomplete" in red text
                     <span
                       style={{ color: COLORS.ErrorRed }}
                       className={classes.statusTab}
@@ -136,6 +140,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   )}
                 </Typography>
               </AccordionSummary>
+              {/* Render the relevant input inside RenderInput component */}
               <AccordionDetails classes={{ root: classes.accordionRoot }}>
                 <RenderInput
                   feature={feature}
@@ -157,6 +162,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
         })}
       {!isCompleted && (
         <>
+          {/* Render colour scheme accordion for the user to pick their colour scheme */}
           <Accordion
             expanded={expanded === `panel-color`}
             TransitionProps={{ unmountOnExit: true }}

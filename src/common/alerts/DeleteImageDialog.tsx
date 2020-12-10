@@ -38,11 +38,6 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
   // store the boolean value in a variable
   const fullscreen = useMediaQuery(breakpoints.down("sm"));
 
-  // any time the keyToDelete changes, set loading to be true.
-  // useEffect(() => {
-  //   setLoading(true);
-  // }, [keyToDelete]);
-
   return (
     <Dialog
       open={isOpen}

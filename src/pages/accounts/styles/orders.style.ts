@@ -1,7 +1,6 @@
-import { FONTS } from "./../../../themes/index";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { COLORS } from "../../../themes";
+import { FONTS, COLORS } from "../../../themes/index";
 
 const breakpoints = createBreakpoints({});
 
@@ -170,5 +169,13 @@ export default createStyles({
     [breakpoints.down("sm")]: {
       fontSize: "0.7rem",
     },
+  },
+  nonIdealContainer: {
+    height: "100%",
+    minHeight: 400,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
   },
 });

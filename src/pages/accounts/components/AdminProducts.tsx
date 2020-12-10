@@ -1,6 +1,6 @@
 import React from "react";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { Typography, Container, createStyles, makeStyles } from "@material-ui/core";
+import { Typography, Container, makeStyles } from "@material-ui/core";
 import ProductsList from "./ProductsList";
 import { FONTS } from "../../../themes";
 

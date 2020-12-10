@@ -25,6 +25,15 @@ import UploadedImages from "./UploadedImages";
 import { getReadableStringFromArray, handleRemoveFromS3 } from "../../../utils";
 import { RenderInputProps, RenderInputState } from "../interfaces/RenderInput.i";
 
+/**
+ * Functional component to render the inputs for the user to complete their products'
+ * customisable options inside the Basket and BasketCustomOptions components.
+ * @param feature - The current feature that should be rendered inside the component
+ * @param i - The current index of the rendered feature
+ * @param setCustomOptions - Function to update the custom options array in parent
+ * @param setExpanded - Function to update the current expanded accordion from parent
+ * @param featuresLength - The number of features expected to be rendered by the component
+ */
 const RenderInput: React.FC<RenderInputProps> = ({
   feature,
   i,
@@ -63,6 +72,10 @@ const RenderInput: React.FC<RenderInputProps> = ({
     }
   }, [feature]);
 
+  /**
+   * When the component mounts, set the maxNumber and minNumber based on feature.value into
+   * state
+   */
   useEffect(() => {
     const { value } = feature;
     const maxNumber = value.range?.[1]! ?? value.number!;
@@ -110,8 +123,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
       };
       // set imageCompleted to true to show the completed tag on the accordion
       setState({ ...state, imageCompleted: true });
-      // open the next panel if i is less than features length, or color if not.
-      setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+      // open the next panel if i is less than features length - 1, or color if not.
+      setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
       // save customOptions to state in parent
       setCustomOptions(updatedCustomOptions);
     }
@@ -151,16 +164,19 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 }}
                 placeholder="Press enter to add an item"
                 onAdd={(chip): void => {
-                  console.log(maxNumber);
+                  // If the inputValues length is less than maxNumber, then add the chip to the array
                   if ((currentInputValue as string[]).length < maxNumber) {
                     const updatedInputValue = currentInputValue as string[];
                     updatedInputValue.push(chip);
-                    console.log(updatedInputValue);
                     setState({
                       ...state,
                       currentInputValue: updatedInputValue,
                     });
                   } else {
+                    /**
+                     * If the inputValue length is equal to or greater than maxNumber, notify the user
+                     * they can't add another chip
+                     */
                     openSnackbar({
                       severity: INTENT.Warning,
                       message: `You can only add ${maxNumber} items.`,
@@ -168,6 +184,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   }
                 }}
                 onDelete={(chip): void => {
+                  // filter chip out of array and update state
                   const updatedChips = (currentInputValue as string[]).filter(
                     (value) => value !== chip,
                   );
@@ -180,8 +197,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string[],
                   };
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -239,8 +256,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     ...state,
                     currentInputValue: null,
                   });
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -308,8 +325,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string,
                   };
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -430,9 +447,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
                             // set image completed to true to notify user its completed.
                             imageCompleted: true,
                           });
-                          // open the next panel if i is less than features length, or color if not.
+                          // open the next panel if i is less than features length - 1, or color if not.
                           setExpanded(
-                            i < featuresLength ? `panel${i + 1}` : `panel-color`,
+                            i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`,
                           );
                           setCustomOptions(updatedCustomOptions);
                         }}
@@ -509,9 +526,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           updatedCustomOptions[i] = {
                             Images: currentInputValue as S3ImageProps[],
                           };
-                          // open the next panel if i is less than features length, or color if not.
+                          // open the next panel if i is less than features length - 1, or color if not.
                           setExpanded(
-                            i < featuresLength ? `panel${i + 1}` : `panel-color`,
+                            i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`,
                           );
                           setCustomOptions(updatedCustomOptions);
                           // set imageCompleted to true to show the user the feature is completed

@@ -36,7 +36,6 @@ import { AppState } from "../store/store";
 import ProductsList from "../pages/accounts/components/ProductsList";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import Success from "../pages/payment/components/Success";
 import background from "../img/pinkbg2.png";
 import Footer from "../pages/navigation/Footer";
 
@@ -65,6 +64,8 @@ class AppRouter extends Component<RouterProps, RouterState> {
       Hub.listen("auth", this.onHubCapsule);
       // get the current users information
       if (!user) await this.getUserData();
+      const data = await Auth.currentUserCredentials();
+      console.log(data);
     } catch (err) {
       console.error(err);
     }
@@ -420,7 +421,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
                     )
                   }
                 />
-                <Route path="/success" component={Success} />
                 <Route component={NotFoundPage} />
               </Switch>
               <Footer />

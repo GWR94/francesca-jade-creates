@@ -44,6 +44,7 @@ if (process.env.NODE_ENV === "production") {
  * [ ] Fix delete button causing error
  * [ ] Fix accordion closing at wrong time
  * [ ] Change confirm dialog title text for images
+ * [ ] Fix image(s) on confirm dialog
  */
 
 /**

@@ -3,7 +3,7 @@ import { ProductProps } from "./Product.i";
 
 export interface UpdateProps {
   history: History;
-  id: string | undefined;
+  id?: string | undefined;
   admin: boolean;
   update?: boolean;
   classes: {

@@ -23,7 +23,7 @@ export interface BasketState {
   user: ProfileProps | null;
   activeStep: number;
   currentIdx: number;
-  session: any;
+  session: any; //FIXME
 }
 
 export interface CheckoutProductProps {

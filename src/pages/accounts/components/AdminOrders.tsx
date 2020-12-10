@@ -45,9 +45,6 @@ import Pagination from "../../../common/Pagination";
 /**
  * TODO
  * [ ] Fix shipping references title overflowing in dialog
- * [ ] Allow two of the same inputs for chip on Orders
- * [x] Add loading UI spinner to purchase items button in Orders
- * [ ] Fix success page
  */
 
 /**
@@ -475,8 +472,6 @@ const AdminOrders = (): JSX.Element => {
     isLoading,
     showPages: { min, max },
   } = state;
-
-  const mobile = useMediaQuery("(max-width: 600px)");
 
   return (
     <>
