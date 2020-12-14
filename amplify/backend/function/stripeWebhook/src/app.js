@@ -62,25 +62,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-const getSignedS3Url = ({ key, bucket, region }) => {
-  // create a new instance of AWS.S3
-  const s3 = new AWS.S3({
-    // use the latest signature
-    signatureVersion: "v4",
-    // set region to be the same as the image
-    region,
-  });
-  // set expire to be 1 week (60 seconds * 60 mins * 24 hrs * 7 days)
-  const expiry = 60 * 60 * 24 * 7;
-
-  // use s3 to get a signed url
-  const url = s3.getSignedUrl("getObject", {
-    Bucket: bucket,
-    Key: `public/${key}`,
-    Expires: expiry,
-  });
-  // return the url
-  return url;
+const getPublicS3URL = (s3Image) => {
+  const { key, bucket, region } = s3Image;
+  return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
 };
 
 const getProducts = (products) => {
@@ -127,7 +111,7 @@ const getProducts = (products) => {
                         <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                           <tbody>
                             <tr>
-                              <td style="width:190px;"> <img height="auto" src="${getSignedS3Url(
+                              <td style="width:190px;"> <img height="auto" src="${getPublicS3URL(
                                 image,
                               )}" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
                                   width="190" /> </td>

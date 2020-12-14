@@ -1,7 +1,7 @@
 import { Auth, Storage } from "aws-amplify";
 import AWS from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import { ProductProps } from "../pages/accounts/interfaces/Product.i";
+import { ProductProps, S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
 import { Variant } from "../pages/accounts/interfaces/Variants.i";
 
@@ -59,6 +59,12 @@ export const getSignedS3Url = (key: string, level = "public"): string => {
     Bucket: process.env.IMAGE_S3_BUCKET,
     Key: `${level}/${key}`,
   });
+  return url;
+};
+
+export const getPublicS3URL = (s3Image: S3ImageProps): string => {
+  const { key, bucket, region } = s3Image;
+  const url = `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
   return url;
 };
 

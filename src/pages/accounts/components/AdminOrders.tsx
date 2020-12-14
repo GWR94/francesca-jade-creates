@@ -192,8 +192,8 @@ const AdminOrders = (): JSX.Element => {
       // set region to be the same as the image
       region,
     });
-    // set expire to be 1 hour (60 seconds * 60 mins)
-    const expiry = 60 * 60;
+    // set expire to be 1 week (60 seconds * 60 mins * 12 hours * 7 days)
+    const expiry = 60 * 60 * 12 * 7;
 
     // use s3 to get a signed url
     const url = s3.getSignedUrl("getObject", {
