@@ -203,7 +203,7 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
               ...styles,
               photoPickerButton: {
                 ...styles.photoPickerButton,
-                background: type === "Cake" ? COLORS.Pink : COLORS.Purple,
+                background: type === "Cake" ? COLORS.Pink : COLORS.Gray,
               },
             }}
           />

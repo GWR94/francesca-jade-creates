@@ -14,7 +14,7 @@ export default createStyles({
     },
   },
   headingContainer: {
-    height: "calc(100vh - 70px)",
+    height: "calc(100vh - 86px)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -24,7 +24,7 @@ export default createStyles({
     fontSize: "1.2rem",
     margin: "10px",
     fontWeight: "bold",
-    fontFamily: FONTS.Text,
+    fontFamily: FONTS.Title,
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },
@@ -37,6 +37,8 @@ export default createStyles({
   },
   landingImage: {
     maxWidth: "100%",
+    padding: "20px 40px",
+    boxSizing: "border-box",
   },
   logoImg: {
     width: 80,
@@ -56,12 +58,12 @@ export default createStyles({
     },
   },
   cakesButton: {
-    background: COLORS.Purple,
+    background: COLORS.Gray,
     color: "#fff",
     borderRadius: 20,
     margin: "6px auto 12px",
     "&:hover": {
-      background: COLORS.LightPurple,
+      background: COLORS.LightGray,
     },
     [breakpoints.up("sm")]: {
       width: 220,
@@ -74,7 +76,7 @@ export default createStyles({
   },
   createsIcon: {
     fontSize: "3rem",
-    color: COLORS.Purple,
+    color: COLORS.Gray,
     margin: "12px auto 0",
   },
 });

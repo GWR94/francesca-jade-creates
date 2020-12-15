@@ -54,12 +54,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       bottom: 4,
       right: 4,
       backgroundColor:
-        product.type === "Cake" ? "rgba(253, 78, 242, 0.4)" : "rgba(147, 112, 246, 0.5)",
+        product.type === "Cake" ? "rgba(253, 78, 242, 0.4)" : "rgba(188, 188, 188, 0.4)",
       "&:hover": {
         backgroundColor:
           product.type === "Cake"
             ? "rgba(253, 78, 242, 0.65)"
-            : "rgba(147, 112, 246, 0.75)",
+            : "rgba(188, 188, 188, 0.65)",
       },
     },
   });
@@ -146,9 +146,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         className={classes.card}
         // depending on the product type, place a border on top of the card with a color
         style={{
-          borderTop: `3px solid ${
-            type === "Cake" ? COLORS.LightPink : COLORS.LightPurple
-          }`,
+          borderTop: `3px solid ${type === "Cake" ? COLORS.LightPink : COLORS.LightGray}`,
         }}
       >
         <CardHeader

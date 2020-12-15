@@ -16,6 +16,9 @@ export default createStyles({
     margin: "0 auto",
     paddingTop: 10,
     minHeight: "50vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   mainTitle: {
     fontSize: "1.6rem",

@@ -1014,8 +1014,8 @@ app.post("/orders/send-quote-email", (req, res) => {
   </style>
 </head>
 
-<body style="background-color:#ccd3e0;>
-  <div style="background-color:#ccd3e0;>
+<body style="background-color:#ccd3e0;height:100%">
+  <div style="background-color:#ccd3e0;">
     <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"

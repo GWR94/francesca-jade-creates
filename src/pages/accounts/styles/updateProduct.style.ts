@@ -12,7 +12,7 @@ export default createStyles({
     background: COLORS.Pink,
   },
   chipCreates: {
-    background: COLORS.Purple,
+    background: COLORS.Gray,
   },
   mainContainer: {
     margin: "0 auto",

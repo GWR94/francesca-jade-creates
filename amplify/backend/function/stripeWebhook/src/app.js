@@ -306,7 +306,7 @@ const emailHandler = (req, res) => {
     </style>
   </head>
 
-<body style="background-color:#ccd3e0;">
+<body style="background-color:#ccd3e0; height:100%;">
   <div style="background-color:#ccd3e0;">
     <!--[if mso | IE]>
       <table

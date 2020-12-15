@@ -119,24 +119,6 @@ export default createStyles({
   formControl: {
     minWidth: 200,
   },
-  selectContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginTop: 14,
-  },
-  sendButton: {
-    color: COLORS.SuccessGreen,
-    minWidth: 60,
-  },
-  trackingList: {
-    fontFamily: FONTS.Title,
-  },
-  deleteIcon: {
-    color: COLORS.ErrorRed,
-    marginLeft: 5,
-    cursor: "pointer",
-  },
   chipSuccess: {
     width: 40,
     borderRadius: 3,

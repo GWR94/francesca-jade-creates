@@ -16,7 +16,7 @@ export default createStyles({
     },
   },
   chipCake: {
-    background: COLORS.Purple,
+    background: COLORS.Gray,
   },
   chipCreates: {
     background: COLORS.Pink,

@@ -40,9 +40,8 @@ if (process.env.NODE_ENV === "production") {
  * TODO
  * [x] Fix basket
  * [ ] Create and link cancel page back to basket
- * [x] Fix payment error showing up when first loading success page
- * [ ] Fix delete button causing error
- * [ ] Fix accordion closing at wrong time
+ * [ ] Test delete button - was causing errors
+ * [x] Fix accordion closing at wrong time
  * [ ] Change confirm dialog title text for images
  * [ ] Fix image(s) on confirm dialog
  */

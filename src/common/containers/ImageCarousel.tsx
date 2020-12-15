@@ -332,13 +332,13 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
               <ButtonBack className={`${classes.backButton} animated pulse infinite`}>
                 <ChevronLeft
                   className={classes.svg}
-                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />
               </ButtonBack>
               <ButtonNext className={`${classes.forwardButton} animated pulse infinite`}>
                 <ChevronRight
                   className={classes.svg}
-                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />
               </ButtonNext>
             </CarouselProvider>

@@ -3,7 +3,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { BrushRounded, CakeRounded } from "@material-ui/icons";
 import { COLORS } from "../../themes";
-import cake from "../../img/cake3.svg";
+import cake from "../../img/moments.svg";
 import logo from "../../img/logo.png";
 import styles from "./styles/landing.style";
 
@@ -15,10 +15,19 @@ const Landing: React.FC = (): JSX.Element => {
     <Container>
       <Grid container>
         <Grid item xs={12} sm={6} className={classes.headingContainer}>
-          <img src={logo} className={classes.logoImg} alt="Francesca Jade Creates" />
-          <Typography className={classes.headingText}>
-            Homemade Cakes & Creations, personalised{" "}
-            <span style={{ color: COLORS.DarkPink, fontWeight: "bolder" }}>for you.</span>
+          <img
+            src={logo}
+            className={`${classes.logoImg} animated fadeIn`}
+            alt="Francesca Jade Creates"
+          />
+          <Typography className={`${classes.headingText} animated fadeInLeft delay-1s`}>
+            Francesca Jade Creates{" "}
+          </Typography>
+          <Typography
+            className="animated fadeInLeft delay-1.5s"
+            style={{ color: COLORS.DarkPink, fontWeight: "bolder", marginBottom: 30 }}
+          >
+            Personalised Cakes & Frames for any occasion
           </Typography>
           <BrushRounded className={classes.createsIcon} />
           <Typography className={classes.subheading}>

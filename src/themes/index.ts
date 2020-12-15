@@ -9,11 +9,11 @@ export enum COLORS {
   LightPink = "#ffa3f9",
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
-  Purple = "#9370f6",
-  LightPurple = "#ae91ff",
+  DarkGrey = "#878787",
+  Gray = "#cfcfcf",
+  LightGray = "#dedede",
   PaleBlue = "#b9d6f3",
   SkyBlue = "#69abec",
-  LightGray = "#d3d3d3",
   OffWhite = "#ebe9e9",
   ErrorRed = "#f44336",
   BorderGray = "#C4C4C4",
@@ -68,7 +68,7 @@ export const nonIdealStateTheme = createMuiTheme({
       main: COLORS.DarkPink,
     },
     secondary: {
-      main: COLORS.Purple,
+      main: COLORS.Gray,
     },
   },
   overrides: {
