@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   makeStyles,
 } from "@material-ui/core";
@@ -20,13 +19,21 @@ import { INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
-//@ts-expect-error
 import awsExports from "../../../aws-exports";
 import styles from "../styles/renderInput.style";
 import UploadedImages from "./UploadedImages";
 import { getReadableStringFromArray, handleRemoveFromS3 } from "../../../utils";
 import { RenderInputProps, RenderInputState } from "../interfaces/RenderInput.i";
 
+/**
+ * Functional component to render the inputs for the user to complete their products'
+ * customisable options inside the Basket and BasketCustomOptions components.
+ * @param feature - The current feature that should be rendered inside the component
+ * @param i - The current index of the rendered feature
+ * @param setCustomOptions - Function to update the custom options array in parent
+ * @param setExpanded - Function to update the current expanded accordion from parent
+ * @param featuresLength - The number of features expected to be rendered by the component
+ */
 const RenderInput: React.FC<RenderInputProps> = ({
   feature,
   i,
@@ -34,8 +41,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
   customOptions,
   setExpanded,
   featuresLength,
-  imageCompleted,
-  setImageCompleted,
 }): JSX.Element | null => {
   // make and use styles to be used in component
   const useStyles = makeStyles(styles);
@@ -47,6 +52,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
     confirmDialogOpen: false,
     uploadedImage: null,
     currentImageFile: null,
+    imageCompleted: false,
+    maxNumber: 0,
+    minNumber: 0,
   });
 
   /**
@@ -55,8 +63,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
    * causing conflicting errors (i.e an array for a string input, or vice versa).
    */
   useEffect(() => {
-    const { featureType } = feature;
-    if (featureType === "") {
+    const { featureType, inputType } = feature;
+    if (featureType === "text" && inputType !== "range") {
       setState({ ...state, currentInputValue: "" });
     } else {
       // if featureType is other, dropdown or images, the input value will need to be an array
@@ -64,34 +72,32 @@ const RenderInput: React.FC<RenderInputProps> = ({
     }
   }, [feature]);
 
+  /**
+   * When the component mounts, set the maxNumber and minNumber based on feature.value into
+   * state
+   */
+  useEffect(() => {
+    const { value } = feature;
+    const maxNumber = value.range?.[1]! ?? value.number!;
+    const minNumber = value.range?.[0]! ?? null;
+    setState({ ...state, maxNumber, minNumber });
+  }, []);
+
   // destructure all relevant data from state
   const { currentImageFile, confirmDialogOpen, currentInputValue, uploadedImage } = state;
   // destructure all relevant data from feature.
   const { featureType, inputType, value, name } = feature;
+  const { maxNumber, minNumber } = state;
 
   // initialise variable to store jsx in.
   let renderedFeature: JSX.Element | null = null;
-
-  // initialise min and max values
-  let maxNumber = -Infinity;
-  let minNumber = Infinity;
-  /**
-   * If the inputType is range, and a value for range exists, save the
-   * min and max to their respective values.
-   */
-  if (inputType === "range" && value.range !== undefined) {
-    maxNumber = value.range[1];
-    minNumber = value.range[0];
-  } else if (inputType === "number" && value.number !== undefined) {
-    // if the inputType is number, set the number to be maxNumber.
-    maxNumber = value.number;
-  }
 
   /**
    * Function to check if the user has input the recommended amount of
    * images, based on the max range or number set for the current feature.
    */
   const checkImageCompletion = (): void => {
+    const { maxNumber } = state;
     /**
      * store the currentInputValue into a variable, and cast it to S3ImageProps[]
      * so the array length can be checked.
@@ -115,19 +121,10 @@ const RenderInput: React.FC<RenderInputProps> = ({
       updatedCustomOptions[i] = {
         Images: imagesArr,
       };
-      setState({
-        ...state,
-        /**
-         * set currentInputValue to null - it will be changed to the correct input
-         * type when the feature is changed (when the user changes to another
-         * feature in the accordion)
-         */
-        currentInputValue: null,
-      });
       // set imageCompleted to true to show the completed tag on the accordion
-      setImageCompleted(true);
-      // open the next panel if i is less than features length, or color if not.
-      setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+      setState({ ...state, imageCompleted: true });
+      // open the next panel if i is less than features length - 1, or color if not.
+      setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
       // save customOptions to state in parent
       setCustomOptions(updatedCustomOptions);
     }
@@ -147,10 +144,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there's a description, show it to the user */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             {/* Notify the user how many inputs they're expected to complete */}
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
               Please add {inputType === "range" ? "up to" : "exactly"} {maxNumber} items
             </Typography>
             <div style={{ display: "inline-flex" }}>
@@ -165,12 +164,19 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 }}
                 placeholder="Press enter to add an item"
                 onAdd={(chip): void => {
+                  // If the inputValues length is less than maxNumber, then add the chip to the array
                   if ((currentInputValue as string[]).length < maxNumber) {
+                    const updatedInputValue = currentInputValue as string[];
+                    updatedInputValue.push(chip);
                     setState({
                       ...state,
-                      currentInputValue: [...(currentInputValue as string[]), chip],
+                      currentInputValue: updatedInputValue,
                     });
                   } else {
+                    /**
+                     * If the inputValue length is equal to or greater than maxNumber, notify the user
+                     * they can't add another chip
+                     */
                     openSnackbar({
                       severity: INTENT.Warning,
                       message: `You can only add ${maxNumber} items.`,
@@ -178,6 +184,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   }
                 }}
                 onDelete={(chip): void => {
+                  // filter chip out of array and update state
                   const updatedChips = (currentInputValue as string[]).filter(
                     (value) => value !== chip,
                   );
@@ -190,12 +197,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string[],
                   };
-                  setState({
-                    ...state,
-                    currentInputValue: null,
-                  });
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -218,10 +221,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there is a description, show it to the user */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             {/* Notify the user of how many inputs they are expected to fill */}
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
               Please add exactly {maxNumber} item {maxNumber === 1 ? "" : "s"}
             </Typography>
             <div
@@ -251,8 +256,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     ...state,
                     currentInputValue: null,
                   });
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -277,7 +282,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             {/* If there is a description, show it to the user. */}
             {feature.description && (
-              <Typography variant="subtitle2">{feature.description}</Typography>
+              <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
+                {feature.description}
+              </Typography>
             )}
             <div
               style={{
@@ -289,7 +296,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
             >
               {/* Render the select */}
               <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="demo-simple-select-outlined-label">{name}</InputLabel>
+                <InputLabel>{name}</InputLabel>
                 <Select
                   value={currentInputValue}
                   label={name}
@@ -318,12 +325,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                   updatedCustomOptions[i] = {
                     [name]: currentInputValue as string,
                   };
-                  setState({
-                    ...state,
-                    currentInputValue: null,
-                  });
-                  // open the next panel if i is less than features length, or color if not.
-                  setExpanded(i < featuresLength ? `panel${i + 1}` : `panel-color`);
+                  // open the next panel if i is less than features length - 1, or color if not.
+                  setExpanded(i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`);
                   setCustomOptions(updatedCustomOptions);
                 }}
                 color="primary"
@@ -416,7 +419,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                       }}
                     />
                     {/* Notify the user how many images they've uploaded */}
-                    <Typography variant="subtitle2">
+                    <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
                       You have entered{" "}
                       {(currentInputValue as S3ImageProps[])?.length ?? 0} image
                       {(currentInputValue as S3ImageProps[])?.length === 1 ? "" : "s"}.
@@ -441,14 +444,12 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           };
                           setState({
                             ...state,
-                            // set input value to null, as it'll be changed when next feature is opened in accordion
-                            currentInputValue: null,
+                            // set image completed to true to notify user its completed.
+                            imageCompleted: true,
                           });
-                          // set image completed to true to notify user its completed.
-                          setImageCompleted(true);
-                          // open the next panel if i is less than features length, or color if not.
+                          // open the next panel if i is less than features length - 1, or color if not.
                           setExpanded(
-                            i < featuresLength ? `panel${i + 1}` : `panel-color`,
+                            i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`,
                           );
                           setCustomOptions(updatedCustomOptions);
                         }}
@@ -496,16 +497,17 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     onClose={(): void => setState({ ...state, confirmDialogOpen: false })}
                   >
                     <DialogTitle>
-                      Do you want to have less than the recommended amount of images?
+                      Continue with {(currentInputValue as S3ImageProps[])?.length}{" "}
+                      images?
                     </DialogTitle>
                     <DialogContent>
-                      <DialogContentText>
+                      <Typography variant="subtitle1" gutterBottom>
                         You have uploaded {(currentInputValue as S3ImageProps[])?.length}{" "}
                         images, when the recommended is {maxNumber}.
-                      </DialogContentText>
-                      <DialogContentText>
+                      </Typography>
+                      <Typography variant="subtitle1" gutterBottom>
                         Do you want to continue with the current amount?
-                      </DialogContentText>
+                      </Typography>
                     </DialogContent>
                     <DialogActions>
                       <Button
@@ -513,6 +515,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           // close the confirm dialog by changing the boolean value to false
                           setState({ ...state, confirmDialogOpen: false })
                         }
+                        color="secondary"
                       >
                         No
                       </Button>
@@ -523,14 +526,19 @@ const RenderInput: React.FC<RenderInputProps> = ({
                           updatedCustomOptions[i] = {
                             Images: currentInputValue as S3ImageProps[],
                           };
-                          // set imageCompleted to true to show the user the feature is completed
-                          setImageCompleted(true);
-                          // open the next panel if i is less than features length, or color if not.
+                          // open the next panel if i is less than features length - 1, or color if not.
                           setExpanded(
-                            i < featuresLength ? `panel${i + 1}` : `panel-color`,
+                            i < featuresLength - 1 ? `panel${i + 1}` : `panel-color`,
                           );
                           setCustomOptions(updatedCustomOptions);
+                          // set imageCompleted to true to show the user the feature is completed
+                          setState({
+                            ...state,
+                            imageCompleted: true,
+                            confirmDialogOpen: false,
+                          });
                         }}
+                        color="primary"
                       >
                         Yes
                       </Button>
@@ -591,9 +599,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
                             currentInputValue: updatedImages,
                             // remove the current uploaded image from state
                             uploadedImage: null,
+                            // set imageCompleted to true to show the user the completed tag
+                            imageCompleted: true,
                           });
-                          // set imageCompleted to true to show the user the completed tag
-                          setImageCompleted(true);
                           // update custom options in parent
                           setCustomOptions(updatedCustomOptions);
                         } else {
@@ -623,34 +631,34 @@ const RenderInput: React.FC<RenderInputProps> = ({
     default:
       return null;
   }
+
   const current =
     typeof customOptions[i] === "object"
       ? // if the current customOptions index is an object, get the values from it with Object.values().
-        Object.values(customOptions[i])
+        Object.values(customOptions[i])[0]
       : // if not, get the value.
         customOptions[i];
 
+  const key = customOptions[i] !== undefined && Object.keys(customOptions[i])[0];
+
+  const { imageCompleted } = state;
   return (
     <div style={{ width: "100%" }}>
       {customOptions[i] ? (
         <>
           {/* If current is not an array, display the information to users */}
-          {!Array.isArray(current) ? (
-            <Typography>{current}</Typography>
-          ) : (
-            // if the first index of current is of type string, show it to the user in a readable fashion
-            typeof current[0] === "string" && (
-              <Typography>{getReadableStringFromArray(current as string[])}</Typography>
-            )
-          )}
+          <Typography variant="subtitle2">
+            {!Array.isArray(current)
+              ? current
+              : typeof current[0] === "string" &&
+                getReadableStringFromArray(current as string[])}
+          </Typography>
           {/* 
             if imageComplete is true and the current index of customOptions key is 
             "Images" show the images within the UploadedImages component
            */}
-          {imageCompleted && Object.keys(customOptions[i])[0] === "Images" && (
-            <UploadedImages
-              images={Object.values(customOptions[i])[0] as S3ImageProps[]}
-            />
+          {imageCompleted && key === "Images" && (
+            <UploadedImages images={current as S3ImageProps[]} />
           )}
           <div className={classes.buttonContainer}>
             <Button

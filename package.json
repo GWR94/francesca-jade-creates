@@ -48,6 +48,7 @@
     "@types/reactstrap": "^8.5.0",
     "@types/underscore": "^1.10.20",
     "@types/uuid": "^8.0.1",
+    "@types/validator": "^13.1.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "babel-eslint": "^10.1.0",
@@ -104,7 +105,7 @@
     "@types/react-image-crop": "^8.1.2",
     "@types/tinymce": "^4.5.24",
     "amazon-cognito-identity-js": "^3.2.4",
-    "animate.css": "^3.7.2",
+    "animate.css": "^4.1.1",
     "aws-amplify": "^2.3.0",
     "aws-amplify-react": "^3.1.9",
     "aws-sdk": "^2.758.0",
@@ -115,6 +116,7 @@
     "express": "^4.17.1",
     "history": "^4.10.1",
     "material-ui-chip-input": "^1.1.0",
+    "mjml": "^4.7.1",
     "node-sass": "^4.14.1",
     "normalize.css": "^8.0.1",
     "pure-react-carousel": "^1.27.1",
@@ -138,6 +140,7 @@
     "use-debounce": "^5.0.1",
     "uuid": "^7.0.3",
     "validate.js": "^0.13.1",
+    "validator": "^13.1.17",
     "webpack-merge": "^4.2.2"
   }
 }

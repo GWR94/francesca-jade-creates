@@ -36,8 +36,10 @@ import { AppState } from "../store/store";
 import ProductsList from "../pages/accounts/components/ProductsList";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import Success from "../pages/payment/components/Success";
 import background from "../img/pinkbg2.png";
+import Footer from "../pages/navigation/Footer";
+import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
+import TermsOfService from "../pages/policies/components/TermsOfService";
 
 export const history = createBrowserHistory();
 
@@ -54,7 +56,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
   };
 
   // set the property to be false to begin with, so no user can accidentally be an admin.
-  private _admin = false;
+  public admin = false;
 
   public async componentDidMount(): Promise<void> {
     const { user } = this.state;
@@ -64,6 +66,8 @@ class AppRouter extends Component<RouterProps, RouterState> {
       Hub.listen("auth", this.onHubCapsule);
       // get the current users information
       if (!user) await this.getUserData();
+      const data = await Auth.currentUserCredentials();
+      console.log(data);
     } catch (err) {
       console.error(err);
     }
@@ -85,7 +89,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
          * if the current user is part of the Admin group in the cognito groups array, then set
          * this.admin to true, otherwise set it to false.
          */
-        this._admin =
+        this.admin =
           user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
             "Admin",
           ) ?? false;
@@ -100,7 +104,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
          * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
          * set the user object to null, and remove loading UI effects by setting isLoading to false.
          */
-        this._admin = false;
+        this.admin = false;
         this.setState({ user: null });
       }
       this.setState({ isLoading: false });
@@ -109,7 +113,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
        * If there are any errors anywhere in the function, then catch the error, set this.admin to false,
        * set user state to null and remove loading UI effects by settings isLoading state to false.
        */
-      this._admin = false;
+      this.admin = false;
       this.setState({ user: null, isLoading: false });
     }
   };
@@ -169,7 +173,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
         setUser(
           userAttributes.sub,
           user.username,
-          this._admin,
+          this.admin,
           userAttributes.email,
           userAttributes.email_verified,
         );
@@ -271,157 +275,178 @@ class AppRouter extends Component<RouterProps, RouterState> {
 
   public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
-
     return (
       <Router history={history}>
         <div
           className="landing__background"
           style={{ background: `url(${background}) no-repeat center center fixed` }}
         >
-          <NavBar signOut={this.handleSignOut} admin={this._admin} />
+          {location.pathname != "/" && (
+            <NavBar signOut={this.handleSignOut} admin={this.admin} />
+          )}
           {isLoading ? (
             <Loading size={100} />
           ) : (
-            <Switch>
-              <Route path="/" exact component={Landing} />
-              <Route
-                path="/creates"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Creations
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Creates" admin={this._admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/basket"
-                history={history}
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Basket userAttributes={userAttributes} />
-                  </div>
-                )}
-              />
-              <Route
-                path="/creates/:id"
-                component={(_: { match: { params: { id: string } } }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Creates" />
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Cakes
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Cake" admin={this._admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes/:id"
-                component={(_: { match: { params: { id: string } } }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Cake" />
-                  </div>
-                )}
-              />
-              <Route path="/login" history={history} component={Login} />
-              <Route
-                path="/account"
-                exact
-                component={(): JSX.Element =>
-                  user ? (
+            <>
+              <Switch>
+                <Route path="/" exact component={Landing} />
+                <Route
+                  path="/creates"
+                  exact
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <AccountsPage
-                        admin={this._admin}
-                        history={history}
-                        user={user}
-                        userAttributes={userAttributes}
-                      />
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Creations
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Creates" admin={this.admin} />
+                      </Container>
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route
-                path="/account/:id"
-                component={(
-                  matchParams: RouteComponentProps<{ id: string }>,
-                ): JSX.Element =>
-                  this._admin ? (
+                  )}
+                />
+                <Route
+                  path="/basket"
+                  history={history}
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <UpdateProduct
-                        history={history}
-                        update
-                        id={matchParams.match.params.id}
-                        admin={this._admin}
-                      />
+                      <Basket userAttributes={userAttributes} />
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route path="/success" component={Success} />
-              <Route component={NotFoundPage} />
-            </Switch>
+                  )}
+                />
+                <Route
+                  path="/creates/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Creates" />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes"
+                  exact
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Cakes
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Cake" admin={this.admin} />
+                      </Container>
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Cake" />
+                    </div>
+                  )}
+                />
+                <Route path="/login" history={history} component={Login} />
+                <Route
+                  path="/account"
+                  exact
+                  component={(): JSX.Element =>
+                    user ? (
+                      <div className="content-container">
+                        <AccountsPage
+                          admin={this.admin}
+                          history={history}
+                          user={user}
+                          userAttributes={userAttributes}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/account/:id"
+                  component={(
+                    matchParams: RouteComponentProps<{ id: string }>,
+                  ): JSX.Element =>
+                    this.admin ? (
+                      <div className="content-container">
+                        <UpdateProduct
+                          history={history}
+                          update
+                          id={matchParams.match.params.id}
+                          admin={this.admin}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/privacy-policy"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <PrivacyPolicy />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/terms-of-service"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <TermsOfService />
+                    </div>
+                  )}
+                />
+                {/* <Route path="/contact" component={} />
+                <Route path="/faq" component={} /> */}
+                <Route component={NotFoundPage} />
+              </Switch>
+              {window.location.pathname !== "/" && <Footer />}
+            </>
           )}
         </div>
       </Router>

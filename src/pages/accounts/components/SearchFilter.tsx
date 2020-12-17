@@ -37,7 +37,7 @@ import styles from "../styles/searchFilter.style";
  * [x] Sort out success page
  * [ ] Sort out basket
  * [x] Fix errors for cakes ViewProduct
- * [ ] Fix general styling on ViewProduct
+ * [x] Fix general styling on ViewProduct
  * [ ] Fix landing page styles on mobile
  */
 

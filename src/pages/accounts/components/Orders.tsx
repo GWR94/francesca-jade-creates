@@ -14,7 +14,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import dayjs from "dayjs";
-import { ExpandMoreRounded } from "@material-ui/icons";
+import { ErrorOutline, ExpandMoreRounded } from "@material-ui/icons";
 import { API, graphqlOperation } from "aws-amplify";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import React, { useEffect, useState } from "react";
@@ -30,14 +30,15 @@ import { S3ImageProps } from "../interfaces/Product.i";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import { UserAttributeProps } from "../interfaces/Accounts.i";
+import NonIdealState from "../../../common/containers/NonIdealState";
 
 interface OrdersProps {
   userAttributes: UserAttributeProps | null;
 }
 
 /**
- * A functional component which renders all of the current authenticated
- * users orders
+ * Functional component which renders all of the current authenticated
+ * users orders if they have any.
  */
 const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   // isLoading is used to show/hide loading UI effects
@@ -54,7 +55,7 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
   // initialise a variable to keep track of the current orders rendered in the component
   const [pages, setPages] = useState({
     min: 0,
-    max: desktop ? 10 : 5,
+    max: 12,
   });
   // initialise a variable to check which accordion component is expanded
   const [expanded, setExpanded] = useState<string | boolean>(false);
@@ -125,8 +126,9 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
 
   return isLoading ? (
     <Loading />
-  ) : (
+  ) : orders.length > 0 ? (
     <div className={classes.root}>
+      <Typography variant="h4">Orders</Typography>
       <Accordion expanded={false}>
         <AccordionSummary>
           <Grid container style={{ marginRight: 30 }}>
@@ -297,9 +299,20 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
       )}
       <Pagination
         dataLength={orders.length}
-        numPerPage={!desktop ? 5 : 10}
+        numPerPage={12}
         setPageValues={({ min, max }): void => setPages({ min, max })}
       />
+    </div>
+  ) : (
+    <div>
+      <Typography variant="h4">Orders</Typography>
+      <div className={classes.nonIdealContainer}>
+        <NonIdealState
+          title="No Orders"
+          Icon={<ErrorOutline />}
+          subtext="You have not completed any orders. Place an order to see them here."
+        />
+      </div>
     </div>
   );
 };

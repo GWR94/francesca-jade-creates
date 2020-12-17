@@ -1,5 +1,7 @@
 import { Variant } from "../../accounts/interfaces/Variants.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
+import { UserAttributeProps } from "../../accounts/interfaces/Accounts.i";
+import { ProfileProps } from "../../accounts/interfaces/Profile.i";
 
 export interface BasketItemProps {
   id: string;
@@ -10,6 +12,18 @@ export interface BasketItemProps {
   tagline: string;
   variants: Variant[];
   customOptions: string[];
+}
+
+export interface BasketProps {
+  userAttributes: UserAttributeProps | null;
+}
+export interface BasketState {
+  isLoading: boolean;
+  isSubmitting: boolean;
+  user: ProfileProps | null;
+  activeStep: number;
+  currentIdx: number;
+  session: any; //FIXME
 }
 
 export interface CheckoutProductProps {

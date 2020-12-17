@@ -32,6 +32,9 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     dialogContainer: {
       fontFamily: FONTS.Title,
     },
+    tagsContainer: {
+      display: "flex",
+    },
   });
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -69,12 +72,15 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </p>
         <p>
           <strong>Price: </strong>
-          {getProductPrice(product, true)}
+          {getProductPrice(product.variants, true)}
         </p>
-        <p>
-          <strong>Tags: </strong>
-        </p>
-        {tags?.length > 0 ? <ChipContainer tags={tags} type={type} /> : "No tags"}
+        <div className={classes.tagsContainer}>
+          <p style={{ marginTop: 8 }}>
+            <strong>Tags: </strong>
+          </p>
+          {tags?.length > 0 ? <ChipContainer tags={tags} type={type} /> : "No tags"}
+        </div>
+
         <p>
           <strong>Cover image:</strong>
         </p>
@@ -89,7 +95,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             }}
           />
         ) : (
-          <ImageCarousel images={images.collection} type={type} />
+          <ImageCarousel images={images.collection} cover={images.cover} type={type} />
         )}
         <DialogActions>
           <Button color="secondary" onClick={closeModal} style={{ margin: "6px 4px" }}>

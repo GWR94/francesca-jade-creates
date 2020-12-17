@@ -7,6 +7,9 @@ export interface RenderInputState {
   confirmDialogOpen: boolean;
   currentImageFile: S3ImageProps | null;
   uploadedImage: string | null;
+  imageCompleted: boolean;
+  maxNumber: number;
+  minNumber: number;
 }
 
 export interface RenderInputProps {

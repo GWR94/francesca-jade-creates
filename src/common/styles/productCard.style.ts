@@ -12,9 +12,12 @@ export default createStyles({
     justifyContent: "space-between",
     position: "relative",
     margin: "0 auto",
-    maxWidth: 350,
-    [breakpoints.only("xs")]: {
-      width: 280,
+    width: "100%",
+    "@media (max-width: 599px)": {
+      width: 320,
+    },
+    "@media (max-width: 400px)": {
+      width: "100%",
     },
   },
   media: {

@@ -9,16 +9,17 @@ export enum COLORS {
   LightPink = "#ffa3f9",
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
-  Purple = "#9370f6",
-  LightPurple = "#ae91ff",
+  DarkGrey = "#878787",
+  Gray = "#b8b8b8",
+  LightGray = "#dedede",
   PaleBlue = "#b9d6f3",
   SkyBlue = "#69abec",
-  LightGray = "#d3d3d3",
   OffWhite = "#ebe9e9",
   ErrorRed = "#f44336",
   BorderGray = "#C4C4C4",
   DisabledGray = "#BABABA",
   AltBorderGray = "#dadada",
+  PaleWhite = "#fcfcfc",
   TextGray = "#828282",
   SuccessGreen = "#4caf50",
   LightGreen = "#59cf5e",
@@ -67,7 +68,7 @@ export const nonIdealStateTheme = createMuiTheme({
       main: COLORS.DarkPink,
     },
     secondary: {
-      main: COLORS.Purple,
+      main: COLORS.Gray,
     },
   },
   overrides: {
@@ -161,6 +162,34 @@ export const rootTheme = createMuiTheme({
         fontWeight: "bold",
         textAlign: "center",
         fontSize: "2rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.8rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.6rem",
+        },
+      },
+      h5: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: "1.8rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.6rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.4rem",
+        },
+      },
+      h6: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: "1.5rem",
+        [breakpoints.down("md")]: {
+          fontSize: "1.3rem",
+        },
+        [breakpoints.down("sm")]: {
+          fontSize: "1.2rem",
+        },
       },
       subtitle1: {
         fontSize: "1rem",
@@ -178,7 +207,9 @@ export const rootTheme = createMuiTheme({
         marginRight: 4,
       },
       colorPrimary: {
-        backgroundColor: COLORS.DarkPink,
+        color: "#fff",
+        marginRight: 3,
+        backgroundColor: "#ffa3f9",
       },
       badge: {
         height: 15,

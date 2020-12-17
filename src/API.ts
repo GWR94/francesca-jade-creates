@@ -197,6 +197,7 @@ export type CreateOrderInput = {
   stripePaymentIntent?: string | null,
   shippingAddress?: ShippingAddressInput | null,
   createdAt?: string | null,
+  stripeOrderId?: string | null,
   paymentStatus?: string | null,
   orderProcessed: boolean,
   userInfo: UserInfoInput,
@@ -223,6 +224,7 @@ export type UserInfoInput = {
 export type ModelOrderConditionInput = {
   stripePaymentIntent?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
+  stripeOrderId?: ModelStringInput | null,
   paymentStatus?: ModelStringInput | null,
   orderProcessed?: ModelBooleanInput | null,
   shipped?: ModelBooleanInput | null,
@@ -237,6 +239,7 @@ export type UpdateOrderInput = {
   stripePaymentIntent?: string | null,
   shippingAddress?: ShippingAddressInput | null,
   createdAt?: string | null,
+  stripeOrderId?: string | null,
   paymentStatus?: string | null,
   orderProcessed?: boolean | null,
   userInfo?: UserInfoInput | null,
@@ -248,6 +251,7 @@ export type ModelOrderFilterInput = {
   id?: ModelStringInput | null,
   stripePaymentIntent?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
+  stripeOrderId?: ModelStringInput | null,
   paymentStatus?: ModelStringInput | null,
   orderProcessed?: ModelBooleanInput | null,
   shipped?: ModelBooleanInput | null,
@@ -318,6 +322,7 @@ export type SearchableIDFilterInput = {
   exists?: boolean | null,
   wildcard?: string | null,
   regexp?: string | null,
+  range?: Array< string | null > | null,
 };
 
 export type SearchableStringFilterInput = {
@@ -334,6 +339,7 @@ export type SearchableStringFilterInput = {
   exists?: boolean | null,
   wildcard?: string | null,
   regexp?: string | null,
+  range?: Array< string | null > | null,
 };
 
 export type SearchableBooleanFilterInput = {
@@ -636,6 +642,7 @@ export type RegisterUserMutation = {
               id: string,
               stripePaymentIntent: string | null,
               createdAt: string,
+              stripeOrderId: string | null,
               paymentStatus: string | null,
               orderProcessed: boolean,
               shipped: boolean | null,
@@ -690,6 +697,7 @@ export type RegisterUserMutation = {
           address_postcode: string,
         } | null,
         createdAt: string,
+        stripeOrderId: string | null,
         paymentStatus: string | null,
         orderProcessed: boolean,
         userInfo:  {
@@ -843,6 +851,7 @@ export type UpdateUserMutation = {
               id: string,
               stripePaymentIntent: string | null,
               createdAt: string,
+              stripeOrderId: string | null,
               paymentStatus: string | null,
               orderProcessed: boolean,
               shipped: boolean | null,
@@ -897,6 +906,7 @@ export type UpdateUserMutation = {
           address_postcode: string,
         } | null,
         createdAt: string,
+        stripeOrderId: string | null,
         paymentStatus: string | null,
         orderProcessed: boolean,
         userInfo:  {
@@ -1118,6 +1128,7 @@ export type CreateOrderMutation = {
             address_postcode: string,
           } | null,
           createdAt: string,
+          stripeOrderId: string | null,
           paymentStatus: string | null,
           orderProcessed: boolean,
           userInfo:  {
@@ -1206,6 +1217,7 @@ export type CreateOrderMutation = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    stripeOrderId: string | null,
     paymentStatus: string | null,
     orderProcessed: boolean,
     userInfo:  {
@@ -1358,6 +1370,7 @@ export type UpdateOrderMutation = {
             address_postcode: string,
           } | null,
           createdAt: string,
+          stripeOrderId: string | null,
           paymentStatus: string | null,
           orderProcessed: boolean,
           userInfo:  {
@@ -1446,6 +1459,7 @@ export type UpdateOrderMutation = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    stripeOrderId: string | null,
     paymentStatus: string | null,
     orderProcessed: boolean,
     userInfo:  {
@@ -1529,6 +1543,7 @@ export type GetUserQuery = {
               id: string,
               stripePaymentIntent: string | null,
               createdAt: string,
+              stripeOrderId: string | null,
               paymentStatus: string | null,
               orderProcessed: boolean,
               shipped: boolean | null,
@@ -1583,6 +1598,7 @@ export type GetUserQuery = {
           address_postcode: string,
         } | null,
         createdAt: string,
+        stripeOrderId: string | null,
         paymentStatus: string | null,
         orderProcessed: boolean,
         userInfo:  {
@@ -1769,6 +1785,7 @@ export type ListOrdersQuery = {
               address_postcode: string,
             } | null,
             createdAt: string,
+            stripeOrderId: string | null,
             paymentStatus: string | null,
             orderProcessed: boolean,
             userInfo:  {
@@ -1846,6 +1863,7 @@ export type ListOrdersQuery = {
         address_postcode: string,
       } | null,
       createdAt: string,
+      stripeOrderId: string | null,
       paymentStatus: string | null,
       orderProcessed: boolean,
       userInfo:  {
@@ -2001,6 +2019,7 @@ export type SearchProductsQueryVariables = {
   sort?: SearchableProductSortInput | null,
   limit?: number | null,
   nextToken?: string | null,
+  from?: number | null,
 };
 
 export type SearchProductsQuery = {
@@ -2204,6 +2223,7 @@ export type OnCreateOrderSubscription = {
             address_postcode: string,
           } | null,
           createdAt: string,
+          stripeOrderId: string | null,
           paymentStatus: string | null,
           orderProcessed: boolean,
           userInfo:  {
@@ -2292,6 +2312,7 @@ export type OnCreateOrderSubscription = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    stripeOrderId: string | null,
     paymentStatus: string | null,
     orderProcessed: boolean,
     userInfo:  {
@@ -2439,6 +2460,7 @@ export type OnUpdateOrderSubscription = {
             address_postcode: string,
           } | null,
           createdAt: string,
+          stripeOrderId: string | null,
           paymentStatus: string | null,
           orderProcessed: boolean,
           userInfo:  {
@@ -2527,6 +2549,7 @@ export type OnUpdateOrderSubscription = {
       address_postcode: string,
     } | null,
     createdAt: string,
+    stripeOrderId: string | null,
     paymentStatus: string | null,
     orderProcessed: boolean,
     userInfo:  {

@@ -1,6 +1,5 @@
 import React from "react";
 import { CircularProgress, makeStyles } from "@material-ui/core";
-import { COLORS } from "../themes";
 
 interface LoadingProps {
   size?: number;
@@ -24,7 +23,7 @@ const Loading: React.FC<LoadingProps> = ({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      height: "calc(100vh - 60px)",
+      height: "calc(100vh - 54px)",
     },
     loadingSmall: {
       display: "flex",

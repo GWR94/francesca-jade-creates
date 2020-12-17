@@ -61,6 +61,7 @@ type Order
   user: User @connection(name: "UserOrders") 
   shippingAddress: ShippingAddress
   createdAt: String!
+  stripeOrderId: String
   paymentStatus: String
   orderProcessed: Boolean!
   userInfo: UserInfo!

@@ -16,6 +16,9 @@ export default createStyles({
     margin: "0 auto",
     paddingTop: 10,
     minHeight: "50vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   mainTitle: {
     fontSize: "1.6rem",
@@ -80,6 +83,15 @@ export default createStyles({
       width: "95%",
     },
   },
+  successContainer: {
+    width: "100%",
+    display: "flex",
+    height: "100%",
+    flexDirection: "column",
+    minHeight: 400,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
   outerContainer: {
     display: "flex",
     flexDirection: "column",
@@ -135,7 +147,7 @@ export default createStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin: "20px 0",
+    paddingBottom: "20px",
   },
   priceTitle: {
     fontSize: "1.1rem",
@@ -154,5 +166,8 @@ export default createStyles({
     fontWeight: "bold",
     // textAlign: "center",
     width: "100%",
+  },
+  checkoutContainer: {
+    marginBottom: 10,
   },
 });

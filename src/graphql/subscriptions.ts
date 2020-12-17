@@ -117,6 +117,7 @@ export const onCreateOrder = /* GraphQL */ `
               address_postcode
             }
             createdAt
+            stripeOrderId
             paymentStatus
             orderProcessed
             userInfo {
@@ -193,6 +194,7 @@ export const onCreateOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
+      stripeOrderId
       paymentStatus
       orderProcessed
       userInfo {
@@ -319,6 +321,7 @@ export const onUpdateOrder = /* GraphQL */ `
               address_postcode
             }
             createdAt
+            stripeOrderId
             paymentStatus
             orderProcessed
             userInfo {
@@ -395,6 +398,7 @@ export const onUpdateOrder = /* GraphQL */ `
         address_postcode
       }
       createdAt
+      stripeOrderId
       paymentStatus
       orderProcessed
       userInfo {

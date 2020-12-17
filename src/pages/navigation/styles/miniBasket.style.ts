@@ -3,8 +3,8 @@ import { COLORS, FONTS } from "../../../themes/index";
 
 export default createStyles({
   basket: {
-    padding: "8px 12px",
-    minWidth: "220px",
+    padding: "12px 24px",
+    minWidth: "240px",
     fontFamily: FONTS.Title,
     position: "relative",
     // Arrow towards parent
@@ -34,8 +34,10 @@ export default createStyles({
     },
   },
   basketDelete: {
-    paddingLeft: 5,
+    marginLeft: 15,
     color: COLORS.ErrorRed,
     display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
   },
 });

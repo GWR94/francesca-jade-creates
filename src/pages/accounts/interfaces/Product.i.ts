@@ -5,12 +5,14 @@ export interface ProductCardProps {
   admin?: boolean;
 }
 
+export type ProductType = "Cake" | "Creates";
+
 export interface ProductProps {
   id: string;
   title: string;
   description: string;
   tagline: string;
-  type: "Cake" | "Creates";
+  type: ProductType;
   images: {
     cover: number;
     collection: S3ImageProps[];

@@ -2,7 +2,8 @@
   width: 1200px;
   background: #fff;
   margin: 0 auto;
-  min-height: calc(100vh - 54px);
+  min-height: calc(100vh - 150px);
+  padding-bottom: 20px;
   @media screen and (max-width: $l-breakpoint) {
     width: 900px;
   }
@@ -81,4 +82,16 @@ span.bp3-popover-target {
     color: #fd4ef2;
     transition: color .5s
   }
+}
+
+.animate__delay-half {
+  animation-delay: 0.5s;
+}
+
+.animate__delay-1half {
+  animation-delay: 1.5s;
+}
+
+.animate__delay-2half {
+  animation-delay: 2.5s;
 }

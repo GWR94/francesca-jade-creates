@@ -1,7 +1,9 @@
-import { Storage } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
+import AWS from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import { ProductProps } from "../pages/accounts/interfaces/Product.i";
+import { ProductProps, S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
+import { Variant } from "../pages/accounts/interfaces/Variants.i";
 
 /**
  * helper method to put cognito user attributes array into an object that can
@@ -21,6 +23,11 @@ export const attributesToObject = (attributes: CognitoUserAttribute[]): any => {
   return obj;
 };
 
+/**
+ * Function to remove an image that is stored in the cloud (S3)
+ * @param key - the key of the image that wants to be removed from the cloud
+ *
+ */
 export const handleRemoveFromS3 = async (key: string): Promise<void> => {
   try {
     // remove the image from s3 by using the key
@@ -30,6 +37,35 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
     // FIXME - remove console.error for production
     console.error(err);
   }
+};
+
+/**
+ * Function to return a url which has been signed, meaning unauthenticated
+ * users/services can still view images.
+ * @param key - the key of the image that you wish to generate a signed
+ * URL for.
+ * @param level - protection level - i.e public, private or protected.
+ */
+export const getSignedS3Url = (key: string, level = "public"): string => {
+  const s3 = new AWS.S3({
+    endpoint: "s3-eu-west-2.amazonaws.com",
+    signatureVersion: "v4",
+    region: "eu-west-2",
+    accessKeyId: process.env.ACCESS_KEY_AWS,
+    secretAccessKey: process.env.SECRET_KEY_AWS,
+  });
+
+  const url = s3.getSignedUrl("getObject", {
+    Bucket: process.env.IMAGE_S3_BUCKET,
+    Key: `${level}/${key}`,
+  });
+  return url;
+};
+
+export const getPublicS3URL = (s3Image: S3ImageProps): string => {
+  const { key, bucket, region } = s3Image;
+  const url = `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
+  return url;
 };
 
 /**
@@ -44,80 +80,6 @@ export const getCompressedKey = (key: string): string => {
   const compressedKey = [arr[0], "/compressed-", ...arr.slice(1)].join("");
   return compressedKey;
 };
-
-/**
- * Marks for range/number sliders in Variants component.
- */
-export const marks = [
-  {
-    value: 0,
-    label: 0,
-  },
-  {
-    value: 2,
-    label: 2,
-  },
-  {
-    value: 4,
-    label: 4,
-  },
-  {
-    value: 6,
-    label: 6,
-  },
-  {
-    value: 8,
-    label: 8,
-  },
-  {
-    value: 10,
-    label: 10,
-  },
-  {
-    value: 12,
-    label: 12,
-  },
-  {
-    value: 14,
-    label: 14,
-  },
-  {
-    value: 16,
-    label: 16,
-  },
-  {
-    value: 18,
-    label: 18,
-  },
-  {
-    value: 20,
-    label: 20,
-  },
-  {
-    value: 22,
-    label: 22,
-  },
-  {
-    value: 24,
-    label: 24,
-  },
-  {
-    value: 26,
-    label: 26,
-  },
-  {
-    value: 28,
-    label: 28,
-  },
-  {
-    value: 30,
-    label: 30,
-  },
-  {
-    value: 32,
-    label: 32,
-  },
-];
 
 // helper methods for setting up aws_exports with localhost and production simultaneously
 export const hasLocalhost = (hostname: string): boolean =>
@@ -140,7 +102,8 @@ export const isLocalhost = hasLocalhost(window.location.hostname);
  * string
  */
 export const getReadableStringFromArray = (array: string[]): string => {
-  return array.length == 1
+  console.log(array);
+  return array.length === 1
     ? array[0]
     : [array.slice(0, array.length - 1).join(", "), array[array.length - 1]].join(
         " and ",
@@ -149,23 +112,22 @@ export const getReadableStringFromArray = (array: string[]): string => {
 
 /**
  * A function to get the minimum possible value for the current chosen
- * product. Will also return a string to notify the customer to request
+ * products' variants. Will also return a string to notify the customer to request
  * a quote if there is no current price.
- * @param {BasketItemProps} product - the current product to get the minimum price from
+ * @param {Variant[]} variants - the variants array for the chosen product.
  * @param {boolean} showMax - value to signify if the maximum product price should be shown
  * the returned string.
  */
-export const getProductPrice = (
-  product: BasketItemProps | ProductProps,
-  showMax = false,
-): string => {
+export const getProductPrice = (variants: Variant[], showMax = false): string => {
   // set min to infinity/max to -infinity so any first value will change them
   let min = Infinity;
   let max = -Infinity;
   // iterate through the variants of the current product
-  product.variants.forEach((variant) => {
+  variants.forEach((variant) => {
     // set the min value to be the smaller value of the current min or the current variants price
-    min = Math.min(variant.price.item + variant.price.postage, min);
+    min = showMax
+      ? Math.min(variant.price.item + variant.price.postage, min)
+      : Math.min(variant.price.item, min);
     max = Math.max(variant.price.item + variant.price.postage, max);
   });
   /**
@@ -175,6 +137,6 @@ export const getProductPrice = (
   return min === Infinity
     ? "Request for Price"
     : min === max
-    ? `£${min.toFixed(2)} incl. P&P`
-    : `From £${min.toFixed(2)}${showMax ? ` to £${max.toFixed(2)}` : ""} incl. P&P`;
+    ? `£${min.toFixed(2)}`
+    : `From £${min.toFixed(2)}${showMax ? ` to £${max.toFixed(2)} incl. P&P` : ""}`;
 };

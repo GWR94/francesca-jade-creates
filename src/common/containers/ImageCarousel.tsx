@@ -20,13 +20,6 @@ import DeleteImageDialog from "../alerts/DeleteImageDialog";
 import { getCompressedKey } from "../../utils";
 
 /**
- * TODO
- * [ ] Put tags inline in confirm dialog
- * [ ] Make sure all absolute positioned divs are below navbar
- * [x] Test deleting images without compressed version
- */
-
-/**
  * Class component for displaying, updating and removing images for a specific product's
  * images. Images will be rendered inside a carousel component, and will have the option
  * to delete and save as cover photo by clicking on the relevant icons on the image.
@@ -217,7 +210,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       });
     }
   };
-  const { keyToDelete, imageLoading, coverImageIdx } = state;
+  const { keyToDelete, coverImageIdx } = state;
   return (
     <>
       <div className={isCentered ? classes.centeredImageContainer : ""}>
@@ -339,13 +332,13 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
               <ButtonBack className={`${classes.backButton} animated pulse infinite`}>
                 <ChevronLeft
                   className={classes.svg}
-                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />
               </ButtonBack>
               <ButtonNext className={`${classes.forwardButton} animated pulse infinite`}>
                 <ChevronRight
                   className={classes.svg}
-                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Purple }}
+                  style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />
               </ButtonNext>
             </CarouselProvider>

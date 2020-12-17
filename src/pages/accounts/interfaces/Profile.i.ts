@@ -6,7 +6,6 @@ import { ImageProps } from "./NewProduct.i";
 
 export interface ProfileProps extends ProfileStateProps {
   userAttributes: UserAttributeProps | null; //object container user attributes
-  admin: boolean; // boolean to check if user is admin
   history: History;
   user: CognitoUserProps;
   // styles object containing classNames.

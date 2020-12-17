@@ -28,7 +28,8 @@ import {
   Variant,
 } from "../interfaces/Variants.i";
 import { COLORS } from "../../../themes";
-import { getReadableStringFromArray, marks } from "../../../utils";
+import { getReadableStringFromArray } from "../../../utils";
+import { marks } from "../../../utils/data";
 
 /**
  * TODO
@@ -383,7 +384,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
       case "number":
         return (
           <>
-            <Typography id="range-slider" gutterBottom style={{ textAlign: "center" }}>
+            <Typography gutterBottom style={{ textAlign: "center" }}>
               Number of {featureName}
             </Typography>
             <Slider
@@ -393,7 +394,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
               max={32}
               valueLabelDisplay="auto"
               onChange={(_e, number): void => this.setState({ number: number as number })}
-              aria-labelledby="range-slider"
               marks={marks.slice(1)}
             />
             <Button
@@ -413,9 +413,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
          */
         return (
           <>
-            <Typography id="range-slider" gutterBottom>
-              Range of {featureName}
-            </Typography>
+            <Typography gutterBottom>Range of {featureName}</Typography>
             <Slider
               value={range}
               step={1}
@@ -423,7 +421,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
               max={32}
               valueLabelDisplay="auto"
               onChange={(_e, range): void => this.setState({ range: range as number[] })}
-              aria-labelledby="range-slider"
               marks={marks}
             />
             <Button
@@ -592,8 +589,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
                 <Select
                   value={featureType}
                   fullWidth
-                  labelId="feature-type-label"
-                  id="feature-type"
                   labelWidth={200}
                   label="User Action"
                   variant="outlined"

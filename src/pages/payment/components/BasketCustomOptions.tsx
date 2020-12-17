@@ -25,13 +25,20 @@ import RenderInput from "./RenderInput";
  * [x] Show uploaded images when field is complete
  * [x] Add Optional to all fields which are optional (range/minNum)
  * [x] Add colour scheme to top of custom options
- * [ ] Add styles to delete product dialog
+ * [x] Add styles to delete product dialog
  * [ ] Check the images are deleting from s3 when removing them from array
+ * [ ] Notify the user images will be lost if navigating away from accordion
+ * [ ] Remove ability to highlight unnecessary text
  */
 
 /**
  * Functional component to allow a customer to enter their custom options for a
  * chosen product variant and store the result into the redux store (basket.checkout)
+ * @param currentVariant - The current variant of the chosen product in the parent.
+ * @param setCurrentVariant - Function to change the current variant in the parent
+ * component.
+ * @param customOptions - The custom options array passed down from the parent component
+ * @param colorScheme - colour scheme of product
  */
 const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   currentVariant,
@@ -39,6 +46,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
   customOptions,
   colorScheme,
 }) => {
+  // create state and initialise with empty input values
   const [state, setState] = useState<CustomOptionsState>({
     expanded: false,
     currentNotesValue: "",
@@ -47,19 +55,28 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     imageCompleted: false,
   });
 
+  // make styles from external styles object
   const useStyles = makeStyles(styles);
+  // execute useStyles function so styles can be used in component
   const classes = useStyles();
 
+  /**
+   * Function to change the open accordion panel in the component based on the
+   * index provided as "panel".
+   * @param panel - The index of the panel that the user wishes to navigate to
+   */
   const handlePanelChange = (panel: string) => (
     _event: React.ChangeEvent<{}>,
     isExpanded: boolean,
   ): void => {
     setState({
       ...state,
+      // if isExpanded is true, change to the panel, otherwise close all panels with false
       expanded: isExpanded ? panel : false,
     });
   };
 
+  // destructure state for use in component
   const {
     expanded,
     isCompleted,
@@ -68,6 +85,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     imageCompleted,
   } = state;
 
+  // store the index of the notes & color panels so they can be referenced easily in component
   const notesIdx = (currentVariant?.features.length ?? 0) + 1;
   const colorIdx = currentVariant?.features.length ?? 0;
 
@@ -80,9 +98,10 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
             (feature.inputType === "range" && feature.value.range?.[0] === 0);
           return (
             <Accordion
+              // expand if expanded is the current panel
               expanded={expanded === `panel${i}`}
               key={i}
-              TransitionProps={{ unmountOnExit: true }}
+              TransitionProps={{ unmountOnExit: false }}
               onChange={handlePanelChange(`panel${i}`)}
               style={{ width: "100%", boxSizing: "border-box" }}
             >
@@ -95,6 +114,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 <Typography className={classes.secondaryHeading}>
                   {customOptions[i] !== undefined ||
                   (feature.featureType === "images" && imageCompleted) ? (
+                    // if completed show "Completed" in green text
                     <span
                       className={classes.statusTab}
                       style={{ color: COLORS.SuccessGreen }}
@@ -102,6 +122,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       Complete
                     </span>
                   ) : optional ? (
+                    // if optional show "Optional" in orange text
                     <span
                       className={classes.statusTab}
                       style={{ color: COLORS.WarningOrange }}
@@ -109,6 +130,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       Optional
                     </span>
                   ) : (
+                    // if not completed show "Incomplete" in red text
                     <span
                       style={{ color: COLORS.ErrorRed }}
                       className={classes.statusTab}
@@ -118,6 +140,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                   )}
                 </Typography>
               </AccordionSummary>
+              {/* Render the relevant input inside RenderInput component */}
               <AccordionDetails classes={{ root: classes.accordionRoot }}>
                 <RenderInput
                   feature={feature}
@@ -139,6 +162,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
         })}
       {!isCompleted && (
         <>
+          {/* Render colour scheme accordion for the user to pick their colour scheme */}
           <Accordion
             expanded={expanded === `panel-color`}
             TransitionProps={{ unmountOnExit: true }}
@@ -174,6 +198,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
                         const prevValue = customOptions[colorIdx];
+                        // @ts-expect-error
                         updatedCustomOptions[colorIdx] = undefined;
                         setState({
                           ...state,
@@ -190,6 +215,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     <Button
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
+                        // @ts-expect-error
                         updatedCustomOptions[colorIdx] = undefined;
                         setCustomOptions(updatedCustomOptions);
                       }}
@@ -283,12 +309,13 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
             <AccordionDetails classes={{ root: classes.accordionRoot }}>
               {customOptions[notesIdx] !== undefined ? (
                 <>
-                  <Typography>{Object.values(customOptions[notesIdx])}</Typography>
+                  <Typography>{Object.values(customOptions[notesIdx])[0]}</Typography>
                   <div className={classes.buttonContainer}>
                     <Button
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
                         const prevValue = customOptions[notesIdx];
+                        // @ts-expect-error
                         updatedCustomOptions[notesIdx] = undefined;
                         setState({
                           ...state,
@@ -305,6 +332,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     <Button
                       onClick={(): void => {
                         const updatedCustomOptions = customOptions;
+                        // @ts-expect-error
                         updatedCustomOptions[notesIdx] = undefined;
                         setCustomOptions(updatedCustomOptions);
                       }}

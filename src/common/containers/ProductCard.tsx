@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { API, graphqlOperation } from "aws-amplify";
 import {
   Card,
@@ -16,28 +16,21 @@ import {
   Menu,
   Fab,
   Tooltip,
+  Typography,
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
-import { MoreVert, AddShoppingCartOutlined } from "@material-ui/icons";
+import { MoreVert, AddShoppingCartOutlined, HelpOutline } from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
 import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { deleteProduct } from "../../graphql/mutations";
-import ChipContainer from "../inputs/ChipContainer";
-import { COLORS, INTENT } from "../../themes";
+import { COLORS, FONTS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
-import AWS from "aws-sdk";
-
-/**
- * TODO
- * [ ] Check cover image index always changes if image is delete
- * [ ] Change ADD ANOTHER IMAGE to ADD IMAGE when theres no images in carousel
- * [ ] Change cover photos to photos in confirm dialog
- */
+import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -61,19 +54,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
       bottom: 4,
       right: 4,
       backgroundColor:
-        product.type === "Cake" ? "rgba(253, 78, 242, 0.4)" : "rgba(147, 112, 246, 0.5)",
+        product.type === "Cake" ? "rgba(253, 78, 242, 0.4)" : "rgba(188, 188, 188, 0.4)",
       "&:hover": {
         backgroundColor:
           product.type === "Cake"
             ? "rgba(253, 78, 242, 0.65)"
-            : "rgba(147, 112, 246, 0.75)",
+            : "rgba(188, 188, 188, 0.65)",
       },
     },
   });
 
   const classes = useStyles();
   // destructure product for ease of variable use
-  const { id, images, title, type, tags, tagline, variants } = product;
+  const { id, images, title, type, tagline, variants } = product;
   // boolean which shows/hides delete alert visibility
   const [deleteAlertOpen, setDeleteAlert] = useState(false);
   // boolean which opens dropdown menu for admin options
@@ -84,6 +77,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const history = useHistory();
   // create anchorRef to allow a point to fit the anchor point for the menu
   const anchorRef = React.useRef<SVGSVGElement>(null);
+  // boolean value which controls quote dialog open/closed
+  const [quoteDialogOpen, setQuoteDialogOpen] = useState(false);
   // connect with redux via hook.
   const dispatch = useDispatch();
 
@@ -151,9 +146,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         className={classes.card}
         // depending on the product type, place a border on top of the card with a color
         style={{
-          borderTop: `3px solid ${
-            type === "Cake" ? COLORS.LightPink : COLORS.LightPurple
-          }`,
+          borderTop: `3px solid ${type === "Cake" ? COLORS.LightPink : COLORS.LightGray}`,
         }}
       >
         <CardHeader
@@ -221,28 +214,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   margin: "auto auto 6px auto",
                 }}
               />
-              <Skeleton
-                animation="wave"
-                height={10}
-                width="80%"
-                style={{
-                  margin: "auto auto 6px auto",
-                }}
-              />
             </div>
           ) : (
-            <>
-              <p className={classes.price}>{handleGetPrices()}</p>
-              {tags && (
-                <div
-                  style={{
-                    marginBottom: 10,
-                  }}
-                >
-                  <ChipContainer type={type} tags={tags} />
-                </div>
-              )}
-            </>
+            <p className={classes.price}>{handleGetPrices()}</p>
           )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
@@ -283,29 +257,37 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={(e): void => {
                 // stop propagation so there are no undesired effects
                 e.stopPropagation();
-                try {
-                  // dispatch the action to add current product to basket, and map the cover image to it.
-                  dispatch(
-                    actions.addToBasket({
-                      ...product,
-                      image: images.collection[images.cover],
-                    }),
-                  );
-                  // notify the user of successful action
-                  openSnackbar({
-                    message: `Added ${product.title} to basket.`,
-                    severity: "success",
-                  });
-                } catch (err) {
-                  // notify the user of failed action
-                  openSnackbar({
-                    message: `Unable to add ${product.title} to basket. Please try again.`,
-                    severity: "error",
-                  });
+                if (type === "Creates") {
+                  try {
+                    // dispatch the action to add current product to basket, and map the cover image to it.
+                    dispatch(
+                      actions.addToBasket({
+                        ...product,
+                        image: images.collection[images.cover],
+                      }),
+                    );
+                    // notify the user of successful action
+                    openSnackbar({
+                      message: `Added ${product.title} to basket.`,
+                      severity: "success",
+                    });
+                  } catch (err) {
+                    // notify the user of failed action
+                    openSnackbar({
+                      message: `Unable to add ${product.title} to basket. Please try again.`,
+                      severity: "error",
+                    });
+                  }
+                } else {
+                  setQuoteDialogOpen(true);
                 }
               }}
             >
-              <AddShoppingCartOutlined />
+              {type === "Cake" ? (
+                <HelpOutline fontSize="large" />
+              ) : (
+                <AddShoppingCartOutlined />
+              )}
             </Fab>
           </Tooltip>
         </CardContent>
@@ -347,19 +329,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
               Delete Product
             </MenuItem>
           </Menu>
-          <Dialog open={deleteAlertOpen} onClose={(): void => setDeleteAlert(false)}>
-            <DialogTitle>
-              Delete &quot;
-              {title}
-              &quot;?
-            </DialogTitle>
+          <Dialog
+            open={deleteAlertOpen}
+            onClose={(): void => setDeleteAlert(false)}
+            style={{
+              fontFamily: `${FONTS.Title}, sans-serif`,
+              padding: "20px",
+              width: 400,
+              margin: "0 auto",
+            }}
+          >
+            <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
             <DialogContent>
-              <p>
+              <Typography variant="subtitle1" gutterBottom>
                 Are you sure you want to delete &quot;
                 {title}
                 &quot;?
-              </p>
-              <p>This cannot be undone.</p>
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                This cannot be undone.
+              </Typography>
+              <S3Image
+                imgKey={product.images.collection[product.images.cover].key}
+                theme={{
+                  photoImg: {
+                    width: 300,
+                    margin: "0 auto",
+                    display: "block",
+                  },
+                }}
+              />
             </DialogContent>
             <DialogActions>
               <Button color="primary" onClick={(): void => setDeleteAlert(false)}>
@@ -370,6 +369,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </DialogActions>
           </Dialog>
+          <QuoteDialog
+            open={quoteDialogOpen}
+            onClose={(): void => setQuoteDialogOpen(false)}
+            cake={product.title}
+          />
         </>
       )}
     </>

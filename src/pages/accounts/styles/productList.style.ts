@@ -36,9 +36,4 @@ export default createStyles({
     },
     zIndex: 1,
   },
-  gridContainer: {
-    [breakpoints.down("xs")]: {
-      margin: "0 15px",
-    },
-  },
 });

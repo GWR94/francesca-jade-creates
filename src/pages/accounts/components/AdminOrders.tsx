@@ -10,20 +10,10 @@ import {
   Chip,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
   Grid,
-  InputLabel,
   makeStyles,
-  MenuItem,
-  Select,
-  TextField,
   Typography,
   useMediaQuery,
-  useTheme,
 } from "@material-ui/core";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -38,32 +28,91 @@ import { listOrders } from "../../../graphql/queries";
 import { S3ImageProps } from "../interfaces/Product.i";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import styles from "../styles/orders.style";
-import { COLORS } from "../../../themes";
+import Pagination from "../../../common/Pagination";
+import ShippingReferenceDialog from "./ShippingReferenceDialog";
+import { getSignedS3Url } from "../../../utils";
+import { openSnackbar } from "../../../utils/Notifier";
 
+/**
+ * TODO
+ * [ ] Fix shipping references title overflowing in dialog
+ */
+
+interface AdminOrdersState {
+  expanded: boolean | string;
+  isSettingStatus: boolean;
+  dialogOpen: boolean;
+  currentOrder: OrderProps | null;
+  inputError: string;
+  isSending: boolean;
+  isLoading: boolean;
+  showPages: {
+    min: number;
+    max: number;
+  };
+}
+
+/**
+ * Functional component to render a table of all of the orders that have been
+ * placed, but only if the user is an admin. The admin can see an overview of
+ * all orders to quickly see if the orders have been paid, and if they have
+ * been marked as shipped or not. The admin can also download all of the custom
+ * images needed to create the order.
+ */
 const AdminOrders = (): JSX.Element => {
+  // initialise state to store orders in as an empty array (which will be filled when component mounts)
   const [orders, setOrders] = useState<OrderProps[]>([]);
 
+  const [state, setState] = useState<AdminOrdersState>({
+    expanded: false,
+    isSettingStatus: false,
+    dialogOpen: false,
+    currentOrder: null,
+    inputError: "",
+    isSending: false,
+    isLoading: true,
+    showPages: {
+      min: 0,
+      max: 12,
+    },
+  });
+
+  /**
+   * Function to retrieve all of the latest orders via the graphql query "listOrders".
+   * This function will be executed when the component mounts
+   */
   const getOrders = async (): Promise<void> => {
+    // retrieve the orders data via the listOrders graphql query
     const { data } = await API.graphql(graphqlOperation(listOrders));
-    setOrders(data.listOrders.items);
+    // store the actual items into a variable
+    const items: OrderProps[] = data.listOrders.items;
+    // sort the items via their createdAt data (descending)
+    const sorted = items.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
+    // set orders into state
+    setOrders(sorted);
+    // create a small timeout so the spinner doesn't stop instantly if on fast connection
+    setTimeout(() => {
+      // remove loading UI effects
+      setState({ ...state, isLoading: false });
+    }, 500);
   };
 
-  const [expanded, setExpanded] = useState<string | boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [trackingSelect, setTrackingInfo] = useState<string>("");
-  const [inputValue, setInputValue] = useState<string>("");
-  const [trackingArray, setMultipleTracking] = useState<{ [key: string]: string }[]>([]);
-  const [currentOrder, setCurrentOrder] = useState<OrderProps | null>(null);
-  const [inputError, setInputError] = useState<string>("");
-  const [isSending, setSending] = useState<boolean>(false);
-
+  let isMounted = false;
   useEffect(() => {
-    getOrders();
+    // isMounted is used for suppressing react error of updating unmounted component
+    isMounted = true;
+    // if the component is mounted, execute the getOrders function
+    if (isMounted) getOrders();
+    return (): void => {
+      // set isMounted to false when the component is unmounted.
+      isMounted = false;
+    };
   }, []);
 
+  // extend localizedFormat extension for dayjs to format dates correctly
   dayjs.extend(localizedFormat);
 
+  // update AWS with access and secret keys.
   AWS.config.update({
     accessKeyId: process.env.ACCESS_KEY_AWS,
     secretAccessKey: process.env.SECRET_KEY_AWS,
@@ -75,11 +124,12 @@ const AdminOrders = (): JSX.Element => {
 
   /**
    * useMediaQuery hook is used to change styles based on whether screen
-   * is smaller/larger than input parameter
+   * is smaller/larger than input parameter. This will be used to
+   * determine if the dialog should be full screen, and will change the
+   * content of some parts of the component to fit mobile/desktop
+   * respectively.
    */
   const desktop = useMediaQuery("(min-width: 600px)");
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   /**
    * Function to open/close a panel inside the Accordion component.
@@ -90,207 +140,151 @@ const AdminOrders = (): JSX.Element => {
     isExpanded: boolean,
   ): void => {
     // Opens panel if its closed, or closes it if it's open.
-    setExpanded(isExpanded ? panel : false);
+    setState({
+      ...state,
+      expanded: isExpanded ? panel : false,
+    });
   };
 
   /**
    * Function which returns the full price of all the products in the order.
    * @param products - Array of products to retrieve the accumulative price from
+   * @returns string - Returns the string of the accumulative price at a fixed
+   * number of 2 decimal places.
    */
   const getOrderPrice = (products: GraphQlProduct[]): string => {
+    // initialise price to be 0.
     let price = 0;
     products.map((product) => {
+      // add the price of the product and shipping cost to price
       price += product.price + product.shippingCost;
     });
+    // return price in correct format as string
     return `£${price.toFixed(2)}`;
   };
 
-  const getSignedDownloadURL = (s3Image: S3ImageProps): string => {
-    const { key, bucket } = s3Image;
-    const s3 = new AWS.S3({
-      signatureVersion: "v4",
-      region: "eu-west-2",
-      accessKeyId: process.env.ACCESS_KEY_AWS,
-      secretAccessKey: process.env.SECRET_KEY_AWS,
-    });
-    const expiry = 60 * 60; // 1 hour (60 seconds * 60 mins)
-
-    const url = s3.getSignedUrl("getObject", {
-      Bucket: bucket,
-      Key: `public/${key}`,
-      Expires: expiry,
-    });
-    return url;
-  };
-
+  /**
+   * Function to render a download button to the admin so they can
+   * download all of the user's custom images (if there are any)
+   * @param product - The completed product with all custom images and
+   * data which will be used to retrieve the custom options from.
+   */
   const downloadProductImages = (product: GraphQlProduct): void => {
+    // destructure customOptions from product
     const { customOptions } = product;
-    const options = [];
-    for (const option of customOptions) {
-      options.push(JSON.parse(option));
-    }
-    for (const option of options) {
-      if (Object.keys(option)[0] === "Images") {
-        (Object.values(option)[0] as S3ImageProps[]).forEach((s3) => {
-          const url = getSignedDownloadURL(s3);
-          console.log(url);
-          const a = document.createElement("a");
-          a.download = url;
-          a.setAttribute("href", url);
-          a.setAttribute("style", "display: none");
-          a.setAttribute("target", "_blank");
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        });
-      }
+    const images: S3ImageProps[] = [];
+    customOptions
+      // filter out any falsy values (null or undefined)
+      .filter((option) => option)
+      // parse the JSON into an object
+      .map((option) => JSON.parse(option))
+      // filter out all but the images object
+      .filter((option) => Object.keys(option)[0] === "Images")
+      // push the s3 images to the images array so it can be used
+      .map((option) => images.push(...(Object.values(option)[0] as S3ImageProps[])));
+
+    /**
+     * Iterate through each of the images in the array, get the signed URL
+     * for each, and simulate a click to open all images to be downloaded.
+     */
+    for (const image of images) {
+      // get the signed url
+      const url = getSignedS3Url(image.key);
+      // create an a element to open the link
+      const a = document.createElement("a");
+      // set the download attribute to be the signed url
+      a.download = url;
+      // set the href to be the signed url
+      a.setAttribute("href", url);
+      // hide the element
+      a.setAttribute("style", "display: none");
+      // open the url in a new window by setting the target to be _blank
+      a.setAttribute("target", "_blank");
+      // append the a element to the body
+      document.body.appendChild(a);
+      // click the a element, which will open/download the image
+      a.click();
+      // remove the a element from the body.
+      document.body.removeChild(a);
     }
   };
 
-  const handleSetOrder = (order: OrderProps): void => {
+  /**
+   * Function to update the order status of the input order - i.e if the
+   * orderProcessed was true, it will now be false, and vice versa.
+   * @param order - The order to update with the updated order values.
+   */
+  const handleSetOrder = async (order: OrderProps): Promise<void> => {
     try {
-      setLoading(true);
+      // set loading to true so loading UI effects are shown to user
+      setState({
+        ...state,
+        isSettingStatus: true,
+      });
+      // set a timeout so UI effects don't instantly stop
+      // execute lambda function to update the database
+      await API.post("orderlambda", "/orders/set-order-processing", {
+        body: {
+          isProcessed: order.orderProcessed ? !order.orderProcessed : true,
+          orderId: order.id,
+        },
+      });
       setTimeout(async () => {
-        await API.post("orderlambda", "/orders/set-order-processing", {
-          body: {
-            isProcessed: order.orderProcessed ? !order.orderProcessed : true,
-            orderId: order.id,
-          },
+        // set loading to be false to remove UI loading effects
+        setState({
+          ...state,
+          isSettingStatus: false,
         });
-        setLoading(false);
+        // reload the window to show updated data to user
         window.location.reload();
       }, 1000);
     } catch (err) {
-      console.error(err);
+      openSnackbar({
+        severity: "error",
+        message: "Unable to update order status. Please try again.",
+      });
     }
   };
 
-  const closeDialog = (): void => {
-    setDialogOpen(false);
-    setMultipleTracking([]);
-    setInputValue("");
-  };
-
-  const handleSendConfirmation = async (order: OrderProps): Promise<void> => {
-    try {
-      setSending(true);
-      const response = await API.post(
-        "orderlambda",
-        "/orders/send-shipping-information",
-        {
-          body: {
-            order,
-            trackingInfo:
-              // if there is an array of tracking numbers, use that
-              trackingArray.length > 0
-                ? trackingArray
-                : // else if there is a value for an individual tracking number, use it
-                inputValue.length > 0
-                ? inputValue
-                : // return null if theres neither an array nor value
-                  null,
-          },
-        },
-      );
-      setSending(false);
-      closeDialog();
-      console.log(response);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const renderShippingInput = (order: OrderProps): JSX.Element | null => {
-    let jsx: JSX.Element | null = null;
-    switch (trackingSelect) {
-      case "all":
-        jsx = (
-          <TextField
-            variant="outlined"
-            label="Tracking Number"
-            value={inputValue}
-            fullWidth
-            onChange={(e): void => setInputValue(e.target.value)}
-            style={{ marginTop: 8 }}
-          />
-        );
-        break;
-      case "one": {
-        jsx =
-          trackingArray.length < order.products.length ? (
-            <div style={{ display: "inline-flex", width: "100%", marginTop: 8 }}>
-              <TextField
-                variant="outlined"
-                label={`${order.products[trackingArray.length].title}`}
-                onChange={(e): void => {
-                  setInputError("");
-                  setInputValue(e.target.value);
-                }}
-                value={inputValue}
-                error={!!inputError}
-                helperText={inputError}
-                style={{ width: "75%" }}
-              />
-              <Button
-                variant="text"
-                onClick={(): void => {
-                  const title = order.products[trackingArray.length].title;
-                  if (!trackingArray.length) {
-                    setMultipleTracking([
-                      ...trackingArray,
-                      {
-                        [title]: inputValue,
-                      },
-                    ]);
-                    setInputValue("");
-                    return;
-                  }
-                  trackingArray.forEach((tracking) => {
-                    if (
-                      Object.keys(tracking).findIndex((item) => item === title) === -1
-                    ) {
-                      setMultipleTracking([
-                        ...trackingArray,
-                        {
-                          [title]: inputValue,
-                        },
-                      ]);
-                      setInputValue("");
-                    }
-                  });
-                }}
-                style={{ width: "25%", height: 54 }}
-                disabled={!inputValue.length}
-              >
-                Add Item
-              </Button>
-            </div>
-          ) : null;
-        break;
-      }
-      case "none":
-        jsx = null;
-        break;
-    }
-    return jsx;
-  };
+  // destructure values from state for use in component
+  const {
+    expanded,
+    isSettingStatus,
+    dialogOpen,
+    currentOrder,
+    isLoading,
+    showPages: { min, max },
+  } = state;
 
   return (
-    <>
-      <Container>
-        <Accordion expanded={false}>
-          <AccordionSummary>
-            <Grid container style={{ marginRight: 30 }}>
-              <Grid item xs={6}>
-                <Typography className={classes.headingTitle}>Order Date</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography className={classes.secondaryTitle}>Payment Status</Typography>
-              </Grid>
+    <Container>
+      {/* Create accordion to show the accordions values */}
+      <Accordion expanded={false}>
+        <AccordionSummary>
+          <Grid container style={{ marginRight: 30 }}>
+            <Grid item xs={6}>
+              <Typography className={classes.headingTitle}>Order Date</Typography>
             </Grid>
-          </AccordionSummary>
-        </Accordion>
-        {orders.map((order, i) => {
+            <Grid item xs={6}>
+              <Typography className={classes.secondaryTitle}>Payment Status</Typography>
+            </Grid>
+          </Grid>
+        </AccordionSummary>
+      </Accordion>
+      {/* If isLoading is true, show the loading spinner while data is retrieved */}
+      {isLoading ? (
+        <CircularProgress
+          color="inherit"
+          style={{
+            color: "#000",
+            display: "block",
+            margin: "100px auto 80px",
+          }}
+          size={60}
+        />
+      ) : (
+        // Map all of the orders into their own accordion component
+        orders.slice(min, max).map((order, i) => {
           return (
             <Accordion
               expanded={expanded === `panel${i}`}
@@ -304,16 +298,27 @@ const AdminOrders = (): JSX.Element => {
                 expandIcon={<ExpandMoreRounded />}
                 aria-controls={`panel${i}-content`}
                 id={`panel${i}-header`}
-                style={{ alignItems: "center" }}
+                style={{
+                  alignItems: "center",
+                }}
               >
                 <Grid container style={{ marginRight: -30 }}>
                   <Grid item xs={6}>
                     <Typography className={classes.heading}>
+                      {/* Render a minimal format if the user is on mobile, full format if not */}
                       {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
                     </Typography>
                   </Grid>
-                  <Grid item xs={6} style={{ display: "flex", justifyContent: "center" }}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
                     <div className={classes.secondaryHeading}>
+                      {/* If order is paid, render a green success chip */}
                       {order.paymentStatus === "paid" ? (
                         <Chip
                           className={classes.chipSuccess}
@@ -322,6 +327,7 @@ const AdminOrders = (): JSX.Element => {
                           label={desktop ? "Paid" : <AttachMoney />}
                         />
                       ) : (
+                        // If the order is not paid, render a red danger chip
                         <Chip
                           className={classes.chipDanger}
                           size="small"
@@ -329,6 +335,7 @@ const AdminOrders = (): JSX.Element => {
                           label={desktop ? "Unpaid" : <MoneyOff />}
                         />
                       )}
+                      {/* If order is shipped, render a green success chip */}
                       {order.shipped ? (
                         <Chip
                           className={classes.chipSuccess}
@@ -337,6 +344,7 @@ const AdminOrders = (): JSX.Element => {
                           label={desktop ? "Shipped" : <Send />}
                         />
                       ) : (
+                        // If order is not shipped, render a red danger chip
                         <Chip
                           className={classes.chipDanger}
                           size="small"
@@ -348,6 +356,7 @@ const AdminOrders = (): JSX.Element => {
                   </Grid>
                 </Grid>
               </AccordionSummary>
+              {/* Render all of the details from the order */}
               <div className={classes.detailsText}>
                 <Typography className={classes.orderId}>
                   Total Cost:
@@ -368,14 +377,19 @@ const AdminOrders = (): JSX.Element => {
                       variant,
                       customOptions,
                     } = product;
-                    const options: { [key: string]: string | string[] }[] = [];
+                    const options: {
+                      [key: string]: string | string[];
+                    }[] = [];
                     customOptions.forEach((option) => options.push(JSON.parse(option)));
                     return (
                       <Grid item xs={12} sm={order.products.length <= 1 ? 12 : 6} key={i}>
                         <div key={i} className={classes.variantContainer}>
                           <Typography
                             className={classes.details}
-                            style={{ textAlign: "center", textDecoration: "underline" }}
+                            style={{
+                              textAlign: "center",
+                              textDecoration: "underline",
+                            }}
                           >
                             {title}
                           </Typography>
@@ -394,7 +408,7 @@ const AdminOrders = (): JSX.Element => {
                           </Typography>
                           <div className={classes.buttonContainer}>
                             {options.some((option) =>
-                              option.hasOwnProperty("Images"),
+                              option?.hasOwnProperty("Images"),
                             ) && (
                               <Button
                                 variant="text"
@@ -403,7 +417,9 @@ const AdminOrders = (): JSX.Element => {
                                 }}
                                 size="small"
                                 color="primary"
-                                style={{ marginTop: 12 }}
+                                style={{
+                                  marginTop: 12,
+                                }}
                               >
                                 Download Custom Images
                               </Button>
@@ -415,21 +431,25 @@ const AdminOrders = (): JSX.Element => {
                   })}
                 </Grid>
               </AccordionDetails>
+              {/* Notify the admin if the orders have not been paid for */}
               {order.paymentStatus !== "paid" && (
                 <Typography className={classes.orderText}>
                   Note: Order not paid (yet)
                 </Typography>
               )}
+              {/* Render the items to control setting processing or sending tracking info */}
               <AccordionActions>
                 <Button
                   variant="contained"
                   color="secondary"
                   className={classes.paymentButton}
-                  onClick={(): void => handleSetOrder(order)}
+                  onClick={(): void => {
+                    if (currentOrder) handleSetOrder(currentOrder);
+                  }}
                   disabled={order.paymentStatus !== "paid"}
                   size="small"
                 >
-                  {isLoading ? (
+                  {isSettingStatus ? (
                     <CircularProgress
                       size={20}
                       style={{ color: "#fff" }}
@@ -448,8 +468,11 @@ const AdminOrders = (): JSX.Element => {
                   className={classes.paymentButton}
                   disabled={order.paymentStatus !== "paid"}
                   onClick={(): void => {
-                    setCurrentOrder(order);
-                    setDialogOpen(true);
+                    setState({
+                      ...state,
+                      currentOrder: order,
+                      dialogOpen: true,
+                    });
                   }}
                 >
                   Add Shipping Info
@@ -457,79 +480,35 @@ const AdminOrders = (): JSX.Element => {
               </AccordionActions>
             </Accordion>
           );
-        })}
-      </Container>
-      <Dialog
-        open={dialogOpen && currentOrder !== null}
-        onClose={closeDialog}
-        fullScreen={fullScreen}
-      >
-        <DialogTitle>Enter Shipping References</DialogTitle>
-        <DialogContent>
-          <Typography>Do you have tracking information for the products?</Typography>
-          <div className={classes.selectContainer}>
-            <FormControl variant="outlined" fullWidth>
-              <InputLabel>Tracking Data</InputLabel>
-              <Select
-                value={trackingSelect}
-                onChange={(e): void => setTrackingInfo(e.target.value as string)}
-                label="Tracking Data"
-                fullWidth
-              >
-                <MenuItem value="one">Yes, 1 for each item</MenuItem>
-                <MenuItem value="all">Yes, 1 for all items</MenuItem>
-                <MenuItem value="none">No, just email customer</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-          {trackingSelect.length > 0 && renderShippingInput(currentOrder as OrderProps)}
-          <ol className={classes.trackingList}>
-            {trackingArray.map((track, i) => {
-              return (
-                <li value={i + 1} key={i}>
-                  {Object.values(track)[0]}
-                  <i
-                    className={`fas fa-times animated pulse infinite ${classes.deleteIcon}`}
-                    onClick={(): void =>
-                      setMultipleTracking([
-                        ...trackingArray.slice(0, i),
-                        ...trackingArray.slice(i + 1),
-                      ])
-                    }
-                    tabIndex={0}
-                    role="button"
-                  />
-                </li>
-              );
-            })}
-          </ol>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="text" color="secondary" onClick={closeDialog}>
-            Cancel
-          </Button>
-          <Button
-            variant="text"
-            color="inherit"
-            className={classes.sendButton}
-            disabled={trackingSelect.length === 0}
-            onClick={(): Promise<void> =>
-              handleSendConfirmation(currentOrder as OrderProps)
-            }
-          >
-            {isSending ? (
-              <CircularProgress
-                style={{ color: COLORS.SuccessGreen }}
-                color="inherit"
-                size={20}
-              />
-            ) : (
-              "Send Email"
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+        })
+      )}
+      {/* Render the pagination if there is more than 6 orders in array */}
+      {orders.length > 6 && (
+        <Pagination
+          dataLength={orders.length}
+          numPerPage={12}
+          setPageValues={({ min, max }): void =>
+            setState({
+              ...state,
+              showPages: {
+                ...state.showPages,
+                min,
+                max,
+              },
+            })
+          }
+        />
+      )}
+      {/* Render Dialog that allows the admin to enter shipping information */}
+      {currentOrder !== null && dialogOpen && (
+        <ShippingReferenceDialog
+          currentOrder={currentOrder}
+          dialogOpen={dialogOpen}
+          closeDialog={(): void => setState({ ...state, dialogOpen: false })}
+          desktop={desktop}
+        />
+      )}
+    </Container>
   );
 };
 

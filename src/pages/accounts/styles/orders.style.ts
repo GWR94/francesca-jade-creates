@@ -1,7 +1,6 @@
-import { FONTS } from "./../../../themes/index";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
+import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { COLORS } from "../../../themes";
+import { COLORS } from "../../../themes/index";
 
 const breakpoints = createBreakpoints({});
 
@@ -120,24 +119,6 @@ export default createStyles({
   formControl: {
     minWidth: 200,
   },
-  selectContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginTop: 14,
-  },
-  sendButton: {
-    color: COLORS.SuccessGreen,
-    minWidth: 60,
-  },
-  trackingList: {
-    fontFamily: FONTS.Title,
-  },
-  deleteIcon: {
-    color: COLORS.ErrorRed,
-    marginLeft: 5,
-    cursor: "pointer",
-  },
   chipSuccess: {
     width: 40,
     borderRadius: 3,
@@ -170,5 +151,13 @@ export default createStyles({
     [breakpoints.down("sm")]: {
       fontSize: "0.7rem",
     },
+  },
+  nonIdealContainer: {
+    height: "100%",
+    minHeight: 400,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
   },
 });

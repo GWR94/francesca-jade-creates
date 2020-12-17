@@ -18,48 +18,39 @@ import {
 import { ExpandMore, LocalShipping, MonetizationOn } from "@material-ui/icons";
 import * as actions from "../../../actions/basket.actions";
 import { RemoveItemAction } from "../../../interfaces/basket.redux.i";
-import {
-  BasketItemProps,
-  CheckoutProductProps,
-  CustomOptionArrayType,
-} from "../interfaces/Basket.i";
+import { BasketItemProps, CustomOptionArrayType } from "../interfaces/Basket.i";
 import styles from "../styles/basket.style";
 import { AppState } from "../../../store/store";
-import { Variant } from "../../accounts/interfaces/Variants.i";
 import { COLORS } from "../../../themes";
 import BasketCustomOptions from "./BasketCustomOptions";
+import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
-interface BasketItemState {
-  isLoading: boolean;
-  currentVariant: Variant | null;
-  variantIndex: number | "";
-  customOptions: CustomOptionArrayType | undefined;
-  isCompleted: boolean;
-}
-
-interface BasketProps {
-  item: BasketItemProps;
-  currentIdx: number;
-  items: BasketItemProps[];
-  setIndex: (num: number) => void;
-  handleConfirmProduct: (product: CheckoutProductProps) => void;
-}
-
+/**
+ * Functional component to render one item (product) that is in the customers' shopping basket. The component
+ * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
+ * add their own customisable options for the product that they're attempting to purchase.
+ * @param item - the data for the current item that will be rendered inside the component
+ * @param currentIdx - the index for the current item in the items array
+ * @param items - the array of items (products), which hold all of the relevant data for each product
+ * @param setIndex - function to update the currentIdx in the parent component.
+ */
 const BasketItem: React.FC<BasketProps> = ({
   item,
   currentIdx,
   items,
   setIndex,
-  handleConfirmProduct,
-}: BasketProps): JSX.Element => {
-  const { id, title, image, variants, tagline } = item as BasketItemProps;
+}): JSX.Element => {
+  const { id, variants } = item as BasketItemProps;
   const initialState: BasketItemState = {
     isLoading: true,
     currentVariant: null,
     variantIndex: "",
     customOptions: [],
     isCompleted: false,
+    expanded: true,
+    isEditing: false,
   };
+
   const [state, setState] = useState<BasketItemState>(initialState);
 
   // useMediaQuery changes boolean to true if window is larger than 600px
@@ -73,7 +64,7 @@ const BasketItem: React.FC<BasketProps> = ({
   // create ref for basket so animations can be triggered from it
   const basket = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   // retrieve products and cost from redux store.
-  const { products, cost } = useSelector(({ basket }: AppState) => basket.checkout);
+  const { products } = useSelector(({ basket }: AppState) => basket.checkout);
 
   /**
    * When the component mounts, or the currentVariant state changes, check to see if
@@ -81,7 +72,7 @@ const BasketItem: React.FC<BasketProps> = ({
    * index in the array (as there's only one item in it) - if not, then do nothing.
    */
   useEffect(() => {
-    if (variants.length === 1) {
+    if (variants.length === 1 && state.customOptions.length === 0) {
       setState({
         ...state,
         currentVariant: variants[0],
@@ -134,33 +125,82 @@ const BasketItem: React.FC<BasketProps> = ({
     });
   };
 
-  const handleCustomCompletion = (): void => {
-    const { customOptions, currentVariant } = state;
-    if (customOptions?.every((option) => option !== undefined)) {
-      setState({ ...state, isCompleted: true });
-      if (
-        products.findIndex((product) => product.id === id) === -1 &&
-        currentVariant !== null
-      ) {
-        dispatch(
-          actions.addToCheckout({
-            id,
-            title,
-            tagline,
-            image,
-            variant: currentVariant,
-            price: currentVariant.price.item,
-            shippingCost: currentVariant.price.postage,
-            customOptions,
-          }),
-        );
+  /**
+   * Function to add a completed product (custom options and variant completed) to
+   * the checkout redux store.
+   */
+  const handleAddToCheckout = (): void => {
+    // destructure relevant state
+    const { currentVariant, customOptions } = state;
+    // destructure item
+    const { id, title, tagline, image } = item;
+    // search the products (checkout products) to see if it exists in the array.
+    const match = products.find((product) => product.id === id);
+    // if it's not in the array, then add it to the store.
+    if (!match) {
+      dispatch(
+        actions.addToCheckout({
+          id,
+          title,
+          tagline,
+          image,
+          price: currentVariant!.price.item,
+          shippingCost: currentVariant!.price.postage,
+          variant: currentVariant,
+          customOptions,
+        }),
+      );
+      // If it does exist in the array, just update custom options
+    } else if (customOptions) {
+      dispatch(actions.addCustomOptionsToProduct(id, customOptions));
+    }
+    /**
+     * If the currentIdx + 1 is less than the length of the items array, then
+     * try and locate the next product in the array if the user has completed it
+     */
+    if (currentIdx + 1 < items.length) {
+      const updatedIdx = currentIdx + 1;
+      // update the index into state
+      setIndex(updatedIdx);
+      // store a potential next product into a variable
+      const nextProduct = products[updatedIdx];
+      // if a value exists in nextProduct, set it into state so the user can edit it.
+      if (nextProduct !== undefined) {
+        setState({
+          ...state,
+          currentVariant: nextProduct?.variant ?? null,
+          variantIndex: "",
+          customOptions: nextProduct?.customOptions ?? [],
+          isEditing: false,
+        });
       } else {
-        dispatch(actions.addCustomOptionsToProduct(id, customOptions));
+        // If there's no value in nextProduct, set the inputs' state to empty values.
+        setState({
+          ...state,
+          currentVariant: null,
+          variantIndex: "",
+          customOptions: [],
+          isEditing: false,
+        });
       }
+    } else {
+      /**
+       * If the updated index is equal to or larger than the length of items array
+       * then update state with isCompleted being set to true (to show "completed"
+       * tags), set expanded to false to close accordion, and set isEditing to false
+       * as the user is no longer editing anymore.
+       */
+      setState({
+        ...state,
+        isCompleted: true,
+        expanded: false,
+        isEditing: false,
+      });
     }
   };
+
   // destructure all relevant pieces of state
-  const { isLoading, variantIndex, currentVariant, customOptions, isCompleted } = state;
+  const { variantIndex, currentVariant, customOptions, expanded, isEditing } = state;
 
   // set disabled to be true if there's no current variable or all required fields aren't completed
   const disabled =
@@ -168,10 +208,12 @@ const BasketItem: React.FC<BasketProps> = ({
     customOptions
       ?.slice(0, customOptions.length - 1)
       .some((option) => option === undefined);
+
   return (
     <>
       <Card className={classes.variantsContainer}>
         <div className={classes.innerContainer}>
+          {/* Render the cover image centralised */}
           <div
             style={{
               display: "flex",
@@ -183,6 +225,7 @@ const BasketItem: React.FC<BasketProps> = ({
               imgKey={item.image.key}
               theme={{
                 photoImg: {
+                  // change the size of the image based on the screen width
                   width: desktop ? 130 : 80,
                   margin: "auto",
                 },
@@ -196,6 +239,13 @@ const BasketItem: React.FC<BasketProps> = ({
             <Typography variant="subtitle1" className={classes.subtext}>
               {item.tagline}
             </Typography>
+            {/*
+              If there are more than one variants for the user to choose from, render a 
+              Select component with all of the variants inside, so the user can pick their
+              chosen variant, and then go ahead and pick the custom options for that
+              variant. If there was only one variant, that variant would already have been
+              picked during the useEffect hook.
+            */}
             {item.variants.length > 1 && (
               <>
                 <Typography className={classes.text}>
@@ -213,7 +263,9 @@ const BasketItem: React.FC<BasketProps> = ({
                     }}
                     label="Pick Variant"
                   >
+                    {/* Map the variants into their own MenuItem component */}
                     {item.variants.map((variant, i) => {
+                      // Set the value to be the variantName if it exists, or the dimensions if not
                       const value = variant?.variantName ?? variant?.dimensions;
                       return (
                         <MenuItem value={i} key={i}>
@@ -226,6 +278,10 @@ const BasketItem: React.FC<BasketProps> = ({
               </>
             )}
             <div className={classes.infoContainer}>
+              {/*
+                If the user has chosen a variant (currentVariant isn't null), then show
+                the prices (shipping cost and unit price) for the variant to the user.
+              */}
               {currentVariant !== null && (
                 <div>
                   <div className={classes.costContainer}>
@@ -243,44 +299,61 @@ const BasketItem: React.FC<BasketProps> = ({
         </div>
 
         {currentVariant && (
-          <Accordion
-            expanded={!isCompleted} //FIXME
-            onClick={(): void => setState({ ...state, isCompleted: false })}
-          >
-            <AccordionSummary expandIcon={<ExpandMore />}>
+          /**
+           * Create a root accordion which will allow the user to open and close the
+           * inputs for creating and editing the custom options for the current product.
+           * Allows users on mobile to not fill up the whole screen unnecessarily.
+           */
+          <Accordion expanded={expanded}>
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              onClick={(): void => setState({ ...state, expanded: !expanded })}
+            >
               <Typography className={classes.header}>Customisable Features</Typography>
             </AccordionSummary>
             <AccordionDetails classes={{ root: classes.accordionRoot }}>
+              {/* Render the custom options accordion for the current product */}
               <BasketCustomOptions
                 currentVariant={currentVariant}
                 setCustomOptions={(customOptions: CustomOptionArrayType): void =>
                   setState({ ...state, customOptions })
                 }
-                customOptions={customOptions || []}
+                customOptions={customOptions!}
                 colorScheme={item.customOptions}
               />
             </AccordionDetails>
           </Accordion>
         )}
       </Card>
+      {/*
+        Render a set of buttons to control the flow of customising the different products.
+      */}
       <div className={classes.buttonContainer}>
+        {/* If the back button is pressed, go back to the previous product */}
         <Button
           color="primary"
           variant="outlined"
           onClick={(): void => {
-            setIndex(currentIdx - 1);
+            // store the updated index into a variable
+            const updatedIdx = currentIdx - 1;
+            // set the index in state.
+            setIndex(updatedIdx);
+            // set the current variant and custom options of the previous product into state.
             setState({
               ...state,
-              currentVariant: products[currentIdx - 1].variant,
-              customOptions: products[currentIdx - 1].customOptions,
+              currentVariant: products[updatedIdx].variant,
+              customOptions: products[updatedIdx]?.customOptions ?? [],
+              isEditing: true,
             });
           }}
           className={classes.button}
+          // disable if the currentIdx is 0 as you obviously can't go back from the first item.
           disabled={currentIdx === 0}
           size="small"
         >
           Back
         </Button>
+        {/* Render a button to delete the current product from basket */}
         <Button
           color="secondary"
           variant="outlined"
@@ -290,59 +363,25 @@ const BasketItem: React.FC<BasketProps> = ({
         >
           Delete
         </Button>
+        {/* Render a button to add the completed product to the checkout - with all custom options */}
         <Button
           color="inherit"
           disabled={disabled}
           variant="outlined"
           style={{
-            color: !disabled ? COLORS.SuccessGreen : "rgba(0, 0, 0, 0.26)",
+            color: !disabled
+              ? items.length === products.length
+                ? COLORS.InfoBlue
+                : COLORS.SuccessGreen
+              : "rgba(0, 0, 0, 0.26)",
           }}
           className={classes.button}
           size="small"
-          onClick={(): void => {
-            const { id, title, tagline, image } = item;
-            dispatch(
-              actions.addToCheckout({
-                id,
-                title,
-                tagline,
-                image,
-                price: currentVariant!.price.item,
-                shippingCost: currentVariant!.price.postage,
-                variant: currentVariant,
-                customOptions,
-              }),
-            );
-            if (currentIdx + 1 < items.length) {
-              setIndex(currentIdx + 1);
-              setState({
-                ...state,
-                currentVariant: null,
-                variantIndex: "",
-                customOptions: [],
-              });
-            } else {
-              setState({ ...state, isCompleted: true });
-            }
-          }}
+          onClick={handleAddToCheckout}
         >
-          Confirm
+          {isEditing || items.length === products.length ? "Update" : "Confirm"}
         </Button>
       </div>
-      {isCompleted && (
-        <div className={classes.container}>
-          <Typography variant="h5">Checkout Overview</Typography>
-          {products.map((product) => (
-            <>
-              <Typography>{product.title}</Typography>
-              <Typography>
-                £{product.price.toFixed(2)} + £{product.shippingCost} Postage & Packaging
-              </Typography>
-            </>
-          ))}
-          <Typography>Total: £{cost.toFixed(2)}</Typography>
-        </div>
-      )}
     </>
   );
 };

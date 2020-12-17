@@ -3,14 +3,13 @@ import { ProductProps } from "./Product.i";
 
 export interface UpdateProps {
   history: History;
-  id: string | undefined;
+  id?: string | undefined;
   admin: boolean;
   update?: boolean;
   classes: {
     [key: string]: string;
   };
   setCurrentTab?: (tab: string) => void;
-  // type: "Cake" | "Creates";
 }
 
 export interface UpdateState {

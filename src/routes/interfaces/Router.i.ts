@@ -63,6 +63,9 @@ export interface SignInUserData {
   storage: Storage;
   userDataKey: string;
   username: string;
+  attributes?: {
+    sub: string;
+  };
   email: string;
   id: string;
   signInUserSession: {

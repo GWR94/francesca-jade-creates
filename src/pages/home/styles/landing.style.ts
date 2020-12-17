@@ -14,7 +14,7 @@ export default createStyles({
     },
   },
   headingContainer: {
-    height: "calc(100vh - 70px)",
+    height: "calc(100vh - 54px)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -24,7 +24,7 @@ export default createStyles({
     fontSize: "1.2rem",
     margin: "10px",
     fontWeight: "bold",
-    fontFamily: FONTS.Text,
+    fontFamily: FONTS.Title,
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },
@@ -37,6 +37,8 @@ export default createStyles({
   },
   landingImage: {
     maxWidth: "100%",
+    padding: "20px 40px",
+    boxSizing: "border-box",
   },
   logoImg: {
     width: 80,
@@ -56,25 +58,60 @@ export default createStyles({
     },
   },
   cakesButton: {
-    background: COLORS.Purple,
+    background: COLORS.DarkGrey,
     color: "#fff",
     borderRadius: 20,
     margin: "6px auto 12px",
     "&:hover": {
-      background: COLORS.LightPurple,
+      background: COLORS.Gray,
     },
     [breakpoints.up("sm")]: {
       width: 220,
     },
   },
   cakeIcon: {
+    [breakpoints.down("md")]: {
+      fontSize: "2.2rem",
+    },
     fontSize: "3rem",
-    color: COLORS.DarkPink,
-    margin: "12px auto 0",
+
+    color: COLORS.Pink,
   },
   createsIcon: {
+    [breakpoints.down("md")]: {
+      fontSize: "2.2rem",
+    },
     fontSize: "3rem",
-    color: COLORS.Purple,
-    margin: "12px auto 0",
+    color: COLORS.LightGray,
+  },
+  createsContainer: {
+    [breakpoints.down("md")]: {
+      width: 40,
+      height: 40,
+    },
+    width: 60,
+    height: 60,
+    borderRadius: "50%",
+    background: COLORS.Pink,
+    border: `3px solid ${COLORS.LightGray}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+  },
+  cakesContainer: {
+    [breakpoints.down("md")]: {
+      width: 40,
+      height: 40,
+    },
+    width: 60,
+    height: 60,
+    borderRadius: "50%",
+    background: COLORS.LightGray,
+    border: `3px solid ${COLORS.Pink}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "20px auto 0",
   },
 });

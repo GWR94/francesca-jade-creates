@@ -1,22 +1,20 @@
 import { createStyles } from "@material-ui/core";
+import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
+
+const breakpoints = createBreakpoints({});
 
 export default createStyles({
   variantContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
-  variant: {
-    width: "50%",
-    // margin: "10px 0",
+    width: "70%",
+    margin: "0 auto",
+    [breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   variantTitle: {
     fontSize: "1rem",
     fontWeight: "bold",
+    textAlign: "center",
   },
   customFeatures: {
     display: "flex",
@@ -25,9 +23,25 @@ export default createStyles({
   },
   info: {
     fontStyle: "italic",
+    marginLeft: 6,
   },
-  break: {
-    flexBasis: "100%",
-    height: 0,
+  featureContainer: {
+    marginBottom: 6,
+    display: "flex",
+    flexDirection: "column",
+  },
+  title: {
+    textDecoration: "underline",
+  },
+  iconTextContainer: {
+    display: "inline-flex",
+    marginLeft: 12,
+    alignItems: "center",
+  },
+  icon: {
+    width: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    display: "flex",
   },
 });
