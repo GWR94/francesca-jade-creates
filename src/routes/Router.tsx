@@ -38,6 +38,8 @@ import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import background from "../img/pinkbg2.png";
 import Footer from "../pages/navigation/Footer";
+import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
+import TermsOfService from "../pages/policies/components/TermsOfService";
 
 export const history = createBrowserHistory();
 
@@ -54,7 +56,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
   };
 
   // set the property to be false to begin with, so no user can accidentally be an admin.
-  private _admin = false;
+  public admin = false;
 
   public async componentDidMount(): Promise<void> {
     const { user } = this.state;
@@ -87,7 +89,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
          * if the current user is part of the Admin group in the cognito groups array, then set
          * this.admin to true, otherwise set it to false.
          */
-        this._admin =
+        this.admin =
           user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
             "Admin",
           ) ?? false;
@@ -102,7 +104,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
          * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
          * set the user object to null, and remove loading UI effects by setting isLoading to false.
          */
-        this._admin = false;
+        this.admin = false;
         this.setState({ user: null });
       }
       this.setState({ isLoading: false });
@@ -111,7 +113,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
        * If there are any errors anywhere in the function, then catch the error, set this.admin to false,
        * set user state to null and remove loading UI effects by settings isLoading state to false.
        */
-      this._admin = false;
+      this.admin = false;
       this.setState({ user: null, isLoading: false });
     }
   };
@@ -171,7 +173,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
         setUser(
           userAttributes.sub,
           user.username,
-          this._admin,
+          this.admin,
           userAttributes.email,
           userAttributes.email_verified,
         );
@@ -279,7 +281,9 @@ class AppRouter extends Component<RouterProps, RouterState> {
           className="landing__background"
           style={{ background: `url(${background}) no-repeat center center fixed` }}
         >
-          <NavBar signOut={this.handleSignOut} admin={this._admin} />
+          {location.pathname != "/" && (
+            <NavBar signOut={this.handleSignOut} admin={this.admin} />
+          )}
           {isLoading ? (
             <Loading size={100} />
           ) : (
@@ -317,7 +321,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           To filter the products please click the pink button on the left
                           hand side, and filter the results to your preferences.
                         </Typography>
-                        <ProductsList type="Creates" admin={this._admin} />
+                        <ProductsList type="Creates" admin={this.admin} />
                       </Container>
                     </div>
                   )}
@@ -370,7 +374,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           To filter the products please click the pink button on the left
                           hand side, and filter the results to your preferences.
                         </Typography>
-                        <ProductsList type="Cake" admin={this._admin} />
+                        <ProductsList type="Cake" admin={this.admin} />
                       </Container>
                     </div>
                   )}
@@ -391,7 +395,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                     user ? (
                       <div className="content-container">
                         <AccountsPage
-                          admin={this._admin}
+                          admin={this.admin}
                           history={history}
                           user={user}
                           userAttributes={userAttributes}
@@ -407,13 +411,13 @@ class AppRouter extends Component<RouterProps, RouterState> {
                   component={(
                     matchParams: RouteComponentProps<{ id: string }>,
                   ): JSX.Element =>
-                    this._admin ? (
+                    this.admin ? (
                       <div className="content-container">
                         <UpdateProduct
                           history={history}
                           update
                           id={matchParams.match.params.id}
-                          admin={this._admin}
+                          admin={this.admin}
                         />
                       </div>
                     ) : (
@@ -421,9 +425,27 @@ class AppRouter extends Component<RouterProps, RouterState> {
                     )
                   }
                 />
+                <Route
+                  path="/privacy-policy"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <PrivacyPolicy />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/terms-of-service"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <TermsOfService />
+                    </div>
+                  )}
+                />
+                {/* <Route path="/contact" component={} />
+                <Route path="/faq" component={} /> */}
                 <Route component={NotFoundPage} />
               </Switch>
-              <Footer />
+              {window.location.pathname !== "/" && <Footer />}
             </>
           )}
         </div>

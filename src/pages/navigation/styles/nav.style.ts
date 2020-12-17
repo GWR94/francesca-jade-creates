@@ -5,7 +5,6 @@ export default createStyles({
   nav: {
     borderTop: `3px solid ${COLORS.Pink}`,
     display: "flex",
-    background: "#fff",
     borderBottom: "none",
     padding: "0 20px",
     userSelect: "none",

@@ -1,6 +1,6 @@
 import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { FONTS, COLORS } from "../../../themes/index";
+import { COLORS } from "../../../themes/index";
 
 const breakpoints = createBreakpoints({});
 

@@ -20,16 +20,14 @@ import { COLORS } from "../../themes";
 interface NavBarProps {
   signOut: () => void;
   admin: boolean;
+  noBackground?: boolean;
 }
 
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
- *
- * TODO
- * [ ] Change color of badge to match one in collapsed navbar (light pink)
  */
-const NavBar: React.FC<NavBarProps> = ({ admin, signOut }): JSX.Element => {
+const NavBar: React.FC<NavBarProps> = ({ admin, signOut, noBackground }): JSX.Element => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -48,9 +46,10 @@ const NavBar: React.FC<NavBarProps> = ({ admin, signOut }): JSX.Element => {
         */}
         <Headroom wrapperStyle={{ position: "relative", zIndex: 2, height: "50px" }}>
           <AppBar
-            className={`${classes.nav} animated slideInDown`}
+            className={`${classes.nav} animate__animated animate__slideInDown`}
             position="relative"
-            color="transparent"
+            style={{ background: noBackground ? "transparent" : "#fff" }}
+            elevation={noBackground ? 0 : 4}
           >
             <Container className={classes.main}>
               <img

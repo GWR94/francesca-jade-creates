@@ -31,11 +31,26 @@ import styles from "../styles/orders.style";
 import Pagination from "../../../common/Pagination";
 import ShippingReferenceDialog from "./ShippingReferenceDialog";
 import { getSignedS3Url } from "../../../utils";
+import { openSnackbar } from "../../../utils/Notifier";
 
 /**
  * TODO
  * [ ] Fix shipping references title overflowing in dialog
  */
+
+interface AdminOrdersState {
+  expanded: boolean | string;
+  isSettingStatus: boolean;
+  dialogOpen: boolean;
+  currentOrder: OrderProps | null;
+  inputError: string;
+  isSending: boolean;
+  isLoading: boolean;
+  showPages: {
+    min: number;
+    max: number;
+  };
+}
 
 /**
  * Functional component to render a table of all of the orders that have been
@@ -47,20 +62,6 @@ import { getSignedS3Url } from "../../../utils";
 const AdminOrders = (): JSX.Element => {
   // initialise state to store orders in as an empty array (which will be filled when component mounts)
   const [orders, setOrders] = useState<OrderProps[]>([]);
-
-  interface AdminOrdersState {
-    expanded: boolean | string;
-    isSettingStatus: boolean;
-    dialogOpen: boolean;
-    currentOrder: OrderProps | null;
-    inputError: string;
-    isSending: boolean;
-    isLoading: boolean;
-    showPages: {
-      min: number;
-      max: number;
-    };
-  }
 
   const [state, setState] = useState<AdminOrdersState>({
     expanded: false,
@@ -179,8 +180,8 @@ const AdminOrders = (): JSX.Element => {
       .map((option) => JSON.parse(option))
       // filter out all but the images object
       .filter((option) => Object.keys(option)[0] === "Images")
-      // push the s3 image object to the images array so it can be used
-      .map((option) => images.push(Object.values(option)[0] as S3ImageProps));
+      // push the s3 images to the images array so it can be used
+      .map((option) => images.push(...(Object.values(option)[0] as S3ImageProps[])));
 
     /**
      * Iterate through each of the images in the array, get the signed URL
@@ -238,8 +239,10 @@ const AdminOrders = (): JSX.Element => {
         window.location.reload();
       }, 1000);
     } catch (err) {
-      // FIXME - should remove after testing
-      console.error(err);
+      openSnackbar({
+        severity: "error",
+        message: "Unable to update order status. Please try again.",
+      });
     }
   };
 

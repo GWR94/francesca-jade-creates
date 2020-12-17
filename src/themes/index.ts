@@ -10,7 +10,7 @@ export enum COLORS {
   Pink = "#ff80f7",
   DarkPink = "#fd4ef2",
   DarkGrey = "#878787",
-  Gray = "#cfcfcf",
+  Gray = "#b8b8b8",
   LightGray = "#dedede",
   PaleBlue = "#b9d6f3",
   SkyBlue = "#69abec",
@@ -207,7 +207,9 @@ export const rootTheme = createMuiTheme({
         marginRight: 4,
       },
       colorPrimary: {
-        backgroundColor: COLORS.DarkPink,
+        color: "#fff",
+        marginRight: 3,
+        backgroundColor: "#ffa3f9",
       },
       badge: {
         height: 15,

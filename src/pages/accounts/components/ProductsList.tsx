@@ -29,25 +29,15 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
   const useStyles = makeStyles(styles);
   // execute useStyles to create the classes object - which will contain all styles
   const classes = useStyles();
-  /**
-   * use the useMediaQuery hook to determine if the current screen width matches the
-   * parameters. E.g if the screen is less than 600px desktop will be false, and if
-   * the screen is larger desktop will be true.
-   */
-  const desktop = useMediaQuery("(min-width: 600px)");
-
+  // set initial state for component
   const [state, setState] = useState<ProductListState>({
     filterOpen: false,
     searchResults: null,
     isLoading: true,
     page: {
       min: 0,
-      max: desktop ? 12 : 6,
+      max: window.innerWidth > 600 ? 12 : 6,
     },
-    // nextToken: undefined,
-    // nextNextToken: undefined,
-    // previousTokens: [],
-    // sortDirection: SortDirection.DESC,
   });
 
   let isMounted = false;
