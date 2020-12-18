@@ -42,8 +42,8 @@ let stripe;
 let endpointSecret;
 let url;
 if (process.env.NODE_ENV === "production") {
-  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-  endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+  stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+  endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
   url = "http://localhost:3000";
 } else {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);

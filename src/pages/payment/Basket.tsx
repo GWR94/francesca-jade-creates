@@ -31,7 +31,7 @@ import { getCompressedKey, getSignedS3Url } from "../../utils/index";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
-  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY as string);
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string); // FIXME - Remove after testing
 } else {
   stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string);
 }

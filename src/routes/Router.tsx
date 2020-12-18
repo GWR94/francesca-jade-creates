@@ -275,13 +275,15 @@ class AppRouter extends Component<RouterProps, RouterState> {
 
   public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
+
+    console.log(window.location.pathname.length);
     return (
       <Router history={history}>
         <div
           className="landing__background"
           style={{ background: `url(${background}) no-repeat center center fixed` }}
         >
-          {location.pathname != "/" && (
+          {window.location.pathname.length > 1 && (
             <NavBar signOut={this.handleSignOut} admin={this.admin} />
           )}
           {isLoading ? (
