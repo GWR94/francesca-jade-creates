@@ -1,10 +1,10 @@
 import { Grid, makeStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { COLORS, FONTS } from "../../themes";
 
-const Footer = (): JSX.Element => {
+const Footer = (): JSX.Element | null => {
   const breakpoints = createBreakpoints({});
   const useStyles = makeStyles({
     container: {
@@ -39,8 +39,9 @@ const Footer = (): JSX.Element => {
       },
     },
   });
+  const { pathname } = useLocation();
   const classes = useStyles();
-  return (
+  return pathname.length <= 1 ? null : (
     <div className={`${classes.container} animate__animated animate__slideInUp`}>
       <Grid container className={classes.row} justify="center">
         <Grid item xs={12} sm={6}>

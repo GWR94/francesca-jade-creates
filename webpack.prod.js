@@ -11,7 +11,12 @@ module.exports = merge(common, {
       filename: "[name].[hash].css",
       chunkFilename: "[id].[hash].css",
     }),
-    new webpack.EnvironmentPlugin(["STRIPE_PUBLIC_KEY", "STRIPE_SECRET_KEY"]),
+    new webpack.EnvironmentPlugin([
+      "STRIPE_PUBLIC_KEY",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_PUBLIC_KEY_TEST",
+      "STRIPE_SECRET_KEY_TEST",
+    ]),
   ],
   optimization: {
     runtimeChunk: "single",
