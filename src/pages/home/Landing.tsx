@@ -6,7 +6,6 @@ import { COLORS } from "../../themes";
 import cake from "../../img/moments.svg";
 import logo from "../../img/logo.png";
 import styles from "./styles/landing.style";
-import video from "../../img/cake.MP4";
 
 /**
  * Functional component to render the landing page for user. It will give a brief overview
@@ -75,7 +74,13 @@ const Landing: React.FC = (): JSX.Element => {
           <div
             className={`${classes.imageContainer} animate__animated animate__fadeIn animate__delay-1half`}
           >
-            <video autoPlay muted loop className={classes.video} src={video} />
+            <video
+              autoPlay
+              muted
+              loop
+              className={classes.video}
+              src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/cake_compressed.mp4"
+            />
           </div>
         </Grid>
       </Grid>
