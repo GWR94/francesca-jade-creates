@@ -175,8 +175,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           this.handleImageUpload(compressedImage, originalImage);
         });
     } catch (err) {
-      // console log errors -> Should be removed before production // FIXME
-      console.error(err);
+      openSnackbar({
+        severity: "error",
+        message: "Unable to compress image. Please try again.",
+      });
     }
   };
 

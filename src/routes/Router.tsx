@@ -1,16 +1,9 @@
-import React, { Component, useEffect, useState } from "react";
-import {
-  Router,
-  Route,
-  Switch,
-  Redirect,
-  RouteComponentProps,
-  useLocation,
-} from "react-router-dom";
+import React, { Component } from "react";
+import { Router, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
 import { Container, Typography } from "@material-ui/core";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
 import Landing from "../pages/home/Landing";
@@ -47,6 +40,7 @@ import background from "../img/pinkbg2.png";
 import Footer from "../pages/navigation/Footer";
 import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";
+import FAQ from "../pages/policies/components/FAQ";
 
 export const history = createBrowserHistory();
 
@@ -55,18 +49,108 @@ export const history = createBrowserHistory();
  * [ ] Check & fix loading spinner off centre
  */
 
-const AppRouter: React.FC<RouterProps> = () => {
-  const [state, setState] = useState<RouterState>({
+class AppRouter extends Component<RouterProps, RouterState> {
+  public readonly state: RouterState = {
     user: null,
     userAttributes: null,
     isLoading: true,
-    path: "/",
-  });
+  };
 
   // set the property to be false to begin with, so no user can accidentally be an admin.
-  let admin: boolean;
+  public admin = false;
 
-  const dispatch = useDispatch();
+  public async componentDidMount(): Promise<void> {
+    const { user } = this.state;
+    try {
+      // listener for auth changes such as signIn, signOut, signUp etc.
+      // @ts-ignore
+      Hub.listen("auth", this.onHubCapsule);
+      // get the current users information
+      if (!user) await this.getUserData();
+      const data = await Auth.currentUserCredentials();
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  /**
+   * A method to retrieve the current authenticated users data, and set it into state. It also
+   * checks to see whether or not the user is an admin or not, and will set it into memory in
+   * this.admin variable.
+   * @param {boolean = false} retry - optional boolean value to signal if there has been a retry in
+   * calling the function - this can only be done once so if it's set to true then there will not be
+   * another retry attempt if there is a fail.
+   */
+  private getUserData = async (): Promise<void> => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      if (user) {
+        /**
+         * if the current user is part of the Admin group in the cognito groups array, then set
+         * this.admin to true, otherwise set it to false.
+         */
+        this.admin =
+          user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
+            "Admin",
+          ) ?? false;
+
+        /**
+         * if there is a user object, set it into state and set isLoading to false to stop any
+         * loading UI effects. Then call getUserAttributes() as the callback function.
+         */
+        this.setState({ user }, (): Promise<void> => this.getUserAttributes(user));
+      } else {
+        /**
+         * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
+         * set the user object to null, and remove loading UI effects by setting isLoading to false.
+         */
+        this.admin = false;
+        this.setState({ user: null });
+      }
+      this.setState({ isLoading: false });
+    } catch (err) {
+      /**
+       * If there are any errors anywhere in the function, then catch the error, set this.admin to false,
+       * set user state to null and remove loading UI effects by settings isLoading state to false.
+       */
+      this.admin = false;
+      this.setState({ user: null, isLoading: false });
+    }
+  };
+
+  /**
+   * Method to sign out the current authenticated user, and remove all of their properties from
+   * state. It will also clear the basket/user from redux stores so all user information is wiped
+   * from the system.
+   */
+  private handleSignOut = async (): Promise<void> => {
+    // destructure relevant props
+    const { clearBasket, clearUser } = this.props;
+    try {
+      // try to sign out
+      await Auth.signOut();
+      // clear basket reducer
+      clearBasket();
+      // clear user reducer
+      clearUser();
+      // set user state to null,
+      this.setState({ user: null });
+      // notify the user of success
+      openSnackbar({
+        severity: "success",
+        message: "Successfully signed out.",
+      });
+    } catch (err) {
+      // notify the user of error signing out
+      openSnackbar({
+        severity: "error",
+        message: "Error signing out. Please try again.",
+      });
+    }
+    // push to home page
+    history.push("/");
+  };
 
   /**
    * Method which converts an object of auth data into a readable object which can be
@@ -75,103 +159,37 @@ const AppRouter: React.FC<RouterProps> = () => {
    * @param {CognitoUser} authUserData - An object containing the data for the current
    * auth user which can be used for getting the users attributes.
    */
-  const getUserAttributes = async (authUserData: any): Promise<void> => {
+  private getUserAttributes = async (authUserData: CognitoUser): Promise<void> => {
     try {
+      const { user } = this.state;
+      const { setUser } = this.props;
       // get the array of user attributes from Auth.userAttributes().
       const attributesArr: CognitoUserAttribute[] = await Auth.userAttributes(
         authUserData,
       );
-      console.log(authUserData);
-      const user = authUserData;
       // convert the array to an object with the help of utils' attributesToObject function.
       const userAttributes = attributesToObject(attributesArr);
       // set the current users' sub to redux reducer.
       if (userAttributes.sub && user?.username) {
-        dispatch(
-          userActions.setUser(
-            userAttributes.sub,
-            user.username,
-            admin,
-            userAttributes.email,
-            userAttributes.email_verified,
-          ),
+        setUser(
+          userAttributes.sub,
+          user.username,
+          this.admin,
+          userAttributes.email,
+          userAttributes.email_verified,
         );
       }
       /**
        * Set userAttributes into sub so it can be used in the application, and stop ui loading
        * effects by setting isLoading to false
        */
-      setState({
-        ...state,
-        user,
-        userAttributes,
-        isLoading: false,
-      });
+      this.setState({ userAttributes });
     } catch (err) {
       /**
        * if there are any errors, set userAttributes to null, and remove the loading UI
        * effects by setting isLoading to false
        */
-      console.error(err);
-      setState({
-        ...state,
-        userAttributes: null,
-        user: null,
-        isLoading: false,
-      });
-    }
-  };
-
-  /**
-   * A method to retrieve the current authenticated users data, and set it into state. It also
-   * checks to see whether or not the user is an admin or not, and will set it into memory in
-   * admin variable.
-   */
-  const getUserData = async (): Promise<void> => {
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      if (user) {
-        console.log("USER");
-        /**
-         * if the current user is part of the Admin group in the cognito groups array, then set
-         * admin to true, otherwise set it to false.
-         */
-        admin =
-          user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
-            "Admin",
-          ) ?? false;
-
-        console.log(admin);
-
-        /**
-         * if there is a user object, set it into state and set isLoading to false to stop any
-         * loading UI effects. Then call getUserAttributes() as the callback function.
-         */
-        await getUserAttributes(user);
-      } else {
-        /**
-         * If there is no user object from Auth.currentAuthUser then set admin to be false, and
-         * set the user object to null, and remove loading UI effects by setting isLoading to false.
-         */
-        admin = false;
-        setState({
-          ...state,
-          user: null,
-          isLoading: false,
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      /**
-       * If there are any errors anywhere in the function, then catch the error, set admin to false,
-       * set user state to null and remove loading UI effects by settings isLoading state to false.
-       */
-      admin = false;
-      setState({
-        ...state,
-        user: null,
-        isLoading: false,
-      });
+      this.setState({ userAttributes: null });
     }
   };
 
@@ -181,7 +199,8 @@ const AppRouter: React.FC<RouterProps> = () => {
    * @param {SignInUserData} signInData - Object containing the current authenticated
    * users' data
    */
-  const registerNewUser = async (signInData: SignInUserData): Promise<void> => {
+  private registerNewUser = async (signInData: SignInUserData): Promise<void> => {
+    console.log(signInData);
     /**
      * Get the id from signInData - it's in different locations based on what provider user
      * logged in with. This will be used to check if the user is already a part of the database
@@ -235,12 +254,12 @@ const AppRouter: React.FC<RouterProps> = () => {
    * certain action occurs - i.e registering users sends data related to
    * registering a user.
    */
-  const onHubCapsule = async (capsule: any): Promise<void> => {
+  private onHubCapsule = async (capsule: HubCapsule): Promise<void> => {
     switch (capsule.payload.event) {
       // if the user is signing in, get the users' data.
       case "signIn":
-        await getUserData();
-        await registerNewUser(capsule.payload.data);
+        await this.getUserData();
+        await this.registerNewUser(capsule.payload.data);
         break;
       // if the user is signing up, register the user
       case "signUp":
@@ -248,216 +267,199 @@ const AppRouter: React.FC<RouterProps> = () => {
         break;
       // if the user is signing out, remove the user object from state.
       case "signOut":
-        setState({ ...state, user: null });
+        this.setState({ user: null });
         break;
       default:
         break;
     }
   };
 
-  useEffect((): void => {
-    const { user } = state;
-    try {
-      Hub.listen("auth", onHubCapsule);
+  public render(): JSX.Element {
+    const { userAttributes, isLoading, user } = this.state;
 
-      if (!user) getUserData();
-    } catch (err) {
-      console.error(err);
-    }
-    return () => {
-      Hub.remove("auth", onHubCapsule);
-    };
-  }, []);
-
-  const { userAttributes, isLoading, user } = state;
-
-  return (
-    <Router history={history}>
-      <div
-        className="landing__background"
-        style={{
-          background: `url(${background}) no-repeat center center fixed`,
-        }}
-      >
-        {isLoading ? (
-          <Loading size={100} />
-        ) : (
-          <>
-            <NavBar />
-            <Switch>
-              <Route path="/" exact component={Landing} />
-              <Route
-                path="/creates"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Creations
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Creates" admin={admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/basket"
-                history={history}
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Basket userAttributes={userAttributes} />
-                  </div>
-                )}
-              />
-              <Route
-                path="/creates/:id"
-                component={(_: {
-                  match: {
-                    params: { id: string };
-                  };
-                }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Creates" />
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes"
-                exact
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <Container>
-                      <Typography
-                        variant="h4"
-                        style={{
-                          paddingTop: 12,
-                        }}
-                      >
-                        Cakes
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        style={{
-                          margin: "10px 0",
-                        }}
-                      >
-                        -- Placeholder --
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{
-                          margin: "10px 0 20px",
-                        }}
-                      >
-                        To filter the products please click the pink button on the left
-                        hand side, and filter the results to your preferences.
-                      </Typography>
-                      <ProductsList type="Cake" admin={admin} />
-                    </Container>
-                  </div>
-                )}
-              />
-              <Route
-                path="/cakes/:id"
-                component={(_: {
-                  match: {
-                    params: { id: string };
-                  };
-                }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Cake" />
-                  </div>
-                )}
-              />
-              <Route path="/login" history={history} component={Login} />
-              <Route
-                path="/account"
-                exact
-                component={(): JSX.Element =>
-                  user ? (
+    return (
+      <Router history={history}>
+        <div
+          className="landing__background"
+          style={{ background: `url(${background}) no-repeat center center fixed` }}
+        >
+          <NavBar />
+          {isLoading ? (
+            <Loading size={100} />
+          ) : (
+            <>
+              <Switch>
+                <Route path="/" exact component={Landing} />
+                <Route
+                  path="/creates"
+                  exact
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <AccountsPage
-                        admin={admin}
-                        history={history}
-                        user={user}
-                        userAttributes={userAttributes}
-                      />
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Creations
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Creates" admin={this.admin} />
+                      </Container>
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route
-                path="/account/:id"
-                component={(
-                  matchParams: RouteComponentProps<{
-                    id: string;
-                  }>,
-                ): JSX.Element =>
-                  admin ? (
+                  )}
+                />
+                <Route
+                  path="/basket"
+                  history={history}
+                  component={(): JSX.Element => (
                     <div className="content-container">
-                      <UpdateProduct
-                        history={history}
-                        update
-                        id={matchParams.match.params.id}
-                        admin={admin}
-                      />
+                      <Basket userAttributes={userAttributes} />
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route
-                path="/privacy-policy"
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <PrivacyPolicy />
-                  </div>
-                )}
-              />
-              <Route
-                path="/terms-of-service"
-                component={(): JSX.Element => (
-                  <div className="content-container">
-                    <TermsOfService />
-                  </div>
-                )}
-              />
-              {/* <Route path="/contact" component={} />
-                <Route path="/faq" component={} /> */}
-              <Route component={NotFoundPage} />
-            </Switch>
-            <Footer />
-          </>
-        )}
-      </div>
-    </Router>
-  );
-};
+                  )}
+                />
+                <Route
+                  path="/creates/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Creates" />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes"
+                  exact
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <Container>
+                        <Typography
+                          variant="h4"
+                          style={{
+                            paddingTop: 12,
+                          }}
+                        >
+                          Cakes
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          style={{
+                            margin: "10px 0",
+                          }}
+                        >
+                          -- Placeholder --
+                        </Typography>
+                        <Typography
+                          variant="subtitle2"
+                          style={{
+                            margin: "10px 0 20px",
+                          }}
+                        >
+                          To filter the products please click the pink button on the left
+                          hand side, and filter the results to your preferences.
+                        </Typography>
+                        <ProductsList type="Cake" admin={this.admin} />
+                      </Container>
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/cakes/:id"
+                  component={(_: { match: { params: { id: string } } }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Cake" />
+                    </div>
+                  )}
+                />
+                <Route path="/login" history={history} component={Login} />
+                <Route
+                  path="/account"
+                  exact
+                  component={(): JSX.Element =>
+                    user ? (
+                      <div className="content-container">
+                        <AccountsPage
+                          admin={this.admin}
+                          history={history}
+                          user={user}
+                          userAttributes={userAttributes}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/account/:id"
+                  component={(
+                    matchParams: RouteComponentProps<{ id: string }>,
+                  ): JSX.Element =>
+                    this.admin ? (
+                      <div className="content-container">
+                        <UpdateProduct
+                          history={history}
+                          update
+                          id={matchParams.match.params.id}
+                          admin={this.admin}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/privacy-policy"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <PrivacyPolicy />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/terms-of-service"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <TermsOfService />
+                    </div>
+                  )}
+                />
+                {/* <Route path="/contact" component={} /> */}
+                <Route
+                  path="/faq"
+                  component={(): JSX.Element => (
+                    <div className="content-container">
+                      <FAQ />
+                    </div>
+                  )}
+                />
+                <Route component={NotFoundPage} />
+              </Switch>
+              <Footer />
+            </>
+          )}
+        </div>
+      </Router>
+    );
+  }
+}
 
 const mapStateToProps = (state: AppState): { sub: string | null } => ({
   sub: state.user.id,

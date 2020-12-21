@@ -4,5 +4,6 @@ declare module "*.gif";
 declare module "*.svg";
 declare module "*.png";
 declare module "*.wav";
+declare module "*.MP4";
 declare module "*.mp3";
 declare module "aws-exports";

@@ -42,7 +42,7 @@ const Footer = (): JSX.Element | null => {
   const { pathname } = useLocation();
   const classes = useStyles();
   return pathname.length <= 1 ? null : (
-    <div className={`${classes.container} animate__animated animate__slideInUp`}>
+    <div className={`${classes.container}`}>
       <Grid container className={classes.row} justify="center">
         <Grid item xs={12} sm={6}>
           <Link className={classes.link} to="/contact">

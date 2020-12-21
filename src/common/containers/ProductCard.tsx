@@ -18,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
 import { MoreVert, AddShoppingCartOutlined, HelpOutline } from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
@@ -31,6 +31,7 @@ import { COLORS, FONTS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
+import { AppState } from "../../store/store";
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -40,10 +41,7 @@ import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
  * @param admin - Boolean value to determine if the current authenticated user is an
  * admin and can view admin only settings/inputs.
  */
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  admin = false,
-}): JSX.Element => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
     // spread all styles from stylesheet
@@ -63,6 +61,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       },
     },
   });
+
+  const admin = useSelector(({ user }: AppState) => user.admin);
 
   const classes = useStyles();
   // destructure product for ease of variable use
@@ -250,9 +250,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </CardMedia>
           {/* show the tooltip to the user if they're hovering over the Floating Action Button (Fab) */}
           {/* render the Fab which allows the user to quickly add an item in their basket */}
-          <Tooltip title="Add to Shopping Basket" arrow placement="top">
+          <Tooltip
+            title={type === "Creates" ? "Add to Shopping Basket" : "Request a Quote"}
+            arrow
+            placement="top"
+          >
             <Fab
-              aria-label="Add to shopping basket"
+              aria-label={
+                type === "Creates" ? "Add to Shopping Basket" : "Request a Quote"
+              }
               className={classes.fab}
               onClick={(e): void => {
                 // stop propagation so there are no undesired effects

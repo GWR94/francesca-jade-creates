@@ -31,7 +31,9 @@ const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
   return (
     <>
       <div className={classes.container}>
-        <Typography variant="h4">Current Products</Typography>
+        <Typography variant="h4" gutterBottom>
+          Current Products
+        </Typography>
         <Typography className={classes.subtitle} style={{ marginBottom: 10 }}>
           Here are a list of all of the products that customers can see when browsing the
           site.
