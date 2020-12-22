@@ -29,7 +29,7 @@ AWS.config.update({
 });
 
 let stripe;
-if (process.env.NODE_ENV !== "production") {
+if (process.env.CURRENT_ENV !== "production") {
   require("dotenv").config("./.env");
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
 } else {
@@ -158,7 +158,7 @@ const getProducts = (products) => {
 };
 
 const url =
-  process.env.NODE_ENV !== "production"
+  process.env.CURRENT_ENV !== "production"
     ? "http://localhost:3000"
     : "https://www.francescajadecreates.co.uk";
 
@@ -313,6 +313,8 @@ app.post("/orders/send-shipping-information", async (req, res) => {
       padding: 0;
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
+      background-color: #ccd3e0;
+      height: 100%;
     }
 
     table,
@@ -384,7 +386,7 @@ app.post("/orders/send-shipping-information", async (req, res) => {
   </style>
 </head>
 
-<body style="background-color:#ccd3e0;">
+<body style="background-color:#ccd3e0; height:100%;">
   <div style="background-color:#ccd3e0;">
     <!--[if mso | IE]>
       <table
@@ -764,55 +766,6 @@ app.post("/orders/send-shipping-information", async (req, res) => {
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
     ${getProducts(order.products)}
-    <div style="background:#9370f6;background-color:#9370f6;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#9370f6;background-color:#9370f6;width:100%;">
-        <tbody>
-          <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20px;text-align:center;">
-              <!--[if mso | IE]>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                
-        <tr>
-              <!--[if mso | IE]>
-            </td>
-          
-            <td
-               class="" style="vertical-align:top;width:300px;"
-            >
-          <![endif]-->
-              <div class="mj-column-per-50 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                  <tr>
-                    <td align="center" vertical-align="middle" style="font-size:0px;padding:15px 30px;padding-right:25px;padding-bottom:12px;padding-left:25px;word-break:break-word;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
-                        <tr>
-                          <td align="center" bgcolor="#ff80f7" role="presentation" style="border:none;border-radius:10px;cursor:auto;mso-padding-alt:10px 25px;background:#ff80f7;" valign="middle"> <a href="https://mjml.io" style="display:inline-block;background:#ff80f7;color:#FFFFFF;font-family:Roboto;font-size:14px;font-weight:bold;line-height:120%;margin: 0 auto;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:10px;"
-                              target="_blank">
-              Track My Order
-            </a> </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-          
-        </tr>
-      
-                  </table>
-                <![endif]-->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!--[if mso | IE]>
-          </td>
-        </tr>
-      </table>
-      
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >

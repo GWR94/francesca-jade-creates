@@ -3,7 +3,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { BrushRounded, CakeRounded } from "@material-ui/icons";
 import { COLORS } from "../../themes";
-import cake from "../../img/moments.svg";
 import logo from "../../img/logo.png";
 import styles from "./styles/landing.style";
 
@@ -72,7 +71,7 @@ const Landing: React.FC = (): JSX.Element => {
         </Grid>
         <Grid item xs={12} sm={6} justify="center" alignItems="center">
           <div
-            className={`${classes.imageContainer} animate__animated animate__fadeIn animate__delay-1half`}
+            className={`${classes.imageContainer} animate__animated animate__zoomIn animate__delay-2s`}
           >
             <video
               autoPlay
