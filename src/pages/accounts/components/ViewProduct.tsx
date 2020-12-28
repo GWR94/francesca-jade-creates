@@ -26,6 +26,7 @@ import styles from "../styles/viewProduct.style";
 import ViewVariants from "./ViewVariants";
 import { getCompressedKey, getSignedS3Url } from "../../../utils";
 import QuoteDialog from "./QuoteDialog";
+import { openSnackbar } from "../../../utils/Notifier";
 
 interface ViewProductState {
   // create boolean state value for loading to show/hide UI loading effects
@@ -36,12 +37,6 @@ interface ViewProductState {
   images: { [key: string]: string }[];
   quoteDialogOpen: boolean;
 }
-
-/**
- * TODO
- * [ ] Remove API_KEY auth, give unauth and auth permission for certain actions
- * ? Look at adding pictures per variant and viewing them when changing
- */
 
 /**
  * Functional component to view the selected products data, including their variants,
@@ -64,6 +59,8 @@ const ViewProduct: React.FC<ViewProps> = ({
 
   // get the users' id (sub) to check the current authenticated user
   const sub = useSelector(({ user }: AppState) => user.id);
+  // retrieve the products so they can be mutated/checked within the component.
+  const products = useSelector(({ basket }: AppState) => basket.items);
   // execute makeStyles based on external styles and store function in variable.
   const useStyles = makeStyles(styles);
   // execute the useStyles function and store result in variable.
@@ -139,11 +136,13 @@ const ViewProduct: React.FC<ViewProps> = ({
    * Function to add the current product into the basket redux store, so it can
    * be purchased from anywhere around the site.
    */
-  const handleAddToBasket = (): AddItemAction | null => {
+  const handleAddToBasket = (): void | null => {
     // destructure product from state
     const { product } = state;
     // check to see the product exists, if it doesn't, return null
+    console.log(product);
     if (!product) return null;
+
     // destructure relevant properties from product
     const {
       id,
@@ -159,18 +158,29 @@ const ViewProduct: React.FC<ViewProps> = ({
      * Dispatch the addToBasket action, which will add the product passed
      * as the parameter into the basket redux store.
      */
-    return dispatch(
-      basketActions.addToBasket({
-        id,
-        title,
-        description,
-        image: images.collection[images.cover],
-        variants,
-        type,
-        tagline,
-        customOptions,
-      }),
-    );
+    if (products.findIndex((p) => p.title === title) === -1) {
+      dispatch(
+        basketActions.addToBasket({
+          id,
+          title,
+          description,
+          image: images.collection[images.cover],
+          variants,
+          type,
+          tagline,
+          customOptions,
+        }),
+      );
+      return openSnackbar({
+        message: `Added ${product.title} to basket.`,
+        severity: "success",
+      });
+    } else {
+      return openSnackbar({
+        message: `${product.title} is already in the basket.`,
+        severity: "error",
+      });
+    }
   };
 
   const { product, isLoading, images, quoteDialogOpen } = state;
@@ -236,57 +246,64 @@ const ViewProduct: React.FC<ViewProps> = ({
             showNav={images.length > 1}
             showPlayButton={images.length > 1}
           />
-        </Grid>
-        <Grid item xs={12} sm={5} style={{ marginBottom: 30 }}>
-          {/* Describe the product and show variants in ViewVariants component */}
-          <ViewVariants variants={variants} customOptions={customOptions} type={type} />
-          <div className={classes.buttonContainer}>
-            {sub ? (
-              /**
-               * If there is a users' sub (user is logged in) and setPrice is true, then
-               * a button to add the current item to the basket should be rendered
-               */
-              setPrice ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={handleAddToBasket}
-                  startIcon={<i className={`fas fa-shopping-cart ${classes.viewIcon}`} />}
-                >
-                  Add to Basket
-                </Button>
-              ) : (
-                /**
-                 * If there is no set price, then the user cannot add the item to the basket,
-                 * they must instead request a quote, so render a button for it.
-                 */
-                <Button
-                  color="primary"
-                  variant="contained"
-                  className={classes.button}
-                  // open the QuoteDialog component on click
-                  onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
-                  startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
-                >
-                  Request a Quote
-                </Button>
-              )
-            ) : (
-              // If there is no sub, then the user isn't logged in, so they must first do that.
+          {/* 
+            If the product type is a cake, then the user must request a quote,
+            as there are no set prices for cakes.
+          */}
+          {type === "Cake" && (
+            <div className={classes.buttonContainer}>
               <Button
-                variant="contained"
                 color="primary"
+                variant="contained"
                 className={classes.button}
-                // redirect to login page on click
-                onClick={(): void => history.push("/login")}
-                startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
+                // open the QuoteDialog component on click
+                onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
+                startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
               >
-                Login to Purchase
+                Request a Quote
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </Grid>
+        {type === "Creates" && (
+          <Grid item xs={12} sm={5} style={{ marginBottom: 30 }}>
+            {/* Describe the product and show variants in ViewVariants component */}
+            <ViewVariants variants={variants} customOptions={customOptions} type={type} />
+            <div className={classes.buttonContainer}>
+              {sub ? (
+                /**
+                 * If there is a users' sub (user is logged in) and setPrice is true, then
+                 * a button to add the current item to the basket should be rendered
+                 */
+                setPrice && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    onClick={handleAddToBasket}
+                    startIcon={
+                      <i className={`fas fa-shopping-cart ${classes.viewIcon}`} />
+                    }
+                  >
+                    Add to Basket
+                  </Button>
+                )
+              ) : (
+                // If there is no sub, then the user isn't logged in, so they must first do that.
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  // redirect to login page on click
+                  onClick={(): void => history.push("/login")}
+                  startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
+                >
+                  Login to Purchase
+                </Button>
+              )}
+            </div>
+          </Grid>
+        )}
       </Grid>
       {/* Render the dialog to allow the user to request a quote */}
       <QuoteDialog

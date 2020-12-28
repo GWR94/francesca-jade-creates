@@ -16,6 +16,11 @@ interface MiniBasketProps {
   closeNav: () => void;
 }
 
+/**
+ * TODO
+ * [ ] Fix dropdown arrow
+ */
+
 const MiniBasketMenu: React.FC<MiniBasketProps> = ({
   basketOpen,
   basketRef,
@@ -40,7 +45,7 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: "center",
+        horizontal: 270,
       }}
       style={{ marginTop: 6 }}
       onClose={(): void => setBasketOpen(false)}

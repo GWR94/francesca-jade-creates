@@ -228,51 +228,50 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 </>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle2" style={{ marginBottom: 10 }}>
                     Please select the colour scheme you wish to use for the frame.
                   </Typography>
-                  <FormControl variant="outlined" className={classes.formControl}>
-                    <InputLabel id="demo-simple-select-outlined-label">
-                      Colour Scheme
-                    </InputLabel>
-                    <Select
-                      value={currentColorScheme}
-                      label="Colour Scheme"
-                      fullWidth
-                      variant="outlined"
-                      onChange={(e): void =>
+                  <div className={classes.formControl}>
+                    <FormControl variant="outlined" style={{ width: "80%" }}>
+                      <InputLabel>Colour Scheme</InputLabel>
+                      <Select
+                        value={currentColorScheme}
+                        label="Colour Scheme"
+                        fullWidth
+                        variant="outlined"
+                        onChange={(e): void =>
+                          setState({
+                            ...state,
+                            currentColorScheme: e.target.value as string,
+                          })
+                        }
+                      >
+                        {colorScheme.map((val, i) => (
+                          <MenuItem value={val} key={i}>
+                            {val}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Button
+                      onClick={(): void => {
+                        const updatedCustomOptions = customOptions;
+                        updatedCustomOptions[colorIdx] = {
+                          "Color Scheme": currentColorScheme,
+                        };
                         setState({
                           ...state,
-                          currentColorScheme: e.target.value as string,
-                        })
-                      }
-                      style={{ minWidth: 220 }}
+                          currentColorScheme: "",
+                          expanded: `panel-color`,
+                        });
+                        setCustomOptions(updatedCustomOptions);
+                      }}
+                      color="primary"
+                      disabled={!currentColorScheme}
                     >
-                      {colorScheme.map((val, i) => (
-                        <MenuItem value={val} key={i}>
-                          {val}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <Button
-                    onClick={(): void => {
-                      const updatedCustomOptions = customOptions;
-                      updatedCustomOptions[colorIdx] = {
-                        "Color Scheme": currentColorScheme,
-                      };
-                      setState({
-                        ...state,
-                        currentColorScheme: "",
-                        expanded: `panel-color`,
-                      });
-                      setCustomOptions(updatedCustomOptions);
-                    }}
-                    color="primary"
-                    disabled={!currentColorScheme}
-                  >
-                    Next
-                  </Button>
+                      Next
+                    </Button>
+                  </div>
                 </div>
               )}
             </AccordionDetails>
@@ -287,7 +286,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
               aria-controls="panel-notes-content"
               id="panel-notes-header"
             >
-              <Typography className={classes.heading}>Notes</Typography>
+              <Typography className={classes.heading}>Comments</Typography>
               <Typography className={classes.secondaryHeading}>
                 {customOptions[notesIdx] === undefined ? (
                   <span
@@ -345,7 +344,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                 </>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle2" gutterBottom>
                     Optionally add notes to add other bespoke customisation options or to
                     notify about the chosen image placement etc.
                   </Typography>
@@ -353,7 +352,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     value={currentNotesValue}
                     fullWidth
                     multiline
-                    label="Notes"
+                    label="Comments"
                     variant="outlined"
                     rows={3}
                     onChange={(e): void =>

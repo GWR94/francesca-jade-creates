@@ -32,6 +32,7 @@ import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
 import { AppState } from "../../store/store";
+import { BasketItemProps } from "../../pages/payment/interfaces/Basket.i";
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -81,6 +82,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
   const [quoteDialogOpen, setQuoteDialogOpen] = useState(false);
   // connect with redux via hook.
   const dispatch = useDispatch();
+
+  const products = useSelector(({ basket }: AppState) => basket.items);
 
   /**
    * Function to delete the current product from the database, using the deleteProduct
@@ -266,17 +269,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
                 if (type === "Creates") {
                   try {
                     // dispatch the action to add current product to basket, and map the cover image to it.
-                    dispatch(
-                      actions.addToBasket({
-                        ...product,
-                        image: images.collection[images.cover],
-                      }),
-                    );
-                    // notify the user of successful action
-                    openSnackbar({
-                      message: `Added ${product.title} to basket.`,
-                      severity: "success",
-                    });
+                    if (products.findIndex((p) => product.title === p.title) === -1) {
+                      dispatch(
+                        actions.addToBasket({
+                          ...product,
+                          image: images.collection[images.cover],
+                        }),
+                      );
+                      // notify the user of successful action
+                      openSnackbar({
+                        message: `Added ${product.title} to basket.`,
+                        severity: "success",
+                      });
+                    } else {
+                      openSnackbar({
+                        message: `${product.title} is already in the basket.`,
+                        severity: "error",
+                      });
+                    }
                   } catch (err) {
                     // notify the user of failed action
                     openSnackbar({

@@ -64,8 +64,9 @@ export default createStyles({
     boxSizing: "border-box",
   },
   formControl: {
-    margin: 8,
-    minWidth: 120,
+    display: "inline-flex",
+    justifyContent: "space-evenly",
+    width: "100%",
   },
   button: {
     margin: "0 5px",

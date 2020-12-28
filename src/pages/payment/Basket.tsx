@@ -120,7 +120,6 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     if (isMounted) {
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get("session_id");
-      console.log(sessionId);
       if (sessionId) {
         handleRetrieveSession(sessionId);
       } else {

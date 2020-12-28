@@ -11,7 +11,7 @@ export default createStyles({
     "&:before": {
       content: "''",
       position: "absolute",
-      left: "calc(50% - 10px)",
+      right: 30,
       top: -15,
       width: 0,
       height: 0,
@@ -23,7 +23,7 @@ export default createStyles({
     "&:after": {
       content: "''",
       position: "absolute",
-      left: "calc(50% - 10px)",
+      right: 30,
       top: -14,
       width: 0,
       height: 0,

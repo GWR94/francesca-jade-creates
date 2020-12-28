@@ -26,6 +26,15 @@ import BasketCustomOptions from "./BasketCustomOptions";
 import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
 /**
+ * TODO
+ * [x] Fix select outline variant
+ * [x] Padding below colour scheme text
+ * [ ] Fix chip input next button
+ * [ ] Fix padding below above notes textifeld
+ * [ ] Change Word Art Frame personlised message
+ */
+
+/**
  * Functional component to render one item (product) that is in the customers' shopping basket. The component
  * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
  * add their own customisable options for the product that they're attempting to purchase.
@@ -248,19 +257,20 @@ const BasketItem: React.FC<BasketProps> = ({
             */}
             {item.variants.length > 1 && (
               <>
-                <Typography className={classes.text}>
+                <Typography
+                  variant="subtitle1"
+                  className={classes.text}
+                  style={{ marginBottom: 10 }}
+                >
                   Please select the variant you wish to purchase
                 </Typography>
-                <FormControl fullWidth>
+
+                <FormControl variant="outlined" size="small" style={{ width: "100%" }}>
                   <InputLabel>Pick Variant</InputLabel>
                   <Select
                     value={variantIndex}
                     onChange={handleVariantChange}
                     fullWidth
-                    classes={{
-                      outlined: classes.outlined,
-                      root: classes.root,
-                    }}
                     label="Pick Variant"
                   >
                     {/* Map the variants into their own MenuItem component */}

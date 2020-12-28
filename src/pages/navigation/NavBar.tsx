@@ -22,22 +22,16 @@ import { openSnackbar } from "../../utils/Notifier";
 import * as userActions from "../../actions/user.actions";
 import * as basketActions from "../../actions/basket.actions";
 
-interface NavBarProps {
-  noBackground?: boolean;
-}
-
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
  */
-const NavBar: React.FC<NavBarProps> = ({ noBackground }): JSX.Element => {
+const NavBar: React.FC = (): JSX.Element => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
   const location = useLocation();
-
-  console.log(location);
 
   const { admin } = useSelector(({ user }: AppState) => user);
 

@@ -12,7 +12,6 @@ export interface RouterState {
   user: CognitoUserProps | null;
   userAttributes: UserAttributeProps | null;
   isLoading: boolean;
-  path: string;
 }
 
 export interface RouterDispatchProps {

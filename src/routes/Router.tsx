@@ -55,7 +55,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
     userAttributes: null,
     isLoading: true,
   };
-
   // set the property to be false to begin with, so no user can accidentally be an admin.
   public admin = false;
 
@@ -117,39 +116,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
       this.admin = false;
       this.setState({ user: null, isLoading: false });
     }
-  };
-
-  /**
-   * Method to sign out the current authenticated user, and remove all of their properties from
-   * state. It will also clear the basket/user from redux stores so all user information is wiped
-   * from the system.
-   */
-  private handleSignOut = async (): Promise<void> => {
-    // destructure relevant props
-    const { clearBasket, clearUser } = this.props;
-    try {
-      // try to sign out
-      await Auth.signOut();
-      // clear basket reducer
-      clearBasket();
-      // clear user reducer
-      clearUser();
-      // set user state to null,
-      this.setState({ user: null });
-      // notify the user of success
-      openSnackbar({
-        severity: "success",
-        message: "Successfully signed out.",
-      });
-    } catch (err) {
-      // notify the user of error signing out
-      openSnackbar({
-        severity: "error",
-        message: "Error signing out. Please try again.",
-      });
-    }
-    // push to home page
-    history.push("/");
   };
 
   /**

@@ -66,7 +66,7 @@ const ViewVariants = ({
           <FormControl
             variant="outlined"
             size={desktop ? "medium" : "small"}
-            style={{ width: "100%", marginTop: 8 }}
+            style={{ width: "100%" }}
           >
             <InputLabel variant="outlined">Select Variant</InputLabel>
             <Select

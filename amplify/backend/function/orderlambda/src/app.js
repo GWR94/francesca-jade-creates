@@ -29,10 +29,13 @@ AWS.config.update({
 });
 
 let stripe;
-if (process.env.CURRENT_ENV !== "production") {
+let url;
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config("./.env");
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
+  url = "http://localhost:3000";
 } else {
+  url = "https://www.francescajadecreates.co.uk";
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST); //FIXME - Change after test
 }
 
@@ -157,16 +160,11 @@ const getProducts = (products) => {
     .toString();
 };
 
-const url =
-  process.env.CURRENT_ENV !== "production"
-    ? "http://localhost:3000"
-    : "https://www.francescajadecreates.co.uk";
-
 app.post("/orders/create-checkout-session", async (req, res) => {
   const { products, email, orderId } = req.body;
   const items = [];
   try {
-    products.map((product) => {
+    await products.map((product) => {
       items.push({
         price_data: {
           currency: "gbp",
@@ -175,11 +173,12 @@ app.post("/orders/create-checkout-session", async (req, res) => {
             description: product.tagline || "",
             images: [product.image],
           },
-          unit_amount: (product.price + product.shippingCost) * 100,
+          unit_amount: Math.round((product.price + product.shippingCost) * 100),
         },
         quantity: 1,
       });
     });
+
     const session = await stripe.checkout.sessions.create({
       billing_address_collection: "required",
       shipping_address_collection: {
@@ -195,7 +194,7 @@ app.post("/orders/create-checkout-session", async (req, res) => {
         orderId,
       },
     });
-    res.json({ id: session.id });
+    res.json({ id: session.id, env: process.env.NODE_ENV });
   } catch (err) {
     res.status(502).json({ error: err });
   }

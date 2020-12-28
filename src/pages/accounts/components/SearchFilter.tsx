@@ -33,15 +33,6 @@ import * as actions from "../../../actions/products.actions";
 import styles from "../styles/searchFilter.style";
 
 /**
- * TODO
- * [x] Sort out success page
- * [ ] Sort out basket
- * [x] Fix errors for cakes ViewProduct
- * [x] Fix general styling on ViewProduct
- * [ ] Fix landing page styles on mobile
- */
-
-/**
  * Component which allows the user to filter out products to fit their needs.
  * @param admin = false - Boolean value to show if the current authenticated user
  * is an admin.
