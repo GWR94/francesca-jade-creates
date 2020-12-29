@@ -256,7 +256,7 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
                         className="login__forgot"
                         tabIndex={0}
                         role="button"
-                        style={{ width: "170px" }}
+                        style={{ width: "220px" }}
                         onClick={this.handleResendVerificationCode}
                       >
                         Not got a code? Resend code here.

@@ -5,6 +5,10 @@ import { FONTS, COLORS } from "../../../themes";
 const breakpoints = createBreakpoints({});
 
 export default createStyles({
+  container: {
+    padding: "30px 0",
+    minHeight: "calc(100vh - 54px)",
+  },
   headingText: {
     fontFamily: FONTS.Text,
     fontSize: "2.8rem",
@@ -14,11 +18,11 @@ export default createStyles({
     },
   },
   headingContainer: {
-    height: "calc(100vh - 54px)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     textAlign: "center",
+    marginBottom: 30,
   },
   subheading: {
     fontSize: "1.2rem",
@@ -37,21 +41,23 @@ export default createStyles({
     borderRadius: "50%",
     overflow: "hidden",
     margin: "auto",
+    // padding: "20px 0",
     top: "50%",
-    transform: "translateY(-50%)",
-    "&:before": {
-      content: "''",
-      position: "absolute",
-      background: "rgba(255, 150, 202, 0.5)",
-      top: 0,
-      right: 0,
-      left: 0,
-      bottom: 0,
+    [breakpoints.down("sm")]: {
+      width: 280,
+      height: 280,
     },
+    transform: "translateY(-50%)",
+  },
+  mobileImage: {
+    height: "auto",
+    background: "green",
   },
   video: {
     width: "100%",
-    display: "block",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: -150,
   },
   landingImage: {

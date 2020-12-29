@@ -202,10 +202,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
           }),
         );
         // notify the user of success
-        openSnackbar({
-          severity: INTENT.Success,
-          message: "Successfully registered new user.",
-        });
+        console.log("User successfully registered");
       }
     } catch (err) {
       // log any errors

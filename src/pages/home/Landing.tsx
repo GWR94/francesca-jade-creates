@@ -20,7 +20,7 @@ const Landing: React.FC = (): JSX.Element => {
 
   return (
     <Container>
-      <Grid container>
+      <Grid container className={classes.container}>
         <Grid item xs={12} sm={6} className={classes.headingContainer}>
           <img
             src={logo}
@@ -69,7 +69,7 @@ const Landing: React.FC = (): JSX.Element => {
             </Button>
           </div>
         </Grid>
-        <Grid item xs={12} sm={6} justify="center" alignItems="center">
+        <Grid item xs={12} sm={6}>
           <div
             className={`${classes.imageContainer} animate__animated animate__zoomIn animate__delay-2s`}
           >
