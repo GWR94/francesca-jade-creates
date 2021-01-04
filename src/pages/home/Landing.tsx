@@ -71,7 +71,7 @@ const Landing: React.FC = (): JSX.Element => {
         </Grid>
         <Grid item xs={12} sm={6} justify="center" alignItems="center">
           <div
-            className={`${classes.imageContainer} animate__animated animate__zoomIn animate__delay-2s`}
+            className={`${classes.imageContainer} animate__animated animate__fadeIn animate__delay-2s`}
           >
             <video
               autoPlay

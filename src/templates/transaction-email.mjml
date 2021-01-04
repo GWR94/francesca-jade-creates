@@ -2,52 +2,85 @@
   <mj-body background-color="#ccd3e0">
     <mj-section background-color="#fff" padding-bottom="20px" padding-top="20px">
       <mj-column width="100%">
-        <mj-image src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png" alt="Francesca Jade Creates" align="center" border="none" width="100px" padding-left="0px" padding-right="0px" padding-bottom="10px" padding-top="10px"></mj-image>
+        <mj-image src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png" alt="Francesca Jade Creates" align="center" border="none" width="100px" padding-left="0px" padding-right="0px" padding-bottom="0px" padding-top="10px"></mj-image>
+        <mj-text font-size="12px" align="center" font-family="Roboto, sans-serif">
+          <p style="font-weight: bold; margin: 0; color: #afafaf">Francesca Jade Creates</p>
+        </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#9370f6" padding-bottom="0px" padding-top="0">
+    <mj-section background-color="#356cc7" padding-bottom="0px" padding-top="0">
       <mj-column width="100%">
-        <mj-text align="center" font-size="13px" color="#ABCDEA" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="18px" padding-top="28px">HELLO
+        <mj-text align="center" font-size="13px" color="#ABCDEA" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="18px" padding-top="28px">
+          <p>HELLO</p>
           <p style="font-size:16px; color:white">[[FirstName]]</p>
         </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#9370f6" padding-bottom="5px" padding-top="0">
+    <mj-section background-color="#356cc7" padding-bottom="5px" padding-top="0">
       <mj-column width="100%">
         <mj-divider border-color="#ffffff" border-width="2px" border-style="solid" padding-left="20px" padding-right="20px" padding-bottom="0px" padding-top="0"></mj-divider>
-        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="28px" padding-top="28px"><span style="font-size:20px; font-weight:bold">Thank you very much for your purchase.</span>
-          <br />
-          <span style="font-size:15px">Please find the receipt below.</span></mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="28px" padding-top="28px">
+          <p style="font-size: 1.2rem; font-weight: bold">Thank you very much for your purchase.</p>
+          <span style="font-size:15px">Please find the receipt below.</span>
+        </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#ae91ff" padding-bottom="15px">
+    <mj-section background-color="#fff">
+      <mj-column width="30%" border="1px solid red">
+        <mj-image src="https://ci6.googleusercontent.com/proxy/BZplEOx4oUaYKsmEBHMEPtrDeAwQdCjJ4a4d6gjsW5BTy7SeDPwfHLF_ZvbJljhUN_7eAENwlKobsXVJW8thdqY8wxJISl87oC7QNy9Pjx28U0g8qNZIOgWLPuHzNVQRg2IPm7156hg0-dIaZlnltxA5BQpxGRaIPc4by1XLSjFcC2gdo0eVST5V=s0-d-e1-ft#https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/products/1605187666659-IMG_0820.JPEG">
+        </mj-image>
+      </mj-column>
+      <mj-column width="70%" border="1px solid green">
+        <mj-text>
+          <p style="font-weight: bold; text-align: center; font-size: 1rem">[[order.title]]</p>
+          <p>Quantity: <span style="font-weight: bold; padding-left: 5px">1</span></p>
+          <p>Cost: <span style="font-weight: bold; padding-left: 5px">£[[order.price]] + £[[order.shippingCost]]</span></p>
+          <p style="text-decoration:underline; font-size: 0.9rem">Custom Options</p>
+          [[mapCustomOptions]]
+        </mj-text>
+      </mj-column>
       <mj-column>
-        <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Order Number</strong></mj-text>
-        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[OrderNumber]]</mj-text>
+
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#568feb" padding-bottom="15px">
+      <mj-column>
+        <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Order ID</strong></mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[OrderNumber]]</mj-text>
       </mj-column>
       <mj-column>
         <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Order Date</strong></mj-text>
-        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[OrderDate]]</mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[OrderDate]]</mj-text>
       </mj-column>
       <mj-column>
         <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Total Price</strong></mj-text>
-        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[TotalPrice]]</mj-text>
+        <mj-text align="center" color="#FFF" font-size="13px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">[[TotalPrice]]</mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#9370f6" padding-bottom="20px" padding-top="20px">
-      <mj-column width="50%">
-        <mj-button background-color="#ff80f7" color="#FFF" font-size="14px" align="center" font-weight="bold" border="none" padding="15px 30px" border-radius="10px" href="https://mjml.io" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="10px">Download Receipt</mj-button>
-      </mj-column>
-      <mj-column width="50%">
-        <mj-button background-color="#ff80f7" color="#FFF" font-size="14px" align="center" font-weight="bold" border="none" padding="15px 30px" border-radius="10px" href="https://mjml.io" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="12px">Track My Order</mj-button>
+    <mj-section background-color="#356CC7" padding-top="20px">
+      <mj-column width="60%">
+        <mj-text color="#fff" align="center">
+          <p style="font-size: 1rem; font-weight: bold">Shipping Information</p>
+          <p>[[name]]</p>
+          <p>[[line1]]</p>
+          <p>[[line2]]</p>
+          <p>[[postalCode]]</p>
+          <p style="margin:0">[[country]]</p>
+        </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section background-color="#9370f6" padding-bottom="5px" padding-top="0">
+    <mj-section background-color="#356CC7">
+      <mj-column>
+        <mj-button background-color="#ffae00" color="#FFF" font-size="14px" align="center" font-weight="bold" border="none" border-radius="10px" href="https://mjml.io" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="10px">Track Order</mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#356cc7" padding-bottom="5px" padding-top="0">
       <mj-column width="100%">
         <mj-divider border-color="#ffffff" border-width="2px" border-style="solid" padding-left="20px" padding-right="20px" padding-bottom="0px" padding-top="0"></mj-divider>
-        <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="20px">Best,
-          <br />
-          <span style="font-size:15px">Francesca Jade</span></mj-text>
+        <mj-text align="center" color="#FFF" font-size="15px" font-family="Roboto, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="20px">
+          <p>Best,</p>
+          <p style="font-size:15px, margin-top: 5px">Francesca Jade Creates</p>
+        </mj-text>
       </mj-column>
     </mj-section>
   </mj-body>

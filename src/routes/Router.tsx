@@ -20,7 +20,6 @@ import {
   RouterProps,
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
-import { openSnackbar } from "../utils/Notifier";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import UpdateProduct from "../pages/accounts/components/UpdateProduct";
@@ -30,7 +29,6 @@ import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import * as productsActions from "../actions/products.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
-import { INTENT } from "../themes";
 import { FetchProductsSuccessAction } from "../interfaces/products.redux.i";
 import { AppState } from "../store/store";
 import ProductsList from "../pages/accounts/components/ProductsList";
@@ -66,8 +64,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
       Hub.listen("auth", this.onHubCapsule);
       // get the current users information
       if (!user) await this.getUserData();
-      const data = await Auth.currentUserCredentials();
-      console.log(data);
+      await Auth.currentUserCredentials();
     } catch (err) {
       console.error(err);
     }
@@ -178,7 +175,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
       signInData?.id ??
       signInData.signInUserSession?.idToken?.payload?.sub;
 
-    console.log(id);
     // check to see if the user is in the database
     try {
       const { data } = await API.graphql(graphqlOperation(getUser, { id }));
@@ -274,6 +270,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle1"
                           style={{
                             margin: "10px 0",
+                            color: "red",
                           }}
                         >
                           -- Placeholder --
@@ -327,6 +324,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle1"
                           style={{
                             margin: "10px 0",
+                            color: "red",
                           }}
                         >
                           -- Placeholder --

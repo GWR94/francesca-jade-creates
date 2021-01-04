@@ -55,8 +55,6 @@ describe("<ViewProduct />", () => {
       );
       // expect second child of button to be the correct text
       expect(wrapper.find(Button).prop("text")).toBe("Request a Quote");
-      // TODO
-      // [ ] Add tests for request quote button once its configured
     });
 
     it("should render correctly when injecting product with set price into state", () => {

@@ -10,6 +10,7 @@ See the License for the specific language governing permissions and limitations 
 /**
  * TODO
  * [ ] Make checkAdmin function to quickly check if the user is admin or not
+ * [ ] Check sign in page going to right url (staging.amplifyapp)
  */
 
 const express = require("express");
@@ -75,9 +76,7 @@ const getProducts = (products) => {
             <td style="direction:ltr;text-align:center;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                
         <tr>
-      
             <td
                class="" style="width:600px;"
             >
@@ -88,7 +87,6 @@ const getProducts = (products) => {
            bgcolor="#9370f6" border="0" cellpadding="0" cellspacing="0" role="presentation"
         >
           <tr>
-        
               <td
                  style="vertical-align:middle;width:240px;"
               >

@@ -26,15 +26,6 @@ import BasketCustomOptions from "./BasketCustomOptions";
 import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
 /**
- * TODO
- * [x] Fix select outline variant
- * [x] Padding below colour scheme text
- * [ ] Fix chip input next button
- * [ ] Fix padding below above notes textifeld
- * [ ] Change Word Art Frame personlised message
- */
-
-/**
  * Functional component to render one item (product) that is in the customers' shopping basket. The component
  * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
  * add their own customisable options for the product that they're attempting to purchase.
@@ -103,7 +94,6 @@ const BasketItem: React.FC<BasketProps> = ({
     basket.current?.classList.add("zoomOut");
     // dispatch the action after the animation has finished, which will remove it from basket.
     setTimeout((): RemoveItemAction => {
-      // basket.current.classList.remove("zoomOut"); // FIXME - May be needed?
       return dispatch(actions.removeFromBasket(id));
     }, 500);
   };

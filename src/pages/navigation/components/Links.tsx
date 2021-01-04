@@ -92,7 +92,7 @@ const Links: React.FC<LinksProps> = ({
               ref={accountRef}
               className={
                 window.location.href.split("/").includes("account")
-                  ? classes.linkActive
+                  ? classes.linkActiveDiv
                   : classes.link
               }
             >
@@ -136,7 +136,7 @@ const Links: React.FC<LinksProps> = ({
             }
           }}
           className={
-            window.location.href.includes("basket") ? classes.linkActive : classes.link
+            window.location.href.includes("basket") ? classes.linkActiveDiv : classes.link
           }
         >
           <Badge

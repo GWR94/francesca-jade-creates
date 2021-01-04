@@ -11,6 +11,7 @@ import {
   Step,
   StepLabel,
   CircularProgress,
+  useMediaQuery,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { InfoOutlined } from "@material-ui/icons";
@@ -38,12 +39,13 @@ if (process.env.NODE_ENV === "production") {
 
 /**
  * TODO
- * [x] Fix basket
  * [ ] Create and link cancel page back to basket
  * [ ] Test delete button - was causing errors
- * [x] Fix accordion closing at wrong time
- * [ ] Change confirm dialog title text for images
- * [ ] Fix image(s) on confirm dialog
+ * [ ] Remove "Uploaded Image" text when theres no images uploaded
+ * [ ] Test to see if you can remove skip button / notify user they have to skip
+ * [ ] Test login button going to staging randomly
+ * [ ] Mark phone number as optional in create new account
+ * [ ] Check basket clears once purchase is complete
  */
 
 /**
@@ -80,6 +82,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     currentIdx: 0,
     session: null,
   });
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   // store the useDispatch hook into a variable so it can be used within the component
   const dispatch = useDispatch();
@@ -124,7 +128,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         handleRetrieveSession(sessionId);
       } else {
         // clear the checkout basket when the user navigates to the page to clear up old data
-        dispatch(actions.clearCheckout()); // FIXME
+        dispatch(actions.clearCheckout());
         // get the users' data and set it into state within the getUserInfo function
         getUserInfo();
       }
@@ -269,11 +273,17 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         return (
           <div className={classes.itemContainer}>
             <>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography
+                variant="subtitle1"
+                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
+              >
                 Please confirm each of the items in your basket, and if necessary choose
                 the variant you wish to purchase.
               </Typography>
-              <Typography variant="subtitle1" style={{ marginBottom: 20 }}>
+              <Typography
+                variant="subtitle1"
+                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
+              >
                 Please complete all of the required fields to personalise your product.
               </Typography>
               <Typography style={{ marginBottom: 4 }}>

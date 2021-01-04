@@ -94,7 +94,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
           },
         });
       } catch (err) {
-        console.error(err); //FIXME
+        console.error("Unable to retrieve product");
       }
     }
     /**

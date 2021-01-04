@@ -17,7 +17,6 @@ import "react-image-gallery/styles/scss/image-gallery.scss";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";
-import { AddItemAction } from "../../../interfaces/basket.redux.i";
 import { ViewProps } from "../interfaces/ViewProduct.i";
 import { chipTheme } from "../../../common/styles/viewProduct.style";
 import { AppState } from "../../../store/store";
@@ -33,7 +32,6 @@ interface ViewProductState {
   isLoading: boolean;
   // store the product in state so it can be accessed throughout component
   product: ProductProps | null;
-  // FIXME
   images: { [key: string]: string }[];
   quoteDialogOpen: boolean;
 }

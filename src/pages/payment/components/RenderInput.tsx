@@ -159,6 +159,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 fullWidth
                 variant="outlined"
                 label={name}
+                allowDuplicates
                 classes={{
                   chip: classes.chip,
                 }}
@@ -274,8 +275,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
      * If the featureType is other, then a select will need to be rendered with all
      * of the values placed inside it.
      */
-    case "dropdown": // FIXME - one of dropdown/other should be removed - currently mixed
     case "other":
+    case "dropdown":
       {
         if (value.array === undefined) return null;
         renderedFeature = (
@@ -497,8 +498,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     onClose={(): void => setState({ ...state, confirmDialogOpen: false })}
                   >
                     <DialogTitle>
-                      Continue with {(currentInputValue as S3ImageProps[])?.length}{" "}
-                      images?
+                      Continue with {(currentInputValue as S3ImageProps[])?.length} image
+                      {(currentInputValue as S3ImageProps[]).length === 1 ? "" : "s"}
                     </DialogTitle>
                     <DialogContent>
                       <Typography variant="subtitle1" gutterBottom>
