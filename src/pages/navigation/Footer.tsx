@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, Tooltip } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -10,14 +10,19 @@ const Footer = (): JSX.Element | null => {
     container: {
       borderTop: `3px solid ${COLORS.LightPink}`,
       width: "100%",
-      position: "relative",
+      position: "absolute",
       bottom: 0,
+      height: 150,
       background: "#fff",
       fontFamily: FONTS.Title,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
+      justifyContent: "center",
       zIndex: 5,
+      [breakpoints.down("sm")]: {
+        height: 180,
+      },
     },
     row: {
       margin: "10px auto",
@@ -37,6 +42,16 @@ const Footer = (): JSX.Element | null => {
       "&:hover": {
         textDecoration: "underline",
       },
+    },
+    socialsContainer: {
+      width: 200,
+      margin: "0 auto 10px",
+      display: "inline-flex",
+      justifyContent: "space-evenly",
+    },
+    icon: {
+      cursor: "pointer",
+      fontSize: "1.6rem",
     },
   });
   const { pathname } = useLocation();
@@ -61,6 +76,43 @@ const Footer = (): JSX.Element | null => {
           </Link>
         </Grid>
       </Grid>
+      <div className={classes.socialsContainer}>
+        <Tooltip title="Francesca Jade Creates Facebook" arrow>
+          <i
+            className={`fab fa-facebook ${classes.icon}`}
+            onClick={(): void => {
+              window.location.href = "https://www.facebook.com/francescajadecreates/";
+            }}
+            role="button"
+            tabIndex={0}
+          />
+        </Tooltip>
+        <Tooltip title="Francesca Jade Creates Instagram" arrow>
+          <i
+            className={`fab fa-instagram ${classes.icon}`}
+            onClick={(): void => {
+              window.location.href = "https://www.instagram.com/francescajadecreates/";
+            }}
+            role="button"
+            tabIndex={0}
+            style={{ color: COLORS.DarkGrey }}
+          />
+        </Tooltip>
+        <Tooltip title="Francesca Jade Cakes Instagram" arrow>
+          <i
+            className={`fab fa-instagram ${classes.icon}`}
+            onClick={(): void => {
+              window.location.href = "https://www.instagram.com/francescajadecakes/";
+            }}
+            role="button"
+            style={{ color: COLORS.DarkPink }}
+            tabIndex={0}
+          />
+        </Tooltip>
+        <Tooltip title="Francesca Jade Creates Etsy" arrow>
+          <i className={`fab fa-etsy ${classes.icon}`} />
+        </Tooltip>
+      </div>
       <a
         className={classes.link}
         style={{

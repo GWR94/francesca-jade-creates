@@ -25,6 +25,8 @@ export enum COLORS {
   LightGreen = "#59cf5e",
   InfoBlue = "#00b0ff",
   WarningOrange = "#ff9800",
+  FacebookBlue = "#4267B2",
+  InstagramPurple = "#833AB4",
 }
 
 export enum BREAKPOINTS {

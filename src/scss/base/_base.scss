@@ -2,8 +2,8 @@
   width: 1200px;
   background: #fff;
   margin: 0 auto;
-  min-height: calc(100vh - 150px);
-  padding-bottom: 20px;
+  min-height: calc(100vh - 52px);
+  padding-bottom: 170px;
   @media screen and (max-width: $l-breakpoint) {
     width: 900px;
   }
@@ -12,6 +12,7 @@
   }
   @media screen and (max-width: $s-breakpoint) {
     width: 95vw;
+    padding-bottom: 200px;
   }
 }
 

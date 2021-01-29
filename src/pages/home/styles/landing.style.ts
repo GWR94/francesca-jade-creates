@@ -43,11 +43,15 @@ export default createStyles({
     margin: "auto",
     // padding: "20px 0",
     top: "50%",
-    [breakpoints.down("sm")]: {
-      width: 280,
-      height: 280,
-    },
     transform: "translateY(-50%)",
+    "&:before": {
+      content: "''",
+      position: "absolute",
+      top: 0,
+      right: 0,
+      left: 0,
+      bottom: 0,
+    },
   },
   mobileImage: {
     height: "auto",

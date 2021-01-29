@@ -1,17 +1,10 @@
 import { createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { COLORS } from "../../../themes/index";
+import { COLORS } from "../../../themes";
 
 const breakpoints = createBreakpoints({});
 
 export default createStyles({
-  root: {
-    width: "70%",
-    margin: "0 auto",
-    [breakpoints.down("sm")]: {
-      width: "90%",
-    },
-  },
   heading: {
     fontSize: "1rem",
     textAlign: "center",
@@ -76,11 +69,6 @@ export default createStyles({
   detailsText: {
     flexBasis: "50%",
   },
-  imageContainer: {
-    display: "flex",
-    justifyContent: "center",
-    marginBottom: "0.35em",
-  },
   orderId: {
     textAlign: "center",
     fontWeight: "bold",
@@ -102,12 +90,37 @@ export default createStyles({
       padding: "4px 6px",
     },
   },
-  nonIdealContainer: {
-    height: "100%",
-    minHeight: 400,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
+  chipSuccess: {
+    width: 40,
+    borderRadius: 3,
+    background: COLORS.SuccessGreen,
+    textAlign: "center",
+    paddingTop: 3,
+    margin: "0 3px",
+    [breakpoints.up("sm")]: {
+      width: 90,
+    },
+  },
+  chipDanger: {
+    width: 40,
+    borderRadius: 3,
+    background: COLORS.ErrorRed,
+    textAlign: "center",
+    paddingTop: 3,
+    margin: "0 3px",
+    [breakpoints.up("sm")]: {
+      width: 90,
+    },
+  },
+  orderText: {
+    textAlign: "right",
+    fontSize: "1rem",
+    fontWeight: "bold",
+    paddingRight: 12,
+  },
+  paymentButton: {
+    [breakpoints.down("sm")]: {
+      fontSize: "0.7rem",
+    },
   },
 });

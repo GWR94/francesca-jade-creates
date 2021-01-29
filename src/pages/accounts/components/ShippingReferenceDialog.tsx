@@ -18,11 +18,12 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../store/store";
 import { COLORS } from "../../../themes";
+import { openSnackbar } from "../../../utils/Notifier";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import styles from "../styles/shipping.style";
 
 interface ShippingReferenceProps {
-  currentOrder: OrderProps;
+  order: OrderProps;
   dialogOpen: boolean;
   closeDialog: () => void;
   desktop: boolean;
@@ -34,23 +35,25 @@ interface ShippingReferenceState {
   trackingSelect: TrackingSelect;
   inputValue: string;
   trackingArray: { [key: string]: string }[];
-  inputError: "";
+  inputError: string;
   isSending: boolean;
 }
 
+const initialState: ShippingReferenceState = {
+  trackingSelect: "",
+  inputValue: "",
+  trackingArray: [],
+  inputError: "",
+  isSending: false,
+};
+
 const ShippingReferenceDialog = ({
-  currentOrder,
+  order,
   dialogOpen,
   closeDialog,
   desktop,
 }: ShippingReferenceProps): JSX.Element => {
-  const [state, setState] = useState<ShippingReferenceState>({
-    trackingSelect: "",
-    inputValue: "",
-    trackingArray: [],
-    inputError: "",
-    isSending: false,
-  });
+  const [state, setState] = useState<ShippingReferenceState>(initialState);
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -66,48 +69,43 @@ const ShippingReferenceDialog = ({
    */
   const handleSendConfirmation = async (): Promise<void> => {
     const { trackingArray, inputValue } = state;
+    // set sending to true so loading UI effects are shown
+    setState({ ...state, isSending: true });
+
+    const getSum = (total: number, product: GraphQlProduct): number =>
+      total + product.price * 100 + product.shippingCost * 100;
+
+    const cost = order.products.reduce(getSum, 0) / 100;
     try {
-      // set sending to true so loading UI effects are shown
-      setState({ ...state, isSending: true });
-
-      const getSum = (total: number, product: GraphQlProduct): number =>
-        total + product.price * 100 + product.shippingCost * 100;
-
-      const cost = currentOrder.products.reduce(getSum, 0) / 100;
-      try {
-        const response = await API.post(
-          "orderlambda",
-          "/orders/send-shipping-information",
-          {
-            body: {
-              // add order to body
-              order: currentOrder,
-              trackingInfo:
-                // if there is an array of tracking numbers, use that
-                trackingArray.length > 0
-                  ? trackingArray
-                  : // else if there is a value for an individual tracking number, use it
-                  inputValue.length > 0
-                  ? inputValue
-                  : // return null if theres neither an array nor value
-                    null,
-              username,
-              cost,
-            },
-          },
-        );
-        console.log(response);
-      } catch (err) {
-        console.error(err);
-      }
-      // remove loading UI effects
-      setState({ ...state, isSending: false, trackingArray: [], inputValue: "" });
-      // close the dialog
-      closeDialog();
+      await API.post("orderlambda", "/orders/send-shipping-information", {
+        body: {
+          // add order to body
+          order: order,
+          trackingInfo:
+            // if there is an array of tracking numbers, use that
+            trackingArray.length > 0
+              ? trackingArray
+              : // else if there is a value for an individual tracking number, use it
+              inputValue.length > 0
+              ? inputValue
+              : // return null if theres neither an array nor value
+                null,
+          username,
+          cost,
+        },
+      });
+      openSnackbar({
+        severity: "success",
+        message: "Shipping information sent successfully.",
+      });
     } catch (err) {
-      // FIXME - should be removed after testing
-      console.error(err);
+      openSnackbar({
+        severity: "error",
+        message: "Unable to send shipping information. Please try again.",
+      });
     }
+    setState(initialState);
+    closeDialog();
   };
 
   /**
@@ -158,7 +156,6 @@ const ShippingReferenceDialog = ({
               {/* Render the TextField component for current product */}
               <TextField
                 variant="outlined"
-                // set label to be the current products title
                 label={`${order.products[trackingArray.length].title}`}
                 onChange={(e): void => {
                   setState({
@@ -168,9 +165,7 @@ const ShippingReferenceDialog = ({
                   });
                 }}
                 value={inputValue}
-                // only show errors if there are errors present
                 error={!!inputError}
-                // show the helper text when there's an erro
                 helperText={inputError}
                 style={{ width: "75%" }}
               />
@@ -183,7 +178,7 @@ const ShippingReferenceDialog = ({
                     return setState({
                       ...state,
                       trackingArray: [
-                        ...trackingArray, // FIXME - test removal
+                        ...trackingArray,
                         {
                           [title]: inputValue,
                         },
@@ -231,8 +226,8 @@ const ShippingReferenceDialog = ({
 
   return (
     <Dialog
-      // only allow it to be open if the is a value in currentOrder and dialogOpen is true
-      open={dialogOpen && currentOrder !== null}
+      // only allow it to be open if the is a value in order and dialogOpen is true
+      open={dialogOpen && order !== null}
       onClose={closeDialog}
       // set fullscreen to true if screen width is less than 600px
       fullScreen={!desktop}
@@ -254,7 +249,7 @@ const ShippingReferenceDialog = ({
               label="Tracking Data"
               fullWidth
             >
-              {currentOrder?.products.length! > 1 && (
+              {order?.products.length! > 1 && (
                 <MenuItem value="one">Yes, 1 for each item</MenuItem>
               )}
               <MenuItem value="all">Yes, 1 for all items</MenuItem>
@@ -262,7 +257,7 @@ const ShippingReferenceDialog = ({
             </Select>
           </FormControl>
         </div>
-        {trackingSelect.length > 0 && renderShippingInput(currentOrder as OrderProps)}
+        {trackingSelect.length > 0 && renderShippingInput(order as OrderProps)}
         <ol className={classes.trackingList}>
           {trackingArray.map((track, i) => {
             return (
@@ -297,7 +292,7 @@ const ShippingReferenceDialog = ({
           className={classes.sendButton}
           disabled={
             (trackingSelect === "one" &&
-              trackingArray.length !== currentOrder.products.length) ||
+              trackingArray.length !== order.products.length) ||
             (trackingSelect === "all" && inputValue.length === 0) ||
             trackingSelect === ""
           }

@@ -62,6 +62,8 @@ app.use(function (req, res, next) {
   next();
 });
 
+const checkPrivileges = (credentials) => {};
+
 const getPublicS3URL = (s3Image) => {
   const { key, bucket, region } = s3Image;
   return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
@@ -72,6 +74,7 @@ const getProducts = (products) => {
     .map(({ image, title, customOptions: options, price, shippingCost }) => {
       const customOptions = options.map((option) => JSON.parse(option));
       return `
+<div style="">
     <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
@@ -79,88 +82,87 @@ const getProducts = (products) => {
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
-    <div style="margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
+    <div style="background:#dedede;background-color:#dedede;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#dedede;background-color:#dedede;width:100%;">
         <tbody>
           <tr>
-            <td style="direction:ltr;text-align:center;">
+            <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 
         <tr>
       
             <td
-               class="" style="width:600px;"
+               class="" style="vertical-align:middle;width:240px;"
             >
           <![endif]-->
-              <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0;line-height:0;text-align:left;display:inline-block;width:100%;direction:ltr;background-color:#9370f6;">
-                <!--[if mso | IE]>
+              <div class="mj-column-per-40 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;" width="100%">
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
+                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
+                        <tbody>
+                          <tr>
+                            <td style="width:190px;"> <img height="auto" src="${getPublicS3URL(
+                              image,
+                            )}"
+                                width="190" /> </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+          
+            <td
+               class="" style="vertical-align:top;width:360px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-60 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:left;color:rbga(0,0,0,60%);">
+                        <h3 style="text-align:center">${title}</h3>
+                        <p><span style="font-weight:bold">Cost:</span> £${price.toFixed(
+                          2,
+                        )} + £${shippingCost.toFixed(2)} </span></p>
+                        <p style="font-size:14px;margin-top:24px;text-decoration:underline;">Custom Options</p>
+                        ${customOptions
+                          .filter((option) => option !== null)
+                          .map((option) => {
+                            const key = Object.keys(option)[0];
+                            const value = Object.values(option)[0];
+                            return `
+                              <p style="font-weight:bold;">
+                                ${key}:  
+                                <span style="font-weight:normal">
+                                  ${key === "Images" ? `${value.length} added` : value}
+                                </span>
+                              </p>
+                            `;
+                          })
+                          .join("")
+                          .toString()}</div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <p style="border-top:solid 2px #fff;font-size:1px;margin:0px auto;width:70%;"> </p>
+    <!--[if mso | IE]>
         <table
-           bgcolor="#9370f6" border="0" cellpadding="0" cellspacing="0" role="presentation"
+           align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #fff;font-size:1px;margin:0px auto;width:350px;" role="presentation" width="350px"
         >
           <tr>
-        
-              <td
-                 style="vertical-align:middle;width:240px;"
-              >
-              <![endif]-->
-                <div class="mj-column-per-40 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:35%;">
-                  <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;" width="100%">
-                    <tr>
-                      <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
-                          <tbody>
-                            <tr>
-                              <td style="width:190px;"> <img height="auto" src="${getPublicS3URL(
-                                image,
-                              )}" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
-                                  width="190" /> </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-                <!--[if mso | IE]>
-              </td>
-              
-              <td
-                 style="vertical-align:middle;width:360px;"
-              >
-              <![endif]-->
-                <div class="mj-column-per-60 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:65%;">
-                  <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;" width="100%">
-                    <tr>
-                      <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Roboto, sans-serif;font-size:14px;line-height:1;text-align:left;color:#fff;">
-                          <h3 align="center">${title}</h3>
-                          <p>£${price.toFixed(2)} + £${shippingCost.toFixed(2)}</p>
-
-                          <h3 align="center">Custom Options</h3>
-                          ${customOptions
-                            .filter((option) => option !== null)
-                            .map((option) => {
-                              const key = Object.keys(option)[0];
-                              const value = Object.values(option)[0];
-                              return `<p><span style="font-weight:bold">${key}: </span>${
-                                key === "Images" ? `${value.length} added` : value
-                              }</p>`;
-                            })
-                            .join("")
-                            .toString()}
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-                <!--[if mso | IE]>
-              </td>
-              
+            <td style="height:0;line-height:0;">
+              &nbsp;
+            </td>
           </tr>
-          </table>
-        <![endif]-->
-              </div>
+        </table>
+      <![endif]-->
               <!--[if mso | IE]>
             </td>
           
@@ -177,7 +179,8 @@ const getProducts = (products) => {
           </td>
         </tr>
       </table>
-      <![endif]-->`;
+      <![endif]-->
+  </div>`;
     })
     .join("")
     .toString();
@@ -218,96 +221,106 @@ const emailHandler = (req, res) => {
             Charset: "UTF-8",
             Data: `
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-  <head>
-    <title>Thank You For Your Order</title>
-      <!--[if !mso]><!-- -->
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">   
-      <!--<![endif]-->
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style type="text/css">
-          #outlook a {
-            padding: 0;
-          }
 
-          body {
-            margin: 0;
-            padding: 0;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-          }
+<head>
+  <title> </title>
+  <!--[if !mso]><!-- -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!--<![endif]-->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    #outlook a {
+      padding: 0;
+    }
 
-          table,
-          td {
-            border-collapse: collapse;
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-          }
+    body {
+      margin: 0;
+      padding: 0;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
 
-          img {
-            border: 0;
-            height: auto;
-            line-height: 100%;
-            outline: none;
-            text-decoration: none;
-            -ms-interpolation-mode: bicubic;
-            border-radius: 5px
-          }
+    table,
+    td {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
 
-          p {
-            display: block;
-            margin: 13px 0;
-          }
-        </style>
-        <!--[if mso]>
-          <xml>
-          <o:OfficeDocumentSettings>
-            <o:AllowPNG/>
-            <o:PixelsPerInch>96</o:PixelsPerInch>
-          </o:OfficeDocumentSettings>
-          </xml>
-          <![endif]-->
-        <!--[if lte mso 11]>
-          <style type="text/css">
-            .mj-outlook-group-fix { width:100% !important; }
-          </style>
+    img {
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+      -ms-interpolation-mode: bicubic;
+    }
+
+    p {
+      display: block;
+      margin: 13px 0;
+    }
+  </style>
+  <!--[if mso]>
+        <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG/>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+        </xml>
         <![endif]-->
-        <!--[if !mso]><!-->
-          <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
-          <style type="text/css">
-            @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);
-          </style>
-          <!--<![endif]-->
-          <style type="text/css">
-            @media only screen and (min-width:480px) {
-              .mj-column-per-100 {
-                width: 100% !important;
-                max-width: 100%;
-              }
-              .mj-column-per-33-333333333333336 {
-                width: 33.333333333333336% !important;
-                max-width: 33.333333333333336%;
-              }
-              .mj-column-per-50 {
-                width: 50% !important;
-                max-width: 50%;
-              }
-            }
-          </style>
-          <style type="text/css">
-      @media only screen and (max-width:480px) {
-        table.mj-full-width-mobile {
-          width: 100% !important;
-        }
-        td.mj-full-width-mobile {
-          width: auto !important;
-        }
+  <!--[if lte mso 11]>
+        <style type="text/css">
+          .mj-outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+  <!--[if !mso]><!-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);
+    @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+  </style>
+  <!--<![endif]-->
+  <style type="text/css">
+    @media only screen and (min-width:480px) {
+      .mj-column-per-100 {
+        width: 100% !important;
+        max-width: 100%;
       }
-    </style>
-  </head>
+      .mj-column-per-30 {
+        width: 30% !important;
+        max-width: 30%;
+      }
+      .mj-column-per-70 {
+        width: 70% !important;
+        max-width: 70%;
+      }
+      .mj-column-per-33-333333333333336 {
+        width: 33.333333333333336% !important;
+        max-width: 33.333333333333336%;
+      }
+      .mj-column-per-60 {
+        width: 60% !important;
+        max-width: 60%;
+      }
+    }
+  </style>
+  <style type="text/css">
+    @media only screen and (max-width:480px) {
+      table.mj-full-width-mobile {
+        width: 100% !important;
+      }
+      td.mj-full-width-mobile {
+        width: auto !important;
+      }
+    }
+  </style>
+</head>
 
-<body style="background-color:#ccd3e0; height:100%;">
-  <div style="background-color:#ccd3e0;">
+<body style="background-color:#FEB5D5;">
+  <div style="background-color:#FEB5D5">
     <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
@@ -332,7 +345,7 @@ const emailHandler = (req, res) => {
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:0px;padding-bottom:10px;padding-left:0px;word-break:break-word;">
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;">
                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                         <tbody>
                           <tr>
@@ -343,51 +356,10 @@ const emailHandler = (req, res) => {
                       </table>
                     </td>
                   </tr>
-                </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-          
-        </tr>
-      
-                  </table>
-                <![endif]-->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!--[if mso | IE]>
-          </td>
-        </tr>
-      </table>
-      
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
-      >
-        <tr>
-          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-      <![endif]-->
-    <div style="background:#9370f6;background-color:#9370f6;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#9370f6;background-color:#9370f6;width:100%;">
-        <tbody>
-          <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-top:0;text-align:center;">
-              <!--[if mso | IE]>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                
-        <tr>
-      
-            <td
-               class="" style="vertical-align:top;width:600px;"
-            >
-          <![endif]-->
-              <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:28px;padding-right:25px;padding-bottom:18px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:#ABCDEA;">HELLO
-                        <p style="font-size:16px; color:white">${customerName}</p>
+                    <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:12px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">
+                        <p style="font-weight: bold; margin: 0; color: #afafaf">Francesca Jade Creates</p>
                       </div>
                     </td>
                   </tr>
@@ -416,8 +388,57 @@ const emailHandler = (req, res) => {
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
-    <div style="background:#9370f6;background-color:#9370f6;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#9370f6;background-color:#9370f6;width:100%;">
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#b8b8b8;width:100%;">
+        <tbody>
+          <tr>
+            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:0px;padding-top:0;text-align:center;">
+              <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               class="" style="vertical-align:top;width:600px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:28px;padding-right:25px;padding-bottom:18px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">
+                        <p style="font-weight:bold;font-size:14px;color:#000">HELLO</p>
+                        <p style="font-size:18px; color:rgba(0,0,0,0.7)">${customerName}</p>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#b8b8b8;width:100%;">
         <tbody>
           <tr>
             <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:5px;padding-top:0;text-align:center;">
@@ -450,172 +471,11 @@ const emailHandler = (req, res) => {
                   </tr>
                   <tr>
                     <td align="center" style="font-size:0px;padding:10px 25px;padding-top:28px;padding-right:25px;padding-bottom:28px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto;font-size:13px;line-height:1;text-align:center;color:#FFFFFF;"><p style="font-size:20px; font-weight:bold">Thank you very much for your purchase.</p> <br /> <p style="font-size:15px">Please find the receipt below.</p></div>
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:#FFFFFF;">
+                        <p style="font-size: 1.2rem; font-weight: bold">Thank you very much for your purchase.</p> <span style="font-size:15px">Please find the receipt below.</span></div>
                     </td>
                   </tr>
                 </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-          
-        </tr>
-      
-                  </table>
-                <![endif]-->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!--[if mso | IE]>
-          </td>
-        </tr>
-      </table>
-
-      <div style="">
-    <!--[if mso | IE]>
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
-      >
-        <tr>
-          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-      <![endif]-->
-    <div style="background:#ae91ff;background-color:#ae91ff;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ae91ff;background-color:#ae91ff;width:100%;">
-        <tbody>
-          <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
-              <!--[if mso | IE]>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                
-                  
-                  <tr>
-            <td
-               class="" style="vertical-align:top;width:300px;"
-            >
-          <![endif]-->
-         
-              <!--[if mso | IE]>
-            </td>
-         
-            <td
-               class="" style="vertical-align:top;width:300px;"
-            >
-          <![endif]--> 
-              <div class="mj-column-per-50 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                  <tr>
-                    <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:left;color:#ffffff;">
-                        <h3 align="center">Shipping Address</h3>
-                        <p style="color:#fff">${customerName},</p> 
-                        <p style="color:#fff">${line1},</p>
-                        ${line2 !== null ? `<p style="color:#fff">${line2},</p>` : ""}
-                        <p style="color:#fff">${city},</p>
-                        <p style="color:#fff">${postal_code},</p>
-                        <p style="color:#fff">${country}</p>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-        </tr>
-      
-                  </table>
-                <![endif]-->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!--[if mso | IE]>
-          </td>
-        </tr>
-      </table>
-      <![endif]-->
-  </div>
-      
-      <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
-      >
-        <tr>
-          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-      <![endif]-->
-    <div style="background:#ae91ff;background-color:#ae91ff;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ae91ff;background-color:#ae91ff;width:100%;">
-        <tbody>
-          <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:15px;text-align:center;">
-              <!--[if mso | IE]>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                
-        <tr>
-            <td
-               class="" style="vertical-align:top;width:200px;"
-            >
-          <![endif]-->
-              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:#FFFFFF;"><strong>Order ID</strong></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto;font-size:13px;line-height:1;text-align:center;color:#FFFFFF;">${orderId}</div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-          
-            <td
-               class="" style="vertical-align:top;width:200px;"
-            >
-          <![endif]-->
-              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:#FFFFFF;"><strong>Order Date</strong></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto;font-size:13px;line-height:1;text-align:center;color:#FFFFFF;">${dayjs().format(
-                        "LLLL",
-                      )}</div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <!--[if mso | IE]>
-            </td>
-          
-            <td
-               class="" style="vertical-align:top;width:200px;"
-            >
-          <![endif]-->
-              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:#FFFFFF;"><strong>Total Price</strong></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto;font-size:13px;line-height:1;text-align:center;color:#FFFFFF;">£${(
-                        amount_total / 100
-                      ).toFixed(2)}</div>
-                    </td>
-                  </tr>
-                </table>
-                
               </div>
               <!--[if mso | IE]>
             </td>
@@ -641,31 +501,191 @@ const emailHandler = (req, res) => {
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
     ${getProducts(products)}
-    <div style="background:#9370f6;background-color:#9370f6;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#9370f6;background-color:#9370f6;width:100%;">
+    <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#dedede;width:100%;">
         <tbody>
           <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20px;text-align:center;">
+            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:15px;text-align:center;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 
         <tr>
+      
+            <td
+               class="" style="vertical-align:top;width:200px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:rbga(0,0,0,60%);"><strong>Order ID</strong></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">${orderId}</div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
               <!--[if mso | IE]>
             </td>
           
             <td
-               class="" style="vertical-align:top;width:300px;"
+               class="" style="vertical-align:top;width:200px;"
             >
           <![endif]-->
-              <div class="mj-column-per-50 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
-                    <td align="center" vertical-align="middle" style="font-size:0px;padding:15px 30px;padding-right:25px;padding-bottom:12px;padding-left:25px;word-break:break-word;">
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:rbga(0,0,0,60%);"><strong>Order Date</strong></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">${dayjs().format(
+                        "LLLL",
+                      )}</div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+          
+            <td
+               class="" style="vertical-align:top;width:200px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:rbga(0,0,0,60%);"><strong>Total Price</strong></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">£${(
+                        amount_total / 100
+                      ).toFixed(2)}</div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#b8b8b8;width:100%;">
+        <tbody>
+          <tr>
+            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-top:20px;text-align:center;">
+              <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               class="" style="vertical-align:top;width:360px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-60 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
+                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#ffffff;">
+                        <p style="font-size: 1rem; font-weight: bold">Shipping Information</p>
+                        <p>${customerName}</p>
+                        <p>${line1}</p>
+                        ${line2 !== null ? `<p>${line2}</p>` : ""}
+                        <p>${city},</p>
+                        <p>${postal_code}</p>
+                        <p style="margin:0">${country}</p>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+          
+        </tr>
+      
+                  </table>
+                <![endif]-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+      
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#b8b8b8;width:100%;">
+        <tbody>
+          <tr>
+            <td style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;">
+              <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                
+        <tr>
+      
+            <td
+               class="" style="vertical-align:top;width:600px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" vertical-align="middle" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
                         <tr>
-                          <td align="center" bgcolor="#ff80f7" role="presentation" style="border:none;border-radius:10px;cursor:auto;mso-padding-alt:10px 25px;background:#ff80f7;" align="middle"> <a href="${url}/account?page=orders" style="display:inline-block;background:#ff80f7;color:#FFFFFF;font-family:Roboto;font-size:14px;font-weight:bold;line-height:120%;margin: 0 auto;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:10px;"
+                          <td align="center" bgcolor="#FEB5D5" role="presentation" style="border:none;border-radius:10px;cursor:auto;mso-padding-alt:10px 25px;background:#ff80f7;" valign="middle"> <a href="https://www.francescajadecreates.co.uk/account?page=orders" style="display:inline-block;background:#ff80f7;color:#FFFFFF;font-family:Roboto, sans-serif;font-size:14px;font-weight:bold;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:10px;"
                               target="_blank">
-              Track My Order
+              Track Order
             </a> </td>
                         </tr>
                       </table>
@@ -696,8 +716,8 @@ const emailHandler = (req, res) => {
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
-    <div style="background:#9370f6;background-color:#9370f6;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#9370f6;background-color:#9370f6;width:100%;">
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#b8b8b8;width:100%;">
         <tbody>
           <tr>
             <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:5px;padding-top:0;text-align:center;">
@@ -717,7 +737,7 @@ const emailHandler = (req, res) => {
                       <p style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:100%;"> </p>
                       <!--[if mso | IE]>
         <table
-           align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px;width:560px;" role="presentation" width="560px"
+           align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:560px;" role="presentation" width="560px"
         >
           <tr>
             <td style="height:0;line-height:0;">
@@ -730,7 +750,10 @@ const emailHandler = (req, res) => {
                   </tr>
                   <tr>
                     <td align="center" style="font-size:0px;padding:10px 25px;padding-top:20px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Roboto;font-size:15px;line-height:1;text-align:center;color:#FFFFFF;">Best, <br /> <span style="font-size:15px">Francesca Jade</span></div>
+                      <div style="font-family:Roboto, sans-serif;font-size:15px;line-height:1;text-align:center;color:#FFFFFF;">
+                        <p>Best,</p>
+                        <p style="font-size:15px, margin-top: 5px">Francesca Jade Creates</p>
+                      </div>
                     </td>
                   </tr>
                 </table>

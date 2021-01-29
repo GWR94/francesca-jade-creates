@@ -79,6 +79,26 @@ export default createStyles({
       borderBottom: `2px solid ${COLORS.LightPink}`,
     },
   },
+  linkActiveDiv: {
+    width: 120,
+    height: 50,
+    textAlign: "center",
+    display: "flex",
+    cursor: "pointer",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: FONTS.Title,
+    color: `${COLORS.DarkPink} !important`, // ? Important may be needed
+    borderBottom: `2px solid ${COLORS.Pink}`,
+    fontWeight: "bold",
+    margin: "0 4px",
+    boxSizing: "border-box",
+    textTransform: "uppercase",
+    "&:hover": {
+      textDecoration: "none",
+      borderBottom: `2px solid ${COLORS.LightPink}`,
+    },
+  },
   navIcon: {
     fontSize: "1.4rem",
     marginRight: 10,

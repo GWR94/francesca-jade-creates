@@ -1,9 +1,9 @@
-import { Auth, Storage } from "aws-amplify";
+import { Storage } from "aws-amplify";
 import AWS from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import { ProductProps, S3ImageProps } from "../pages/accounts/interfaces/Product.i";
-import { BasketItemProps } from "../pages/payment/interfaces/Basket.i";
+import { S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { Variant } from "../pages/accounts/interfaces/Variants.i";
+import { openSnackbar } from "./Notifier";
 
 /**
  * helper method to put cognito user attributes array into an object that can
@@ -33,9 +33,10 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
     // remove the image from s3 by using the key
     if (key) await Storage.remove(key);
   } catch (err) {
-    // if there are any errors log to console
-    // FIXME - remove console.error for production
-    console.error(err);
+    openSnackbar({
+      severity: "error",
+      message: "Unable to remove image. Please try again.",
+    });
   }
 };
 

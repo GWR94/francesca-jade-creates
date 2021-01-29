@@ -22,11 +22,6 @@ import RenderInput from "./RenderInput";
 
 /**
  * TODO
- * [x] Show uploaded images when field is complete
- * [x] Add Optional to all fields which are optional (range/minNum)
- * [x] Add colour scheme to top of custom options
- * [x] Add styles to delete product dialog
- * [ ] Check the images are deleting from s3 when removing them from array
  * [ ] Notify the user images will be lost if navigating away from accordion
  * [ ] Remove ability to highlight unnecessary text
  */
@@ -262,7 +257,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                         setState({
                           ...state,
                           currentColorScheme: "",
-                          expanded: `panel-color`,
+                          expanded: `panel-notes`,
                         });
                         setCustomOptions(updatedCustomOptions);
                       }}

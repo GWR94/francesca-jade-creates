@@ -6,6 +6,7 @@ import { RemoveItemAction } from "../../../interfaces/basket.redux.i";
 import * as actions from "../../../actions/basket.actions";
 import styles from "../styles/miniBasket.style";
 import { BasketItemProps } from "../../payment/interfaces/Basket.i";
+import { COLORS } from "../../../themes";
 
 interface MiniBasketProps {
   basketOpen: boolean;
@@ -15,11 +16,6 @@ interface MiniBasketProps {
   setMenuOpen: (value: boolean) => void;
   closeNav: () => void;
 }
-
-/**
- * TODO
- * [ ] Fix dropdown arrow
- */
 
 const MiniBasketMenu: React.FC<MiniBasketProps> = ({
   basketOpen,
@@ -57,7 +53,7 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
             textAlign: "center",
             margin: "4px 0",
             fontWeight: "bold",
-            fontSize: "1.4rem",
+            fontSize: "1.2rem",
           }}
         >
           Basket
@@ -77,7 +73,12 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
             </div>
           ))
         ) : (
-          <Typography>Basket is empty.</Typography>
+          <Typography
+            variant="subtitle1"
+            style={{ color: COLORS.DisabledGray, marginTop: 10, fontSize: "0.8rem" }}
+          >
+            Basket is empty.
+          </Typography>
         )}
         <div
           style={{

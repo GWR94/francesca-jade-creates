@@ -9,13 +9,15 @@ export default createStyles({
     marginBottom: 10,
     fontFamily: FONTS.Title,
     display: "block",
+    textAlign: "left",
+    color: "rgba(0,0,0,0.7)",
   },
   container: {
-    paddingTop: 10,
+    padding: "20px",
     width: 800,
     margin: "0 auto",
     display: "block",
-    [breakpoints.down("xs")]: {
+    [breakpoints.down("sm")]: {
       width: "90%",
     },
     fontFamily: FONTS.Title,

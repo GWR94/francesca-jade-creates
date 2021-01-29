@@ -11,9 +11,10 @@ import {
   Step,
   StepLabel,
   CircularProgress,
+  useMediaQuery,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import { InfoOutlined } from "@material-ui/icons";
+import { InfoOutlined, WarningOutlined } from "@material-ui/icons";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
 import Loading from "../../common/Loading";
@@ -38,12 +39,12 @@ if (process.env.NODE_ENV === "production") {
 
 /**
  * TODO
- * [x] Fix basket
- * [ ] Create and link cancel page back to basket
  * [ ] Test delete button - was causing errors
- * [x] Fix accordion closing at wrong time
- * [ ] Change confirm dialog title text for images
- * [ ] Fix image(s) on confirm dialog
+ * [ ] Remove "Uploaded Image" text when theres no images uploaded
+ * [ ] Test to see if you can remove skip button / notify user they have to skip
+ * [ ] Test login button going to staging randomly
+ * [ ] Mark phone number as optional in create new account
+ * [ ] Check basket clears once purchase is complete
  */
 
 /**
@@ -79,7 +80,10 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     activeStep: 0,
     currentIdx: 0,
     session: null,
+    cancelled: false,
   });
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   // store the useDispatch hook into a variable so it can be used within the component
   const dispatch = useDispatch();
@@ -120,11 +124,14 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     if (isMounted) {
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get("session_id");
+      const cancelled = Boolean(urlParams.get("cancel"));
       if (sessionId) {
         handleRetrieveSession(sessionId);
+      } else if (cancelled) {
+        setState({ ...state, cancelled, isLoading: false });
       } else {
         // clear the checkout basket when the user navigates to the page to clear up old data
-        dispatch(actions.clearCheckout()); // FIXME
+        dispatch(actions.clearCheckout());
         // get the users' data and set it into state within the getUserInfo function
         getUserInfo();
       }
@@ -223,18 +230,16 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         "/orders/create-checkout-session",
         params,
       );
-      try {
-        await API.graphql(
-          graphqlOperation(updateOrder, {
-            input: {
-              id: orderId,
-              stripeOrderId: response.id,
-            },
-          }),
-        );
-      } catch (err) {
-        console.error(err);
-      }
+
+      await API.graphql(
+        graphqlOperation(updateOrder, {
+          input: {
+            id: orderId,
+            stripeOrderId: response.id,
+          },
+        }),
+      );
+
       // pass the session's id to stripe so it can be viewed by the user.
       const result = await stripe?.redirectToCheckout({
         sessionId: response.id,
@@ -269,11 +274,17 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         return (
           <div className={classes.itemContainer}>
             <>
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography
+                variant="subtitle1"
+                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
+              >
                 Please confirm each of the items in your basket, and if necessary choose
                 the variant you wish to purchase.
               </Typography>
-              <Typography variant="subtitle1" style={{ marginBottom: 20 }}>
+              <Typography
+                variant="subtitle1"
+                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
+              >
                 Please complete all of the required fields to personalise your product.
               </Typography>
               <Typography style={{ marginBottom: 4 }}>
@@ -396,11 +407,11 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   };
 
   const steps = ["Add Custom Options", "Purchase Items", "Purchase Completed"];
-  const { isLoading, activeStep } = state;
+  const { isLoading, activeStep, cancelled } = state;
   return isLoading ? (
     <Loading />
   ) : (
-    <div>
+    <>
       <div className={classes.container}>
         <Typography variant="h4" style={{ marginTop: 10 }}>
           Shopping Basket
@@ -427,6 +438,22 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               )}
             </div>
           </>
+        ) : cancelled ? (
+          <div>
+            <WarningOutlined
+              color="error"
+              fontSize="large"
+              style={{ display: "block", margin: "0 auto" }}
+            />
+            <Typography variant="h6" gutterBottom>
+              Purchase cancelled.
+            </Typography>
+            <Typography variant="subtitle1">You have not been charged.</Typography>
+            <Typography variant="subtitle1">
+              Your items are still in the basket if you wish to continue with the
+              purchase.
+            </Typography>
+          </div>
         ) : (
           <NonIdealState
             title="No items in basket"
@@ -435,7 +462,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           />
         )}
       </div>
-    </div>
+    </>
   );
 };
 

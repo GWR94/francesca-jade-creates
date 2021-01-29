@@ -83,7 +83,17 @@ export const App: FC = (): JSX.Element => (
     <Provider store={persist.store}>
       <PersistGate loading={null} persistor={persist.persistor}>
         <ThemeProvider theme={rootTheme}>
-          <div id="app" style={{ background: COLORS.PalePink }}>
+          <div
+            id="app"
+            style={{
+              background: COLORS.PalePink,
+              minHeight: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "stretch",
+              position: "relative",
+            }}
+          >
             <AppRouter />
           </div>
         </ThemeProvider>

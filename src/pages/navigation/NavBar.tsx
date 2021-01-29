@@ -111,7 +111,11 @@ const NavBar: React.FC = (): JSX.Element => {
                   style={{ marginTop: 6, color: COLORS.LightPink }}
                 >
                   <MenuRounded
-                    onClick={(): void => setNavOpen(!navOpen)}
+                    onClick={(): void => {
+                      location.pathname.length <= 1
+                        ? history.push("/cakes")
+                        : setNavOpen(!navOpen);
+                    }}
                     className={classes.menuIcon}
                     style={{ marginTop: -6 }}
                   />

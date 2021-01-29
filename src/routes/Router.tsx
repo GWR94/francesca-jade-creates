@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
 import Landing from "../pages/home/Landing";
-import NotFoundPage from "../pages/not-found/NotFoundPage";
 import NavBar from "../pages/navigation/NavBar";
 import ViewProduct from "../pages/accounts/components/ViewProduct";
 import { getUser } from "../graphql/queries";
@@ -20,7 +19,6 @@ import {
   RouterProps,
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
-import { openSnackbar } from "../utils/Notifier";
 import Loading from "../common/Loading";
 import Login from "../pages/home/Login";
 import UpdateProduct from "../pages/accounts/components/UpdateProduct";
@@ -30,7 +28,6 @@ import * as basketActions from "../actions/basket.actions";
 import * as userActions from "../actions/user.actions";
 import * as productsActions from "../actions/products.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
-import { INTENT } from "../themes";
 import { FetchProductsSuccessAction } from "../interfaces/products.redux.i";
 import { AppState } from "../store/store";
 import ProductsList from "../pages/accounts/components/ProductsList";
@@ -41,6 +38,10 @@ import Footer from "../pages/navigation/Footer";
 import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";
 import FAQ from "../pages/policies/components/FAQ";
+import NotFoundPage from "../common/containers/NotFoundPage";
+import { FONTS } from "../themes";
+import ScrollToTop from "../hooks/ScrollToTop";
+import Contact from "../pages/policies/components/Contact";
 
 export const history = createBrowserHistory();
 
@@ -66,8 +67,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
       Hub.listen("auth", this.onHubCapsule);
       // get the current users information
       if (!user) await this.getUserData();
-      const data = await Auth.currentUserCredentials();
-      console.log(data);
+      await Auth.currentUserCredentials();
     } catch (err) {
       console.error(err);
     }
@@ -166,7 +166,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
    * users' data
    */
   private registerNewUser = async (signInData: SignInUserData): Promise<void> => {
-    console.log(signInData);
     /**
      * Get the id from signInData - it's in different locations based on what provider user
      * logged in with. This will be used to check if the user is already a part of the database
@@ -178,7 +177,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
       signInData?.id ??
       signInData.signInUserSession?.idToken?.payload?.sub;
 
-    console.log(id);
     // check to see if the user is in the database
     try {
       const { data } = await API.graphql(graphqlOperation(getUser, { id }));
@@ -201,8 +199,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
             input: registerUserInput,
           }),
         );
-        // notify the user of success
-        console.log("User successfully registered");
       }
     } catch (err) {
       // log any errors
@@ -251,6 +247,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
             <Loading size={100} />
           ) : (
             <>
+              <ScrollToTop />
               <Switch>
                 <Route path="/" exact component={Landing} />
                 <Route
@@ -263,6 +260,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="h4"
                           style={{
                             paddingTop: 12,
+                            fontFamily: `${FONTS.Title}, sans-serif`,
                           }}
                         >
                           Creations
@@ -270,15 +268,24 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         <Typography
                           variant="subtitle1"
                           style={{
-                            margin: "10px 0",
+                            margin: "10px auto 20px",
+                            color: "red",
+                            width: "90%",
+                            textAlign: "justify",
                           }}
                         >
-                          -- Placeholder --
+                          Finding the perfect gift which can be both memorable and give a
+                          long lasting impression can be a challenge - so we&apos;ve made
+                          it our goal to build bespoke, handcrafted gifts for every
+                          occasion. Whether it be a bespoke scrabble-themed frame, a
+                          personalised birthday card or even a little Christmas decoration
+                          gift, just select a product and we&apos;ll do the rest!
                         </Typography>
                         <Typography
                           variant="subtitle2"
                           style={{
-                            margin: "10px 0 20px",
+                            margin: "10px 0 5px",
+                            color: "rgba(0, 0, 0, 0.7)",
                           }}
                         >
                           To filter the products please click the pink button on the left
@@ -323,15 +330,22 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         <Typography
                           variant="subtitle1"
                           style={{
-                            margin: "10px 0",
+                            margin: "10px auto 20px",
+                            color: "red",
+                            width: "90%",
+                            textAlign: "justify",
                           }}
                         >
-                          -- Placeholder --
+                          All of our delicious cakes are baked with love on-site, using
+                          natural ingredients, and are fully customisable and ready to
+                          request. Whether you want some chocolate cupcakes for a party,
+                          or a princess themed birthday cake - just send a request and
+                          we&apos;ll get back to you as soon as possible with a quote!
                         </Typography>
                         <Typography
                           variant="subtitle2"
                           style={{
-                            margin: "10px 0 20px",
+                            margin: "10px 0 5px",
                           }}
                         >
                           To filter the products please click the pink button on the left
@@ -413,6 +427,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                     </div>
                   )}
                 />
+                <Route path="/contact" component={Contact} />
                 <Route component={NotFoundPage} />
               </Switch>
               <Footer />
