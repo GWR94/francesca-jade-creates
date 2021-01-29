@@ -42,7 +42,6 @@ export default createStyles({
     "&:before": {
       content: "''",
       position: "absolute",
-      background: "rgba(255, 150, 202, 0.5)",
       top: 0,
       right: 0,
       left: 0,

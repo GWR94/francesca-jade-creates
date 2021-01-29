@@ -21,7 +21,7 @@ const TermsOfService: React.FC = () => {
       <Typography variant="h6" style={{ textAlign: "left" }}>
         2. Use Licence
       </Typography>
-      <ol type="a" style={{ margin: "0 0 10px" }}>
+      <ol type="a" className={classes.text} style={{ margin: "0 0 10px" }}>
         <li>
           Permission is granted to temporarily download one copy of the materials
           (information or software) on Francesca Jade Creates&apos; website for personal,
@@ -57,7 +57,7 @@ const TermsOfService: React.FC = () => {
       <Typography variant="h6" style={{ textAlign: "left" }}>
         3. Disclaimer
       </Typography>
-      <ol type="a" style={{ margin: "0 0 10px" }}>
+      <ol type="a" className={classes.text} style={{ margin: "0 0 10px" }}>
         <li>
           The materials on Francesca Jade Creates&apos; website are provided on an
           &apos;as is&apos; basis. Francesca Jade Creates makes no warranties, expressed

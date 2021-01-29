@@ -1,0 +1,69 @@
+<mjml>
+  <mj-body background-color="#FEB5D5">
+    <mj-section background-color="#fff">
+      <mj-column>
+        <mj-image width="100px" src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png"></mj-image>
+        <mj-text align="center" padding-top="0" font-family="Roboto, sans-serif">
+          <p style="font-weight: bold; margin: 0; color: #b8b8b8">Francesca Jade Creates</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#b8b8b8">
+      <mj-column>
+        <mj-text font-family="Roboto, sans-serif" align="center">
+          <p style="font-weight: bold; font-size: 14px">HELLO</p>
+          <p style="font-size: 18px">${name}</p>
+        </mj-text>
+        <mj-divider border-color="#fff" border-width="2px" width="60%" />
+        <mj-text font-family="Roboto, sans-serif" color="rgba(0,0,0,0.7)" align="center">
+          <p style="font-size:18px; padding-bottom: 10px">Great News!</p>
+          <p style="font-size: 16px">Your order is complete and has been dispatched.</p>
+          <p style="padding: 10px 0">You can find the shipping information below.</p>
+        </mj-text>
+        <mj-divider border-color="#fff" border-width="2px" width="60%" padding="0" />
+
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#dedede">
+      <mj-column>
+        <mj-text>
+          <p style="text-align: center; text-decoration: underline">Shipping Information</p>
+          <p>${customerName}</p>
+          <p>${address_line1}</p>
+          ${
+          address_line2 !== null
+          ? `
+          <p>${address_line2},</p>
+          `
+          : ""
+          }
+          <p>${city},</p>
+          <p>${address_postcode},</p>
+          <p>${country}</p>
+        </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text>
+          <p style="text-decoration:underline; text-align:center;">Tracking Information</p>
+          ${ Array.isArray(trackingInfo) ? (
+          trackingInfo.map((info) => {
+          const title = Object.keys(info)[0];
+          const tracking = Object.values(info)[0];
+          return `
+          <p>${title} - ${tracking}</p>
+          <p>To check the status of your shipment, please click <a href="http://www.royalmail.com/portal/rm/track?trackNumber=${tracking}">here</a></p>
+          `;
+          })) : (
+          <p style="margin: 0">The tracking number for your package(s) is ${trackingInfo}</p>
+          <p>To check the status of your shipment, please click <a href="http://www.royalmail.com/portal/rm/track?trackNumber=${trackingInfo}">here</a></p>`;
+          )}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#b8b8b8">
+      <mj-column>
+        ${getProducts(order.products)}
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

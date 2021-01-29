@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import { API, graphqlOperation } from "aws-amplify";
 import {
   Card,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
   CardHeader,
   IconButton,
   makeStyles,
@@ -26,13 +20,12 @@ import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
-import { deleteProduct } from "../../graphql/mutations";
-import { COLORS, FONTS, INTENT } from "../../themes";
+import { COLORS } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
 import { AppState } from "../../store/store";
-import { BasketItemProps } from "../../pages/payment/interfaces/Basket.i";
+import DeleteProductAlert from "../alerts/DeleteProductAlert";
 
 /**
  * Functional component which renders a card showing an overview of the chosen
@@ -68,54 +61,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
   const classes = useStyles();
   // destructure product for ease of variable use
   const { id, images, title, type, tagline, variants } = product;
-  // boolean which shows/hides delete alert visibility
-  const [deleteAlertOpen, setDeleteAlert] = useState(false);
-  // boolean which opens dropdown menu for admin options
-  const [menuOpen, setMenuOpen] = useState(false);
-  // boolean which shows/hides loading UI effects
-  const [isLoading, setLoading] = useState(true);
   // import and initialise useHistory() for navigation around the page
   const history = useHistory();
   // create anchorRef to allow a point to fit the anchor point for the menu
   const anchorRef = React.useRef<SVGSVGElement>(null);
-  // boolean value which controls quote dialog open/closed
-  const [quoteDialogOpen, setQuoteDialogOpen] = useState(false);
   // connect with redux via hook.
   const dispatch = useDispatch();
 
-  const products = useSelector(({ basket }: AppState) => basket.items);
+  const [state, setState] = useState({
+    isLoading: true,
+    quoteDialogOpen: false,
+    menuOpen: false,
+    deleteAlertOpen: false,
+  });
 
-  /**
-   * Function to delete the current product from the database, using the deleteProduct
-   * graphQL mutation.
-   */
-  const handleDeleteProduct = async (): Promise<void> => {
-    try {
-      // use the id of the current product as the input for deleteProduct
-      await API.graphql(
-        graphqlOperation(deleteProduct, {
-          input: {
-            id,
-          },
-        }),
-      );
-      // close the confirm delete dialog
-      setDeleteAlert(false);
-      // notify the user of success using a success snackbar with a relevant title.
-      openSnackbar({
-        severity: INTENT.Success,
-        message: `${title} has been successfully removed.`,
-      });
-    } catch (err) {
-      console.error(err);
-      // if there are any errors, notify the user with a danger snackbar.
-      openSnackbar({
-        severity: INTENT.Danger,
-        message: `${title} could not be removed.
-        Please try again`,
-      });
-    }
-  };
+  const products = useSelector(({ basket }: AppState) => basket.items);
 
   /**
    * Function to return a string containing the minimum price that the product
@@ -133,10 +93,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
       }
     }
     // if min still is infinity, there's no price so notify the user.
-    if (min === Infinity) return `Variable Price - Request a Quote!`;
+    if (min === Infinity) return `Request for Price`;
     // otherwise return the min value.
     return `From £${min.toFixed(2)}`;
   };
+
+  const { isLoading, menuOpen, quoteDialogOpen, deleteAlertOpen } = state;
 
   return (
     <>
@@ -155,6 +117,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
         <CardHeader
           classes={{
             title: classes.headerContainer,
+            // content: classes.content,
+            root: classes.root,
           }}
           action={
             /**
@@ -168,7 +132,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
                   // stop propagation to avoid unintended side effects
                   e.stopPropagation();
                   // open menu
-                  setMenuOpen(true);
+                  setState({
+                    ...state,
+                    menuOpen: true,
+                  });
                 }}
                 className={classes.options}
               >
@@ -179,20 +146,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
           title={
             // if loading return a skeleton of the potential product
             isLoading ? (
-              <Skeleton
-                animation="wave"
-                width="60%"
-                style={{
-                  margin: "auto auto 10px",
-                }}
-              />
+              <div className={classes.content}>
+                <Skeleton
+                  animation="wave"
+                  width="60%"
+                  style={{
+                    margin: "auto auto 10px",
+                  }}
+                />
+                <Skeleton animation="wave" />
+                <Skeleton
+                  animation="wave"
+                  height={10}
+                  width="80%"
+                  style={{
+                    margin: "auto auto 6px auto",
+                  }}
+                />
+              </div>
             ) : (
-              // otherwise show the title
-              title
+              <div className={classes.content}>
+                <div>
+                  <Typography className={classes.title}>{title}</Typography>
+                  <Typography className={classes.tagline}>{tagline || ""}</Typography>
+                </div>
+                <Typography className={classes.price}>{handleGetPrices()}</Typography>
+              </div>
             )
           }
-          // if isLoading is true, show the skeleton, otherwise show the tagline if there is one
-          subheader={isLoading ? <Skeleton animation="wave" /> : tagline || ""}
           style={{
             textAlign: "center",
           }}
@@ -202,25 +183,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
             root: classes.root,
           }}
         >
-          {/* if isLoading is true, show a skeleton, otherwise show price and tags */}
-          {isLoading ? (
-            <div
-              style={{
-                margin: "30px 0",
-              }}
-            >
-              <Skeleton
-                animation="wave"
-                height={10}
-                width="80%"
-                style={{
-                  margin: "auto auto 6px auto",
-                }}
-              />
-            </div>
-          ) : (
-            <p className={classes.price}>{handleGetPrices()}</p>
-          )}
           <CardMedia className={classes.media} title={title}>
             <S3Image
               imgKey={getCompressedKey(images.collection[images.cover].key)}
@@ -237,7 +199,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
                     },
               }}
               // once the image has loaded, set loading to be false
-              onLoad={(): void => setLoading(false)}
+              onLoad={(): void =>
+                setState({
+                  ...state,
+                  isLoading: false,
+                })
+              }
             />
             {/* if loading return a skeleton of the potential product */}
             {isLoading && (
@@ -295,7 +262,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
                     });
                   }
                 } else {
-                  setQuoteDialogOpen(true);
+                  setState({
+                    ...state,
+                    quoteDialogOpen: true,
+                  });
                 }
               }}
             >
@@ -315,7 +285,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
             // open if menuOpen is true
             open={menuOpen}
             anchorEl={anchorRef.current}
-            onClose={(): void => setMenuOpen(false)}
+            onClose={(): void =>
+              setState({
+                ...state,
+                menuOpen: false,
+              })
+            }
             // set correct transformOrigin for position of menu
             transformOrigin={{
               vertical: -32,
@@ -336,62 +311,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
               onClick={(e): void => {
                 // stop propagation to avoid unintended side effects
                 e.stopPropagation();
-                // close the menu
-                setMenuOpen(false);
-                // show the delete alert
-                setDeleteAlert(true);
+                setState({
+                  ...state,
+                  menuOpen: false,
+                  deleteAlertOpen: true,
+                });
               }}
             >
               Delete Product
             </MenuItem>
           </Menu>
-          <Dialog
-            open={deleteAlertOpen}
-            onClose={(): void => setDeleteAlert(false)}
-            style={{
-              fontFamily: `${FONTS.Title}, sans-serif`,
-              padding: "20px",
-              width: 400,
-              margin: "0 auto",
-            }}
-          >
-            <DialogTitle>Delete &quot;{title}&quot;?</DialogTitle>
-            <DialogContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Are you sure you want to delete &quot;
-                {title}
-                &quot;?
-              </Typography>
-              <Typography variant="subtitle1" gutterBottom>
-                This cannot be undone.
-              </Typography>
-              <S3Image
-                imgKey={product.images.collection[product.images.cover].key}
-                theme={{
-                  photoImg: {
-                    width: 300,
-                    margin: "0 auto",
-                    display: "block",
-                  },
-                }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button color="primary" onClick={(): void => setDeleteAlert(false)}>
-                Cancel
-              </Button>
-              <Button color="secondary" onClick={handleDeleteProduct}>
-                Confirm
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <QuoteDialog
-            open={quoteDialogOpen}
-            onClose={(): void => setQuoteDialogOpen(false)}
-            cake={product.title}
+          <DeleteProductAlert
+            isOpen={deleteAlertOpen}
+            onClose={(): void => setState({ ...state, deleteAlertOpen: false })}
+            product={product}
           />
         </>
       )}
+      <QuoteDialog
+        open={quoteDialogOpen}
+        onClose={(): void =>
+          setState({
+            ...state,
+            quoteDialogOpen: false,
+          })
+        }
+        cake={product.title}
+      />
     </>
   );
 };

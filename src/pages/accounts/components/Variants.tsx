@@ -442,6 +442,10 @@ class Variants extends Component<VariantsProps, VariantsState> {
          */
         return (
           <>
+            <Typography variant="subtitle2">
+              Enter all of your choices{featureName.length > 0 && ` for ${featureName}`}.
+              Press enter to save a choice.
+            </Typography>
             <ChipInput
               label={`${featureName} Choices`}
               value={array}

@@ -62,6 +62,8 @@ app.use(function (req, res, next) {
   next();
 });
 
+const checkPrivileges = (credentials) => {};
+
 const getPublicS3URL = (s3Image) => {
   const { key, bucket, region } = s3Image;
   return `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
@@ -405,8 +407,8 @@ const emailHandler = (req, res) => {
                   <tr>
                     <td align="center" style="font-size:0px;padding:10px 25px;padding-top:28px;padding-right:25px;padding-bottom:18px;padding-left:25px;word-break:break-word;">
                       <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:center;color:rbga(0,0,0,60%);">
-                        <p color="#e0e0e0;font-weight:bold;font-size:15px">HELLO</p>
-                        <p style="font-size:16px; color:white">${customerName}</p>
+                        <p style="font-weight:bold;font-size:14px;color:#000">HELLO</p>
+                        <p style="font-size:18px; color:rgba(0,0,0,0.7)">${customerName}</p>
                       </div>
                     </td>
                   </tr>
@@ -510,8 +512,8 @@ const emailHandler = (req, res) => {
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
       <![endif]-->
-    <div style="background:#dedede;background-color:#dedede;margin:0px auto;max-width:600px;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#dedede;background-color:#dedede;width:100%;">
+    <div style="background:#b8b8b8;background-color:#b8b8b8;margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#b8b8b8;background-color:#dedede;width:100%;">
         <tbody>
           <tr>
             <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:15px;text-align:center;">

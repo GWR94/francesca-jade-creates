@@ -1,99 +1,56 @@
 <mjml>
-  <mj-head>
-    <mj-title>Hello world</mj-title>
-    <mj-font name="Roboto" href="https://fonts.googleapis.com/css?family=Roboto:300,500"></mj-font>
-    <mj-attributes>
-      <mj-all font-family="Roboto, Helvetica, sans-serif"></mj-all>
-      <mj-text font-weight="300" font-size="16px" color="#616161" line-height="24px"></mj-text>
-      <mj-section padding="0px"></mj-section>
-    </mj-attributes>
-  </mj-head>
-  <mj-body>
-    <mj-section>
-      <mj-column width="80%">
-        <mj-image href="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/birthday.png" src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/birthday.png"></mj-image>
-      </mj-column>
-    </mj-section>
-    <mj-section>
-      <mj-column width="100%">
-      </mj-column>
-    </mj-section>
-    <mj-section>
-      <mj-column width="55%">
-        <mj-image align="center" src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png" height="60px" width="60px" />
-        <mj-text align="center" font-weight="500" padding="0px" font-size="18px">{{username}} has requested a quote
-        </mj-text>
-        <mj-divider border-width="2px" border-color="#616161"></mj-divider>
-        <mj-divider border-width="2px" border-color="#616161" width="45%"></mj-divider>
-      </mj-column>
-    </mj-section>
-    <mj-section padding-top="30px">
-      <mj-column width="100%">
-        <mj-text>
-          <p>Hi Franki,</p>
-          <p>{{email}} has requested a quote for a cake while browsing {{cake}}</p>
-        </mj-text>
-        <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
-        <mj-text align="center">
-          <h4 style="padding: 0; margin: 0">Requested Cake Details</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Sponge:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{sponge}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Cake Size:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{size}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Buttercream:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{buttercream}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Ganache Drip:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{drip}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Jam:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{jam}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Toppings:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{toppings}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Bespoke Requests:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{requests}}</p>
-        </mj-text>
-        <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
-
-      </mj-column>
-
+  <mj-body background-color="#FEB5D5">
+    <mj-section background-color="#fff">
       <mj-column>
+        <mj-image width="100px" src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png"></mj-image>
+        <mj-text align="center" padding-top="0" font-family="Roboto, sans-serif">
+          <p style="font-weight: bold; margin: 0; color: #b8b8b8">Francesca Jade Creates</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#b8b8b8">
+      <mj-column>
+        <mj-text font-family="Roboto, sans-serif" align="center">
+          <p style="font-weight: bold; font-size: 14px">HELLO</p>
+          <p style="font-size: 18px">Franki</p>
+        </mj-text>
+        <mj-divider border-color="#fff" border-width="2px" width="60%" />
+        <mj-text font-family="Roboto, sans-serif" color="rgba(0,0,0,0.7)" align="center">
+          <p style="font-size:18px; padding-bottom: 10px">A Cake request has been sent!</p>
+          <p style="font-size: 16px">${user.name} has requested a quote.</p>
+          <p style="padding: 10px 0">They requested the quote while browsing ${cake}</p>
+        </mj-text>
+        <mj-divider border-color="#fff" border-width="2px" width="60%" padding="0" />
 
       </mj-column>
     </mj-section>
-    <mj-section padding-bottom="100px">
-      <mj-column width="100%">
-        <mj-text align="center">
-          <h4 style="padding: 0; margin: 0">Contact Information</h4>
+    <mj-section background-color="#dedede">
+      <mj-column>
+        <mj-text font-family="Roboto, sans-serif">
+          <p style="text-align:center; text-decoration:underline;font-size:17px">Requested Cake Details</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Sponge: </span>${sponge}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Cake Size: </span>${size}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Buttercream: </span>${buttercream}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Ganache Drip: </span>${drip}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Jam: </span>${jam}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Toppings: </span>${toppings}</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Bespoke Requests: </span>${requests}</p>
         </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Email Address:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{email}}</p>
-        </mj-text>
-        <mj-text font-weight="bold" align="left" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
-          <p style="display: inline-block">Phone Number:</p>
-          <p style="display: inline-block; font-weight: normal; margin-left: 5px">{{phoneNumber}}</p>
-        </mj-text>
-        <mj-divider border-width="1px" border-color="#E0E0E0"></mj-divider>
-        <mj-text align="center" font-size="14px" padding-left="10px" padding-bottom="0" padding-top="0">
+      </mj-column>
+      <mj-column>
+        <mj-text font-family="Roboto, sans-serif">
+          <p style="text-align:center; text-decoration:underline;font-size:17px">Contact Details</p>
+          <p style="font-size:14px"><span style="font-weight:bold;padding-right:5px">Email: </span>${user.email}</p>
 
-          <p>The request was made on {{date}}</p>
         </mj-text>
-
       </mj-column>
     </mj-section>
-
+    <mj-section background-color="#b8b8b8">
+      <mj-column>
+        <mj-text>
+          <p style="text-align:center;font-style:italic">This request was mate on ${dayjs().format("LLLL")}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
   </mj-body>
 </mjml>

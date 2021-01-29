@@ -24,6 +24,7 @@ export interface BasketState {
   activeStep: number;
   currentIdx: number;
   session: any; //FIXME
+  cancelled: boolean;
 }
 
 export interface CheckoutProductProps {
