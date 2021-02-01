@@ -77,6 +77,7 @@ const Landing: React.FC = (): JSX.Element => {
               autoPlay
               muted
               loop
+              playsInline
               className={classes.video}
               src="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/cake_compressed.mp4"
             />
