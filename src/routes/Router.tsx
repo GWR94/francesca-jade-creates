@@ -33,7 +33,7 @@ import { AppState } from "../store/store";
 import ProductsList from "../pages/accounts/components/ProductsList";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import background from "../img/pinkbg2.png";
+import background from "../img/pinkbg.jpg";
 import Footer from "../pages/navigation/Footer";
 import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";
@@ -269,9 +269,9 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle1"
                           style={{
                             margin: "10px auto 20px",
-                            color: "red",
                             width: "90%",
                             textAlign: "justify",
+                            lineHeight: 1.2,
                           }}
                         >
                           Finding the perfect gift which can be both memorable and give a
@@ -285,6 +285,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle2"
                           style={{
                             margin: "10px 0 5px",
+                            lineHeight: 1,
                             color: "rgba(0, 0, 0, 0.7)",
                           }}
                         >
@@ -331,9 +332,9 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle1"
                           style={{
                             margin: "10px auto 20px",
-                            color: "red",
                             width: "90%",
                             textAlign: "justify",
+                            lineHeight: "1.2",
                           }}
                         >
                           All of our delicious cakes are baked with love on-site, using
@@ -346,6 +347,8 @@ class AppRouter extends Component<RouterProps, RouterState> {
                           variant="subtitle2"
                           style={{
                             margin: "10px 0 5px",
+                            lineHeight: 1,
+                            color: "rgba(0, 0, 0, 0.7)",
                           }}
                         >
                           To filter the products please click the pink button on the left

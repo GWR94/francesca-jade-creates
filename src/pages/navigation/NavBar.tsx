@@ -84,10 +84,9 @@ const NavBar: React.FC = (): JSX.Element => {
             className={`${classes.nav} animate__animated animate__slideInDown`}
             position="relative"
             style={{
-              background:
-                location.pathname.length <= 1 && !mobile ? "transparent" : "#fff",
+              background: location.pathname.length <= 1 ? "transparent" : "#fff",
             }}
-            elevation={location.pathname.length <= 1 && !mobile ? 0 : 4}
+            elevation={location.pathname.length <= 1 ? 0 : 4}
           >
             <Container className={classes.main}>
               <img

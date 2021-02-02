@@ -13,8 +13,29 @@ export default createStyles({
     fontFamily: FONTS.Text,
     fontSize: "2.8rem",
     fontWeight: "bold",
+    textAlign: "left",
+    [breakpoints.down("lg")]: {
+      fontSize: "2.6rem",
+    },
     [breakpoints.down("md")]: {
-      fontSize: "2rem",
+      fontSize: "2.4rem",
+    },
+    // [breakpoints.down("sm")]: {
+    //   fontSize: "2.1rem",
+    // },
+  },
+  subheadingText: {
+    color: "rgba(0,0,0,0.7)",
+    lineHeight: 1.1,
+    fontSize: "1.4rem",
+    fontFamily: FONTS.Title,
+    textAlign: "left",
+    marginBottom: 30,
+    [breakpoints.down("md")]: {
+      fontSize: "1.3rem",
+    },
+    [breakpoints.down("sm")]: {
+      fontSize: "1.2rem",
     },
   },
   headingContainer: {
@@ -28,7 +49,9 @@ export default createStyles({
     fontSize: "1.2rem",
     margin: "10px",
     fontWeight: "bold",
+    textAlign: "center",
     fontFamily: FONTS.Title,
+    color: "rgba(0,0,0,0.6)",
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },
@@ -38,8 +61,8 @@ export default createStyles({
     width: 400,
     height: 400,
     display: "block",
-    borderRadius: "50%",
     overflow: "hidden",
+    borderRadius: 20,
     margin: "auto",
     // padding: "20px 0",
     top: "50%",
@@ -51,6 +74,10 @@ export default createStyles({
       right: 0,
       left: 0,
       bottom: 0,
+    },
+    [breakpoints.down("sm")]: {
+      width: 300,
+      height: 300,
     },
   },
   mobileImage: {
@@ -70,9 +97,13 @@ export default createStyles({
     boxSizing: "border-box",
   },
   logoImg: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     margin: "0 auto 10px",
+    [breakpoints.down("md")]: {
+      height: 40,
+      width: 40,
+    },
   },
   createsButton: {
     background: COLORS.DarkPink,

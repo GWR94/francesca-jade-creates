@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Grid, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Drawer, Grid, makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded, Warning } from "@material-ui/icons";
 import ProductCard from "../../../common/containers/ProductCard";

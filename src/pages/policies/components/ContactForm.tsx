@@ -5,6 +5,7 @@ import {
   Typography,
   CircularProgress,
   useMediaQuery,
+  Grid,
 } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { API } from "aws-amplify";
@@ -82,39 +83,53 @@ const ContactForm = (): JSX.Element => {
 
   return (
     <div className={classes.form}>
-      <TextField
-        value={firstName}
-        onChange={(e): void => setState({ ...state, firstName: e.target.value })}
-        variant="outlined"
-        label="First Name"
-        required
-        size={mobile ? "small" : "medium"}
-      />
-      <TextField
-        value={lastName}
-        onChange={(e): void => setState({ ...state, lastName: e.target.value })}
-        variant="outlined"
-        label="Last Name"
-        size={mobile ? "small" : "medium"}
-      />
-      <TextField
-        value={email}
-        onChange={(e): void => setState({ ...state, email: e.target.value })}
-        variant="outlined"
-        required
-        label="Email Address"
-        size={mobile ? "small" : "medium"}
-      />
-      <TextField
-        value={message}
-        onChange={(e): void => setState({ ...state, message: e.target.value })}
-        variant="outlined"
-        label="Message"
-        multiline
-        required
-        rows={4}
-        size={mobile ? "small" : "medium"}
-      />
+      <Grid container spacing={1}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            value={firstName}
+            onChange={(e): void => setState({ ...state, firstName: e.target.value })}
+            variant="outlined"
+            label="First Name"
+            required
+            size={mobile ? "small" : "medium"}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            value={lastName}
+            onChange={(e): void => setState({ ...state, lastName: e.target.value })}
+            variant="outlined"
+            label="Last Name"
+            fullWidth
+            size={mobile ? "small" : "medium"}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            value={email}
+            onChange={(e): void => setState({ ...state, email: e.target.value })}
+            variant="outlined"
+            required
+            label="Email Address"
+            size={mobile ? "small" : "medium"}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            value={message}
+            onChange={(e): void => setState({ ...state, message: e.target.value })}
+            variant="outlined"
+            label="Message"
+            multiline
+            required
+            fullWidth
+            rows={4}
+            size={mobile ? "small" : "medium"}
+          />
+        </Grid>
+      </Grid>
       <Button onClick={handleSendMessage} variant="outlined" color="primary">
         {isSubmitting ? <CircularProgress size={20} /> : "Send Message"}
       </Button>

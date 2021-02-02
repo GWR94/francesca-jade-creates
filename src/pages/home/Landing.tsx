@@ -2,7 +2,6 @@ import { Grid, Typography, Container, makeStyles, Button } from "@material-ui/co
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { BrushRounded, CakeRounded } from "@material-ui/icons";
-import { COLORS } from "../../themes";
 import logo from "../../img/logo.png";
 import styles from "./styles/landing.style";
 
@@ -22,21 +21,15 @@ const Landing: React.FC = (): JSX.Element => {
     <Container>
       <Grid container className={classes.container}>
         <Grid item xs={12} sm={6} className={classes.headingContainer}>
-          <img
-            src={logo}
-            className={`${classes.logoImg} animate__animated animate__fadeIn`}
-            alt="Francesca Jade Creates"
-          />
           <Typography
-            className={`${classes.headingText} animate__animated animate__bounceIn animate__delay-half`}
+            className={`${classes.headingText} animate__animated animate__fadeIn animate__delay-half`}
           >
             Francesca Jade Creates
           </Typography>
           <Typography
-            className="animate__animated animate__bounceInLeft animate__delay-1s"
-            style={{ color: COLORS.DarkPink, fontWeight: "bolder", marginBottom: 30 }}
+            className={`${classes.subheadingText} animate__animated animate__bounceInLeft animate__delay-1s`}
           >
-            Personalised Cakes & Creations for any occasion
+            Bespoke Hand-crafted Cakes & Creations for any occasion.
           </Typography>
           <div className="animate__animated animate__fadeIn animate__delay-1half">
             <div className={classes.createsContainer}>
@@ -44,7 +37,7 @@ const Landing: React.FC = (): JSX.Element => {
             </div>
             <Typography className={classes.subheading}>
               Personalised Prints, Frames and Cards. All handmade with love and a little
-              bit of sparkle, to capture moments, share memories & celebrate loved ones
+              bit of sparkle, to capture moments, share memories & celebrate loved ones.
             </Typography>
             <Button
               onClick={(): void => history.push("/creates")}
@@ -73,6 +66,11 @@ const Landing: React.FC = (): JSX.Element => {
           <div
             className={`${classes.imageContainer} animate__animated animate__fadeIn animate__delay-2s`}
           >
+            <img
+              src={logo}
+              className={`${classes.logoImg} animate__animated animate__fadeIn`}
+              alt="Francesca Jade Creates"
+            />
             <video
               autoPlay
               muted
