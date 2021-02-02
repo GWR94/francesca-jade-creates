@@ -7,7 +7,7 @@
 }
 
 .login__container {
-  width: 800px;
+  width: 100%;
   font-family: $title-font;
   padding: 20px;
   border-radius: 20px;
@@ -80,9 +80,7 @@
 .login__cognito-container {
   flex-direction: column;
   display: flex;
-  height: 100%;
   width: 100%;
-  margin-left: 10px;
   @media screen and (max-width: $s-breakpoint) {
     width: 95%;
   }

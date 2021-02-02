@@ -16,7 +16,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   error,
   small = false,
   label = "Password",
-  labelWidth = 60,
+  labelWidth = 70,
   placeholder = "Enter your password...",
 }) => {
   const [show, setShow] = useState(false);

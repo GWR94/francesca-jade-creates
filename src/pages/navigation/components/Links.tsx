@@ -30,6 +30,8 @@ const Links: React.FC<LinksProps> = ({
   admin = false,
   closeNav,
   signOut,
+  navOpen,
+  setLoginOpen,
 }): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false); // open/close navigation menu for mobile
   const [basketOpen, setBasketOpen] = useState(false); // open/close basket menu
@@ -109,19 +111,15 @@ const Links: React.FC<LinksProps> = ({
             />
           </>
         ) : (
-          <NavLink
-            to="/login"
-            onClick={closeNav}
-            activeClassName="/login"
-            className={
-              window.location.href.split("/").includes("account")
-                ? classes.linkActive
-                : classes.link
-            }
+          <div
+            onClick={setLoginOpen}
+            role="button"
+            tabIndex={0}
+            className={navOpen ? classes.linkActiveDiv : classes.link}
           >
             <AccountBoxRounded className={classes.navIcon} />
-            Sign in
-          </NavLink>
+            Sign In
+          </div>
         )}
         <div
           role="button"

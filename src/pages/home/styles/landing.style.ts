@@ -51,7 +51,7 @@ export default createStyles({
     fontWeight: "bold",
     textAlign: "center",
     fontFamily: FONTS.Title,
-    color: "rgba(0,0,0,0.6)",
+    color: "rgba(0,0,0,0.8)",
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },

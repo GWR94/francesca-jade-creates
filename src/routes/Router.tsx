@@ -20,7 +20,6 @@ import {
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
 import Loading from "../common/Loading";
-import Login from "../pages/home/Login";
 import UpdateProduct from "../pages/accounts/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import { ClearBasketAction } from "../interfaces/basket.redux.i";
@@ -367,7 +366,6 @@ class AppRouter extends Component<RouterProps, RouterState> {
                     </div>
                   )}
                 />
-                <Route path="/login" history={history} component={Login} />
                 <Route
                   path="/account"
                   exact

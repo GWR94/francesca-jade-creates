@@ -1,7 +1,6 @@
-import { History } from "history";
-
 export interface LoginProps {
-  history: History;
+  isOpen: boolean;
+  closeDialog: () => void;
 }
 
 export interface LoginState {

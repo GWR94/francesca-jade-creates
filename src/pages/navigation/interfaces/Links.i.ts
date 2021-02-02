@@ -3,4 +3,6 @@ export interface LinksProps {
   admin: boolean;
   closeNav: () => void;
   signOut: () => void;
+  navOpen: boolean;
+  setLoginOpen: () => void;
 }

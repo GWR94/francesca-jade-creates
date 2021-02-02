@@ -212,7 +212,6 @@ class CreateAccountDialog extends React.Component<CreateProps, CreateState> {
       codeLoading,
       createLoading,
     } = this.state;
-    const { theme } = this.props;
     return (
       <Dialog
         open={isOpen}

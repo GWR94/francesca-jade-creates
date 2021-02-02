@@ -21,7 +21,7 @@ import { COLORS } from "../../themes";
 import { openSnackbar } from "../../utils/Notifier";
 import * as userActions from "../../actions/user.actions";
 import * as basketActions from "../../actions/basket.actions";
-
+import LoginDialog from "../home/Login";
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
@@ -30,6 +30,7 @@ const NavBar: React.FC = (): JSX.Element => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+  const [loginOpen, setLoginOpen] = useState<boolean>(false);
 
   const location = useLocation();
 
@@ -129,6 +130,8 @@ const NavBar: React.FC = (): JSX.Element => {
                   closeNav={(): void => setNavOpen(false)}
                   admin={admin}
                   signOut={handleSignOut}
+                  navOpen={navOpen}
+                  setLoginOpen={(): void => setLoginOpen(true)}
                 />
               )}
             </Container>
@@ -143,12 +146,15 @@ const NavBar: React.FC = (): JSX.Element => {
                   closeNav={(): void => setNavOpen(false)}
                   admin={admin}
                   signOut={handleSignOut}
+                  navOpen={loginOpen}
+                  setLoginOpen={(): void => setLoginOpen(true)}
                 />
               </Collapse>
             )}
           </AppBar>
         </Headroom>
       </ClickAwayListener>
+      <LoginDialog isOpen={loginOpen} closeDialog={(): void => setLoginOpen(false)} />
     </>
   );
 };
