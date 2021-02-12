@@ -47,10 +47,10 @@ const VerificationDialog: React.FC<Props> = ({
     <>
       {open && (
         <Dialog
-          className="verify__container"
           open={open}
           onClose={closeDialog}
           title="Verify your email address"
+          style={{ fontFamily: "Roboto, sans-serif" }}
         >
           <DialogTitle>Enter Verification Code</DialogTitle>
           <DialogContent>

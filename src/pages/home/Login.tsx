@@ -18,7 +18,8 @@ import { openSnackbar } from "../../utils/Notifier";
 import CreateAccountDialog from "./components/CreateAccountDialog";
 import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
 import PasswordInput from "../../common/inputs/PasswordInput";
-import styles, { breakpoints } from "./styles/login.style";
+import styles from "./styles/login.style";
+import { breakpoints } from "../../themes";
 // TODO
 // [ ] Add loading for login button (HOC?)
 
@@ -31,19 +32,17 @@ const Login: React.FC<LoginProps> = ({ isOpen, closeDialog }): JSX.Element => {
     loggingIn: false,
   });
 
-  const fullscreen = useMediaQuery(breakpoints.down("md"));
+  const fullscreen = useMediaQuery(breakpoints.down("xs"));
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-
-  const history = useHistory();
 
   const handleSignIn = async (): Promise<void> => {
     const { username, password } = state;
     setState({ ...state, loggingIn: true });
     try {
       await Auth.signIn(username, password);
-      history.push("/");
+      closeDialog();
     } catch (err) {
       console.error(err);
       openSnackbar({
@@ -73,7 +72,7 @@ const Login: React.FC<LoginProps> = ({ isOpen, closeDialog }): JSX.Element => {
           <div className={classes.federatedButtons}>
             <Button
               className={`${classes.button} ${classes.google}`}
-              size="large"
+              size={fullscreen ? "small" : "large"}
               startIcon={<i className={`fab fa-google ${classes.icon}`} />}
               style={{ marginBottom: "10px" }}
               onClick={async (): Promise<ICredentials> =>
@@ -87,7 +86,7 @@ const Login: React.FC<LoginProps> = ({ isOpen, closeDialog }): JSX.Element => {
             </Button>
             <Button
               className={`${classes.button} ${classes.facebook}`}
-              size="large"
+              size={fullscreen ? "small" : "large"}
               style={{ marginBottom: "10px" }}
               startIcon={<i className={`fab fa-facebook-f ${classes.icon}`} />}
               onClick={async (): Promise<ICredentials> =>
@@ -101,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ isOpen, closeDialog }): JSX.Element => {
             </Button>
             <Button
               className={`${classes.button} ${classes.amazon}`}
-              size="large"
+              size={fullscreen ? "small" : "large"}
               startIcon={<i className={`fab fa-amazon ${classes.icon}`} />}
               onClick={async (): Promise<ICredentials> =>
                 // @ts-ignore

@@ -23,7 +23,7 @@ import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { COLORS } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
-import QuoteDialog from "../../pages/accounts/components/QuoteDialog";
+import QuoteDialog from "../../pages/products/components/QuoteDialog";
 import { AppState } from "../../store/store";
 import DeleteProductAlert from "../alerts/DeleteProductAlert";
 

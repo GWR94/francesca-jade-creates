@@ -1,5 +1,5 @@
 import { History } from "history";
-import { ProductProps } from "./Product.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
 
 export interface UpdateProps {
   history: History;

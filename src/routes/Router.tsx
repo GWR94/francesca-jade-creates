@@ -8,7 +8,7 @@ import { Dispatch } from "redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
 import Landing from "../pages/home/Landing";
 import NavBar from "../pages/navigation/NavBar";
-import ViewProduct from "../pages/accounts/components/ViewProduct";
+import ViewProduct from "../pages/products/components/ViewProduct";
 import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import {
@@ -20,7 +20,7 @@ import {
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
 import Loading from "../common/Loading";
-import UpdateProduct from "../pages/accounts/components/UpdateProduct";
+import UpdateProduct from "../pages/products/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import { ClearBasketAction } from "../interfaces/basket.redux.i";
 import * as basketActions from "../actions/basket.actions";
@@ -29,7 +29,7 @@ import * as productsActions from "../actions/products.actions";
 import { SetUserAction, ClearUserAction } from "../interfaces/user.redux.i";
 import { FetchProductsSuccessAction } from "../interfaces/products.redux.i";
 import { AppState } from "../store/store";
-import ProductsList from "../pages/accounts/components/ProductsList";
+import ProductsList from "../pages/products/components/ProductsList";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import AccountsPage from "../pages/accounts/AccountsPage";
 import background from "../img/pinkbg.jpg";
@@ -41,6 +41,7 @@ import NotFoundPage from "../common/containers/NotFoundPage";
 import { FONTS } from "../themes";
 import ScrollToTop from "../hooks/ScrollToTop";
 import Contact from "../pages/policies/components/Contact";
+import Themes from "../pages/products/components/Themes";
 
 export const history = createBrowserHistory();
 
@@ -238,8 +239,12 @@ class AppRouter extends Component<RouterProps, RouterState> {
     return (
       <Router history={history}>
         <div
-          className="landing__background"
-          style={{ background: `url(${background}) no-repeat center center fixed` }}
+          style={{
+            background: `url(${background}) no-repeat center center fixed`,
+            minHeight: "100vh",
+            height: "100%",
+            backgroundSize: "cover",
+          }}
         >
           <NavBar />
           {isLoading ? (
@@ -283,7 +288,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         <Typography
                           variant="subtitle2"
                           style={{
-                            margin: "10px 0 5px",
+                            margin: "10px 0",
                             lineHeight: 1,
                             color: "rgba(0, 0, 0, 0.7)",
                           }}
@@ -312,6 +317,10 @@ class AppRouter extends Component<RouterProps, RouterState> {
                       <ViewProduct id={_.match.params.id} type="Creates" />
                     </div>
                   )}
+                />
+                <Route
+                  path="/themes"
+                  component={(): JSX.Element => <Themes admin={this.admin} />}
                 />
                 <Route
                   path="/cakes"
@@ -345,7 +354,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                         <Typography
                           variant="subtitle2"
                           style={{
-                            margin: "10px 0 5px",
+                            margin: "10px 0",
                             lineHeight: 1,
                             color: "rgba(0, 0, 0, 0.7)",
                           }}

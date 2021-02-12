@@ -1,6 +1,6 @@
 import { UserAttributeProps } from "./Accounts.i";
 import { S3ImageProps } from "./Product.i";
-import { Variant } from "./Variants.i";
+import { Variant } from "../../products/interfaces/Variants.i";
 
 export interface GraphQlProduct {
   id: string;

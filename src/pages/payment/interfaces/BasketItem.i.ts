@@ -1,4 +1,4 @@
-import { Variant } from "../../accounts/interfaces/Variants.i";
+import { Variant } from "../../products/interfaces/Variants.i";
 import { CustomOptionArrayType, BasketItemProps } from "./Basket.i";
 
 export interface BasketItemState {

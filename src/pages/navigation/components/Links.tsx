@@ -7,6 +7,8 @@ import {
   BrushRounded,
   CakeRounded,
   HomeRounded,
+  LocalOffer,
+  LocalOfferRounded,
   ShoppingCartRounded,
 } from "@material-ui/icons";
 import navStyles from "../styles/links.style";
@@ -87,6 +89,15 @@ const Links: React.FC<LinksProps> = ({
       <div className={mobile ? classes.navMobile : classes.navRight}>
         {user ? (
           <>
+            <NavLink
+              to="/themes"
+              activeClassName={classes.linkActive}
+              className={classes.link}
+              onClick={closeNav}
+            >
+              <LocalOfferRounded className={classes.navIcon} />
+              Themes
+            </NavLink>
             <div
               onClick={(): void => setMenuOpen(!menuOpen)}
               role="button"

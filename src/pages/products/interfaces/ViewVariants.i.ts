@@ -1,4 +1,4 @@
-import { ProductType } from "./Product.i";
+import { ProductType } from "../../accounts/interfaces/Product.i";
 import { Variant } from "./Variants.i";
 
 export interface ViewVariantsProps {

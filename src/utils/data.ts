@@ -117,3 +117,20 @@ export const jamArr = [
 ];
 
 export const phoneNumberReg = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
+
+export const themes = [
+  "Wedding",
+  "Anniversary",
+  "Love",
+  "Birthday",
+  "Kids",
+  "Friendship",
+  "Family",
+  "Religious",
+  "Personal",
+  "Memory",
+  "Parenthood",
+  "Baby",
+  "TV & Film",
+  "Food & Drink Brands",
+];

@@ -1,8 +1,5 @@
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { createStyles } from "@material-ui/core";
-import { FONTS } from "../../themes";
-
-const breakpoints = createBreakpoints({});
+import { FONTS, breakpoints } from "../../themes";
 
 export default createStyles({
   card: {

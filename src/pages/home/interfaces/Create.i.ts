@@ -16,11 +16,6 @@ export interface CreateState {
     value: string;
     error: string;
   };
-  phoneNumber: {
-    code: string;
-    number: string;
-    error: string;
-  };
   codeSent: boolean;
   destination: string;
   code: string;

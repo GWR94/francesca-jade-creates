@@ -1,4 +1,4 @@
-import { ProductProps } from "./Product.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
 
 export interface SearchFilterProps {
   type?: string;

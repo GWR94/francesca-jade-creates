@@ -18,7 +18,7 @@ import {
 import { ProductData } from "../../routes/interfaces/Router.i";
 import AdminProducts from "./components/AdminProducts";
 import Profile from "./components/Profile";
-import UpdateProduct from "./components/UpdateProduct";
+import UpdateProduct from "../products/components/UpdateProduct";
 import { FetchProductsSuccessAction } from "../../interfaces/products.redux.i";
 import * as productActions from "../../actions/products.actions";
 import * as userActions from "../../actions/user.actions";

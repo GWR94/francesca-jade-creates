@@ -1,11 +1,9 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { COLORS } from "../../themes";
+import { COLORS, breakpoints } from "../../themes";
 import missingImg from "../../img/404.svg";
 
 const NotFoundPage = (): JSX.Element => {
-  const breakpoints = createBreakpoints({});
   const useStyles = makeStyles({
     container: {
       position: "absolute",

@@ -25,12 +25,12 @@ import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductLis
 import { searchFilterTheme } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
 import { searchProducts } from "../../../graphql/queries";
-import { ProductProps } from "../interfaces/Product.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
 import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
 import { FilterActionProps, SortBy } from "../../../interfaces/products.redux.i";
 import * as actions from "../../../actions/products.actions";
-import styles from "../styles/searchFilter.style";
+import styles from "../../accounts/styles/searchFilter.style";
 
 /**
  * Component which allows the user to filter out products to fit their needs.

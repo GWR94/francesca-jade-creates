@@ -14,7 +14,7 @@ import {
   withStyles,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Alert, AlertTitle, Autocomplete } from "@material-ui/lab";
 import { connect } from "react-redux";
 import Compress from "client-compress";
 import { AnyAction } from "redux";
@@ -31,14 +31,15 @@ import { UpdateProps, UpdateState, FileToUpload } from "../interfaces/UpdateProd
 import ConfirmDialog from "../../../common/alerts/ConfirmDialog";
 import ImageCarousel from "../../../common/containers/ImageCarousel";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
-import styles from "../styles/updateProduct.style";
+import styles from "../../accounts/styles/updateProduct.style";
 import { defaultStyles } from "../../../themes/index";
-import { S3ImageProps } from "../interfaces/Product.i";
+import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import Variants from "./Variants";
 import { Variant } from "../interfaces/Variants.i";
 import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
+import { themes } from "../../../utils/data";
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
@@ -191,7 +192,6 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     fileToUpload: FileToUpload,
     blobToUpload: FileToUpload,
   ): Promise<void> => {
-    console.log(fileToUpload, blobToUpload);
     const { product } = this.state;
     const { update } = this.props;
     try {
@@ -729,56 +729,63 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
             </OutlinedContainer>
           </div>
           {errors.image && <p className={classes.errorText}>{errors.image}</p>}
-          <ChipInput
-            value={tags || []}
+          <Autocomplete
+            multiple
+            id="collections-input"
+            options={themes.sort((a, b) => -b.slice(0, 1).localeCompare(a.slice(0, 1)))}
+            filterSelectedOptions
             fullWidth
-            variant="outlined"
-            label="Tags"
-            classes={{
-              inputRoot: classes.chipInput,
-              // label: classes.chipLabel,
-              chip: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
-            }}
-            error={!!errors.tags}
-            helperText={errors.tags}
-            placeholder="Add up to 5 tags - confirm by clicking enter..."
-            onAdd={(chip): void => {
+            autoComplete
+            value={tags || []}
+            onChange={(_event, tags, reason): void => {
               this.setState(
                 (prevState): UpdateState => {
-                  if (prevState.product.tags.length < 5) {
+                  if (reason === "remove-option") {
                     return {
                       ...prevState,
                       product: {
                         ...prevState.product,
-                        tags: [...prevState.product.tags, chip],
+                        tags,
                       },
                       errors: { ...errors, tags: null },
                     };
-                  } else {
+                  } else if (prevState.product.tags.length > 5) {
                     openSnackbar({
                       severity: "error",
-                      message: `Please only add up to 5 tags.`,
+                      message: `Please only add up to 5 collections.`,
                     });
                     return prevState;
+                  } else {
+                    return {
+                      ...prevState,
+                      product: {
+                        ...prevState.product,
+                        tags,
+                      },
+                      errors: { ...errors, tags: null },
+                    };
                   }
                 },
               );
             }}
-            style={{ marginBottom: errors.tags ? 16 : 0 }}
-            onDelete={(chip): void => {
-              const idx = tags.findIndex((name) => name === chip);
-              const newTags = [...tags.slice(0, idx), ...tags.slice(idx + 1)];
-              this.setState({
-                product: { ...product, tags: newTags },
-                errors: { ...errors, tags: null },
-              });
+            classes={{
+              tag: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
             }}
+            renderInput={(params): JSX.Element => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Themes"
+                fullWidth
+                error={!!errors.tags}
+                helperText={errors.tags}
+              />
+            )}
           />
-
           <Variants
             variants={product.variants}
             type={type}
-            size={isDesktop === false ? "small" : "medium"}
+            size={!isDesktop ? "small" : "medium"}
             setPrice={product.setPrice}
             updateVariants={(variants: Variant[]): void =>
               this.setState({ product: { ...product, variants } })

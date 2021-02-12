@@ -9,16 +9,6 @@ interface NonIdealProps {
   subtext: string;
 }
 
-const useStyles = makeStyles({
-  nonIdealState: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    height: 200,
-  },
-});
-
 /**
  * A component which shows the user that there is no data found where it possibly
  * should have been. For example, when the basket is empty there will be a non-ideal
@@ -33,6 +23,20 @@ const NonIdealState: React.SFC<NonIdealProps> = ({
   Icon,
   subtext,
 }): JSX.Element => {
+  const useStyles = makeStyles({
+    nonIdealState: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+      height: 200,
+    },
+    buttonContainer: {
+      display: "inline-flex",
+      width: "100%",
+      justifyContent: "center",
+    },
+  });
   const classes = useStyles();
   const history = useHistory();
 
@@ -43,7 +47,7 @@ const NonIdealState: React.SFC<NonIdealProps> = ({
         {Icon}
         <Typography variant="h5">{title}</Typography>
         <Typography variant="subtitle2">{subtext}</Typography>
-        <div className="dialog__button-container">
+        <div className={classes.buttonContainer}>
           <Button
             color="primary"
             variant="outlined"

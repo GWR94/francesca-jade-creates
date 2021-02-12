@@ -1,8 +1,8 @@
 import { Storage } from "aws-amplify";
-import AWS from "aws-sdk";
+import { S3 } from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { S3ImageProps } from "../pages/accounts/interfaces/Product.i";
-import { Variant } from "../pages/accounts/interfaces/Variants.i";
+import { Variant } from "../pages/products/interfaces/Variants.i";
 import { openSnackbar } from "./Notifier";
 
 /**
@@ -48,7 +48,7 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
  * @param level - protection level - i.e public, private or protected.
  */
 export const getSignedS3Url = (key: string, level = "public"): string => {
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     endpoint: "s3-eu-west-2.amazonaws.com",
     signatureVersion: "v4",
     region: "eu-west-2",
@@ -103,7 +103,6 @@ export const isLocalhost = hasLocalhost(window.location.hostname);
  * string
  */
 export const getReadableStringFromArray = (array: string[]): string => {
-  console.log(array);
   return array.length === 1
     ? array[0]
     : [array.slice(0, array.length - 1).join(", "), array[array.length - 1]].join(

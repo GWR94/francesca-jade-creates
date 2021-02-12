@@ -18,7 +18,7 @@ import {
 import ChipInput from "material-ui-chip-input";
 import { DeleteRounded, EditRounded, FileCopyRounded } from "@material-ui/icons";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
-import styles from "../styles/variants.style";
+import styles from "../../accounts/styles/variants.style";
 import {
   VariantsProps,
   VariantsState,

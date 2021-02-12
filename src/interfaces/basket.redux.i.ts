@@ -1,4 +1,4 @@
-import { Variant } from "../pages/accounts/interfaces/Variants.i";
+import { Variant } from "../pages/products/interfaces/Variants.i";
 import {
   CheckoutProductProps,
   BasketItemProps,

@@ -1,5 +1,5 @@
 import { Crop } from "react-image-crop";
-import { ImageProps } from "../../../pages/accounts/interfaces/NewProduct.i";
+import { ImageProps } from "../../../pages/products/interfaces/NewProduct.i";
 import { S3ObjectInput } from "../../../API";
 
 export interface ImagePickerProps {

@@ -1,4 +1,4 @@
-import { Variant } from "./Variants.i";
+import { Variant } from "../../products/interfaces/Variants.i";
 
 export interface ProductCardProps {
   product: ProductProps;

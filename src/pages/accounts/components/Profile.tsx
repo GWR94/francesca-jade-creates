@@ -29,7 +29,7 @@ import {
   ProfileStateProps,
 } from "../interfaces/Profile.i";
 import { updateUser } from "../../../graphql/mutations";
-import { ImageProps, UploadedFile } from "../interfaces/NewProduct.i";
+import { ImageProps, UploadedFile } from "../../products/interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
 import euroNumbers from "../../../utils/europeanCodes";

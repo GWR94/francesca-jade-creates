@@ -2,7 +2,7 @@ import React from "react";
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
-let openSnackbarFn;
+let openSnackbarFn: { (props: SnackbarInput): void };
 
 interface NotifierState {
   open: boolean;
@@ -40,7 +40,7 @@ class Notifier extends React.Component {
         open={open}
         autoHideDuration={2500}
         onClose={this.handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert severity={severity} onClose={this.handleSnackbarClose}>
           {message}

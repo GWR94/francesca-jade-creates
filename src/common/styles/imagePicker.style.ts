@@ -11,6 +11,10 @@ export default createStyles({
     MozBorderRadius: "50%",
     WebkitBorderRadius: "50%",
   },
+  input: {
+    width: "100%",
+    marginBottom: 6,
+  },
   image: {
     display: "flex",
     alignItems: "center",

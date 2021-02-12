@@ -1,5 +1,5 @@
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
-import { Feature } from "../../accounts/interfaces/Variants.i";
+import { Feature } from "../../products/interfaces/Variants.i";
 import { CustomOptionArrayType } from "./Basket.i";
 
 export interface RenderInputState {

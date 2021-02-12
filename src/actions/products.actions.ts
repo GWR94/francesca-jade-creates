@@ -52,3 +52,28 @@ export const getProducts = (type?: "Cake" | "Creates") => {
     }
   };
 };
+
+export const getProductsByTheme = (theme: string) => {
+  return async (
+    dispatch: Dispatch,
+  ): Promise<FetchProductsSuccessAction | FetchProductsFailureAction> => {
+    try {
+      const { data } = await API.graphql({
+        query: listProducts,
+        variables: {
+          filter: {
+            tags: {
+              contains: theme,
+            },
+          },
+          limit: 100,
+        },
+        // @ts-ignore
+        authMode: "API_KEY",
+      });
+      return dispatch(fetchProductsSuccess(data.listProducts.items));
+    } catch (error) {
+      return dispatch(fetchProductsFailure());
+    }
+  };
+};

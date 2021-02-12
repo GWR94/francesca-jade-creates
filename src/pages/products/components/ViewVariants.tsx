@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Divider,
   FormControl,
   InputLabel,
   makeStyles,
@@ -11,8 +10,8 @@ import {
 } from "@material-ui/core";
 import _ from "underscore";
 import { v4 as uuidv4 } from "uuid";
-import { Feature, Variant } from "../interfaces/Variants.i";
-import styles from "../styles/viewVariants.style";
+import { Feature } from "../interfaces/Variants.i";
+import styles from "../../accounts/styles/viewVariants.style";
 import { ViewVariantsProps, ViewVariantsState } from "../interfaces/ViewVariants.i";
 
 /**

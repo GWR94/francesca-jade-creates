@@ -2,8 +2,6 @@ import { green } from "@material-ui/core/colors";
 import { createMuiTheme, createStyles } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
-const breakpoints = createBreakpoints({});
-
 export enum COLORS {
   PalePink = "#fff2fe",
   LightPink = "#ffa3f9",
@@ -29,24 +27,13 @@ export enum COLORS {
   InstagramPurple = "#833AB4",
 }
 
-export enum BREAKPOINTS {
-  XL = "1690px",
-  LG = "1280px",
-  MD = "980px",
-  SM = "740px",
-  XS = "480px",
-}
-
 export enum PLACEHOLDERS {
   DisplayImage = "https://www.pngkey.com/png/full/230-2301779_best-classified-apps-default-user-profile.png",
 }
 
 export enum FONTS {
-  Header = "Lobster Two, cursive",
   Text = "Neucha, sans-serif",
   Title = "Roboto, sans-serif",
-  Display = "Londrina Solid, sans-serif",
-  Paint = "Finger Paint, sans-serif",
 }
 
 export enum INTENT {
@@ -63,6 +50,8 @@ export const defaultStyles = createStyles({
     justifyContent: "center",
   },
 });
+
+export const breakpoints = createBreakpoints({});
 
 export const nonIdealStateTheme = createMuiTheme({
   palette: {

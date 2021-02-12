@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { S3Image } from "aws-amplify-react";
 import { Skeleton } from "@material-ui/lab";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
+import { breakpoints } from "../../themes";
 
 interface DeleteDialogProps {
   isOpen: boolean; // opens dialog when set to true
@@ -33,8 +33,6 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
   // create state for loading
   const [isLoading, setLoading] = useState(true);
 
-  // create breakpoints to be used to determine if fullscreen is needed
-  const breakpoints = createBreakpoints({});
   // store the boolean value in a variable
   const fullscreen = useMediaQuery(breakpoints.down("sm"));
 

@@ -3,7 +3,7 @@ import { Drawer, Grid, makeStyles } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded, Warning } from "@material-ui/icons";
 import ProductCard from "../../../common/containers/ProductCard";
-import { ProductProps } from "../interfaces/Product.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
 import Pagination from "../../../common/Pagination";
 import SearchFilter from "./SearchFilter";
 import * as actions from "../../../actions/products.actions";
@@ -11,7 +11,7 @@ import { AppState } from "../../../store/store";
 import { ProductListProps, ProductListState } from "../interfaces/ProductList.i";
 import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
-import styles from "../styles/productList.style";
+import styles from "../../accounts/styles/productList.style";
 
 /**
  * Component which allows the user to filter each of the products, and allow them
@@ -22,7 +22,11 @@ import styles from "../styles/productList.style";
  * @param type - The type of product that will be rendered - i.e Cake or Creates.
  * @param admin - Boolean value to determine if the user is an admin or not.
  */
-const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element => {
+const ProductsList: React.FC<ProductListProps> = ({
+  type,
+  admin,
+  theme,
+}): JSX.Element => {
   // create a variable for the useDispatch hook to be executed within the component
   const dispatch = useDispatch();
   // make styles using the styles and store it into a variable that can be executed.
@@ -41,7 +45,6 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
   });
 
   let isMounted = false;
-
   useEffect(() => {
     // isMounted is used for suppressing react error of updating unmounted component
     isMounted = true;
@@ -52,6 +55,8 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
        * all of the products which are of that type.
        */
       dispatch(actions.getProducts(type));
+    } else if (theme) {
+      dispatch(actions.getProductsByTheme(theme));
     } else {
       /**
        * If there is no type prop, then dispatch the getProducts action with no
@@ -73,6 +78,14 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
     };
   }, []);
 
+  useEffect(() => {
+    try {
+      dispatch(actions.getProductsByTheme(theme as string));
+    } catch (err) {
+      console.error(err);
+    }
+  }, [theme]);
+
   // destructure relevant data from state
   const {
     filterOpen,
@@ -90,7 +103,7 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
    * use them. If there aren't, then use the products from the products store (which
    * were retrieved from the useSelector hook).
    */
-  const results = searchResults || products;
+  const results = theme ? products || [] : searchResults || products;
 
   return (
     <>
@@ -105,7 +118,9 @@ const ProductsList: React.FC<ProductListProps> = ({ type, admin }): JSX.Element 
         tabIndex={0}
       >
         {/* Show an animated pulsing menu icon to the user */}
-        <MenuRounded className={`${classes.filterIcon} animated infinite pulse`} />
+        <MenuRounded
+          className={`${classes.filterIcon} animate__animated animate__infinite animate__pulse`}
+        />
       </div>
       {isLoading ? (
         // if isLoading is true, show a loading UI spinner.

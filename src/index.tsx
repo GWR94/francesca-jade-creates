@@ -12,12 +12,13 @@ import AppRouter from "./routes/Router";
 import "remove-focus-outline";
 import "normalize.css";
 import "animate.css/animate.min.css";
-import "./scss/styles.scss";
 import "@stripe/stripe-js";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import configureStore from "./store/store";
 import { COLORS, rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
 import { isLocalhost, hasLocalhost, hasHostname, hasAmplifyApp } from "./utils";
+import "./themes/styles.css";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require
@@ -86,7 +87,7 @@ export const App: FC = (): JSX.Element => (
           <div
             id="app"
             style={{
-              background: COLORS.PalePink,
+              background: "#F2B7D0",
               minHeight: "100vh",
               display: "flex",
               flexDirection: "column",

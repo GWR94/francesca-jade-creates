@@ -37,8 +37,8 @@ export default createStyles({
   },
 
   link: {
-    width: 120,
     height: 50,
+    padding: "0 10px",
     textAlign: "center",
     display: "flex",
     textDecoration: "none",
@@ -50,7 +50,7 @@ export default createStyles({
     color: "black !important",
     fontWeight: "bold",
     margin: "0 4px",
-    fontSize: "1rem",
+    fontSize: "0.8rem",
     textTransform: "uppercase",
     "&:hover": {
       paddingTop: 2,
@@ -59,8 +59,8 @@ export default createStyles({
     },
   },
   linkActive: {
-    width: 120,
     height: 50,
+    padding: "0 10px",
     textAlign: "center",
     display: "flex",
     cursor: "pointer",
@@ -101,6 +101,6 @@ export default createStyles({
   },
   navIcon: {
     fontSize: "1.4rem",
-    marginRight: 10,
+    marginRight: 5,
   },
 });

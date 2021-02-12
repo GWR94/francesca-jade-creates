@@ -1,5 +1,5 @@
-import { AdminFilters } from "../pages/accounts/interfaces/SearchFilter.i";
-import { SearchType } from "../pages/accounts/interfaces/ProductList.i";
+import { AdminFilters } from "../pages/products/interfaces/SearchFilter.i";
+import { SearchType } from "../pages/products/interfaces/ProductList.i";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 
 export const GET_PRODUCTS = "GET_PRODUCTS";

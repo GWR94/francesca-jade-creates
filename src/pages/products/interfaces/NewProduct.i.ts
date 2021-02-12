@@ -1,4 +1,4 @@
-import { ProductProps, S3ImageProps } from "./Product.i";
+import { ProductProps, S3ImageProps } from "../../accounts/interfaces/Product.i";
 
 export interface NewProductState {
   title: {

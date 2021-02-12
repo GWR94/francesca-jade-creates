@@ -1,9 +1,10 @@
-import { ProductProps, ProductType } from "./Product.i";
+import { ProductProps, ProductType } from "../../accounts/interfaces/Product.i";
 
 export interface ProductListProps {
   admin: boolean;
   noTitle?: boolean;
   type?: ProductType;
+  theme?: string;
 }
 
 export enum SortDirection {

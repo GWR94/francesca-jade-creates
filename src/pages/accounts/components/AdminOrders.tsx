@@ -1,6 +1,5 @@
 import { API, graphqlOperation } from "aws-amplify";
 import React, { useEffect, useState } from "react";
-import AWS from "aws-sdk";
 import {
   Accordion,
   AccordionSummary,
@@ -86,12 +85,6 @@ const AdminOrders = (): JSX.Element => {
 
   // extend localizedFormat extension for dayjs to format dates correctly
   dayjs.extend(localizedFormat);
-
-  // update AWS with access and secret keys.
-  AWS.config.update({
-    accessKeyId: process.env.ACCESS_KEY_AWS,
-    secretAccessKey: process.env.SECRET_KEY_AWS,
-  });
 
   // make and use styles for use in the component
   const useStyles = makeStyles(styles);

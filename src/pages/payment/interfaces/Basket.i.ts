@@ -1,4 +1,4 @@
-import { Variant } from "../../accounts/interfaces/Variants.i";
+import { Variant } from "../../products/interfaces/Variants.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import { UserAttributeProps } from "../../accounts/interfaces/Accounts.i";
 import { ProfileProps } from "../../accounts/interfaces/Profile.i";

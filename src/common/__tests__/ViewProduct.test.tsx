@@ -4,7 +4,7 @@ import { Tag, Button } from "@blueprintjs/core";
 import configureStore from "redux-mock-store";
 import ConnectedViewProduct, {
   ViewProduct,
-} from "../../pages/accounts/components/ViewProduct";
+} from "../../pages/products/components/ViewProduct";
 import Loading from "../Loading";
 import { cakeProduct, createsProduct, userAttributes } from "../../__mocks__/products";
 import ImageCarousel from "../containers/ImageCarousel";

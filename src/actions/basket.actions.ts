@@ -21,7 +21,7 @@ import {
   AddCustomOptionsToProductAction,
   SetVariantAction,
 } from "../interfaces/basket.redux.i";
-import { Variant } from "../pages/accounts/interfaces/Variants.i";
+import { Variant } from "../pages/products/interfaces/Variants.i";
 
 export const addToBasket = (item: BasketItemProps): AddItemAction => ({
   type: ADD_ITEM_TO_BASKET,

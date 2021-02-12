@@ -1,7 +1,7 @@
 import { Store } from "redux";
 import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 import { AddItemAction } from "../../../interfaces/basket.redux.i";
-import { ProductProps } from "./Product.i";
+import { ProductProps } from "../../accounts/interfaces/Product.i";
 
 export interface ViewProps {
   id?: string; // id of product the user is attempting to view

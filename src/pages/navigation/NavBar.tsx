@@ -36,8 +36,7 @@ const NavBar: React.FC = (): JSX.Element => {
 
   const { admin } = useSelector(({ user }: AppState) => user);
 
-  const mobile = useMediaQuery("(max-width: 767px)");
-  const centerImage = useMediaQuery("(max-width: 979px)");
+  const mobile = useMediaQuery("(max-width: 760px)");
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -93,7 +92,7 @@ const NavBar: React.FC = (): JSX.Element => {
               <img
                 src={logo}
                 alt="Francesca Jade Creates"
-                className={centerImage ? classes.logo : classes.logoFixed}
+                className={mobile ? classes.logo : classes.logoFixed}
               />
               {/* 
                   If there are any items in the shopping basket and the user is viewing the

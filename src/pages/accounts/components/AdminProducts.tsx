@@ -1,15 +1,13 @@
 import React from "react";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { Typography, Container, makeStyles } from "@material-ui/core";
-import ProductsList from "./ProductsList";
-import { FONTS } from "../../../themes";
+import ProductsList from "../../products/components/ProductsList";
+import { FONTS, breakpoints } from "../../../themes";
 
 interface AdminProductProps {
   admin: boolean;
 }
 
 const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
-  const breakpoints = createBreakpoints({});
   const useStyles = makeStyles({
     container: {
       margin: "0 auto",

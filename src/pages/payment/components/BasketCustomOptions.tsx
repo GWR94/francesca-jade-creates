@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import { COLORS } from "../../../themes";
-import { Feature } from "../../accounts/interfaces/Variants.i";
+import { Feature } from "../../products/interfaces/Variants.i";
 import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";

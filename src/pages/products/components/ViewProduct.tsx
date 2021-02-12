@@ -3,30 +3,27 @@ import { API } from "aws-amplify";
 import {
   Container,
   Button,
-  ThemeProvider,
-  Chip,
   makeStyles,
   Typography,
   Grid,
   Divider,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/scss/image-gallery.scss";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";
 import { ViewProps } from "../interfaces/ViewProduct.i";
-import { chipTheme } from "../../../common/styles/viewProduct.style";
 import { AppState } from "../../../store/store";
-import { ProductProps, S3ImageProps } from "../interfaces/Product.i";
-import styles from "../styles/viewProduct.style";
+import { ProductProps, S3ImageProps } from "../../accounts/interfaces/Product.i";
+import styles from "../../accounts/styles/viewProduct.style";
 import ViewVariants from "./ViewVariants";
 import { getCompressedKey, getSignedS3Url } from "../../../utils";
 import QuoteDialog from "./QuoteDialog";
 import { openSnackbar } from "../../../utils/Notifier";
 import LoginDialog from "../../home/Login";
+import ChipContainer from "../../../common/inputs/ChipContainer";
 
 interface ViewProductState {
   // create boolean state value for loading to show/hide UI loading effects
@@ -84,7 +81,7 @@ const ViewProduct: React.FC<ViewProps> = ({
         limit: 100,
       },
       // @ts-ignore
-      authMode: "API_KEY", // FIXME
+      authMode: "API_KEY",
     });
     // create an array to store the images in
     const images: { [key: string]: string }[] = [];
@@ -92,13 +89,13 @@ const ViewProduct: React.FC<ViewProps> = ({
      * Iterate through the images collection from the getProduct query, and
      * push to results images array, modifying them where necessary.
      */
-    data.getProduct.images.collection.map(async (image: S3ImageProps) => {
+    data.getProduct.images.collection.map((image: S3ImageProps) => {
       // get the compressed image key by using the util function
       const compressedKey = getCompressedKey(image.key);
       // retrieve the full resolution signed image url
-      const originalURL = await getSignedS3Url(image.key);
+      const originalURL = getSignedS3Url(image.key);
       // get the compressed thumbnail singed image url
-      const thumbnailURL = await getSignedS3Url(compressedKey);
+      const thumbnailURL = getSignedS3Url(compressedKey);
       // push the urls into the images array
       images.push({
         original: originalURL,
@@ -122,7 +119,9 @@ const ViewProduct: React.FC<ViewProps> = ({
   let isMounted = false;
   useEffect(() => {
     isMounted = true;
-    if (isMounted) getCurrentProduct();
+    if (isMounted) {
+      getCurrentProduct();
+    }
     return (): void => {
       isMounted = false;
     };
@@ -130,8 +129,6 @@ const ViewProduct: React.FC<ViewProps> = ({
 
   // store the useDispatch hook into a variable so it can be used throughout
   const dispatch = useDispatch();
-  // store the useHistory hook into a variable so it can be used throughout
-  const history = useHistory();
 
   /**
    * Function to add the current product into the basket redux store, so it can
@@ -198,6 +195,7 @@ const ViewProduct: React.FC<ViewProps> = ({
     customOptions,
     type,
   } = product;
+
   return isLoading ? (
     <Loading />
   ) : (
@@ -214,22 +212,7 @@ const ViewProduct: React.FC<ViewProps> = ({
             </Typography>
           )}
           {/* Map all of the tags into a chip to show to the user */}
-          <ThemeProvider theme={chipTheme}>
-            <div className={classes.tagsContainer}>
-              {tags.map(
-                (tag: string, i: number): JSX.Element => (
-                  <Chip
-                    key={i}
-                    size="small"
-                    className={classes.chip}
-                    // change the color based on the productType
-                    color={productType === "Creates" ? "primary" : "secondary"}
-                    label={tag}
-                  />
-                ),
-              )}
-            </div>
-          </ThemeProvider>
+          <ChipContainer tags={tags} type={type} />
         </div>
         {/* Set the jsx from description to innerHTML of the description div */}
         <div
@@ -243,9 +226,11 @@ const ViewProduct: React.FC<ViewProps> = ({
             {/* Render the images from the product */}
             <ImageGallery
               items={images}
-              thumbnailPosition="left"
-              showNav={images.length > 1}
+              thumbnailPosition="bottom"
+              showNav={images.length >= 1}
               showPlayButton={images.length > 1}
+              autoPlay={images.length > 1}
+              showThumbnails={images.length > 1}
             />
             {/* 
             If the product type is a cake, then the user must request a quote,

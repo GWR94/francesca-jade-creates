@@ -17,7 +17,7 @@ import { Storage } from "aws-amplify";
 import React, { useState, useEffect } from "react";
 import { INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
-import { UploadedFile } from "../../accounts/interfaces/NewProduct.i";
+import { UploadedFile } from "../../products/interfaces/NewProduct.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import awsExports from "../../../aws-exports";
 import styles from "../styles/renderInput.style";

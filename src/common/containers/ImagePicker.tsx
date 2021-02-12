@@ -156,7 +156,7 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
 
     return (
       <>
-        <FormLabel className="profile__input">{showText && "Display Image:"}</FormLabel>
+        <FormLabel className={classes.input}>{showText && "Display Image:"}</FormLabel>
         {/* Show image preview if one exists */}
         {imagePreview ? (
           <div className={classes.imageContainer}>

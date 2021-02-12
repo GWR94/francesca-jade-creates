@@ -1,8 +1,6 @@
 import { createStyles } from "@material-ui/core";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { FONTS } from "../../../themes";
+import { FONTS, breakpoints } from "../../../themes";
 
-export const breakpoints = createBreakpoints({});
 export default createStyles({
   container: {
     position: "relative",
@@ -11,11 +9,11 @@ export default createStyles({
     justifyContent: "space-between",
     fontFamily: FONTS.Title,
     padding: "30px 24px",
-    [breakpoints.down("md")]: {
+    userSelect: "none",
+    [breakpoints.down("xs")]: {
       justifyContent: "center",
       height: "100%",
     },
-    userSelect: "none",
   },
   federated: {
     width: "100%",
@@ -49,7 +47,7 @@ export default createStyles({
     width: 280,
     margin: "0 auto",
     textAlign: "center",
-    [breakpoints.down("sm")]: {
+    [breakpoints.down("xs")]: {
       width: "100%",
     },
   },

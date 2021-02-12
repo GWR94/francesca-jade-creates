@@ -2,7 +2,7 @@ import { History } from "history";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
-import { ImageProps } from "./NewProduct.i";
+import { ImageProps } from "../../products/interfaces/NewProduct.i";
 
 export interface ProfileProps extends ProfileStateProps {
   userAttributes: UserAttributeProps | null; //object container user attributes

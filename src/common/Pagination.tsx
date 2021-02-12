@@ -46,11 +46,14 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
             min: value === 1 ? 0 : (value - 1) * numPage,
             max: value === 1 ? numPage : (value - 1) * numPage + numPage,
           });
+          window.scrollTo(0, 0);
         }}
         shape="rounded"
         showFirstButton={desktop}
         showLastButton={desktop}
         count={maxPages}
+        boundaryCount={1}
+        size={desktop ? "medium" : "small"}
       />
     </div>
   );
