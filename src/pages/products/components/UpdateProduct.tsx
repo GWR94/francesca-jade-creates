@@ -39,7 +39,7 @@ import { Variant } from "../interfaces/Variants.i";
 import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
-import { themes } from "../../../utils/data";
+import { cakeFeatures, createsFeatures, themes } from "../../../utils/data";
 
 class UpdateProduct extends Component<UpdateProps, UpdateState> {
   public readonly state: UpdateState = {
@@ -284,7 +284,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    */
   private handleProductErrors = (): void => {
     const {
-      product: { title, description, tags, images, tagline },
+      product: { title, description, tags, images, tagline, customOptions, type },
     } = this.state;
 
     // set errors for each field to be false, so they can be tracked if there are changes.
@@ -295,6 +295,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       image: "",
       tags: "",
       tagline: "",
+      customOptions: "",
     };
 
     if (title.length < 5) {
@@ -328,6 +329,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     if (tagline && tagline.length <= 0) {
       // if there is no tagline, set tagline error to true.
       error.tagline = "Please enter a tagline - 50 characters max.";
+    }
+    if (customOptions.length <= 0) {
+      error.customOptions = `Please enter at least one ${
+        type === "Cake" ? "feature." : "colour scheme."
+      }`;
     }
 
     /**
@@ -533,6 +539,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     } = product;
     const { history, update, classes, setCurrentTab } = this.props;
 
+    const features: string[] = type === "Cake" ? cakeFeatures : createsFeatures;
+
     return isLoading ? (
       <Loading size={100} />
     ) : (
@@ -618,41 +626,35 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
               </RadioGroup>
             </OutlinedContainer>
           </div>
-          <ChipInput
-            value={customOptions || []}
+          <Autocomplete
+            multiple
+            freeSolo
+            options={features.sort((a, b) => -b.slice(0, 1).localeCompare(a.slice(0, 1)))}
+            filterSelectedOptions
             fullWidth
-            variant="outlined"
-            label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
-            classes={{
-              inputRoot: classes.chipInput,
-              // label: classes.chipLabel,
-              chip: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
-            }}
-            placeholder="Save each item by pressing enter"
-            onAdd={(chip): void => {
-              this.setState(
-                (prevState): UpdateState => {
-                  return {
-                    ...prevState,
-                    product: {
-                      ...prevState.product,
-                      customOptions: [...prevState.product?.customOptions, chip],
-                    },
-                  };
+            autoComplete
+            value={customOptions || []}
+            onChange={(_event, customOptions): void => {
+              this.setState((prevState) => ({
+                product: {
+                  ...prevState.product,
+                  customOptions,
                 },
-              );
+              }));
             }}
-            onDelete={(chip): void => {
-              const idx = customOptions.findIndex((name) => name === chip);
-              const newCustom = [
-                ...customOptions.slice(0, idx),
-                ...customOptions.slice(idx + 1),
-              ];
-              this.setState({
-                product: { ...product, customOptions: newCustom },
-              });
+            classes={{
+              tag: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
             }}
-            style={{ marginBottom: 10 }}
+            renderInput={(params): JSX.Element => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
+                fullWidth
+                error={!!errors.customOptions}
+                helperText={errors.customOptions}
+              />
+            )}
           />
           <Alert
             severity="info"

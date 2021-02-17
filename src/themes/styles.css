@@ -78,6 +78,10 @@ span.bp3-popover-target {
   animation-delay: 0.5s;
 }
 
+.animate__delay-tiny {
+  animation-delay: 0.35s;
+}
+
 .animate__delay-1half {
   animation-delay: 1.5s;
 }

@@ -132,5 +132,37 @@ export const themes = [
   "Parenthood",
   "Baby",
   "TV & Film",
-  "Food & Drink Brands",
+  "Brands",
+];
+
+export const cakeFeatures = [
+  "Chocolate",
+  "Confectionary",
+  "Strawberry",
+  "Vanilla",
+  "Raspberry",
+  "Reese's",
+  "Ferrero Rocher",
+  "Kinder",
+  "Biscuits",
+  "Oreo",
+  "Alcohol",
+];
+
+export const createsFeatures = [
+  "Floral (Pink/Purple)",
+  "Floral (Bright)",
+  "Floral (Neutral)",
+  "Pattern (Bright)",
+  "Pattern (Pastel)",
+  "Solid Colour (add comment)",
+  "Glitter (add comment)",
+  "Black, White, Grey & Silver",
+  "Pinks",
+  "Purples",
+  "Blues",
+  "Reds",
+  "Gold",
+  "Silver",
+  "Neutral Tones",
 ];

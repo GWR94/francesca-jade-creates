@@ -26,6 +26,7 @@ const ProductsList: React.FC<ProductListProps> = ({
   type,
   admin,
   theme,
+  page,
 }): JSX.Element => {
   // create a variable for the useDispatch hook to be executed within the component
   const dispatch = useDispatch();
@@ -44,16 +45,14 @@ const ProductsList: React.FC<ProductListProps> = ({
     },
   });
 
-  let isMounted = false;
   useEffect(() => {
-    // isMounted is used for suppressing react error of updating unmounted component
-    isMounted = true;
     if (type) {
       /**
        * if there is a type prop that was passed down from the parent, dispatch the
        * getProducts action with the type passed as the parameter. This will return
        * all of the products which are of that type.
        */
+      console.log("getProducts");
       dispatch(actions.getProducts(type));
     } else if (theme) {
       dispatch(actions.getProductsByTheme(theme));
@@ -64,18 +63,7 @@ const ProductsList: React.FC<ProductListProps> = ({
        */
       dispatch(actions.getProducts());
     }
-    setTimeout(() => {
-      /**
-       * if the component is mounted and actions are completed, set isLoading to
-       * false to remove UI loading effects.
-       */
-      if (isMounted) setState({ ...state, isLoading: false });
-    }, 500);
-
-    return (): void => {
-      // set isMounted to false when the component is unmounted.
-      isMounted = false;
-    };
+    setState({ ...state, isLoading: false });
   }, []);
 
   useEffect(() => {
@@ -107,21 +95,23 @@ const ProductsList: React.FC<ProductListProps> = ({
 
   return (
     <>
-      <div
-        className={classes.filterContainer}
-        onClick={(e): void => {
-          e.stopPropagation();
-          // open the search filter when clicking on the div
-          setState({ ...state, filterOpen: true });
-        }}
-        role="button"
-        tabIndex={0}
-      >
-        {/* Show an animated pulsing menu icon to the user */}
-        <MenuRounded
-          className={`${classes.filterIcon} animate__animated animate__infinite animate__pulse`}
-        />
-      </div>
+      {!theme && (
+        <div
+          className={classes.filterContainer}
+          onClick={(e): void => {
+            e.stopPropagation();
+            // open the search filter when clicking on the div
+            setState({ ...state, filterOpen: true });
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          {/* Show an animated pulsing menu icon to the user */}
+          <MenuRounded
+            className={`${classes.filterIcon} animate__animated animate__infinite animate__pulse`}
+          />
+        </div>
+      )}
       {isLoading ? (
         // if isLoading is true, show a loading UI spinner.
         <Loading small />
@@ -165,28 +155,30 @@ const ProductsList: React.FC<ProductListProps> = ({
         Render the drawer component with the SearchFilter component inside if
         the filterOpen boolean is true 
       */}
-      <Drawer
-        open={filterOpen}
-        anchor="top"
-        ModalProps={{
-          // If the user clicks outside the drawer, it will close
-          onBackdropClick: (): void => setState({ ...state, filterOpen: false }),
-          // disable the default scroll lock so the user can still scroll while open
-          disableScrollLock: true,
-        }}
-        SlideProps={{
-          unmountOnExit: false,
-        }}
-      >
-        {/* Render the SearchFilter component */}
-        <SearchFilter
-          admin={admin}
-          type={type}
-          setSearchResults={(searchResults): void =>
-            setState({ ...state, searchResults })
-          }
-        />
-      </Drawer>
+      {!theme && (
+        <Drawer
+          open={filterOpen}
+          anchor="top"
+          ModalProps={{
+            // If the user clicks outside the drawer, it will close
+            onBackdropClick: (): void => setState({ ...state, filterOpen: false }),
+            // disable the default scroll lock so the user can still scroll while open
+            disableScrollLock: true,
+          }}
+          SlideProps={{
+            unmountOnExit: false,
+          }}
+        >
+          {/* Render the SearchFilter component */}
+          <SearchFilter
+            admin={admin}
+            type={type}
+            setSearchResults={(searchResults): void =>
+              setState({ ...state, searchResults })
+            }
+          />
+        </Drawer>
+      )}
     </>
   );
 };

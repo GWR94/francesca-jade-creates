@@ -1,6 +1,8 @@
 import { makeStyles, TextField } from "@material-ui/core";
+import { SearchRounded } from "@material-ui/icons";
 import { Autocomplete } from "@material-ui/lab";
 import React, { useState, useEffect } from "react";
+import NonIdealState from "../../../common/containers/NonIdealState";
 import { themes } from "../../../utils/data";
 import ProductsList from "./ProductsList";
 
@@ -17,6 +19,9 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
 
   useEffect(() => {
     setTheme(selectedTheme);
+    return (): void => {
+      setTheme("");
+    };
   }, [selectedTheme]);
 
   const useStyles = makeStyles({
@@ -51,7 +56,15 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
           />
         )}
       />
-      {theme && <ProductsList admin={admin} theme={theme} />}
+      {theme ? (
+        <ProductsList admin={admin} theme={theme} />
+      ) : (
+        <NonIdealState
+          title="Please enter a theme to begin the search"
+          Icon={<SearchRounded />}
+          subtext="Or view other products below"
+        />
+      )}
     </div>
   );
 };

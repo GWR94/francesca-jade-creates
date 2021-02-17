@@ -5,6 +5,7 @@ export interface ProductListProps {
   noTitle?: boolean;
   type?: ProductType;
   theme?: string;
+  page?: number;
 }
 
 export enum SortDirection {
