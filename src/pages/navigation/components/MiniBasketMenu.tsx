@@ -33,7 +33,6 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
   return (
     <Popover
       open={basketOpen}
-      getContentAnchorEl={null}
       anchorEl={basketRef.current}
       anchorOrigin={{
         vertical: "bottom",
@@ -41,7 +40,7 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: 270,
+        horizontal: 280,
       }}
       style={{ marginTop: 6 }}
       onClose={(): void => setBasketOpen(false)}

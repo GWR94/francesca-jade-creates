@@ -7,7 +7,6 @@ import {
   BrushRounded,
   CakeRounded,
   HomeRounded,
-  LocalOffer,
   LocalOfferRounded,
   ShoppingCartRounded,
 } from "@material-ui/icons";
@@ -17,6 +16,7 @@ import { BasketItemProps } from "../../payment/interfaces/Basket.i";
 import AccountsMenu from "./AccountsMenu";
 import MiniBasketMenu from "./MiniBasketMenu";
 import { LinksProps } from "../interfaces/Links.i";
+import Login from "../../home/Login";
 
 /**
  * Component containing all of the links to navigate around the site.
@@ -87,17 +87,17 @@ const Links: React.FC<LinksProps> = ({
         </NavLink>
       </div>
       <div className={mobile ? classes.navMobile : classes.navRight}>
+        <NavLink
+          to="/themes"
+          activeClassName={classes.linkActive}
+          className={classes.link}
+          onClick={closeNav}
+        >
+          <LocalOfferRounded className={classes.navIcon} />
+          Themes
+        </NavLink>
         {user ? (
           <>
-            <NavLink
-              to="/themes"
-              activeClassName={classes.linkActive}
-              className={classes.link}
-              onClick={closeNav}
-            >
-              <LocalOfferRounded className={classes.navIcon} />
-              Themes
-            </NavLink>
             <div
               onClick={(): void => setMenuOpen(!menuOpen)}
               role="button"
@@ -122,15 +122,15 @@ const Links: React.FC<LinksProps> = ({
             />
           </>
         ) : (
-          <div
-            onClick={setLoginOpen}
-            role="button"
-            tabIndex={0}
-            className={navOpen ? classes.linkActiveDiv : classes.link}
-          >
-            <AccountBoxRounded className={classes.navIcon} />
-            Sign In
-          </div>
+          <Login
+            props={{
+              classOverride: navOpen ? classes.linkActiveDiv : classes.link,
+              text: "Sign in",
+              color: "inherit",
+              variant: "text",
+              Icon: <AccountBoxRounded className={classes.navIcon} />,
+            }}
+          />
         )}
         <div
           role="button"

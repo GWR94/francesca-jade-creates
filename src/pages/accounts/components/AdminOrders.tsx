@@ -138,6 +138,7 @@ const AdminOrders = (): JSX.Element => {
                 min,
                 max,
               },
+              e,
             })
           }
         />

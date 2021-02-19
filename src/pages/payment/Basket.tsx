@@ -28,7 +28,8 @@ import { createOrder, updateOrder } from "../../graphql/mutations";
 import { UserState } from "../../reducers/user.reducer";
 import { getUser } from "../../graphql/queries";
 import { BasketState as BasketStoreState } from "../../reducers/basket.reducer";
-import { getCompressedKey, getSignedS3Url } from "../../utils/index";
+import { getCompressedKey, getPublicS3URL } from "../../utils/index";
+import Login from "../home/Login";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
@@ -39,13 +40,20 @@ if (process.env.NODE_ENV === "production") {
 
 /**
  * TODO
- * [ ] Test delete button - was causing errors
  * [ ] Remove "Uploaded Image" text when theres no images uploaded
  * [ ] Test to see if you can remove skip button / notify user they have to skip
- * [ ] Test login button going to staging randomly
- * [ ] Mark phone number as optional in create new account
  * [ ] Check basket clears once purchase is complete
  */
+
+const initialState = {
+  isLoading: true,
+  isSubmitting: false,
+  user: null,
+  activeStep: 0,
+  currentIdx: 0,
+  session: null,
+  cancelled: false,
+};
 
 /**
  * Functional component that allows a customer to check, validate, confirm
@@ -73,15 +81,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   const { id, email } = useSelector(({ user }: AppState): UserState => user);
 
   // create state for the product and initialise it with blank input values
-  const [state, setState] = useState<BasketState>({
-    isLoading: true,
-    isSubmitting: false,
-    user: null,
-    activeStep: 0,
-    currentIdx: 0,
-    session: null,
-    cancelled: false,
-  });
+  const [state, setState] = useState<BasketState>(initialState);
 
   const isMobile = useMediaQuery("(max-width: 600px)");
 
@@ -132,8 +132,9 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
       } else {
         // clear the checkout basket when the user navigates to the page to clear up old data
         dispatch(actions.clearCheckout());
+        setState({ ...state, isLoading: false, user: null });
         // get the users' data and set it into state within the getUserInfo function
-        getUserInfo();
+        // getUserInfo();
       }
     }
     return (): void => {
@@ -148,6 +149,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
    */
   const handleCreateCheckout = async (): Promise<void> => {
     const { user } = state;
+    if (!user) await getUserInfo();
+
     try {
       // show ui loading effects
       setState({ ...state, isSubmitting: true });
@@ -214,7 +217,11 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
              * the full resolution image. Then use that compressed key to get a signed
              * S3 url, so it can be shown within stripe's checkout.
              */
-            image: getSignedS3Url(getCompressedKey(product.image.key)),
+            image: getPublicS3URL({
+              key: getCompressedKey(product.image.key),
+              bucket: process.env.IMAGE_S3_BUCKET as string,
+              region: "eu-west-2",
+            }),
           })),
           email,
           orderId,
@@ -264,7 +271,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   };
 
   const getStepContent = (stepIndex: number): JSX.Element | null => {
-    const { currentIdx, activeStep, isSubmitting } = state;
+    const { currentIdx, activeStep, isSubmitting, user } = state;
     switch (stepIndex) {
       /**
        * the first step is the user confirms the products in their basket,
@@ -298,26 +305,43 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               />
             </>
             <div className={classes.stepButtonContainer}>
-              <Button
-                onClick={(): void => setState({ ...state, activeStep: activeStep - 1 })}
-                color="secondary"
-                variant="contained"
-                disabled
-                className={classes.button}
-              >
-                Previous Step
-              </Button>
-              <Button
-                onClick={(): void => {
-                  setState({ ...state, currentIdx: 0, activeStep: activeStep + 1 });
-                }}
-                disabled={basketItems.length !== products.length}
-                color="primary"
-                variant="contained"
-                className={classes.button}
-              >
-                Next Step
-              </Button>
+              {!user ? (
+                <Login
+                  showButton
+                  props={{
+                    classOverride: classes.button,
+                    text: "Login to Continue",
+                    variant: "contained",
+                    align: "center",
+                    color: "primary",
+                  }}
+                />
+              ) : (
+                <>
+                  <Button
+                    onClick={(): void =>
+                      setState({ ...state, activeStep: activeStep - 1 })
+                    }
+                    color="secondary"
+                    variant="contained"
+                    disabled
+                    className={classes.button}
+                  >
+                    Previous Step
+                  </Button>
+                  <Button
+                    onClick={(): void => {
+                      setState({ ...state, currentIdx: 0, activeStep: activeStep + 1 });
+                    }}
+                    disabled={basketItems.length !== products.length}
+                    variant="contained"
+                    className={classes.button}
+                    color="primary"
+                  >
+                    Next Step
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         );
@@ -345,31 +369,52 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               TOTAL: £{cost.toFixed(2)}
             </Typography>
             <div className={classes.stepButtonContainer}>
-              <Button
-                onClick={(): void => setState({ ...state, activeStep: activeStep - 1 })}
-                color="secondary"
-                variant="contained"
-                disabled
-                className={classes.button}
-              >
-                Previous Step
-              </Button>
-              <Button
-                onClick={(): void => {
-                  setState({ ...state, currentIdx: 0 });
-                  handleCreateCheckout();
-                }}
-                disabled={basketItems.length !== products.length}
-                color="primary"
-                variant="contained"
-                className={classes.button}
-              >
-                {isSubmitting ? (
-                  <CircularProgress color="inherit" style={{ color: "#fff" }} size={20} />
-                ) : (
-                  "Purchase Items"
-                )}
-              </Button>
+              {!user ? (
+                <Login
+                  showButton
+                  props={{
+                    classOverride: classes.button,
+                    text: "Login to Continue",
+                    variant: "contained",
+                    align: "center",
+                    color: "primary",
+                  }}
+                />
+              ) : (
+                <>
+                  <Button
+                    onClick={(): void =>
+                      setState({ ...state, activeStep: activeStep - 1 })
+                    }
+                    color="secondary"
+                    variant="contained"
+                    disabled
+                    className={classes.button}
+                  >
+                    Previous Step
+                  </Button>
+                  <Button
+                    onClick={(): void => {
+                      setState({ ...state, currentIdx: 0 });
+                      handleCreateCheckout();
+                    }}
+                    disabled={basketItems.length !== products.length}
+                    color="primary"
+                    variant="contained"
+                    className={classes.button}
+                  >
+                    {isSubmitting ? (
+                      <CircularProgress
+                        color="inherit"
+                        style={{ color: "#fff" }}
+                        size={20}
+                      />
+                    ) : (
+                      "Purchase Items"
+                    )}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         );

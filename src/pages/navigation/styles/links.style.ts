@@ -80,8 +80,9 @@ export default createStyles({
     },
   },
   linkActiveDiv: {
-    width: 120,
     height: 50,
+    fontSize: "0.8rem",
+    padding: "0 10px",
     textAlign: "center",
     display: "flex",
     cursor: "pointer",

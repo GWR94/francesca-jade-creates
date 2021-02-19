@@ -21,7 +21,7 @@ import { COLORS } from "../../themes";
 import { openSnackbar } from "../../utils/Notifier";
 import * as userActions from "../../actions/user.actions";
 import * as basketActions from "../../actions/basket.actions";
-import LoginDialog from "../home/Login";
+
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
@@ -153,7 +153,6 @@ const NavBar: React.FC = (): JSX.Element => {
           </AppBar>
         </Headroom>
       </ClickAwayListener>
-      <LoginDialog isOpen={loginOpen} closeDialog={(): void => setLoginOpen(false)} />
     </>
   );
 };

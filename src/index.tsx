@@ -13,11 +13,11 @@ import "remove-focus-outline";
 import "normalize.css";
 import "animate.css/animate.min.css";
 import "@stripe/stripe-js";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import "@fortawesome/fontawesome-free/css/all.css";
 import configureStore from "./store/store";
-import { COLORS, rootTheme } from "./themes";
+import { rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
-import { isLocalhost, hasLocalhost, hasHostname, hasAmplifyApp } from "./utils";
+import { isLocalhost, hasLocalhost, hasHostname } from "./utils";
 import "./themes/styles.css";
 
 if (process.env.NODE_ENV === "development") {
@@ -55,16 +55,12 @@ if (isLocalhost) {
   });
 } else {
   urlsIn.forEach((e: string): void => {
-    if (hasHostname(e) && hasAmplifyApp(e)) {
-      oauth.redirectSignIn = e; // will be staging.xxxxxx.amplifyapp.com
-    } else {
+    if (hasHostname(e)) {
       oauth.redirectSignIn = e; // will be francescajadecreates.co.uk
     }
   });
   urlsOut.forEach((e: string): void => {
-    if (hasHostname(e) && hasAmplifyApp(e)) {
-      oauth.redirectSignOut = e; // will be staging.xxxxxx.amplifyapp.com
-    } else {
+    if (hasHostname(e)) {
       oauth.redirectSignOut = e; // will be francescajadecreates.co.uk
     }
   });

@@ -26,7 +26,6 @@ const ProductsList: React.FC<ProductListProps> = ({
   type,
   admin,
   theme,
-  page,
 }): JSX.Element => {
   // create a variable for the useDispatch hook to be executed within the component
   const dispatch = useDispatch();
@@ -52,7 +51,6 @@ const ProductsList: React.FC<ProductListProps> = ({
        * getProducts action with the type passed as the parameter. This will return
        * all of the products which are of that type.
        */
-      console.log("getProducts");
       dispatch(actions.getProducts(type));
     } else if (theme) {
       dispatch(actions.getProductsByTheme(theme));
@@ -64,15 +62,7 @@ const ProductsList: React.FC<ProductListProps> = ({
       dispatch(actions.getProducts());
     }
     setState({ ...state, isLoading: false });
-  }, []);
-
-  useEffect(() => {
-    try {
-      dispatch(actions.getProductsByTheme(theme as string));
-    } catch (err) {
-      console.error(err);
-    }
-  }, [theme]);
+  }, [theme, type]);
 
   // destructure relevant data from state
   const {

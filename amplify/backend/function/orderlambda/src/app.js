@@ -7,12 +7,6 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
-/**
- * TODO
- * [ ] Make checkAdmin function to quickly check if the user is admin or not
- * [ ] Check sign in page going to right url (staging.amplifyapp)
- */
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");

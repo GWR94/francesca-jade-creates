@@ -22,12 +22,12 @@ import {
 import dayjs from "dayjs";
 import { API } from "aws-amplify";
 import { COLORS } from "../../../themes";
-import { getSignedS3Url } from "../../../utils";
 import { openSnackbar } from "../../../utils/Notifier";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import { S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/adminOrders.style";
 import ShippingReferenceDialog from "./ShippingReferenceDialog";
+import { getPublicS3URL } from "../../../utils";
 
 interface AdminOrderItemProps {
   order: OrderProps;
@@ -40,12 +40,14 @@ interface AdminOrderItemState {
   dialogOpen: boolean;
 }
 
+const initialState = {
+  expanded: false,
+  isSettingProcessed: false,
+  dialogOpen: false,
+};
+
 const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
-  const [state, setState] = useState<AdminOrderItemState>({
-    expanded: false,
-    isSettingProcessed: false,
-    dialogOpen: false,
-  });
+  const [state, setState] = useState<AdminOrderItemState>(initialState);
 
   const desktop = useMediaQuery("(min-width: 600px)");
 
@@ -93,7 +95,11 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
      */
     for (const image of images) {
       // get the signed url
-      const url = getSignedS3Url(image.key);
+      const url = getPublicS3URL({
+        key: image.key,
+        bucket: process.env.IMAGE_S3_BUCKET as string,
+        region: "eu-west-2",
+      });
       // create an a element to open the link
       const a = document.createElement("a");
       // set the download attribute to be the signed url

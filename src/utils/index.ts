@@ -1,5 +1,4 @@
 import { Storage } from "aws-amplify";
-import { S3 } from "aws-sdk";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { Variant } from "../pages/products/interfaces/Variants.i";
@@ -40,29 +39,6 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
   }
 };
 
-/**
- * Function to return a url which has been signed, meaning unauthenticated
- * users/services can still view images.
- * @param key - the key of the image that you wish to generate a signed
- * URL for.
- * @param level - protection level - i.e public, private or protected.
- */
-export const getSignedS3Url = (key: string, level = "public"): string => {
-  const s3 = new S3({
-    endpoint: "s3-eu-west-2.amazonaws.com",
-    signatureVersion: "v4",
-    region: "eu-west-2",
-    accessKeyId: process.env.ACCESS_KEY_AWS,
-    secretAccessKey: process.env.SECRET_KEY_AWS,
-  });
-
-  const url = s3.getSignedUrl("getObject", {
-    Bucket: process.env.IMAGE_S3_BUCKET,
-    Key: `${level}/${key}`,
-  });
-  return url;
-};
-
 export const getPublicS3URL = (s3Image: S3ImageProps): string => {
   const { key, bucket, region } = s3Image;
   const url = `https://${bucket}.s3.${region}.amazonaws.com/public/${key}`;
@@ -91,9 +67,6 @@ export const hasLocalhost = (hostname: string): boolean =>
 
 export const hasHostname = (hostname: string): boolean =>
   Boolean(hostname.includes(window.location.hostname));
-
-export const hasAmplifyApp = (hostname: string): boolean =>
-  Boolean(hostname.includes("amplifyapp"));
 
 export const isLocalhost = hasLocalhost(window.location.hostname);
 

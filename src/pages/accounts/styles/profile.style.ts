@@ -44,7 +44,7 @@ export default createStyles({
   heading: {
     fontSize: "1.2rem",
     fontWeight: 500,
-    marginBottom: 5,
+    marginBottom: 10,
   },
   optionalText: {
     color: "darkgrey",

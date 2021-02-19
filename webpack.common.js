@@ -46,7 +46,7 @@ module.exports = {
         exclude: [path.resolve(__dirname, "./node_modules")],
       },
       {
-        test: /\.(jpg|jpeg|png|gif|svg|pdf|ico|eot|woff|woff2|ttf|mp4)$/i,
+        test: /\.(jpg|jpeg|png|gif|svg|pdf|ico|eot|woff|woff2|otf|ttf|mp4)$/i,
         loader: "file-loader?name=[path][hash].[ext]",
       },
       {

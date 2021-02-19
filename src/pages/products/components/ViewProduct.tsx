@@ -19,11 +19,11 @@ import { AppState } from "../../../store/store";
 import { ProductProps, S3ImageProps } from "../../accounts/interfaces/Product.i";
 import styles from "../../accounts/styles/viewProduct.style";
 import ViewVariants from "./ViewVariants";
-import { getCompressedKey, getSignedS3Url } from "../../../utils";
+import { getCompressedKey, getPublicS3URL } from "../../../utils";
 import QuoteDialog from "./QuoteDialog";
 import { openSnackbar } from "../../../utils/Notifier";
-import LoginDialog from "../../home/Login";
 import ChipContainer from "../../../common/inputs/ChipContainer";
+import Login from "../../home/Login";
 
 interface ViewProductState {
   // create boolean state value for loading to show/hide UI loading effects
@@ -64,69 +64,80 @@ const ViewProduct: React.FC<ViewProps> = ({
   // execute the useStyles function and store result in variable.
   const classes = useStyles();
 
-  /**
-   * Function to get the data of the chosen product and store it into state.
-   * The function will be executed as the component mounts, so all of the relevant
-   * data will be available in state before the first render.
-   */
-  const getCurrentProduct = async (): Promise<void> => {
-    /**
-     * Execute the getProduct graphQL query to retrieve the products data, and
-     * destructure the data property from the result.
-     */
-    const { data } = await API.graphql({
-      query: getProduct,
-      variables: {
-        id,
-        limit: 100,
-      },
-      // @ts-ignore
-      authMode: "API_KEY",
-    });
+  const retrieveImagesFromProduct = (
+    images: S3ImageProps[],
+  ): { [key: string]: string }[] => {
     // create an array to store the images in
-    const images: { [key: string]: string }[] = [];
+    const imagesArr: { [key: string]: string }[] = [];
     /**
      * Iterate through the images collection from the getProduct query, and
      * push to results images array, modifying them where necessary.
      */
-    data.getProduct.images.collection.map((image: S3ImageProps) => {
+    images.map((image: S3ImageProps) => {
       // get the compressed image key by using the util function
       const compressedKey = getCompressedKey(image.key);
       // retrieve the full resolution signed image url
-      const originalURL = getSignedS3Url(image.key);
+      const originalURL = getPublicS3URL({
+        key: image.key,
+        bucket: process.env.IMAGE_S3_BUCKET as string,
+        region: "eu-west-2",
+      });
       // get the compressed thumbnail singed image url
-      const thumbnailURL = getSignedS3Url(compressedKey);
-      // push the urls into the images array
-      images.push({
+      const thumbnailURL = getPublicS3URL({
+        key: compressedKey,
+        bucket: process.env.IMAGE_S3_BUCKET as string,
+        region: "eu-west-2",
+      });
+      const current = {
         original: originalURL,
         thumbnail: thumbnailURL,
         thumbnailClass: "thumbnail",
-      });
+      };
+      console.log(current);
+      // push the urls into the images array
+      imagesArr.push(current);
     });
+    return imagesArr;
     // update the state with all values
-    setState({
-      ...state,
-      images,
-      isLoading: false,
-      product: data.getProduct,
-    });
   };
 
   /**
    * When the component mounts, run the getCurrentProduct function so all
    * relevant data is stored before the component is rendered.
    */
-  let isMounted = false;
   useEffect(() => {
-    isMounted = true;
-    if (isMounted) {
-      getCurrentProduct();
-    }
-    return (): void => {
-      isMounted = false;
-    };
-  }, []);
+    /**
+     * Function to get the data of the chosen product and store it into state.
+     * The function will be executed as the component mounts, so all of the relevant
+     * data will be available in state before the first render.
+     */
+    const getCurrentProduct = async (): Promise<void> => {
+      /**
+       * Execute the getProduct graphQL query to retrieve the products data, and
+       * destructure the data property from the result.
+       */
+      const { data } = await API.graphql({
+        query: getProduct,
+        variables: {
+          id,
+          limit: 100,
+        },
+        // @ts-ignore
+        authMode: "API_KEY",
+      });
 
+      const images = retrieveImagesFromProduct(data.getProduct.images.collection);
+
+      setState({
+        ...state,
+        images,
+        isLoading: false,
+        product: data.getProduct,
+      });
+    };
+
+    getCurrentProduct();
+  }, []);
   // store the useDispatch hook into a variable so it can be used throughout
   const dispatch = useDispatch();
 
@@ -196,6 +207,8 @@ const ViewProduct: React.FC<ViewProps> = ({
     type,
   } = product;
 
+  console.log(state.images);
+
   return isLoading ? (
     <Loading />
   ) : (
@@ -212,7 +225,7 @@ const ViewProduct: React.FC<ViewProps> = ({
             </Typography>
           )}
           {/* Map all of the tags into a chip to show to the user */}
-          <ChipContainer tags={tags} type={type} />
+          <ChipContainer tags={tags} type={type} openLink />
         </div>
         {/* Set the jsx from description to innerHTML of the description div */}
         <div
@@ -280,16 +293,22 @@ const ViewProduct: React.FC<ViewProps> = ({
                   )
                 ) : (
                   // If there is no sub, then the user isn't logged in, so they must first do that.
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    // redirect to login page on click
-                    onClick={(): void => setState({ ...state, loginOpen: true })}
-                    startIcon={<i className={`fas fa-user ${classes.viewIcon}`} />}
-                  >
-                    Login to Purchase
-                  </Button>
+                  <Login
+                    showButton
+                    props={{
+                      variant: "contained",
+                      color: "primary",
+                      classOverride: classes.button,
+                      text: "Login to Purchase",
+                      align: "center",
+                      Icon: (
+                        <i
+                          className={`fas fa-user ${classes.viewIcon}`}
+                          style={{ paddingRight: 5 }}
+                        />
+                      ),
+                    }}
+                  />
                 )}
               </div>
             </Grid>
@@ -302,10 +321,6 @@ const ViewProduct: React.FC<ViewProps> = ({
           cake={product.title}
         />
       </Container>
-      <LoginDialog
-        isOpen={loginOpen}
-        closeDialog={(): void => setState({ ...state, loginOpen: false })}
-      />
     </>
   );
 };

@@ -1,6 +1,5 @@
 import React, { Component, Dispatch } from "react";
 import { API, graphqlOperation, Storage } from "aws-amplify";
-import ChipInput from "material-ui-chip-input";
 import {
   TextField,
   FormControlLabel,
@@ -546,7 +545,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     ) : (
       <>
         <div className={classes.mainContainer}>
-          <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }}>
+          <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }} gutterBottom>
             {update ? "Update Product" : "Create Product"}
           </Typography>
           {!update && (

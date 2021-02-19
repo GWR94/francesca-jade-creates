@@ -1,6 +1,13 @@
 export interface LoginProps {
-  isOpen: boolean;
-  closeDialog: () => void;
+  showButton?: boolean;
+  props?: {
+    variant: "text" | "outlined" | "contained" | undefined;
+    class: string;
+    text?: string;
+    align?: string;
+    color: "primary" | "secondary" | "transparent";
+    Icon: JSX.Element;
+  };
 }
 
 export interface LoginState {
@@ -9,6 +16,7 @@ export interface LoginState {
   passwordDialogOpen: boolean;
   accountDialogOpen: boolean;
   loggingIn: boolean;
+  isOpen: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix

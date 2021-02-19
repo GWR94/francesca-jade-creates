@@ -1,16 +1,13 @@
 import React from "react";
-import { Chip, ThemeProvider, makeStyles } from "@material-ui/core";
+import { Chip, makeStyles } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import { COLORS, breakpoints } from "../../themes";
 
 interface ChipContainerProps {
   tags: string[];
   type: "Cake" | "Creates";
+  openLink?: boolean;
 }
-
-/**
- * TODO
- * [ ] Create chip input component and remove mui-chip-input library
- */
 
 /**
  * A component which follows material-ui's outlined input where you can add tags
@@ -18,7 +15,11 @@ interface ChipContainerProps {
  * @param tags - Array of string containing the labels for each tag
  * @param type - The type of product which the tags are for.
  */
-const ChipContainer: React.FC<ChipContainerProps> = ({ tags, type }): JSX.Element => {
+const ChipContainer: React.FC<ChipContainerProps> = ({
+  tags,
+  type,
+  openLink = false,
+}): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
     container: {
@@ -30,11 +31,9 @@ const ChipContainer: React.FC<ChipContainerProps> = ({ tags, type }): JSX.Elemen
       marginTop: 10,
     },
     tag: {
-      cursor: "pointer",
       color: "#fff",
-      borderRadius: 3,
       padding: "8px 12px",
-      fontSize: "1rem",
+      fontSize: "0.9rem",
       margin: "4px",
       [breakpoints.down("xs")]: {
         padding: "4px 8px",
@@ -54,8 +53,8 @@ const ChipContainer: React.FC<ChipContainerProps> = ({ tags, type }): JSX.Elemen
       },
     },
   });
-  // use styles
   const classes = useStyles();
+  const history = useHistory();
   return (
     <div className={classes.container}>
       {/* The theme changes the tags colour based on which type the product is */}
@@ -69,11 +68,16 @@ const ChipContainer: React.FC<ChipContainerProps> = ({ tags, type }): JSX.Elemen
             }`}
             label={tag}
             size="small"
+            onClick={(): void => {
+              if (openLink) history.push(`/themes?current=${tag}`);
+            }}
+            tabIndex={0}
+            role="button"
             color={type === "Cake" ? "secondary" : "primary"}
             style={{
               color: "#fff",
-              borderRadius: "3px",
               alignItems: "center",
+              cursor: openLink ? "pointer" : "cursor",
             }}
           />
         ),

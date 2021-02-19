@@ -15,6 +15,10 @@ export default createStyles({
       height: "100%",
     },
   },
+  buttonContainer: {
+    width: "100%",
+    display: "flex",
+  },
   federated: {
     width: "100%",
     display: "flex",
