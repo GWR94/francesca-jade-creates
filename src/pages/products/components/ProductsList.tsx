@@ -13,6 +13,15 @@ import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import styles from "../../accounts/styles/productList.style";
 
+const initialState = {
+  filterOpen: false,
+  searchResults: null,
+  isLoading: true,
+  page: {
+    min: 0,
+    max: window.innerWidth > 600 ? 12 : 6,
+  },
+};
 /**
  * Component which allows the user to filter each of the products, and allow them
  * to sort based on their needs. Used in ProductTypePage and AccountsPage. The former
@@ -34,15 +43,7 @@ const ProductsList: React.FC<ProductListProps> = ({
   // execute useStyles to create the classes object - which will contain all styles
   const classes = useStyles();
   // set initial state for component
-  const [state, setState] = useState<ProductListState>({
-    filterOpen: false,
-    searchResults: null,
-    isLoading: true,
-    page: {
-      min: 0,
-      max: window.innerWidth > 600 ? 12 : 6,
-    },
-  });
+  const [state, setState] = useState<ProductListState>(initialState);
 
   useEffect(() => {
     if (type) {
