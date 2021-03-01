@@ -23,7 +23,7 @@ import Login from "../../home/Login";
  * @param {boolean} [mobile = false] - Boolean value to say if the user is on a mobile device
  * @param {boolean} [admin = false] - Boolean value which says if the current user is an admin.
  * @param {() => void} closeNav - Function to close the navigation menu if it's open
- * @param {UserAttributesProps} - Object containing  user datCrea.
+ * @param {UserAttributesProps} - Object containing  user data.
  * @param {(tab: string) => void} setAccountsTab - Function to change the current tab in Account component
  * @param {() => void} signOut - Function to sign out the current user.
  */
@@ -33,7 +33,6 @@ const Links: React.FC<LinksProps> = ({
   closeNav,
   signOut,
   navOpen,
-  setLoginOpen,
 }): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false); // open/close navigation menu for mobile
   const [basketOpen, setBasketOpen] = useState(false); // open/close basket menu
@@ -124,6 +123,7 @@ const Links: React.FC<LinksProps> = ({
         ) : (
           <Login
             props={{
+              // @ts-ignore
               classOverride: navOpen ? classes.linkActiveDiv : classes.link,
               text: "Sign in",
               color: "inherit",

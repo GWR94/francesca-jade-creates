@@ -10,7 +10,8 @@
     "express": "^4.15.2",
     "dotenv": "8.2.0",
     "stripe": "8.89.0",
-    "aws-sdk": "2.761.0"
+    "aws-sdk": "2.761.0",
+    "cors": "2.8.5"
   },
   "devDependencies": {},
   "scripts": {

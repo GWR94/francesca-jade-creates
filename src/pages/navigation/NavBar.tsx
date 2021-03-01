@@ -112,7 +112,7 @@ const NavBar: React.FC = (): JSX.Element => {
                   <MenuRounded
                     onClick={(): void => {
                       location.pathname.length <= 1
-                        ? history.push("/cakes")
+                        ? history.push("/themes")
                         : setNavOpen(!navOpen);
                     }}
                     className={classes.menuIcon}

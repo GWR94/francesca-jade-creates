@@ -43,14 +43,6 @@ export enum INTENT {
   Warning = "warning",
 }
 
-export const defaultStyles = createStyles({
-  buttonContainer: {
-    display: "inline-flex",
-    width: "100%",
-    justifyContent: "center",
-  },
-});
-
 export const breakpoints = createBreakpoints({});
 
 export const nonIdealStateTheme = createMuiTheme({

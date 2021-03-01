@@ -5,7 +5,7 @@ export interface LoginProps {
     class: string;
     text?: string;
     align?: string;
-    color: "primary" | "secondary" | "transparent";
+    color: "inherit" | "default" | "primary" | "secondary" | undefined;
     Icon: JSX.Element;
   };
 }

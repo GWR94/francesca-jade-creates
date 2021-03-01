@@ -296,7 +296,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                               ...state,
                               keyToDelete: image.key,
                             });
-                            console.log(image.key);
                             setDialogOpen(true);
                           }}
                         />

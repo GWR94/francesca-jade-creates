@@ -9,7 +9,8 @@
     "amplify/backend/awscloudformation": true
   },
   "cSpell.words": [
-    "authorised"
+    "authorised",
+    "personalise"
   ],
   "discord.enabled": true
 }

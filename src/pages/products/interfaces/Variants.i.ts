@@ -55,7 +55,21 @@ export interface VariantsState {
   variantName: string;
   // object for tracking each inputs' errors
   errors: {
-    [key: string]: string;
+    action: string;
+    name: string;
+    range: string;
+    array: string;
+    dimensions: string;
+    item: string;
+    postage: string;
+    priceItem: string;
+    priceShipping: string;
+    featureName: string;
+    featureType: string;
+    variantName: string;
+    inputType: string;
+    instructions: string;
+    description: string;
   };
   // the index of the selected variant
   variantIdx: number | null;
@@ -73,14 +87,14 @@ export type FeatureType =
   | "text" // the user inputs text - text field will be rendered
   | "other" // the user picks from a set of values - select input will be rendered
   | "dropdown" // same as above - should be removed // FIXME
-  | "";
+  | string;
 
 // the value expected to be returned from the input
 export type InputType =
   | "number" // expect a number to be returned
   | "range" // expect an array (two different numbers) to be returned
   | "array" // expect an array to be returned.
-  | "";
+  | string;
 
 export interface Variant {
   dimensions: string; // dimensions of the variant in cm

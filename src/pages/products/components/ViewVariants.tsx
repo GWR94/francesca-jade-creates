@@ -11,7 +11,7 @@ import {
 import _ from "underscore";
 import { v4 as uuidv4 } from "uuid";
 import { Feature } from "../interfaces/Variants.i";
-import styles from "../../accounts/styles/viewVariants.style";
+import styles from "../styles/viewVariants.style";
 import { ViewVariantsProps, ViewVariantsState } from "../interfaces/ViewVariants.i";
 
 /**
@@ -142,8 +142,12 @@ const ViewVariants = ({
                   {type === "Creates" ? "Color Scheme" : "Cake Features"}
                 </Typography>
                 <ul style={{ margin: 0, paddingLeft: 33 }}>
-                  {customOptions.map((option) => {
-                    return <li style={{ fontStyle: "italic" }}>{option}</li>;
+                  {customOptions.map((option, i) => {
+                    return (
+                      <li key={i} style={{ fontStyle: "italic" }}>
+                        {option}
+                      </li>
+                    );
                   })}
                 </ul>
               </>

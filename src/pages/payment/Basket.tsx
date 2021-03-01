@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
  * TODO
  * [ ] Remove "Uploaded Image" text when theres no images uploaded
  * [ ] Test to see if you can remove skip button / notify user they have to skip
- * [ ] Check basket clears once purchase is complete
+ * [x] Check basket clears once purchase is complete
  */
 
 const initialState = {
@@ -121,10 +121,15 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
       return window.history.pushState({}, document.title, window.location.pathname);
     };
 
+    const { user } = state;
+
     if (isMounted) {
       const urlParams = new URLSearchParams(window.location.search);
       const sessionId = urlParams.get("session_id");
       const cancelled = Boolean(urlParams.get("cancel"));
+      if (!user) {
+        getUserInfo(); //FIXME - Test
+      }
       if (sessionId) {
         handleRetrieveSession(sessionId);
       } else if (cancelled) {
@@ -166,9 +171,9 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
        */
       const updatedProducts = products.map((product) => ({
         ...product,
-        customOptions: (product.customOptions as CustomOptionArrayType).map((options) => {
-          return JSON.stringify(options);
-        }),
+        customOptions: (product.customOptions as CustomOptionArrayType).map((options) =>
+          JSON.stringify(options),
+        ),
       }));
 
       if (!userAttributes) {
@@ -309,6 +314,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 <Login
                   showButton
                   props={{
+                    // @ts-ignore
                     classOverride: classes.button,
                     text: "Login to Continue",
                     variant: "contained",
@@ -319,9 +325,9 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               ) : (
                 <>
                   <Button
-                    onClick={(): void =>
-                      setState({ ...state, activeStep: activeStep - 1 })
-                    }
+                    onClick={(): void => {
+                      setState({ ...state, activeStep: activeStep - 1 });
+                    }}
                     color="secondary"
                     variant="contained"
                     disabled
@@ -354,8 +360,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               Please confirm the items in your checkout basket, and make any changes if
               necessary.
             </Typography>
-            {products.map((product) => (
-              <div className={classes.checkoutContainer}>
+            {products.map((product, i) => (
+              <div className={classes.checkoutContainer} key={i}>
                 <Typography variant="body1">{product.title}</Typography>
                 <Typography
                   variant="caption"
@@ -373,6 +379,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 <Login
                   showButton
                   props={{
+                    // @ts-ignore
                     classOverride: classes.button,
                     text: "Login to Continue",
                     variant: "contained",
@@ -464,8 +471,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
         {basketItems.length > 0 ? (
           <>
             <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
+              {steps.map((label, i) => (
+                <Step key={i}>
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}

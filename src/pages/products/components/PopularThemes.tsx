@@ -410,21 +410,23 @@ const PopularThemes: React.FC = (): JSX.Element => {
   return (
     <div style={{ width: "100%" }}>
       <div className={classes.outerContainer}>
-        {topTiles.map((props) => (
+        {topTiles.map((props, i) => (
           <ThemeTile
             handleHoverChange={(id: string, isLeaving?: boolean): void =>
               handleHoverChange(id, isLeaving)
             }
+            key={i}
             {...props}
           />
         ))}
       </div>
       <div className={classes.outerContainer}>
-        {bottomTiles.map((props) => (
+        {bottomTiles.map((props, i) => (
           <ThemeTile
             handleHoverChange={(id: string, isLeaving?: boolean): void =>
               handleHoverChange(id, isLeaving)
             }
+            key={i}
             {...props}
           />
         ))}

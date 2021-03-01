@@ -6,9 +6,6 @@ export interface UpdateProps {
   id?: string | undefined;
   admin: boolean;
   update?: boolean;
-  classes: {
-    [key: string]: string;
-  };
   setCurrentTab?: (tab: string) => void;
 }
 
@@ -24,10 +21,10 @@ export interface UpdateState {
     tags: string | null;
     image: string | null;
     tagline: string | null;
+    customOptions: string | null;
   };
   percentUploaded: number;
   customSwitch: boolean;
-  isDesktop: boolean;
 }
 
 export interface FileToUpload extends Partial<File> {

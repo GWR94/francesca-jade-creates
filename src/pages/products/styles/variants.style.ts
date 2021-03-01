@@ -71,8 +71,11 @@ export default createStyles({
   },
   input: {
     borderRadius: 0,
-    borderLeft: "0px solid transparent",
-    borderRight: "0px solid transparent",
+    borderLeft: "1px solid transparent",
+    borderRight: "1px solid transparent",
+  },
+  disabled: {
+    border: "none",
   },
   name: {
     fontWeight: "bold",
@@ -84,6 +87,29 @@ export default createStyles({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 8,
+    fontSize: "1.1rem",
+  },
+  error: {
+    color: "#f44336",
+    fontSize: "0.75rem",
+    marginTop: 3,
+    margin: "3px 14px 4px 14px",
+    textAlign: "left",
+    fontWeight: 400,
+    lineHeight: 1.66,
+    letterSpacing: "0.03333em",
+  },
+  dividerContainer: {
+    position: "relative",
+  },
+  dividerText: {
+    width: 120,
+    left: "calc(50% - 60px)",
+    position: "absolute",
+    background: "#fff",
+    color: "rgba(0,0,0,0.5)",
+    top: -10,
+    textAlign: "center",
     fontSize: "1.1rem",
   },
 });

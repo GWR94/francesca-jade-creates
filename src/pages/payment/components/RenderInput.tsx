@@ -12,7 +12,6 @@ import {
   DialogActions,
   makeStyles,
 } from "@material-ui/core";
-import ChipInput from "material-ui-chip-input";
 import { Storage } from "aws-amplify";
 import React, { useState, useEffect } from "react";
 import { INTENT } from "../../../themes";
@@ -24,6 +23,7 @@ import styles from "../styles/renderInput.style";
 import UploadedImages from "./UploadedImages";
 import { getReadableStringFromArray, handleRemoveFromS3 } from "../../../utils";
 import { RenderInputProps, RenderInputState } from "../interfaces/RenderInput.i";
+import ChipInput from "../../../common/inputs/ChipInput";
 
 /**
  * Functional component to render the inputs for the user to complete their products'
@@ -157,21 +157,21 @@ const RenderInput: React.FC<RenderInputProps> = ({
               <ChipInput
                 value={currentInputValue as string[]}
                 fullWidth
-                variant="outlined"
+                options={[]}
+                freeSolo
                 label={name}
-                allowDuplicates
-                classes={{
-                  chip: classes.chip,
-                }}
-                placeholder="Press enter to add an item"
-                onAdd={(chip): void => {
-                  // If the inputValues length is less than maxNumber, then add the chip to the array
+                tagClass={classes.chip}
+                onChange={(_event, value, reason): void => {
+                  if (reason === "remove-option") {
+                    return setState({
+                      ...state,
+                      currentInputValue: value,
+                    });
+                  }
                   if ((currentInputValue as string[]).length < maxNumber) {
-                    const updatedInputValue = currentInputValue as string[];
-                    updatedInputValue.push(chip);
                     setState({
                       ...state,
-                      currentInputValue: updatedInputValue,
+                      currentInputValue: value,
                     });
                   } else {
                     /**
@@ -184,13 +184,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                     });
                   }
                 }}
-                onDelete={(chip): void => {
-                  // filter chip out of array and update state
-                  const updatedChips = (currentInputValue as string[]).filter(
-                    (value) => value !== chip,
-                  );
-                  setState({ ...state, currentInputValue: updatedChips });
-                }}
+                placeholder="Press enter to add an item"
               />
               <Button
                 onClick={(): void => {

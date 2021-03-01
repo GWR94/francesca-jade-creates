@@ -10,14 +10,14 @@ import {
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import ImageGallery from "react-image-gallery";
-import "react-image-gallery/styles/scss/image-gallery.scss";
+import "react-image-gallery/styles/css/image-gallery.css";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import * as basketActions from "../../../actions/basket.actions";
 import { ViewProps } from "../interfaces/ViewProduct.i";
 import { AppState } from "../../../store/store";
 import { ProductProps, S3ImageProps } from "../../accounts/interfaces/Product.i";
-import styles from "../../accounts/styles/viewProduct.style";
+import styles from "../styles/viewProduct.style";
 import ViewVariants from "./ViewVariants";
 import { getCompressedKey, getPublicS3URL } from "../../../utils";
 import QuoteDialog from "./QuoteDialog";
@@ -42,10 +42,7 @@ interface ViewProductState {
  * @param type - The type of product that the user is trying to view ("Cake" or
  * "Creates").
  */
-const ViewProduct: React.FC<ViewProps> = ({
-  id,
-  type: productType,
-}): JSX.Element | null => {
+const ViewProduct: React.FC<ViewProps> = ({ id }): JSX.Element | null => {
   // create state for a loading boolean which will show/hide loading UI effects.
   const [state, setState] = useState<ViewProductState>({
     isLoading: true,
@@ -93,7 +90,6 @@ const ViewProduct: React.FC<ViewProps> = ({
         thumbnail: thumbnailURL,
         thumbnailClass: "thumbnail",
       };
-      console.log(current);
       // push the urls into the images array
       imagesArr.push(current);
     });
@@ -149,9 +145,7 @@ const ViewProduct: React.FC<ViewProps> = ({
     // destructure product from state
     const { product } = state;
     // check to see the product exists, if it doesn't, return null
-    console.log(product);
     if (!product) return null;
-
     // destructure relevant properties from product
     const {
       id,
@@ -192,7 +186,7 @@ const ViewProduct: React.FC<ViewProps> = ({
     }
   };
 
-  const { product, isLoading, images, quoteDialogOpen, loginOpen } = state;
+  const { product, isLoading, images, quoteDialogOpen } = state;
   // if there is no product, return null as nothing can be rendered
   if (!product) return null;
   // destructure all relevant data from product
@@ -206,8 +200,6 @@ const ViewProduct: React.FC<ViewProps> = ({
     customOptions,
     type,
   } = product;
-
-  console.log(state.images);
 
   return isLoading ? (
     <Loading />
@@ -298,6 +290,7 @@ const ViewProduct: React.FC<ViewProps> = ({
                     props={{
                       variant: "contained",
                       color: "primary",
+                      // @ts-ignore
                       classOverride: classes.button,
                       text: "Login to Purchase",
                       align: "center",

@@ -21,6 +21,9 @@ const app = express();
 
 AWS.config.update({
   region: "eu-west-2",
+  accessKeyId: process.env.ACCESS_KEY_AWS,
+  secretAccessKey: process.env.SECRET_KEY_AWS,
+  signatureVersion: "v4",
 });
 
 let stripe;

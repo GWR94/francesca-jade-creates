@@ -124,7 +124,9 @@ const AdminOrders = (): JSX.Element => {
         />
       ) : (
         // Map all of the orders into their own accordion component
-        orders.slice(min, max).map((order, i) => <AdminOrderItem order={order} i={i} />)
+        orders
+          .slice(min, max)
+          .map((order, i) => <AdminOrderItem order={order} i={i} key={i} />)
       )}
       {/* Render the pagination if there is more than 6 orders in array */}
       {orders.length > 6 && (
@@ -138,7 +140,6 @@ const AdminOrders = (): JSX.Element => {
                 min,
                 max,
               },
-              e,
             })
           }
         />

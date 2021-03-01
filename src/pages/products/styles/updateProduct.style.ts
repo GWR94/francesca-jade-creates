@@ -65,4 +65,9 @@ export default createStyles({
     textAlign: "center",
     fontSize: "2.2rem",
   },
+  buttonContainer: {
+    display: "inline-flex",
+    width: "100%",
+    justifyContent: "center",
+  },
 });

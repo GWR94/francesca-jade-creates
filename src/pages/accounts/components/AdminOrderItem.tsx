@@ -19,6 +19,7 @@ import {
   Send,
   CancelScheduleSend,
 } from "@material-ui/icons";
+import AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { API } from "aws-amplify";
 import { COLORS } from "../../../themes";
@@ -69,6 +70,39 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
     });
   };
 
+  const getSignedUrls = (images: S3ImageProps[]): string[] => {
+    const urls = [];
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.ACCESS_KEY_AWS,
+      secretAccessKey: process.env.SECRET_KEY_AWS,
+      signatureVersion: "v4",
+      region: "eu-west-2",
+    });
+
+    /**
+     * Iterate through each of the images in the array, get the signed URL
+     * for each, and simulate a click to open all images to be downloaded.
+     */
+    for (const image of images) {
+      const url = s3.getSignedUrl("getObject", {
+        Bucket: image.bucket,
+        Key: `public/${image.key}`,
+        Expires: 60 * 5,
+      });
+
+      // create an a element to open the link
+      const a = document.createElement("a");
+      // set the download attribute to be the signed url
+      a.setAttribute("download", url);
+      // set target to _blank so it opens in a new window if it doesn't auto download
+      a.setAttribute("target", "_blank");
+      // set the href to be the signed url
+      a.setAttribute("href", url);
+      // click the a element, which will open/download the image
+      a.click();
+    }
+  };
+
   /**
    * Function to render a download button to the admin so they can
    * download all of the user's custom images (if there are any)
@@ -89,34 +123,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
       // push the s3 images to the images array so it can be used
       .map((option) => images.push(...(Object.values(option)[0] as S3ImageProps[])));
 
-    /**
-     * Iterate through each of the images in the array, get the signed URL
-     * for each, and simulate a click to open all images to be downloaded.
-     */
-    for (const image of images) {
-      // get the signed url
-      const url = getPublicS3URL({
-        key: image.key,
-        bucket: process.env.IMAGE_S3_BUCKET as string,
-        region: "eu-west-2",
-      });
-      // create an a element to open the link
-      const a = document.createElement("a");
-      // set the download attribute to be the signed url
-      a.download = url;
-      // set the href to be the signed url
-      a.setAttribute("href", url);
-      // hide the element
-      a.setAttribute("style", "display: none");
-      // open the url in a new window by setting the target to be _blank
-      a.setAttribute("target", "_blank");
-      // append the a element to the body
-      document.body.appendChild(a);
-      // click the a element, which will open/download the image
-      a.click();
-      // remove the a element from the body.
-      document.body.removeChild(a);
-    }
+    const urls = getSignedUrls(images);
   };
 
   /**

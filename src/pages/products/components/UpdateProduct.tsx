@@ -1,4 +1,4 @@
-import React, { Component, Dispatch } from "react";
+import React, { useState, useEffect } from "react";
 import { API, graphqlOperation, Storage } from "aws-amplify";
 import {
   TextField,
@@ -10,13 +10,14 @@ import {
   ThemeProvider,
   createMuiTheme,
   Typography,
-  withStyles,
+  makeStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import { Alert, AlertTitle, Autocomplete } from "@material-ui/lab";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import Compress from "client-compress";
-import { AnyAction } from "redux";
+import { useHistory } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import { getProduct } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
@@ -30,18 +31,17 @@ import { UpdateProps, UpdateState, FileToUpload } from "../interfaces/UpdateProd
 import ConfirmDialog from "../../../common/alerts/ConfirmDialog";
 import ImageCarousel from "../../../common/containers/ImageCarousel";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
-import styles from "../../accounts/styles/updateProduct.style";
-import { defaultStyles } from "../../../themes/index";
+import styles from "../styles/updateProduct.style";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import Variants from "./Variants";
 import { Variant } from "../interfaces/Variants.i";
-import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
 import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { cakeFeatures, createsFeatures, themes } from "../../../utils/data";
+import ChipInput from "../../../common/inputs/ChipInput";
 
-class UpdateProduct extends Component<UpdateProps, UpdateState> {
-  public readonly state: UpdateState = {
+const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
+  const [state, setState] = useState<UpdateState>({
     isLoading: true,
     product: {
       id: "",
@@ -67,42 +67,47 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       tags: null,
       image: null,
       tagline: null,
+      customOptions: null,
     },
     percentUploaded: 0,
     customSwitch: false,
-    isDesktop: window.innerWidth > 600,
-  };
+  });
 
-  public async componentDidMount(): Promise<void> {
-    const { update } = this.props;
+  const history = useHistory();
+  const useStyles = makeStyles(styles);
+  const classes = useStyles();
+
+  const dispatch = useDispatch();
+
+  const isDesktop = useMediaQuery("(min-width: 600px)");
+
+  useEffect((): void => {
     /**
      * If the update prop is true, get all of the product's data from the database,
      * and set it into state so it can be edited by the user.
      */
-    if (update) {
-      const { id } = this.props;
-      try {
-        const { data } = await API.graphql(graphqlOperation(getProduct, { id }));
-        const product = data.getProduct;
-        const { variants } = product;
-        this.setState({
-          product: {
-            ...product,
-            setPrice:
-              variants.some((variant: Variant) => variant.price.item > 0) ?? false,
-            customOptions: product?.customOptions ?? [],
-          },
-        });
-      } catch (err) {
-        console.error("Unable to retrieve product"); //FIXME
-      }
+    async function fetchProduct(): Promise<void> {
+      const { data } = await API.graphql(
+        graphqlOperation(getProduct, {
+          id,
+        }),
+      );
+      const product = data.getProduct;
+      setState({
+        ...state,
+        product: {
+          ...product,
+          setPrice:
+            product.variants.some((variant: Variant) => variant.price.item > 0) ?? false,
+          customOptions: product?.customOptions ?? [],
+        },
+        isLoading: false,
+      });
     }
-    /**
-     * Set isLoading to true, as the rest of the component can be rendered with the correct
-     * data.
-     */
-    this.setState({ isLoading: false });
-  }
+    if (update) {
+      fetchProduct();
+    } else setState({ ...state, isLoading: false });
+  }, []);
 
   /**
    * A function which sets the value from the "e" parameter into the products' state named
@@ -112,13 +117,13 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {string} type - The name of the state which is going to be updated with the value
    * from the e parameter.
    */
-  private handleFormItem = (
+  const handleFormItem = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     type: string,
   ): void => {
     const { value } = e.target;
-    const { product, errors } = this.state;
-    this.setState(
+    const { product, errors } = state;
+    setState(
       (prevState): UpdateState => ({
         ...prevState,
         /**
@@ -142,62 +147,23 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
   };
 
   /**
-   * A function which compressed the input image to a preferred size if necessary.
-   * @param {File} fileToUpload: The image which the user wishes to compress.
-   */
-  private handleImageCompress = (blobToUpload: ImageFile): void => {
-    const compressor = new Compress({
-      targetSize: 0.3, // target size in MB
-      quality: 0.5,
-      autoRotate: false,
-    });
-    const originalImage = blobToUpload;
-    try {
-      compressor
-        .compress([blobToUpload])
-        .then((conversions: { photo: { data: File } }[]) => {
-          /**
-           * Compress the image via the compressor, then set the fileToUpload.file
-           * to be the compressed file (photo.data);
-           */
-          const { photo } = conversions[0];
-          console.log(conversions);
-          const compressedImage: { file?: File } = {};
-          compressedImage.file = photo.data;
-          Object.defineProperty(compressedImage, "name", {
-            writable: true,
-            value: blobToUpload.name,
-          });
-          /**
-           * If everything else was successful, then attempt to upload it to S3 with
-           * the handleImageUpload function.
-           */
-          this.handleImageUpload(compressedImage, originalImage);
-        });
-    } catch (err) {
-      openSnackbar({
-        severity: "error",
-        message: "Unable to compress image. Please try again.",
-      });
-    }
-  };
-
-  /**
    * Function to upload a compressed image into the cloud (S3).
    * @param {File} fileToUpload - The compressed image to upload to S3 (Usually
    * returned file from handleImageCompress function.)
    */
-  private handleImageUpload = async (
+  const handleImageUpload = async (
     fileToUpload: FileToUpload,
     blobToUpload: FileToUpload,
   ): Promise<void> => {
-    const { product } = this.state;
-    const { update } = this.props;
+    const { product } = state;
     try {
       /**
        * Set isUploading to true so the UI can show loading spinners on buttons etc.
        */
-      this.setState({ isUploading: true });
+      setState({
+        ...state,
+        isUploading: true,
+      });
       /**
        * Get the identityId from the current auth user, and create the filename from
        * all of the relevant parts of data.
@@ -254,7 +220,8 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
        * the new image. Also close image dialog and set isUploading to false as these operations
        * should be completed by now.
        */
-      this.setState({
+      setState({
+        ...state,
         product: {
           ...product,
           images: {
@@ -278,16 +245,66 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
   };
 
   /**
+   * A function which compressed the input image to a preferred size if necessary.
+   * @param {File} fileToUpload: The image which the user wishes to compress.
+   */
+  const handleImageCompress = (blobToUpload: ImageFile): void => {
+    const compressor = new Compress({
+      targetSize: 0.3, // target size in MB
+      quality: 0.5,
+      autoRotate: false,
+    });
+    const originalImage = blobToUpload;
+    try {
+      compressor.compress([blobToUpload]).then(
+        (
+          conversions: {
+            photo: {
+              data: File;
+            };
+          }[],
+        ) => {
+          /**
+           * Compress the image via the compressor, then set the fileToUpload.file
+           * to be the compressed file (photo.data);
+           */
+          const { photo } = conversions[0];
+          const compressedImage: {
+            file?: File;
+          } = {};
+          compressedImage.file = photo.data;
+          Object.defineProperty(compressedImage, "name", {
+            writable: true,
+            value: blobToUpload.name,
+          });
+          /**
+           * If everything else was successful, then attempt to upload it to S3 with
+           * the handleImageUpload function.
+           */
+          handleImageUpload(compressedImage, originalImage);
+        },
+      );
+    } catch (err) {
+      openSnackbar({
+        severity: "error",
+        message: "Unable to compress image. Please try again.",
+      });
+    }
+  };
+
+  /**
    * Function which checks all the input fields have the correct data, and if not it
    * will show the user where there are errors in the UI.
    */
-  private handleProductErrors = (): void => {
+  const handleProductErrors = (): void => {
     const {
       product: { title, description, tags, images, tagline, customOptions, type },
-    } = this.state;
+    } = state;
 
     // set errors for each field to be false, so they can be tracked if there are changes.
-    const error: { [key: string]: string } = {
+    const error: {
+      [key: string]: string;
+    } = {
       title: "",
       invalidTitle: "",
       description: "",
@@ -315,7 +332,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
     }
     if (tags.length <= 0) {
       // if there are no tags, set the tag error to true.
-      error.tags = "Please enter at least one tag for your product.";
+      error.tags = "Please enter at least one theme for your product.";
     }
     if (tags.length > 5) {
       // if there are more than 5 tags, set tag error to true.
@@ -340,14 +357,16 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
      * state to show any errors in the UI.
      */
     if (Object.values(error).some((val) => val.length > 0)) {
-      const { title, description, tags, image, tagline } = error;
-      this.setState({
+      const { title, description, tags, image, tagline, customOptions } = error;
+      setState({
+        ...state,
         errors: {
           title,
           description,
           tags,
           image,
           tagline,
+          customOptions,
         },
       });
       /**
@@ -364,7 +383,10 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
      * If there are no errors then open the confirm dialog which will ask the user
      * to check the product details before confirming it and saving it to the database.
      */
-    this.setState({ confirmDialogOpen: true });
+    setState({
+      ...state,
+      confirmDialogOpen: true,
+    });
   };
 
   /**
@@ -372,9 +394,9 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * should already be validated from the handleProductErrors function, so no validation
    * is needed.
    */
-  private handleProductUpdate = async (): Promise<void> => {
+  const handleProductUpdate = async (): Promise<void> => {
     // destructure product and its values so they can be used in the graphQL input.
-    const { product } = this.state;
+    const { product } = state;
     const {
       id,
       title,
@@ -386,9 +408,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
       customOptions,
       setPrice,
     } = product;
-    const { history, setCurrentTab } = this.props;
     // set uploading to true so loading spinners and ui changes will show to user.
-    this.setState({ isUploading: true });
+    setState({
+      ...state,
+      isUploading: true,
+    });
     try {
       /**
        * add all of the products values to the input variable for use in the updateProduct
@@ -420,13 +444,17 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
 
       setTimeout(() => {
         // set isUploading to stop loading UI effects, and close the confirm dialog.
-        this.setState({ isUploading: false, confirmDialogOpen: false });
+        setState({
+          ...state,
+          isUploading: false,
+          confirmDialogOpen: false,
+        });
       }, 1000);
       /**
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      if (setCurrentTab) setCurrentTab("products");
+      dispatch(actions.setCurrentTab("products"));
       history.push("/account");
     } catch (err) {
       console.error(err);
@@ -441,7 +469,7 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
   /**
    * Function to add a newly created product into the database.
    */
-  private handleProductCreate = async (): Promise<void> => {
+  const handleProductCreate = async (): Promise<void> => {
     // destructure product and all of its properties for use in the graphql operation
     const {
       product: {
@@ -455,9 +483,11 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         variants,
         setPrice,
       },
-    } = this.state;
-    const { history, setCurrentTab } = this.props;
-    this.setState({ isUploading: true });
+    } = state;
+    setState({
+      ...state,
+      isUploading: true,
+    });
     try {
       await API.graphql(
         /**
@@ -484,14 +514,18 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
         message: `${title} has been successfully created!`,
       });
       // set isUploading to false to stop loading ui effects, and close confirm dialog
-      await setTimeout(() => {
-        this.setState({ isUploading: false, confirmDialogOpen: false });
+      setTimeout(() => {
+        setState({
+          ...state,
+          isUploading: false,
+          confirmDialogOpen: false,
+        });
       }, 1000);
       /**
        * Set accounts tab to be products, so it goes to the correct tab when using
        * history to push back to the accounts page.
        */
-      if (setCurrentTab) setCurrentTab("products");
+      dispatch(actions.setCurrentTab("products"));
       history.push("/account");
     } catch (err) {
       console.error(err);
@@ -509,340 +543,404 @@ class UpdateProduct extends Component<UpdateProps, UpdateState> {
    * @param {React.ChangeEvent} e - event containing the data which shows
    * the updated information from the TinyMCE editor.
    */
-  public handleEditorChange = (e: React.ChangeEvent<any>): void => {
-    const { product } = this.state;
-    this.setState({
-      product: { ...product, description: e.target.getContent() as string },
+  const handleEditorChange = (e: React.ChangeEvent<{}>): void => {
+    const { product } = state;
+    setState({
+      ...state,
+      product: {
+        ...product,
+        description: e.target.getContent() as string,
+      },
     });
   };
 
-  public render(): JSX.Element {
-    const {
-      isLoading,
-      product,
-      isDesktop,
-      isUploading,
-      errors,
-      confirmDialogOpen,
-      percentUploaded,
-    } = this.state;
-    const {
-      title,
-      description,
-      images,
-      tagline,
-      type,
-      tags,
-      setPrice,
-      customOptions,
-    } = product;
-    const { history, update, classes, setCurrentTab } = this.props;
+  const {
+    isLoading,
+    product,
+    isUploading,
+    errors,
+    confirmDialogOpen,
+    percentUploaded,
+  } = state;
+  const {
+    title,
+    description,
+    images,
+    tagline,
+    type,
+    tags,
+    setPrice,
+    customOptions,
+  } = product;
 
-    const features: string[] = type === "Cake" ? cakeFeatures : createsFeatures;
+  const features: string[] = type === "Cake" ? cakeFeatures : createsFeatures;
 
-    return isLoading ? (
-      <Loading size={100} />
-    ) : (
-      <>
-        <div className={classes.mainContainer}>
-          <Typography variant="h4" style={{ marginTop: update ? 20 : 0 }} gutterBottom>
-            {update ? "Update Product" : "Create Product"}
+  return isLoading ? (
+    <Loading size={100} />
+  ) : (
+    <>
+      <div className={classes.mainContainer}>
+        <Typography
+          variant="h4"
+          style={{
+            marginTop: update ? 20 : 0,
+          }}
+          gutterBottom
+        >
+          {update ? "Update Product" : "Create Product"}
+        </Typography>
+        {!update && (
+          <Typography variant="subtitle1">
+            Create your product by filling out all of the fields. Products can be changed
+            and/or deleted at a later stage.
           </Typography>
-          {!update && (
-            <Typography variant="subtitle1">
-              Create your product by filling out all of the fields. Products can be
-              changed and/or deleted at a later stage.
-            </Typography>
-          )}
-          <TextField
-            variant="outlined"
-            value={title}
-            onChange={(e): void => this.handleFormItem(e, "title")}
-            error={!!errors.title}
-            helperText={errors.title}
-            label="Title"
-            fullWidth
-            size={isDesktop === false ? "small" : "medium"}
-            placeholder="Enter a product title"
-            style={{ marginBottom: "10px" }}
-          />
-          <TextField
-            variant="outlined"
-            value={tagline}
-            onChange={(e): void => this.handleFormItem(e, "tagline")}
-            error={!!errors.tagline}
-            helperText={errors.tagline}
-            label="Tag line"
-            fullWidth
-            size={isDesktop === false ? "small" : "medium"}
-            placeholder="Enter a brief tagline for the product"
-            style={{ marginBottom: "10px" }}
-          />
-          <Editor
-            initialValue={description}
-            apiKey={process.env.TINY_API_KEY}
-            init={{
-              height: 300,
-              width: "100%",
-              marginBottom: 10,
-              menubar: false,
-              plugins: [
-                "advlist autolink lists link image charmap print preview anchor",
-                "searchreplace visualblocks code fullscreen",
-                "insertdatetime media table paste code help wordcount",
-              ],
-              toolbar:
-                "undo redo | formatselect | bold italic backcolor | \
+        )}
+        <TextField
+          variant="outlined"
+          value={title}
+          onChange={(e): void => handleFormItem(e, "title")}
+          error={!!errors.title}
+          helperText={errors.title}
+          label="Title"
+          fullWidth
+          size={!isDesktop ? "small" : "medium"}
+          placeholder="Enter a product title"
+          style={{
+            marginBottom: "10px",
+          }}
+        />
+        <TextField
+          variant="outlined"
+          value={tagline}
+          onChange={(e): void => handleFormItem(e, "tagline")}
+          error={!!errors.tagline}
+          helperText={errors.tagline}
+          label="Tag line"
+          fullWidth
+          size={!isDesktop ? "small" : "medium"}
+          placeholder="Enter a brief tagline for the product"
+          style={{
+            marginBottom: "10px",
+          }}
+        />
+        <Editor
+          initialValue={description}
+          apiKey={process.env.TINY_API_KEY}
+          init={{
+            height: 300,
+            width: "100%",
+            marginBottom: 10,
+            menubar: false,
+            plugins: [
+              "advlist autolink lists link image charmap print preview anchor",
+              "searchreplace visualblocks code fullscreen",
+              "insertdatetime media table paste code help wordcount",
+            ],
+            toolbar:
+              "undo redo | formatselect | bold italic backcolor | \
                 alignleft aligncenter alignjustify | \
                 bullist numlist outdent indent | removeformat | help",
-            }}
-            onChange={this.handleEditorChange}
-          />
-          <div style={{ margin: "10px 0", width: "100%" }}>
-            <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
-              <RadioGroup
-                aria-label="Product Type"
-                name="ProductType"
-                value={type}
-                onChange={(e): void => this.handleFormItem(e, "type")}
-                row
-                style={{ justifyContent: "space-around", margin: 0 }}
-              >
-                <FormControlLabel
-                  value="Cake"
-                  classes={{
-                    root: classes.root,
-                  }}
-                  control={<Radio />}
-                  label="Cake"
-                />
-                <FormControlLabel
-                  value="Creates"
-                  classes={{ root: classes.root }}
-                  control={<Radio />}
-                  label="Creates"
-                />
-              </RadioGroup>
-            </OutlinedContainer>
-          </div>
-          <Autocomplete
-            multiple
-            freeSolo
-            options={features.sort((a, b) => -b.slice(0, 1).localeCompare(a.slice(0, 1)))}
-            filterSelectedOptions
-            fullWidth
-            autoComplete
-            value={customOptions || []}
-            onChange={(_event, customOptions): void => {
-              this.setState((prevState) => ({
-                product: {
-                  ...prevState.product,
-                  customOptions,
-                },
-              }));
-            }}
-            classes={{
-              tag: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
-            }}
-            renderInput={(params): JSX.Element => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
-                fullWidth
-                error={!!errors.customOptions}
-                helperText={errors.customOptions}
-              />
-            )}
-          />
-          <Alert
-            severity="info"
-            className={classes.callout}
-            style={{ margin: "0 0 10px" }}
-          >
-            <div
+          }}
+          onChange={handleEditorChange}
+        />
+        <div
+          style={{
+            margin: "10px 0",
+            width: "100%",
+          }}
+        >
+          <OutlinedContainer label="Product Type" labelWidth={78} padding={10}>
+            <RadioGroup
+              aria-label="Product Type"
+              name="ProductType"
+              value={type}
+              onChange={(e): void => handleFormItem(e, "type")}
+              row
               style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
+                justifyContent: "space-around",
+                margin: 0,
               }}
             >
-              <AlertTitle style={{ fontSize: "18px" }}>Is there a set price?</AlertTitle>
-              <Typography variant="body1">
-                To set a price for the product, turn the switch on and input the price and
-                shipping cost in the inputs below. To set a variable price where the
-                customer requests a quote based on their preferences, leave the switch
-                off.
-              </Typography>
-            </div>
-            <div className={classes.switch}>
-              <Switch
-                checked={setPrice}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  this.setState({
-                    product: { ...product, setPrice: e.target.checked },
-                  })
-                }
-                style={{ display: "flex", justifyContent: "center" }}
-                color="primary"
-                name="setPrice"
-                size={isDesktop === false ? "small" : "medium"}
-                inputProps={{ "aria-label": "primary checkbox" }}
-              />
-            </div>
-          </Alert>
-          <div style={{ margin: "10px 0", width: "100%" }}>
-            <OutlinedContainer
-              label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
-              labelWidth={images.collection.length <= 1 ? 84 : 90}
-              padding={12}
-              error={!!errors.image}
-            >
-              {images.collection.length > 0 && (
-                <div className={classes.carouselContainer}>
-                  <ImageCarousel
-                    images={images.collection}
-                    cover={images.cover}
-                    deleteImages
-                    update={update}
-                    id={product.id}
-                    type={type}
-                    handleUpdateImages={(collection: S3ImageProps[]): void => {
-                      this.setState({
-                        product: {
-                          ...product,
-                          images: { ...product.images, collection },
-                        },
-                      });
-                    }}
-                  />
-                </div>
-              )}
-              <ImagePicker
-                setImageFile={(file): void => {
-                  this.handleImageCompress(file);
-                  this.setState({ errors: { ...errors, image: null } });
+              <FormControlLabel
+                value="Cake"
+                classes={{
+                  root: classes.root,
                 }}
-                cropImage
-                update={update}
-                type={product.type}
+                control={<Radio />}
+                label="Cake"
               />
-            </OutlinedContainer>
-          </div>
-          {errors.image && <p className={classes.errorText}>{errors.image}</p>}
-          <Autocomplete
-            multiple
-            id="collections-input"
-            options={themes.sort((a, b) => -b.slice(0, 1).localeCompare(a.slice(0, 1)))}
-            filterSelectedOptions
-            fullWidth
-            autoComplete
-            value={tags || []}
-            onChange={(_event, tags, reason): void => {
-              this.setState(
-                (prevState): UpdateState => {
-                  if (reason === "remove-option") {
-                    return {
-                      ...prevState,
-                      product: {
-                        ...prevState.product,
-                        tags,
-                      },
-                      errors: { ...errors, tags: null },
-                    };
-                  } else if (prevState.product.tags.length > 5) {
-                    openSnackbar({
-                      severity: "error",
-                      message: `Please only add up to 5 collections.`,
-                    });
-                    return prevState;
-                  } else {
-                    return {
-                      ...prevState,
-                      product: {
-                        ...prevState.product,
-                        tags,
-                      },
-                      errors: { ...errors, tags: null },
-                    };
-                  }
-                },
-              );
-            }}
-            classes={{
-              tag: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
-            }}
-            renderInput={(params): JSX.Element => (
-              <TextField
-                {...params}
-                variant="outlined"
-                label="Themes"
-                fullWidth
-                error={!!errors.tags}
-                helperText={errors.tags}
-              />
-            )}
-          />
-          <Variants
-            variants={product.variants}
-            type={type}
-            size={!isDesktop ? "small" : "medium"}
-            setPrice={product.setPrice}
-            updateVariants={(variants: Variant[]): void =>
-              this.setState({ product: { ...product, variants } })
-            }
-          />
-          <div className={classes.buttonContainer} style={{ marginBottom: "40px" }}>
-            <ThemeProvider
-              theme={createMuiTheme({
-                palette: {
-                  primary: green,
-                },
-              })}
-            >
-              <Button
-                onClick={(): void => {
-                  if (setCurrentTab) setCurrentTab("products");
-                  history.push("/account");
+              <FormControlLabel
+                value="Creates"
+                classes={{
+                  root: classes.root,
                 }}
-                style={{ margin: "0 10px" }}
-                size="large"
-                variant="contained"
-                color="secondary"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={this.handleProductErrors}
-                color="primary"
-                variant="contained"
-                style={{ margin: "0 10px", color: "#fff" }}
-                size="large"
-              >
-                Confirm
-              </Button>
-            </ThemeProvider>
-          </div>
+                control={<Radio />}
+                label="Creates"
+              />
+            </RadioGroup>
+          </OutlinedContainer>
         </div>
-        <ConfirmDialog
-          isOpen={confirmDialogOpen}
-          product={product}
-          isUploading={isUploading}
-          percentUploaded={percentUploaded}
-          onProductCreate={update ? this.handleProductUpdate : this.handleProductCreate}
-          closeModal={(): void => this.setState({ confirmDialogOpen: false })}
-          update
+        <ChipInput
+          label={type === "Cake" ? "Cake Features" : "Colour Scheme"}
+          value={customOptions || []}
+          options={features}
+          onChange={(_event, customOptions): void => {
+            setState((prevState) => ({
+              ...state,
+              product: {
+                ...prevState.product,
+                customOptions: customOptions as string[],
+              },
+              errors: {
+                ...errors,
+                customOptions: "",
+              },
+            }));
+          }}
+          tagClass={product.type === "Cake" ? classes.chipCake : classes.chipCreates}
+          errors={errors.customOptions}
+          fullWidth
+          freeSolo
         />
-      </>
-    );
-  }
-}
+        <Alert
+          severity="info"
+          className={classes.callout}
+          style={{
+            margin: "10px 0",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <AlertTitle
+              style={{
+                fontSize: "18px",
+              }}
+            >
+              Is there a set price?
+            </AlertTitle>
+            <Typography variant="body1">
+              To set a price for the product, turn the switch on and input the price and
+              shipping cost in the inputs below. To set a variable price where the
+              customer requests a quote based on their preferences, leave the switch off.
+            </Typography>
+          </div>
+          <div className={classes.switch}>
+            <Switch
+              checked={setPrice}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                setState({
+                  ...state,
+                  product: {
+                    ...product,
+                    setPrice: e.target.checked,
+                  },
+                })
+              }
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+              color="primary"
+              name="setPrice"
+              size={!isDesktop ? "small" : "medium"}
+              inputProps={{
+                "aria-label": "primary checkbox",
+              }}
+            />
+          </div>
+        </Alert>
+        <div
+          style={{
+            margin: "10px 0",
+            width: "100%",
+          }}
+        >
+          <OutlinedContainer
+            label={images.collection.length <= 1 ? "Product Image" : "Product Images"}
+            labelWidth={images.collection.length <= 1 ? 84 : 90}
+            padding={12}
+            error={!!errors.image}
+          >
+            {images.collection.length > 0 && (
+              <div>
+                <ImageCarousel
+                  images={images.collection}
+                  cover={images.cover}
+                  deleteImages
+                  update={update}
+                  id={product.id}
+                  type={type}
+                  handleUpdateImages={(collection: S3ImageProps[]): void => {
+                    setState({
+                      ...state,
+                      product: {
+                        ...product,
+                        images: {
+                          ...product.images,
+                          collection,
+                        },
+                      },
+                    });
+                  }}
+                />
+              </div>
+            )}
+            <ImagePicker
+              setImageFile={(file): void => {
+                handleImageCompress(file);
+                setState({
+                  ...state,
+                  errors: {
+                    ...errors,
+                    image: null,
+                  },
+                });
+              }}
+              cropImage
+              update={update}
+              type={product.type}
+            />
+          </OutlinedContainer>
+        </div>
+        {errors.image && <p className={classes.errorText}>{errors.image}</p>}
+        <Autocomplete
+          multiple
+          id="collections-input"
+          options={themes.sort((a, b) => -b.slice(0, 1).localeCompare(a.slice(0, 1)))}
+          filterSelectedOptions
+          fullWidth
+          autoComplete
+          value={tags || []}
+          onChange={(_event, tags, reason): void => {
+            setState(
+              (prevState): UpdateState => {
+                if (reason === "remove-option") {
+                  return {
+                    ...prevState,
+                    product: {
+                      ...prevState.product,
+                      tags,
+                    },
+                    errors: {
+                      ...errors,
+                      tags: null,
+                    },
+                  };
+                } else if (prevState.product.tags.length > 5) {
+                  openSnackbar({
+                    severity: "error",
+                    message: `Please only add up to 5 collections.`,
+                  });
+                  return prevState;
+                } else {
+                  return {
+                    ...prevState,
+                    product: {
+                      ...prevState.product,
+                      tags,
+                    },
+                    errors: {
+                      ...errors,
+                      tags: null,
+                    },
+                  };
+                }
+              },
+            );
+          }}
+          classes={{
+            tag: product.type === "Cake" ? classes.chipCake : classes.chipCreates,
+          }}
+          renderInput={(params): JSX.Element => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Themes"
+              fullWidth
+              error={!!errors.tags}
+              helperText={errors.tags}
+            />
+          )}
+        />
+        <Variants
+          variants={product.variants}
+          type={type}
+          size={!isDesktop ? "small" : "medium"}
+          setPrice={product.setPrice}
+          updateVariants={(variants: Variant[]): void => {
+            console.log(variants);
+            setState({
+              ...state,
+              product: {
+                ...product,
+                variants,
+              },
+            });
+          }}
+        />
+        <div
+          className={classes.buttonContainer}
+          style={{
+            marginBottom: "40px",
+          }}
+        >
+          <ThemeProvider
+            theme={createMuiTheme({
+              palette: {
+                primary: green,
+              },
+            })}
+          >
+            <Button
+              onClick={(): void => {
+                dispatch(actions.setCurrentTab("products"));
+                history.push("/account");
+              }}
+              style={{
+                margin: "0 10px",
+              }}
+              size="large"
+              variant="contained"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleProductErrors}
+              color="primary"
+              variant="contained"
+              style={{
+                margin: "0 10px",
+                color: "#fff",
+              }}
+              size="large"
+            >
+              Confirm
+            </Button>
+          </ThemeProvider>
+        </div>
+      </div>
+      <ConfirmDialog
+        isOpen={confirmDialogOpen}
+        product={product}
+        isUploading={isUploading}
+        percentUploaded={percentUploaded}
+        onProductCreate={update ? handleProductUpdate : handleProductCreate}
+        closeModal={(): void =>
+          setState({
+            ...state,
+            confirmDialogOpen: false,
+          })
+        }
+        update
+      />
+    </>
+  );
+};
 
-const merged = { ...styles, defaultStyles };
-
-const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): unknown => ({
-  setCurrentTab: (currentTab: CurrentTabTypes): void =>
-    dispatch(actions.setCurrentTab(currentTab)),
-});
-
-export default connect(null, mapDispatchToProps)(withStyles(merged)(UpdateProduct));
+export default UpdateProduct;
