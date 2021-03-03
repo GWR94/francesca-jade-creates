@@ -18,7 +18,6 @@ export default createStyles({
     minHeight: "50vh",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
   },
   mainTitle: {
     fontSize: "1.6rem",
@@ -42,12 +41,23 @@ export default createStyles({
     marginTop: 8,
   },
   subtext: {
-    margin: "0 10px 8px",
-    fontSize: "0.8rem",
+    margin: "10px 0",
+    lineHeight: 1.3,
+    fontSize: "1rem",
+    [breakpoints.down("md")]: {
+      fontSize: "0.9rem",
+    },
+    [breakpoints.down("sm")]: {
+      fontSize: "0.8rem",
+    },
   },
   variantsContainer: {
     borderRadius: 5,
     border: `1px solid ${COLORS.DisabledGray}`,
+    width: 500,
+    [breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   innerContainer: {
     display: "inline-flex",
@@ -55,6 +65,7 @@ export default createStyles({
     height: "100%",
     padding: 12,
     boxSizing: "border-box",
+    cursor: "default",
   },
   textContainer: {
     display: "flex",
@@ -77,7 +88,7 @@ export default createStyles({
     width: "100%",
   },
   itemContainer: {
-    margin: "0 auto",
+    margin: "20px auto 0",
     width: 500,
     [breakpoints.down("sm")]: {
       width: "95%",

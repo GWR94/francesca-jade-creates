@@ -17,12 +17,12 @@ const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
         width: 620,
       },
       [breakpoints.down("sm")]: {
-        width: "100%",
+        width: "90%",
       },
     },
     subtitle: {
-      textAlign: "center",
-      margin: "0 5px",
+      textAlign: "justify",
+      margin: "auto 10px",
     },
   });
   const classes = useStyles();
@@ -34,9 +34,10 @@ const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
         </Typography>
         <Typography className={classes.subtitle} style={{ marginBottom: 10 }}>
           Here are a list of all of the products that customers can see when browsing the
-          site.
+          site. You can search through all of the products via the search feature by
+          clicking the pink hamburger icon.
         </Typography>
-        <Typography className={classes.subtitle} style={{ marginBottom: 20 }}>
+        <Typography variant="subtitle2" style={{ margin: "10px auto" }}>
           To edit or delete products, click the 3 dots on the item you wish to change and
           click the relevant choice.
         </Typography>

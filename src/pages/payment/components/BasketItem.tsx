@@ -225,7 +225,7 @@ const BasketItem: React.FC<BasketProps> = ({
               theme={{
                 photoImg: {
                   // change the size of the image based on the screen width
-                  width: desktop ? 130 : 80,
+                  width: desktop ? 130 : 90,
                   margin: "auto",
                 },
               }}

@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Grid, makeStyles } from "@material-ui/core";
+import {
+  CircularProgress,
+  Drawer,
+  Grid,
+  makeStyles,
+  useMediaQuery,
+} from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded, Warning } from "@material-ui/icons";
 import ProductCard from "../../../common/containers/ProductCard";
@@ -9,9 +15,9 @@ import SearchFilter from "./SearchFilter";
 import * as actions from "../../../actions/products.actions";
 import { AppState } from "../../../store/store";
 import { ProductListProps, ProductListState } from "../interfaces/ProductList.i";
-import Loading from "../../../common/Loading";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import styles from "../../accounts/styles/productList.style";
+import { COLORS } from "../../../themes";
 
 const initialState = {
   filterOpen: false,
@@ -45,7 +51,7 @@ const ProductsList: React.FC<ProductListProps> = ({
   // set initial state for component
   const [state, setState] = useState<ProductListState>(initialState);
 
-  useEffect(() => {
+  const getProducts = (): void => {
     if (type) {
       /**
        * if there is a type prop that was passed down from the parent, dispatch the
@@ -63,7 +69,17 @@ const ProductsList: React.FC<ProductListProps> = ({
       dispatch(actions.getProducts());
     }
     setState({ ...state, isLoading: false });
+  };
+
+  useEffect(() => {
+    getProducts();
   }, [theme, type]);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const desktop = useMediaQuery("(min-width: 600px)");
 
   // destructure relevant data from state
   const {
@@ -84,7 +100,24 @@ const ProductsList: React.FC<ProductListProps> = ({
    */
   const results = theme ? products || [] : searchResults || products;
 
-  return (
+  const isCake = type === "Cake";
+
+  return isLoading ? (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: desktop ? 600 : 300,
+        width: "100%",
+      }}
+    >
+      <CircularProgress
+        size={desktop ? 100 : 50}
+        style={{ color: isCake ? COLORS.LightPink : COLORS.LightGray }}
+      />
+    </div>
+  ) : (
     <>
       {!theme && (
         <div
@@ -103,10 +136,7 @@ const ProductsList: React.FC<ProductListProps> = ({
           />
         </div>
       )}
-      {isLoading ? (
-        // if isLoading is true, show a loading UI spinner.
-        <Loading small />
-      ) : results.length > 0 ? (
+      {results.length > 0 ? (
         <Grid container spacing={2}>
           {/* 
             Map the results to a Grid item to control the responsive layout,
@@ -124,7 +154,7 @@ const ProductsList: React.FC<ProductListProps> = ({
       ) : (
         // If there are no products, show the NonIdealState component to notify the user
         <NonIdealState
-          title="No Results Found!"
+          title="No Results Found."
           Icon={<Warning />}
           subtext="Please edit your search to return results."
         />
@@ -174,4 +204,4 @@ const ProductsList: React.FC<ProductListProps> = ({
   );
 };
 
-export default ProductsList;
+export default React.memo(ProductsList);

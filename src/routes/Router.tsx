@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Router, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { Container, Typography } from "@material-ui/core";
+import { Container, Typography, withStyles } from "@material-ui/core";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
@@ -38,10 +38,12 @@ import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";
 import FAQ from "../pages/policies/components/FAQ";
 import NotFoundPage from "../common/containers/NotFoundPage";
-import { FONTS } from "../themes";
+import { breakpoints, FONTS } from "../themes";
 import ScrollToTop from "../hooks/ScrollToTop";
 import Contact from "../pages/policies/components/Contact";
 import Themes from "../pages/products/components/Themes";
+import Creations from "../pages/products/components/Creations";
+import Cakes from "../pages/products/components/Cakes";
 
 export const history = createBrowserHistory();
 
@@ -257,49 +259,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 <Route
                   path="/creates"
                   exact
-                  component={(): JSX.Element => (
-                    <div className="content-container">
-                      <Container>
-                        <Typography
-                          variant="h4"
-                          style={{
-                            paddingTop: 12,
-                            fontFamily: `${FONTS.Title}, sans-serif`,
-                          }}
-                        >
-                          Creations
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          style={{
-                            margin: "10px auto 20px",
-                            width: "90%",
-                            textAlign: "justify",
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          Finding the perfect gift which can be both memorable and give a
-                          long lasting impression can be a challenge - so we&apos;ve made
-                          it our goal to build bespoke, handcrafted gifts for every
-                          occasion. Whether it be a bespoke scrabble-themed frame, a
-                          personalised birthday card or even a little Christmas decoration
-                          gift, just select a product and we&apos;ll do the rest!
-                        </Typography>
-                        <Typography
-                          variant="subtitle2"
-                          style={{
-                            margin: "10px 0",
-                            lineHeight: 1,
-                            color: "rgba(0, 0, 0, 0.7)",
-                          }}
-                        >
-                          To filter the products please click the pink button on the left
-                          hand side, and filter the results to your preferences.
-                        </Typography>
-                        <ProductsList type="Creates" admin={this.admin} />
-                      </Container>
-                    </div>
-                  )}
+                  component={(): JSX.Element => <Creations admin={this.admin} />}
                 />
                 <Route
                   path="/basket"
@@ -325,47 +285,7 @@ class AppRouter extends Component<RouterProps, RouterState> {
                 <Route
                   path="/cakes"
                   exact
-                  component={(): JSX.Element => (
-                    <div className="content-container">
-                      <Container>
-                        <Typography
-                          variant="h4"
-                          style={{
-                            paddingTop: 12,
-                          }}
-                        >
-                          Cakes
-                        </Typography>
-                        <Typography
-                          variant="subtitle1"
-                          style={{
-                            margin: "10px auto 20px",
-                            width: "90%",
-                            textAlign: "justify",
-                            lineHeight: "1.2",
-                          }}
-                        >
-                          All of our delicious cakes are baked with love on-site, using
-                          natural ingredients, and are fully customisable and ready to
-                          request. Whether you want some chocolate cupcakes for a party,
-                          or a princess themed birthday cake - just send a request and
-                          we&apos;ll get back to you as soon as possible with a quote!
-                        </Typography>
-                        <Typography
-                          variant="subtitle2"
-                          style={{
-                            margin: "10px 0",
-                            lineHeight: 1,
-                            color: "rgba(0, 0, 0, 0.7)",
-                          }}
-                        >
-                          To filter the products please click the pink button on the left
-                          hand side, and filter the results to your preferences.
-                        </Typography>
-                        <ProductsList type="Cake" admin={this.admin} />
-                      </Container>
-                    </div>
-                  )}
+                  component={(): JSX.Element => <Cakes admin={this.admin} />}
                 />
                 <Route
                   path="/cakes/:id"

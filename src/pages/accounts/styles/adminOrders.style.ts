@@ -54,8 +54,8 @@ export default createStyles({
   details: {
     fontWeight: "bold",
     fontSize: "1rem",
-    [breakpoints.down("sm")]: {
-      fontSize: "0.8rem",
+    [breakpoints.down("xs")]: {
+      fontSize: "0.9rem",
     },
   },
   data: {
@@ -63,12 +63,9 @@ export default createStyles({
     fontWeight: "normal",
     marginLeft: 5,
   },
-  detailsText: {
-    flexBasis: "50%",
-  },
-  orderId: {
-    textAlign: "center",
+  paymentText: {
     fontWeight: "bold",
+    textAlign: "center",
   },
   buttonContainer: {
     display: "flex",
@@ -119,5 +116,38 @@ export default createStyles({
     [breakpoints.down("sm")]: {
       fontSize: "0.7rem",
     },
+  },
+  paid: {
+    color: COLORS.WarningOrange,
+    fontWeight: "bold",
+    fontSize: "0.9rem",
+  },
+  shipped: {
+    color: COLORS.SuccessGreen,
+    fontWeight: "bold",
+    fontSize: "0.9rem",
+  },
+  unpaid: {
+    color: COLORS.ErrorRed,
+    fontWeight: "bold",
+    fontSize: "0.9rem",
+  },
+  orderId: {
+    cursor: "pointer",
+    marginLeft: 5,
+    fontWeight: "normal",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+  },
+  dangerIcon: {
+    color: COLORS.ErrorRed,
+    fontSize: "1.3rem",
+    paddingLeft: 10,
+  },
+  successIcon: {
+    color: COLORS.SuccessGreen,
+    fontSize: "1.2rem",
+    paddingLeft: 10,
   },
 });

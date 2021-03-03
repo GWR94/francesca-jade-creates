@@ -69,7 +69,7 @@ const NavBar: React.FC = (): JSX.Element => {
     // push to home page
     history.push("/");
   };
-
+  const isHome = location.pathname.length <= 1;
   const items = useSelector(({ basket }: AppState) => basket.items);
   return (
     <>
@@ -84,9 +84,9 @@ const NavBar: React.FC = (): JSX.Element => {
             className={`${classes.nav} animate__animated animate__slideInDown`}
             position="relative"
             style={{
-              background: location.pathname.length <= 1 ? "transparent" : "#fff",
+              background: isHome ? "transparent" : "#fff",
             }}
-            elevation={location.pathname.length <= 1 ? 0 : 4}
+            elevation={isHome ? 0 : 4}
           >
             <Container className={classes.main}>
               <img
@@ -107,16 +107,17 @@ const NavBar: React.FC = (): JSX.Element => {
                     vertical: "top",
                     horizontal: "right",
                   }}
-                  style={{ marginTop: 6, color: COLORS.LightPink }}
+                  style={{ marginTop: 6, color: COLORS.DarkPink }}
                 >
                   <MenuRounded
                     onClick={(): void => {
-                      location.pathname.length <= 1
-                        ? history.push("/themes")
-                        : setNavOpen(!navOpen);
+                      isHome ? history.push("/themes") : setNavOpen(!navOpen);
                     }}
                     className={classes.menuIcon}
-                    style={{ marginTop: -6 }}
+                    style={{
+                      marginTop: -6,
+                      color: isHome ? "#fff" : COLORS.LightPink,
+                    }}
                   />
                 </Badge>
               )}

@@ -4,7 +4,6 @@ import {
   AccordionSummary,
   Grid,
   Typography,
-  Chip,
   AccordionDetails,
   Button,
   AccordionActions,
@@ -12,13 +11,7 @@ import {
   useMediaQuery,
   makeStyles,
 } from "@material-ui/core";
-import {
-  ExpandMoreRounded,
-  AttachMoney,
-  MoneyOff,
-  Send,
-  CancelScheduleSend,
-} from "@material-ui/icons";
+import { ExpandMoreRounded } from "@material-ui/icons";
 import AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { API } from "aws-amplify";
@@ -28,7 +21,7 @@ import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import { S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/adminOrders.style";
 import ShippingReferenceDialog from "./ShippingReferenceDialog";
-import { getPublicS3URL } from "../../../utils";
+import { getReadableStringFromArray } from "../../../utils";
 
 interface AdminOrderItemProps {
   order: OrderProps;
@@ -39,12 +32,14 @@ interface AdminOrderItemState {
   expanded: boolean | string;
   isSettingProcessed: boolean;
   dialogOpen: boolean;
+  showID: boolean;
 }
 
 const initialState = {
   expanded: false,
   isSettingProcessed: false,
   dialogOpen: false,
+  showID: false,
 };
 
 const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
@@ -70,8 +65,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
     });
   };
 
-  const getSignedUrls = (images: S3ImageProps[]): string[] => {
-    const urls = [];
+  const getSignedUrls = (images: S3ImageProps[]): void => {
     const s3 = new AWS.S3({
       accessKeyId: process.env.ACCESS_KEY_AWS,
       secretAccessKey: process.env.SECRET_KEY_AWS,
@@ -123,7 +117,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
       // push the s3 images to the images array so it can be used
       .map((option) => images.push(...(Object.values(option)[0] as S3ImageProps[])));
 
-    const urls = getSignedUrls(images);
+    getSignedUrls(images);
   };
 
   /**
@@ -180,8 +174,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
     return `£${price.toFixed(2)}`;
   };
 
-  const { expanded, isSettingProcessed, dialogOpen } = state;
-
+  const { expanded, isSettingProcessed, dialogOpen, showID } = state;
   return (
     <>
       <Accordion
@@ -204,7 +197,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
             <Grid item xs={6}>
               <Typography className={classes.heading}>
                 {/* Render a minimal format if the user is on mobile, full format if not */}
-                {dayjs(order.createdAt).format(desktop ? "llll" : "l")}
+                {dayjs(order.createdAt).format(desktop ? "llll" : "LL")}
               </Typography>
             </Grid>
             <Grid
@@ -218,61 +211,76 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
               <div className={classes.secondaryHeading}>
                 {/* If order is paid, render a green success chip */}
                 {order.paymentStatus === "paid" ? (
-                  <Chip
-                    className={classes.chipSuccess}
-                    size="small"
-                    color="primary"
-                    label={desktop ? "Paid" : <AttachMoney />}
-                  />
+                  order.shipped ? (
+                    <Typography className={classes.shipped}>Shipped</Typography>
+                  ) : (
+                    <Typography className={classes.paid}>Paid</Typography>
+                  )
                 ) : (
                   // If the order is not paid, render a red danger chip
-                  <Chip
-                    className={classes.chipDanger}
-                    size="small"
-                    color="secondary"
-                    label={desktop ? "Unpaid" : <MoneyOff />}
-                  />
+                  <Typography className={classes.unpaid}>Unpaid</Typography>
                 )}
                 {/* If order is shipped, render a green success chip */}
-                {order.shipped ? (
-                  <Chip
-                    className={classes.chipSuccess}
-                    size="small"
-                    color="primary"
-                    label={desktop ? "Shipped" : <Send />}
-                  />
-                ) : (
-                  // If order is not shipped, render a red danger chip
-                  <Chip
-                    className={classes.chipDanger}
-                    size="small"
-                    color="secondary"
-                    label={desktop ? "Not Shipped" : <CancelScheduleSend />}
-                  />
-                )}
               </div>
             </Grid>
           </Grid>
         </AccordionSummary>
-        {/* Render all of the details from the order */}
-        <div className={classes.detailsText}>
-          <Typography className={classes.orderId}>
-            Total Cost:
-            <span className={classes.data}>{getOrderPrice(order.products)}</span>
-          </Typography>
-          <Typography className={classes.orderId}>
-            Order ID:
-            <span className={classes.data}>{order.id}</span>
-          </Typography>
-        </div>
         <AccordionDetails>
-          <Grid container spacing={desktop ? 1 : 0}>
+          {/* Render all of the details from the order */}
+          <Grid container spacing={0}>
+            <Grid item xs={12} sm={6}>
+              <Typography className={classes.paymentText}>
+                Total Cost:
+                <span className={classes.data}>{getOrderPrice(order.products)}</span>
+              </Typography>
+              <Typography className={classes.paymentText}>
+                Order ID:
+                <span
+                  className={classes.orderId}
+                  role="button"
+                  onClick={(): void => setState({ ...state, showID: !showID })}
+                  tabIndex={0}
+                >
+                  {showID ? order.id : "Click to show"}
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} style={{ marginBottom: 20 }}>
+              <Typography className={classes.paymentText}>
+                Payment Status:
+                <span className={classes.data}>
+                  <i
+                    className={
+                      order.paymentStatus === "paid"
+                        ? `fas fa-check ${classes.successIcon}`
+                        : `fas fa-times ${classes.dangerIcon}`
+                    }
+                  />
+                </span>
+              </Typography>
+              <Typography className={classes.paymentText}>
+                Delivery Status:
+                <span className={classes.data}>
+                  <i
+                    className={
+                      order.shipped
+                        ? `fas fa-check ${classes.successIcon}`
+                        : `fas fa-times ${classes.dangerIcon}`
+                    }
+                  />
+                </span>
+              </Typography>
+            </Grid>
             {order.products.map((product, i) => {
               const { title, price, shippingCost, variant, customOptions } = product;
               const options: {
                 [key: string]: string | string[];
               }[] = [];
-              customOptions.forEach((option) => options.push(JSON.parse(option)));
+              customOptions.forEach((option) => {
+                if (option) {
+                  options.push(JSON.parse(option));
+                }
+              });
               return (
                 <Grid item xs={12} sm={order.products.length <= 1 ? 12 : 6} key={i}>
                   <div key={i} className={classes.variantContainer}>
@@ -286,25 +294,48 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
                       {title}
                     </Typography>
                     <Typography className={classes.details}>
-                      Cost:{" "}
+                      Cost:
                       <span className={classes.data}>
                         £{price.toFixed(2)} + £{shippingCost.toFixed(2)} P&P
                       </span>
                     </Typography>
+                    {variant.variantName !== variant.dimensions && (
+                      <Typography className={classes.details}>
+                        {variant.variantName}
+                      </Typography>
+                    )}
                     <Typography className={classes.details}>
-                      {variant.dimensions}
-                    </Typography>
-                    <Typography className={classes.details}>
-                      Dimensions:{" "}
+                      Dimensions:
                       <span className={classes.data}>{variant.dimensions}</span>
                     </Typography>
+                    <Typography className={classes.details} style={{ marginTop: 10 }}>
+                      Custom Options:
+                    </Typography>
+                    {options
+                      .filter((option) => Object.keys(option)[0] !== "Images")
+                      .map((option) => {
+                        const title = Object.keys(option)[0];
+                        const value = Object.values(option)[0];
+                        const isArray = Array.isArray(value);
+                        return (
+                          <div>
+                            <Typography className={classes.details}>
+                              {title}:
+                              {!isArray && <span className={classes.data}>{value}</span>}
+                            </Typography>
+                            {isArray && (
+                              <Typography className={classes.data}>
+                                {getReadableStringFromArray(value as string[])}
+                              </Typography>
+                            )}
+                          </div>
+                        );
+                      })}
                     <div className={classes.buttonContainer}>
                       {options.some((option) => option?.hasOwnProperty("Images")) && (
                         <Button
                           variant="text"
-                          onClick={(): void => {
-                            downloadProductImages(product);
-                          }}
+                          onClick={(): void => downloadProductImages(product)}
                           size="small"
                           color="primary"
                           style={{
@@ -362,7 +393,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
               });
             }}
           >
-            Add Shipping Info
+            {order.shipped ? "Edit" : "Add"} Shipping Info
           </Button>
         </AccordionActions>
       </Accordion>

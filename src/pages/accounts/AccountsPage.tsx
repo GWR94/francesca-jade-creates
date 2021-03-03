@@ -207,4 +207,4 @@ const mapDispatchToProps = (dispatch: Dispatch): AccountsMapProps => ({
     dispatch(userActions.setCurrentTab(currentTab)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(AccountsPage));

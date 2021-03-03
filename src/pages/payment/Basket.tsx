@@ -284,21 +284,21 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
        */
       case 0: {
         return (
-          <div className={classes.itemContainer}>
-            <>
-              <Typography
-                variant="subtitle1"
-                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
-              >
-                Please confirm each of the items in your basket, and if necessary choose
-                the variant you wish to purchase.
-              </Typography>
-              <Typography
-                variant="subtitle1"
-                style={{ margin: isMobile ? "10px 0" : "20px 0" }}
-              >
-                Please complete all of the required fields to personalise your product.
-              </Typography>
+          <>
+            <Typography
+              variant="subtitle1"
+              style={{ margin: isMobile ? "10px 0" : "20px 0", lineHeight: 1.2 }}
+            >
+              Please confirm each of the items in your basket, and if necessary choose the
+              variant you wish to purchase.
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              style={{ margin: isMobile ? "10px 0" : "20px 0", lineHeight: 1.2 }}
+            >
+              All fields are required unless marked otherwise.
+            </Typography>
+            <div className={classes.itemContainer}>
               <Typography style={{ marginBottom: 4 }}>
                 Confirm product <strong>{currentIdx + 1}</strong> of {basketItems.length}:
               </Typography>
@@ -308,61 +308,63 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 items={basketItems}
                 setIndex={(idx: number): void => setState({ ...state, currentIdx: idx })}
               />
-            </>
-            <div className={classes.stepButtonContainer}>
-              {!user ? (
-                <Login
-                  showButton
-                  props={{
-                    // @ts-ignore
-                    classOverride: classes.button,
-                    text: "Login to Continue",
-                    variant: "contained",
-                    align: "center",
-                    color: "primary",
-                  }}
-                />
-              ) : (
-                <>
-                  <Button
-                    onClick={(): void => {
-                      setState({ ...state, activeStep: activeStep - 1 });
+              <div className={classes.stepButtonContainer}>
+                {!user ? (
+                  <Login
+                    showButton
+                    props={{
+                      // @ts-ignore
+                      classOverride: classes.button,
+                      text: "Login to Continue",
+                      variant: "contained",
+                      align: "center",
+                      color: "primary",
                     }}
-                    color="secondary"
-                    variant="contained"
-                    disabled
-                    className={classes.button}
-                  >
-                    Previous Step
-                  </Button>
-                  <Button
-                    onClick={(): void => {
-                      setState({ ...state, currentIdx: 0, activeStep: activeStep + 1 });
-                    }}
-                    disabled={basketItems.length !== products.length}
-                    variant="contained"
-                    className={classes.button}
-                    color="primary"
-                  >
-                    Next Step
-                  </Button>
-                </>
-              )}
+                  />
+                ) : (
+                  <>
+                    <Button
+                      onClick={(): void => {
+                        setState({ ...state, activeStep: activeStep - 1 });
+                      }}
+                      color="secondary"
+                      variant="contained"
+                      disabled
+                      className={classes.button}
+                    >
+                      Previous Step
+                    </Button>
+                    <Button
+                      onClick={(): void => {
+                        setState({ ...state, currentIdx: 0, activeStep: activeStep + 1 });
+                      }}
+                      disabled={basketItems.length !== products.length}
+                      variant="contained"
+                      className={classes.button}
+                      color="primary"
+                    >
+                      Next Step
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         );
       }
       case 1: {
         return (
           <div className={classes.itemContainer}>
             <Typography variant="h4">Confirm Products</Typography>
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" style={{ margin: "10px auto 20px" }}>
               Please confirm the items in your checkout basket, and make any changes if
               necessary.
             </Typography>
             {products.map((product, i) => (
               <div className={classes.checkoutContainer} key={i}>
-                <Typography variant="body1">{product.title}</Typography>
+                <Typography variant="body1">
+                  {i + 1}. {product.title}
+                </Typography>
                 <Typography
                   variant="caption"
                   style={{ color: COLORS.TextGray, marginLeft: 20 }}
@@ -371,7 +373,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                 </Typography>
               </div>
             ))}
-            <Typography style={{ fontWeight: "bold", marginBottom: 10 }}>
+            <Typography style={{ fontWeight: "bold", marginBottom: 30 }}>
               TOTAL: £{cost.toFixed(2)}
             </Typography>
             <div className={classes.stepButtonContainer}>

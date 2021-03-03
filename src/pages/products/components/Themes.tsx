@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Tab, Tabs, Typography } from "@material-ui/core";
+import { Container, makeStyles, Paper, Tab, Tabs, Typography } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { breakpoints } from "../../../themes";
 import PopularThemes from "./PopularThemes";
@@ -20,6 +20,7 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
       width: "90%",
       margin: "0 auto",
       padding: "0 20px 20px 20px",
+      userSelect: "none",
       boxSizing: "border-box",
       [breakpoints.down("sm")]: {
         width: "100%",
@@ -27,9 +28,13 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
     },
     text: {
       fontSize: "1rem",
-      width: "70%",
+      lineHeight: 1.2,
       textAlign: "justify",
-      margin: "0 auto 10px",
+      margin: "10px auto 20px",
+      width: 800,
+      [breakpoints.down("md")]: {
+        width: 620,
+      },
       [breakpoints.down("sm")]: {
         width: "90%",
       },
@@ -38,11 +43,8 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
       color: "rgba(0,0,0,0.6)",
       fontSize: "0.9rem",
       textAlign: "center",
-      marginBottom: 5,
-      [breakpoints.down("sm")]: {
-        padding: "0 10px",
-        textAlign: "justify",
-      },
+      lineHeight: 1.1,
+      margin: "10px auto",
     },
   });
   const classes = useStyles();
@@ -82,30 +84,38 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
 
   return (
     <div className="content-container">
-      <Typography variant="h4" style={{ paddingTop: 12 }} gutterBottom>
-        Themes
-      </Typography>
-      <Typography variant="subtitle1" className={classes.text}>
-        Whether it&apos;s a Minion themed cake for the kids, a beautiful bespoke frame for
-        a wedding, or some cupcakes for a birthday party - we&apos;ve got you covered!
-        Click on any of the popular themes below to view the products, or alternatively
-        search through all the themes by clicking the &apos;Search Themes&apos; tab below.
-      </Typography>
-      <Paper elevation={3} className={classes.tabContainer}>
-        <Tabs
-          value={currentTab}
-          onChange={(_event: React.ChangeEvent<{}>, currentTab: ThemeTabs): void => {
-            setState({ ...state, currentTab });
-          }}
-          indicatorColor="primary"
-          textColor="primary"
-          centered
-        >
-          <Tab value="popular" label="Popular Themes" />
-          <Tab value="search" label="Search Themes" />
-        </Tabs>
-        {renderCurrentTab()}
-      </Paper>
+      <Container>
+        <Typography variant="h4" style={{ paddingTop: 12 }} gutterBottom>
+          Themes
+        </Typography>
+        <div className={classes.textContainer}>
+          <Typography variant="subtitle1" className={classes.text}>
+            Whether it&apos;s a Minion themed cake for the kids, a beautiful bespoke frame
+            for a wedding, or some cupcakes for a birthday party - we&apos;ve got you
+            covered!
+          </Typography>
+          <Typography variant="subtitle2" className={classes.selectText}>
+            Click on any of the popular themes below to view the products, or
+            alternatively search through all the themes by clicking the &apos;Search
+            Themes&apos; tab below.
+          </Typography>
+        </div>
+        <Paper elevation={3} className={classes.tabContainer}>
+          <Tabs
+            value={currentTab}
+            onChange={(_event: React.ChangeEvent<{}>, currentTab: ThemeTabs): void => {
+              setState({ ...state, currentTab });
+            }}
+            indicatorColor="primary"
+            textColor="primary"
+            centered
+          >
+            <Tab value="popular" label="Popular Themes" />
+            <Tab value="search" label="Search Themes" />
+          </Tabs>
+          {renderCurrentTab()}
+        </Paper>
+      </Container>
     </div>
   );
 };

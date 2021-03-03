@@ -183,6 +183,7 @@ export const rootTheme = createMuiTheme({
         fontSize: "0.9rem",
         fontStyle: "italic",
         fontWeight: "normal",
+        color: "rgba(0,0,0,0.6)",
       },
     },
     MuiBadge: {

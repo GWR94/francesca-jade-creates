@@ -435,4 +435,4 @@ const PopularThemes: React.FC = (): JSX.Element => {
   );
 };
 
-export default PopularThemes;
+export default React.memo(PopularThemes);
