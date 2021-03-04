@@ -14,7 +14,11 @@ import {
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "@material-ui/lab";
-import { MoreVert, AddShoppingCartOutlined, HelpOutline } from "@material-ui/icons";
+import {
+  MoreVert,
+  AddShoppingCartOutlined,
+  ContactSupportOutlined,
+} from "@material-ui/icons";
 import { S3Image } from "aws-amplify-react";
 import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
@@ -270,7 +274,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
               }}
             >
               {type === "Cake" ? (
-                <HelpOutline fontSize="large" />
+                <ContactSupportOutlined fontSize="large" />
               ) : (
                 <AddShoppingCartOutlined />
               )}

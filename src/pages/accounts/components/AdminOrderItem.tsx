@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -10,6 +10,7 @@ import {
   CircularProgress,
   useMediaQuery,
   makeStyles,
+  Divider,
 } from "@material-ui/core";
 import { ExpandMoreRounded } from "@material-ui/icons";
 import AWS from "aws-sdk";
@@ -26,6 +27,10 @@ import { getReadableStringFromArray } from "../../../utils";
 interface AdminOrderItemProps {
   order: OrderProps;
   i: number;
+  expanded: string | false;
+  handlePanelChange: (
+    panel: string,
+  ) => (event: ChangeEvent<{}>, expanded: boolean) => void;
 }
 
 interface AdminOrderItemState {
@@ -42,28 +47,18 @@ const initialState = {
   showID: false,
 };
 
-const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
+const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
+  order,
+  i,
+  expanded,
+  handlePanelChange,
+}) => {
   const [state, setState] = useState<AdminOrderItemState>(initialState);
 
   const desktop = useMediaQuery("(min-width: 600px)");
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-
-  /**
-   * Function to open/close a panel inside the Accordion component.
-   * @param {string} panel - The panel which is expected to be opened/closed
-   */
-  const handlePanelChange = (panel: string) => (
-    _event: React.ChangeEvent<{}>,
-    isExpanded: boolean,
-  ): void => {
-    // Opens panel if its closed, or closes it if it's open.
-    setState({
-      ...state,
-      expanded: isExpanded ? panel : false,
-    });
-  };
 
   const getSignedUrls = (images: S3ImageProps[]): void => {
     const s3 = new AWS.S3({
@@ -136,7 +131,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
       // execute lambda function to update the database
       await API.post("orderlambda", "/orders/set-order-processing", {
         body: {
-          isProcessed: order.orderProcessed ? !order.orderProcessed : true,
+          isProcessed: order.orderProcessed ? false : true,
           orderId: order.id,
         },
       });
@@ -174,7 +169,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
     return `£${price.toFixed(2)}`;
   };
 
-  const { expanded, isSettingProcessed, dialogOpen, showID } = state;
+  const { isSettingProcessed, dialogOpen, showID } = state;
   return (
     <>
       <Accordion
@@ -271,6 +266,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({ order, i }) => {
                 </span>
               </Typography>
             </Grid>
+            <Divider className={classes.divider} />
             {order.products.map((product, i) => {
               const { title, price, shippingCost, variant, customOptions } = product;
               const options: {

@@ -43,6 +43,10 @@ export default createStyles({
       fontSize: "1rem",
     },
   },
+  divider: {
+    width: "60%",
+    margin: "5px auto 10px",
+  },
   secondaryTitle: {
     fontWeight: "bold",
     fontSize: "1.1rem",

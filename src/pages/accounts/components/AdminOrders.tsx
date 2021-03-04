@@ -31,6 +31,7 @@ interface AdminOrdersState {
     min: number;
     max: number;
   };
+  expanded: string | false;
 }
 
 /**
@@ -53,6 +54,7 @@ const AdminOrders = (): JSX.Element => {
       min: 0,
       max: 12,
     },
+    expanded: false,
   });
 
   /**
@@ -90,9 +92,25 @@ const AdminOrders = (): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
+  /**
+   * Function to open/close a panel inside the Accordion component.
+   * @param {string} panel - The panel which is expected to be opened/closed
+   */
+  const handlePanelChange = (panel: string) => (
+    _event: React.ChangeEvent<{}>,
+    isExpanded: boolean,
+  ): void => {
+    // Opens panel if its closed, or closes it if it's open.
+    setState({
+      ...state,
+      expanded: isExpanded ? panel : false,
+    });
+  };
+
   // destructure values from state for use in component
   const {
     isLoading,
+    expanded,
     showPages: { min, max },
   } = state;
 
@@ -126,7 +144,19 @@ const AdminOrders = (): JSX.Element => {
         // Map all of the orders into their own accordion component
         orders
           .slice(min, max)
-          .map((order, i) => <AdminOrderItem order={order} i={i} key={i} />)
+          .map((order, i) => (
+            <AdminOrderItem
+              order={order}
+              i={i}
+              key={i}
+              expanded={expanded}
+              handlePanelChange={(
+                panel: string,
+              ): ((_event: React.ChangeEvent<{}>, isExpanded: boolean) => void) =>
+                handlePanelChange(panel)
+              }
+            />
+          ))
       )}
       {/* Render the pagination if there is more than 6 orders in array */}
       {orders.length > 6 && (

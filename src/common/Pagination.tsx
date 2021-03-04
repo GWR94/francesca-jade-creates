@@ -41,12 +41,14 @@ const Pagination: React.FunctionComponent<PaginationProps> = ({
       <Page
         page={page}
         onChange={(_e: React.ChangeEvent<unknown>, value: number): void => {
-          setPage(value);
-          setPageValues({
-            min: value === 1 ? 0 : (value - 1) * numPage,
-            max: value === 1 ? numPage : (value - 1) * numPage + numPage,
-          });
-          window.scrollTo(0, 0);
+          if (value !== page) {
+            setPage(value);
+            setPageValues({
+              min: value === 1 ? 0 : (value - 1) * numPage,
+              max: value === 1 ? numPage : (value - 1) * numPage + numPage,
+            });
+            window.scrollTo(0, 0);
+          }
         }}
         shape="rounded"
         showFirstButton={desktop}

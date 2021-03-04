@@ -26,17 +26,39 @@ export default createStyles({
   },
   paidTag: {
     borderRadius: 3,
+    fontWeight: "bold",
     border: `2px solid ${COLORS.SuccessGreen}`,
-    minWidth: 90,
+    minWidth: 60,
     [breakpoints.down("sm")]: {
       fontSize: "0.8rem",
     },
     marginLeft: 10,
   },
+  dangerIcon: {
+    color: COLORS.ErrorRed,
+    fontSize: "1.3rem",
+    paddingLeft: 10,
+  },
+  successIcon: {
+    color: COLORS.SuccessGreen,
+    fontSize: "1.2rem",
+    paddingLeft: 10,
+  },
+  paymentText: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  paidLabel: {
+    color: COLORS.SuccessGreen,
+  },
+  unpaidLabel: {
+    color: COLORS.ErrorRed,
+  },
   unpaidTag: {
+    fontWeight: "bold",
     borderRadius: 3,
     border: `2px solid ${COLORS.ErrorRed}`,
-    minWidth: 90,
+    minWidth: 60,
     [breakpoints.down("sm")]: {
       fontSize: "0.8rem",
     },
@@ -58,7 +80,14 @@ export default createStyles({
       fontSize: "1rem",
     },
   },
+  divider: {
+    width: "60%",
+    margin: "15px auto 10px",
+  },
   details: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     fontWeight: "bold",
     fontSize: "1rem",
     [breakpoints.down("sm")]: {
@@ -70,6 +99,12 @@ export default createStyles({
     fontWeight: "normal",
     marginLeft: 5,
   },
+  orderId: {
+    fontStyle: "italic",
+    fontWeight: "normal",
+    marginLeft: 5,
+    cursor: "pointer",
+  },
   detailsText: {
     flexBasis: "50%",
   },
@@ -77,10 +112,6 @@ export default createStyles({
     display: "flex",
     justifyContent: "center",
     marginBottom: "0.35em",
-  },
-  orderId: {
-    textAlign: "center",
-    fontWeight: "bold",
   },
   buttonContainer: {
     display: "flex",
