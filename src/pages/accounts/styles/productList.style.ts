@@ -9,7 +9,6 @@ export default createStyles({
     fontSize: "40px",
     padding: 0,
     dffd: 0,
-    WebkitOverflowScrolling: "touch",
     color: COLORS.Pink,
     [breakpoints.down("md")]: {
       fontSize: "30px",
@@ -22,6 +21,7 @@ export default createStyles({
     position: "fixed",
     left: 0,
     top: "calc(50% - 20px)",
+    WebkitOverflowScrolling: "touch",
     cursor: "pointer",
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
