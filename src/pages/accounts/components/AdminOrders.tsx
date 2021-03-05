@@ -17,11 +17,6 @@ import styles from "../styles/orders.style";
 import Pagination from "../../../common/Pagination";
 import AdminOrderItem from "./AdminOrderItem";
 
-/**
- * TODO
- * [ ] Fix shipping references title overflowing in dialog
- */
-
 interface AdminOrdersState {
   currentOrder: OrderProps | null;
   inputError: string;

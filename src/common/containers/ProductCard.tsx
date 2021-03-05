@@ -60,6 +60,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
     },
   });
 
+  console.log(product);
+
   const admin = useSelector(({ user }: AppState) => user.admin);
 
   const classes = useStyles();

@@ -1,6 +1,6 @@
 import React, { useState as useStateMock } from "react";
 import { shallow } from "enzyme";
-import { Card, Button } from "@blueprintjs/core";
+import { Card, Button } from "@material-ui/core";
 import { S3Image } from "aws-amplify-react";
 import ProductCard from "../containers/ProductCard";
 import { history } from "../../routes/Router";
@@ -22,9 +22,7 @@ describe("<ProductCard />", () => {
 
   it('should render correctly when user IS admin and the product is of type "Cake"', () => {
     // create shallow wrapper
-    const wrapper = shallow(
-      <ProductCard product={cakeProduct} admin history={history} />,
-    );
+    const wrapper = shallow(<ProductCard product={cakeProduct} admin />);
     // match snapshot
     expect(wrapper).toMatchSnapshot();
     // find card

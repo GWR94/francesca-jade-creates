@@ -8,7 +8,6 @@ export default createStyles({
   filterIcon: {
     fontSize: "40px",
     padding: 0,
-    dffd: 0,
     color: COLORS.Pink,
     [breakpoints.down("md")]: {
       fontSize: "30px",

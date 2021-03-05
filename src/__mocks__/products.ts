@@ -1,34 +1,35 @@
-export const cakeProduct = {
+import { ProductProps } from "../pages/accounts/interfaces/Product.i";
+
+export const cakeProduct: ProductProps = {
   id: "8c01cf0d-9de5-4168-8143-73e1ea067ac9",
   title: "Racing Cake",
   description: "Test test test test test test",
-  image: [
-    {
-      bucket: "fjadecreatesmedia121747-production",
-      region: "eu-west-2",
-      key:
-        "/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357819265-racecarcrop.jpg",
-    },
-    {
-      bucket: "fjadecreatesmedia121747-production",
-      region: "eu-west-2",
-      key:
-        "/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357839998-IMG_3565.JPEG",
-    },
-    {
-      bucket: "fjadecreatesmedia121747-production",
-      region: "eu-west-2",
-      key:
-        "/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357864535-IMG_3659.JPG",
-    },
-  ],
-  price: 0,
-  shippingCost: 0,
-  type: "Cake",
-  tags: ["Cake", "Racing"],
-  createdAt: "2020-03-09T11:54:02.873Z",
-  updatedAt: "2020-03-16T11:24:33.081Z",
+  tagline: "Racing birthday cake!",
+  images: {
+    cover: 1,
+    collection: [
+      {
+        bucket: "francescajadecreatesimages102644-staging",
+        region: "eu-west-2",
+        key: "products/1608555324518-IMG_8831.JPEG",
+      },
+      {
+        bucket: "francescajadecreatesimages102644-staging",
+        region: "eu-west-2",
+        key: "products/1608555338248-IMG_8829.JPEG",
+      },
+      {
+        bucket: "francescajadecreatesimages102644-staging",
+        key: "products/1608555349571-IMG_8841.JPEG",
+        region: "eu-west-2",
+      },
+    ],
+  },
+  customOptions: ["Chocolate", "Oreo", "Cadburys"],
   setPrice: false,
+  type: "Cake",
+  variants: [],
+  tags: ["Cake", "Racing"],
 };
 
 export const createsProduct = {

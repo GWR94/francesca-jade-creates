@@ -47,7 +47,7 @@ const AccountsMenu = ({
         content: "''",
         position: "absolute",
         top: -23,
-        right: desktop ? 23 : 0,
+        right: desktop ? 15 : 0,
         // if desktop, show arrow to icon, if not centre it
         left: desktop ? "auto" : "calc(50% - 7.5px)",
         width: 0,
@@ -61,7 +61,7 @@ const AccountsMenu = ({
         content: "''",
         position: "absolute",
         top: -22,
-        right: desktop ? 23 : 0,
+        right: desktop ? 15 : 0,
         // if desktop, show arrow to icon, if not centre it
         left: desktop ? "auto" : "calc(50% - 7.5px)",
         width: 0,

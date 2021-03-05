@@ -1,6 +1,5 @@
 type Product
   @model
-  @searchable
   @auth(
     rules: [
       { allow: private, provider: userPools, operations: [read] }

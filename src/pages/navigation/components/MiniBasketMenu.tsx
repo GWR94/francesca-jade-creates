@@ -40,7 +40,7 @@ const MiniBasketMenu: React.FC<MiniBasketProps> = ({
       }}
       transformOrigin={{
         vertical: "top",
-        horizontal: 280,
+        horizontal: 250,
       }}
       style={{ marginTop: 6 }}
       onClose={(): void => setBasketOpen(false)}

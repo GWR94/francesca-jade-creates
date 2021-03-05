@@ -24,7 +24,7 @@ import { SearchRounded, RefreshRounded } from "@material-ui/icons";
 import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
 import { searchFilterTheme } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
-import { searchProducts } from "../../../graphql/queries";
+import { listProducts, searchProducts } from "../../../graphql/queries";
 import { ProductProps } from "../../accounts/interfaces/Product.i";
 import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
@@ -150,13 +150,23 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
    */
   useEffect(() => {
     const { adminFilters } = filters;
-    if (admin && adminFilters === null) {
+    if (admin && adminFilters === null && !type) {
       dispatch(
         actions.setSearchFilters({
           ...filters,
           adminFilters: {
             cake: true,
             creates: true,
+          },
+        }),
+      );
+    } else if (type) {
+      dispatch(
+        actions.setSearchFilters({
+          ...filters,
+          adminFilters: {
+            cake: type === "Cake",
+            creates: type === "Creates",
           },
         }),
       );
@@ -226,7 +236,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       // execute the searchProducts query, with any filters if there are any
       try {
         const { data } = await API.graphql({
-          query: searchProducts,
+          query: listProducts,
           variables: {
             filter: !_.isEmpty(filter) ? filter : undefined,
             limit: 1000,
@@ -235,7 +245,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           authMode: "API_KEY",
         });
 
-        const products = data.searchProducts.items;
+        const products = data.listProducts.items;
         // sort the products, so they can be sorted and set into state inside that function.
         sortSearchResults(products);
       } catch (err) {
@@ -354,14 +364,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="description">Description</MenuItem>
-                  <MenuItem value="tags">Tags</MenuItem>
+                  <MenuItem value="tags">Themes</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
           </Grid>
           <Grid container>
             {/* only show adminFilters checkboxes if admin boolean is true and adminFilters isn't null */}
-            {admin && adminFilters && (
+            {!type && admin && adminFilters && (
               <Grid item xs={4}>
                 {/* create Checkbox component for selecting adminFilters (cake/creates filters) */}
                 <FormControl fullWidth>
@@ -427,7 +437,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               If adminFilters is not null and admin is true, set the width to 4, otherwise 6 as
               it will need to fill rest of container.
              */}
-            <Grid item xs={admin && adminFilters ? 4 : 6}>
+            <Grid item xs={!type && admin && adminFilters ? 4 : 6}>
               {/* Create RadioGroup (radio buttons) for sort by filter */}
               <FormControl fullWidth>
                 <FormLabel className={classes.formLabel}>Sort By</FormLabel>
@@ -447,7 +457,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   }}
                 >
                   {/* Create Radio buttons for each filter */}
-                  <FormControlLabel value="createdAt" control={<Radio />} label="Date" />
+                  <FormControlLabel
+                    value="createdAt"
+                    control={<Radio />}
+                    label={!type && admin && adminFilters ? "Date" : "Date Added"}
+                  />
                   <FormControlLabel value="price" control={<Radio />} label="Price" />
                 </RadioGroup>
               </FormControl>
@@ -456,7 +470,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               If adminFilters is not null and admin is true, set the width to 4, otherwise 6 as
               it will need to fill rest of container.
              */}
-            <Grid item xs={adminFilters ? 4 : 6}>
+            <Grid item xs={!type && admin && adminFilters ? 4 : 6}>
               {/* Create RadioGroup (radio buttons) for sort direction filter */}
               <FormControl fullWidth>
                 <FormLabel className={classes.formLabel}>Sort Direction</FormLabel>
