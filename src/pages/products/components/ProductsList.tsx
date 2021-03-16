@@ -92,7 +92,9 @@ const ProductsList: React.FC<ProductListProps> = ({
    * Retrieve the items from the products store by destructuring it and renaming
    * it to products for clarity's sake.
    */
-  const { items: products } = useSelector(({ products }: AppState) => products);
+  const { items: products, isSearching } = useSelector(
+    ({ products }: AppState) => products,
+  );
   /**
    * if there are any products (searchResults) passed from the SearchFilter component,
    * use them. If there aren't, then use the products from the products store (which
@@ -102,7 +104,7 @@ const ProductsList: React.FC<ProductListProps> = ({
 
   const isCake = type === "Cake";
 
-  return isLoading ? (
+  return isSearching ? (
     <div
       style={{
         display: "flex",

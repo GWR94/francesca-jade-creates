@@ -1,4 +1,4 @@
-import { AdminFilters } from "../pages/products/interfaces/SearchFilter.i";
+import { ProductFilterType } from "../pages/products/interfaces/SearchFilter.i";
 import { SearchType } from "../pages/products/interfaces/ProductList.i";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 
@@ -14,7 +14,7 @@ export const FILTER_PRODUCTS = "FILTER_PRODUCTS";
 
 export interface FilterActionProps {
   searchType: SearchType;
-  adminFilters: AdminFilters | null;
+  type: ProductFilterType;
   sortDirection: "ASC" | "DESC";
   sortBy: SortBy;
   shouldUpdateWithNoQuery: boolean;

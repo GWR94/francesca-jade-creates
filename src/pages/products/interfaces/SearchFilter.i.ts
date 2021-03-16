@@ -6,7 +6,7 @@ export interface SearchFilterProps {
   setSearchResults: (results: ProductProps[] | null) => void;
 }
 
-export interface AdminFilters {
+export interface ProductFilterType {
   cake: boolean;
   creates: boolean;
 }
