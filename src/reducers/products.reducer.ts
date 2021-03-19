@@ -1,4 +1,3 @@
-import { SET_SEARCH_QUERY } from "./../interfaces/products.redux.i";
 import { ModelProductFilterInput } from "../API";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import ProductActionTypes, {
@@ -7,6 +6,10 @@ import ProductActionTypes, {
   FETCH_PRODUCTS_SUCCESS,
   GET_PRODUCTS,
   RESET_FILTERS,
+  SET_SEARCH_QUERY,
+  SET_SORT_BY,
+  SortBy,
+  SortDirection,
 } from "../interfaces/products.redux.i";
 
 const defaultProductState: ProductState = {
@@ -15,6 +18,8 @@ const defaultProductState: ProductState = {
   isSearching: false,
   query: "",
   noResults: false,
+  sortBy: "updatedAt",
+  sortDirection: "DESC",
 };
 
 export interface ProductState {
@@ -23,6 +28,8 @@ export interface ProductState {
   isSearching: boolean;
   query: string;
   noResults: boolean;
+  sortBy: SortBy;
+  sortDirection: SortDirection;
 }
 
 export default (
@@ -48,6 +55,12 @@ export default (
       return {
         ...state,
         query: action.query,
+      };
+    case SET_SORT_BY:
+      return {
+        ...state,
+        sortBy: action.sortBy,
+        sortDirection: action.sortDirection,
       };
     case GET_PRODUCTS:
       return {

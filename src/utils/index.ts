@@ -126,3 +126,22 @@ export const getUserData = async () => {
   const user = await Auth.currentUserInfo();
   return user;
 };
+
+/**
+ * Function to find the minimum price from an array of variants and return
+ * it.
+ * @param variants - Array of variants which will be iterated
+ * through to find the minimum price out of all of the elements.
+ */
+export const getMinPriceFromVariants = (variants: Variant[]): number => {
+  // set min to infinity so any number which runs with Math.min() will change value
+  let min = Infinity;
+  /**
+   * iterate through each variant and check to see if the current variants prices
+   * are less than the current min, and overwrite it if it is.
+   */
+  variants.forEach((variant) => {
+    min = Math.min(min, variant.price.item + variant.price.postage);
+  });
+  return min;
+};

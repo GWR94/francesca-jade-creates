@@ -2,7 +2,6 @@ import { Variant } from "../../products/interfaces/Variants.i";
 
 export interface ProductCardProps {
   product: ProductProps;
-  admin?: boolean;
 }
 
 export type ProductType = "Cake" | "Creates";

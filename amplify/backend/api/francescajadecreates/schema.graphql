@@ -16,6 +16,7 @@ type Product
   setPrice: Boolean
   type: String!
   tags: [String]!
+  searchField: String
   createdAt: String
   updatedAt: String
   variants: [Variants]

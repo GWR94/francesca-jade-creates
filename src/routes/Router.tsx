@@ -1,11 +1,10 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Router, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { Container, Typography, withStyles } from "@material-ui/core";
 import { connect, useDispatch } from "react-redux";
-import { Dispatch } from "redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
+import { Dispatch } from "redux";
 import Landing from "../pages/home/Landing";
 import NavBar from "../pages/navigation/NavBar";
 import ViewProduct from "../pages/products/components/ViewProduct";
@@ -13,7 +12,6 @@ import { getUser } from "../graphql/queries";
 import { registerUser } from "../graphql/mutations";
 import {
   RouterState,
-  RouterDispatchProps,
   SignInUserData,
   HubCapsule,
   RouterProps,
@@ -36,6 +34,7 @@ import Themes from "../pages/products/components/Themes";
 import Creations from "../pages/products/components/Creations";
 import Cakes from "../pages/products/components/Cakes";
 import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
+import { SetUserAction } from "../interfaces/user.redux.i";
 
 export const history = createBrowserHistory();
 
@@ -44,16 +43,23 @@ export const history = createBrowserHistory();
  * [ ] Check & fix loading spinner off centre
  */
 
-const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
-  const [state, setState] = useState<RouterState>({
+class AppRouter extends React.Component<RouterProps> {
+  public readonly state: RouterState = {
     user: null,
     userAttributes: null,
     isLoading: true,
-  });
+  };
   // set the property to be false to begin with, so no user can accidentally be an admin.
-  let admin = false;
+  public admin = false;
 
-  const dispatch = useDispatch();
+  public async componentDidMount(): Promise<void> {
+    // @ts-ignore
+    Hub.listen("auth", this.onHubCapsule);
+
+    const { user } = this.state;
+    // listener for auth changes such as signIn, signOut, signUp etc.
+    if (!user) await this.getUserData();
+  }
 
   /**
    * A method to register a new user, and save it into the database by using the registerUser
@@ -61,7 +67,8 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
    * @param {SignInUserData} signInData - Object containing the current authenticated
    * users' data
    */
-  const registerNewUser = async (signInData: SignInUserData): Promise<void> => {
+  private registerNewUser = async (signInData: SignInUserData): Promise<void> => {
+    console.log("REGISTER");
     /**
      * Get the id from signInData - it's in different locations based on what provider user
      * logged in with. This will be used to check if the user is already a part of the database
@@ -107,7 +114,7 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
    * @param {CognitoUser} authUserData - An object containing the data for the current
    * auth user which can be used for getting the users attributes.
    */
-  const getUserAttributes = async (
+  public getUserAttributes = async (
     authUserData: CognitoUser,
   ): Promise<UserAttributeProps | null> => {
     try {
@@ -136,53 +143,38 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
    * calling the function - this can only be done once so if it's set to true then there will not be
    * another retry attempt if there is a fail.
    */
-  const getUserData = async (): Promise<void> => {
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      if (user) {
-        /**
-         * if the current user is part of the Admin group in the cognito groups array, then set
-         * this.admin to true, otherwise set it to false.
-         */
-        admin =
-          user?.signInUserSession?.idToken?.payload["cognito:groups"]?.includes(
-            "Admin",
-          ) ?? false;
-
-        /**
-         * if there is a user object, set it into state and set isLoading to false to stop any
-         * loading UI effects. Then call getUserAttributes() as the callback function.
-         */
-        const userAttributes = await getUserAttributes(user);
-        if (userAttributes?.sub) {
-          dispatch(userActions.setUser(userAttributes.sub, admin));
-        }
-        setState({
-          ...state,
-          user,
-          userAttributes,
-          isLoading: false,
-        });
-      } else {
-        /**
-         * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
-         * set the user object to null, and remove loading UI effects by setting isLoading to false.
-         */
-        admin = false;
-        setState({
-          ...state,
-          user: null,
-          isLoading: false,
-        });
-      }
-    } catch (err) {
+  public getUserData = async (): Promise<void> => {
+    const { setUser } = this.props;
+    const user = await Auth.currentAuthenticatedUser();
+    if (user) {
       /**
-       * If there are any errors anywhere in the function, then catch the error, set this.admin to false,
-       * set user state to null and remove loading UI effects by settings isLoading state to false.
+       * if the current user is part of the Admin group in the cognito groups array, then set
+       * this.admin to true, otherwise set it to false.
        */
-      admin = false;
-      setState({
-        ...state,
+      this.admin =
+        user.signInUserSession?.idToken?.payload["cognito:groups"]?.includes("Admin") ??
+        false;
+
+      /**
+       * if there is a user object, set it into state and set isLoading to false to stop any
+       * loading UI effects. Then call getUserAttributes() as the callback function.
+       */
+      const userAttributes = await this.getUserAttributes(user);
+      if (userAttributes?.sub) {
+        setUser(userAttributes.sub, this.admin);
+      }
+      this.setState({
+        user,
+        userAttributes,
+        isLoading: false,
+      });
+    } else {
+      /**
+       * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
+       * set the user object to null, and remove loading UI effects by setting isLoading to false.
+       */
+      this.admin = false;
+      this.setState({
         user: null,
         isLoading: false,
       });
@@ -196,13 +188,13 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
    * certain action occurs - i.e registering users sends data related to
    * registering a user.
    */
-  const onHubCapsule = async (capsule: HubCapsule): Promise<void> => {
+  public onHubCapsule = async (capsule: HubCapsule): Promise<void> => {
     switch (capsule.payload.event) {
       // if the user is signing in, get the users' data.
       case "signIn":
         console.log("signed in");
-        await getUserData();
-        await registerNewUser(capsule.payload.data);
+        await this.getUserData();
+        await this.registerNewUser(capsule.payload.data);
         break;
       // if the user is signing up, register the user
       case "signUp":
@@ -210,8 +202,7 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
         break;
       // if the user is signing out, remove the user object from state.
       case "signOut":
-        setState({
-          ...state,
+        this.setState({
           user: null,
           isLoading: false,
         });
@@ -221,120 +212,111 @@ const AppRouter: React.FC<RouterProps> = (): JSX.Element => {
     }
   };
 
-  useEffect(() => {
-    const fetchUser = async (): Promise<void> => {
-      try {
-        // listener for auth changes such as signIn, signOut, signUp etc.
-        // @ts-ignore
-        Hub.listen("auth", onHubCapsule);
-        // get the current users information
-        if (!state.user) await getUserData();
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchUser();
-  }, []);
-
-  const { userAttributes, isLoading, user } = state;
-  return (
-    <Router history={history}>
-      <div
-        style={{
-          background: `url(${background}) no-repeat center center fixed`,
-          minHeight: "100vh",
-          height: "100%",
-          backgroundSize: "cover",
-        }}
-      >
-        <NavBar admin={admin} />
-        {isLoading ? (
-          <Loading size={100} />
-        ) : (
-          <>
-            <ScrollToTop />
-            <Switch>
-              <Route path="/" exact component={Landing} />
-              <Route path="/creates" exact component={Creations} />
-              <Route path="/basket" history={history} component={Basket} />
-              <Route
-                path="/creates/:id"
-                component={(_: {
-                  match: {
-                    params: {
-                      id: string;
+  public render() {
+    const { userAttributes, isLoading, user } = this.state;
+    return (
+      <Router history={history}>
+        <div
+          style={{
+            background: `url(${background}) no-repeat center center fixed`,
+            minHeight: "100vh",
+            height: "100%",
+            backgroundSize: "cover",
+          }}
+        >
+          <NavBar admin={this.admin} />
+          {isLoading ? (
+            <Loading size={100} />
+          ) : (
+            <>
+              <ScrollToTop />
+              <Switch>
+                <Route path="/" exact component={Landing} />
+                <Route path="/creates" exact component={Creations} />
+                <Route path="/basket" history={history} component={Basket} />
+                <Route
+                  path="/creates/:id"
+                  component={(_: {
+                    match: {
+                      params: {
+                        id: string;
+                      };
                     };
-                  };
-                }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Creates" />
-                  </div>
-                )}
-              />
-              <Route path="/themes" component={Themes} />
-              <Route path="/cakes" exact component={Cakes} />
-              <Route
-                path="/cakes/:id"
-                component={(_: {
-                  match: {
-                    params: {
-                      id: string;
-                    };
-                  };
-                }): JSX.Element => (
-                  <div className="content-container">
-                    <ViewProduct id={_.match.params.id} type="Cake" />
-                  </div>
-                )}
-              />
-              <Route
-                path="/account"
-                exact
-                component={(): JSX.Element =>
-                  user ? (
-                    <AccountsPage
-                      admin={admin}
-                      userAttributes={userAttributes}
-                      user={user}
-                    />
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route
-                path="/account/:id"
-                component={(
-                  matchParams: RouteComponentProps<{
-                    id: string;
-                  }>,
-                ): JSX.Element =>
-                  admin ? (
+                  }): JSX.Element => (
                     <div className="content-container">
-                      <UpdateProduct
-                        history={history}
-                        update
-                        id={matchParams.match.params.id}
-                        admin={admin}
-                      />
+                      <ViewProduct id={_.match.params.id} type="Creates" />
                     </div>
-                  ) : (
-                    <Redirect to="/" />
-                  )
-                }
-              />
-              <Route path="/privacy-policy" component={PrivacyPolicy} />
-              <Route path="/terms-of-service" component={TermsOfService} />
-              <Route path="/faq" component={FAQ} />
-              <Route path="/contact" component={Contact} />
-              <Route component={NotFoundPage} />
-            </Switch>
-            <Footer />
-          </>
-        )}
-      </div>
-    </Router>
-  );
-};
+                  )}
+                />
+                <Route path="/themes" component={Themes} />
+                <Route path="/cakes" exact component={Cakes} />
+                <Route
+                  path="/cakes/:id"
+                  component={(_: {
+                    match: {
+                      params: {
+                        id: string;
+                      };
+                    };
+                  }): JSX.Element => (
+                    <div className="content-container">
+                      <ViewProduct id={_.match.params.id} type="Cake" />
+                    </div>
+                  )}
+                />
+                <Route
+                  path="/account"
+                  exact
+                  component={(): JSX.Element =>
+                    user ? (
+                      <AccountsPage
+                        admin={this.admin}
+                        userAttributes={userAttributes}
+                        user={user}
+                      />
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route
+                  path="/account/:id"
+                  component={(
+                    matchParams: RouteComponentProps<{
+                      id: string;
+                    }>,
+                  ): JSX.Element =>
+                    this.admin ? (
+                      <div className="content-container">
+                        <UpdateProduct
+                          history={history}
+                          update
+                          id={matchParams.match.params.id}
+                        />
+                      </div>
+                    ) : (
+                      <Redirect to="/" />
+                    )
+                  }
+                />
+                <Route path="/privacy-policy" component={PrivacyPolicy} />
+                <Route path="/terms-of-service" component={TermsOfService} />
+                <Route path="/faq" component={FAQ} />
+                <Route path="/contact" component={Contact} />
+                <Route component={NotFoundPage} />
+              </Switch>
+              <Footer />
+            </>
+          )}
+        </div>
+      </Router>
+    );
+  }
+}
 
-export default AppRouter;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  setUser: (id: string, admin: boolean): SetUserAction =>
+    dispatch(userActions.setUser(id, admin)),
+});
+
+export default connect(null, mapDispatchToProps)(AppRouter);

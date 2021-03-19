@@ -23,11 +23,12 @@ import { AppState } from "../../store/store";
 const AccountsPage: React.FC<AccountsPageProps> = ({
   user,
   userAttributes,
+  admin,
 }): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { admin, currentTab } = useSelector(({ user }: AppState) => user);
-
+  const { currentTab } = useSelector(({ user }: AppState) => user);
+  console.log(admin);
   const renderCurrentTab = (): JSX.Element | null => {
     let tab: JSX.Element | null;
     switch (currentTab) {

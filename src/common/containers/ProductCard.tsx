@@ -39,10 +39,7 @@ import DeleteProductAlert from "../alerts/DeleteProductAlert";
  * @param admin - Boolean value to determine if the current authenticated user is an
  * admin and can view admin only settings/inputs.
  */
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  admin = false,
-}): JSX.Element => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
     // spread all styles from stylesheet
@@ -81,6 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   });
 
   const products = useSelector(({ basket }: AppState) => basket.items);
+  const { admin } = useSelector(({ user }: AppState) => user);
 
   /**
    * Function to return a string containing the minimum price that the product

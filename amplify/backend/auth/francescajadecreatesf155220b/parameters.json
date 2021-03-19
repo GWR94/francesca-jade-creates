@@ -1,6 +1,6 @@
 {
     "identityPoolName": "francescajadecreatesf155220b_identitypool_f155220b",
-    "allowUnauthenticatedIdentities": true,
+    "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "francef155220b",
     "userPoolName": "francescajadecreatesf155220b_userpool_f155220b",
     "autoVerifiedAttributes": [
@@ -12,8 +12,8 @@
     ],
     "smsAuthenticationMessage": "Your authentication code is {####}",
     "smsVerificationMessage": "Your verification code is {####}",
-    "emailVerificationSubject": "Francesca Jade Creates Verification Code",
-    "emailVerificationMessage": "Your verification code is {####}. Please enter it into the verification code input.",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
     "defaultPasswordPolicy": false,
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
@@ -44,7 +44,7 @@
             "Arn"
         ]
     },
-    "useDefault": "manual",
+    "useDefault": "defaultSocial",
     "hostedUI": true,
     "triggers": "{}",
     "hostedUIDomainName": "francescajadecreates",
@@ -60,14 +60,9 @@
     },
     "permissions": [],
     "dependsOn": [],
-    "thirdPartyAuth": true,
-    "authProviders": [
-        "graph.facebook.com",
-        "accounts.google.com",
-        "www.amazon.com"
-    ],
     "userPoolGroups": true,
     "adminQueries": false,
+    "serviceName": "Cognito",
     "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\",\"https://staging.dgbwgsahmq4wg.amplifyapp.com/\",\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\"],\"LogoutURLs\":[\"http://localhost:3000/\",\"https://www.francescajadecreates.co.uk/\",\"https://staging.dgbwgsahmq4wg.amplifyapp.com/\"]}",
-    "serviceName": "Cognito"
+    "authProviders": []
 }

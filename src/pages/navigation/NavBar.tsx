@@ -31,6 +31,8 @@ interface NavBarProps {
  * site efficiently.
  */
 const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
+  console.log(admin);
+
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -127,7 +129,6 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
               {!mobile && (
                 <Links
                   closeNav={(): void => setNavOpen(false)}
-                  admin={admin}
                   signOut={handleSignOut}
                   navOpen={navOpen}
                   setLoginOpen={(): void => setLoginOpen(true)}
@@ -143,7 +144,6 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
                 <Links
                   mobile
                   closeNav={(): void => setNavOpen(false)}
-                  admin={admin}
                   signOut={handleSignOut}
                   navOpen={loginOpen}
                   setLoginOpen={(): void => setLoginOpen(true)}

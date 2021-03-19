@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Typography, Container, makeStyles } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 import ProductsList from "../../products/components/ProductsList";
 import { FONTS, breakpoints } from "../../../themes";
+import * as actions from "../../../actions/products.actions";
 
 interface AdminProductProps {
   admin: boolean;
 }
 
 const AdminProducts: React.FC<AdminProductProps> = ({ admin }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(actions.resetSearchFilters());
+    dispatch(actions.getProducts());
+  }, []);
+
   const useStyles = makeStyles({
     container: {
       margin: "0 auto",

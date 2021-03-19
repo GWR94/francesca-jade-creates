@@ -21,6 +21,12 @@
     "apifrancescajadecreatesGraphQLAPIKeyOutput": {
       "Type": "String",
       "Default": "apifrancescajadecreatesGraphQLAPIKeyOutput"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -89,8 +95,12 @@
         "Layers": [],
         "Timeout": "25",
         "Code": {
-          "S3Bucket": "amplify-francescajadecreates-staging-102644-deployment",
-          "S3Key": "amplify-builds/stripeWebhook-44573438666f4b5a7a76-build.zip"
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
         }
       }
     },

@@ -8,11 +8,6 @@ export interface ProductListProps {
   page?: number;
 }
 
-export enum SortDirection {
-  DESC = "DESC",
-  ASC = "ASC",
-}
-
 export interface ProductListState {
   page: {
     min: number;
@@ -31,8 +26,6 @@ export interface FilterProps {
   or: unknown[];
   and: unknown[];
 }
-
-export type SearchType = "all" | "title" | "description" | "tags";
 
 export interface ProductFilters {
   adminFilters: {

@@ -101,7 +101,6 @@ const ProductsList: React.FC<ProductListProps> = ({
   const results = theme ? products || [] : searchResults || products;
 
   const isCake = type === "Cake";
-  console.log(isSearching);
   return (
     <>
       {!theme && (
