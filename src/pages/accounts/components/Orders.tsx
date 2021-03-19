@@ -4,29 +4,21 @@ import {
   Grid,
   makeStyles,
   Typography,
-  useMediaQuery,
 } from "@material-ui/core";
 import dayjs from "dayjs";
-import { ErrorOutline, ExpandMoreRounded } from "@material-ui/icons";
+import { ErrorOutline } from "@material-ui/icons";
 import { API, graphqlOperation } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import { S3Image } from "aws-amplify-react";
 import Loading from "../../../common/Loading";
 import Pagination from "../../../common/Pagination";
 import { getUser } from "../../../graphql/queries";
 import { AppState } from "../../../store/store";
 import styles from "../styles/orders.style";
-import { S3ImageProps } from "../interfaces/Product.i";
-import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
-import { UserAttributeProps } from "../interfaces/Accounts.i";
+import { OrderProps } from "../interfaces/Orders.i";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import OrderItem from "./OrderItem";
-
-interface OrdersProps {
-  userAttributes: UserAttributeProps | null;
-}
 
 interface OrdersState {
   isLoading: boolean;
@@ -42,7 +34,7 @@ interface OrdersState {
  * Functional component which renders all of the current authenticated
  * users orders if they have any.
  */
-const Orders: React.FC<OrdersProps> = (): JSX.Element => {
+const Orders: React.FC = (): JSX.Element => {
   const [state, setState] = useState<OrdersState>({
     isLoading: true,
     pages: {
@@ -61,7 +53,6 @@ const Orders: React.FC<OrdersProps> = (): JSX.Element => {
     _event: React.ChangeEvent<{}>,
     isExpanded: boolean,
   ): void => {
-    console.log(isExpanded);
     // Opens panel if its closed, or closes it if it's open.
     setState({
       ...state,

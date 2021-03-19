@@ -55,7 +55,7 @@ const OrderItem = ({
   const getOrderPrice = (products: GraphQlProduct[]): string => {
     let price = 0;
     products.map((product) => {
-      price += product.price + product.shippingCost;
+      price += product.variant.price.item + product.variant.price.postage;
     });
     return `£${price.toFixed(2)}`;
   };
@@ -172,7 +172,7 @@ const OrderItem = ({
         <AccordionDetails>
           <Grid container spacing={1}>
             {order.products.map((product, i) => {
-              const { title, price, shippingCost, variant } = product;
+              const { title, variant } = product;
               return (
                 <Grid item xs={12} sm={order.products.length <= 1 ? 12 : 6} key={i}>
                   <div
@@ -185,7 +185,8 @@ const OrderItem = ({
                     <Typography className={classes.details}>
                       Cost:{" "}
                       <span className={classes.data}>
-                        £{price.toFixed(2)} + £{shippingCost.toFixed(2)} P&P
+                        £{variant.price.item.toFixed(2)} + £
+                        {variant.price.postage.toFixed(2)} P&P
                       </span>
                     </Typography>
                     <Typography className={classes.details}>

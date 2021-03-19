@@ -35,10 +35,6 @@ export const createProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range
@@ -91,10 +87,6 @@ export const updateProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range
@@ -147,10 +139,6 @@ export const deleteProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range
@@ -213,8 +201,6 @@ export const registerUser = /* GraphQL */ `
                 key
               }
             }
-            price
-            shippingCost
             customOptions
           }
           stripePaymentIntent
@@ -322,10 +308,6 @@ export const registerUser = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -392,8 +374,6 @@ export const updateUser = /* GraphQL */ `
                 key
               }
             }
-            price
-            shippingCost
             customOptions
           }
           stripePaymentIntent
@@ -501,10 +481,6 @@ export const updateUser = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -553,10 +529,6 @@ export const createOrder = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -573,8 +545,6 @@ export const createOrder = /* GraphQL */ `
             key
           }
         }
-        price
-        shippingCost
         customOptions
       }
       stripePaymentIntent
@@ -601,8 +571,6 @@ export const createOrder = /* GraphQL */ `
                 instructions
                 dimensions
               }
-              price
-              shippingCost
               customOptions
             }
             stripePaymentIntent
@@ -690,10 +658,6 @@ export const createOrder = /* GraphQL */ `
               inputType
               description
               featureType
-              price {
-                item
-                postage
-              }
               value {
                 array
                 range
@@ -760,10 +724,6 @@ export const updateOrder = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -780,8 +740,6 @@ export const updateOrder = /* GraphQL */ `
             key
           }
         }
-        price
-        shippingCost
         customOptions
       }
       stripePaymentIntent
@@ -808,8 +766,6 @@ export const updateOrder = /* GraphQL */ `
                 instructions
                 dimensions
               }
-              price
-              shippingCost
               customOptions
             }
             stripePaymentIntent
@@ -897,10 +853,6 @@ export const updateOrder = /* GraphQL */ `
               inputType
               description
               featureType
-              price {
-                item
-                postage
-              }
               value {
                 array
                 range

@@ -290,7 +290,6 @@ const ViewProduct: React.FC<ViewProps> = ({ id }): JSX.Element | null => {
                     props={{
                       variant: "contained",
                       color: "primary",
-                      // @ts-ignore
                       classOverride: classes.button,
                       text: "Login to Purchase",
                       align: "center",

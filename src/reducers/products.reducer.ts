@@ -1,27 +1,17 @@
+import { SET_SEARCH_QUERY } from "./../interfaces/products.redux.i";
+import { ModelProductFilterInput } from "../API";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import ProductActionTypes, {
   SET_FILTERS,
   FETCH_PRODUCTS_FAILURE,
   FETCH_PRODUCTS_SUCCESS,
   GET_PRODUCTS,
-  GET_PRODUCTS_BY_TYPE,
   RESET_FILTERS,
-  FilterActionProps,
 } from "../interfaces/products.redux.i";
-import { FlightTakeoffSharp } from "@material-ui/icons";
 
 const defaultProductState: ProductState = {
   items: [],
-  filters: {
-    searchType: "all",
-    type: {
-      cake: true,
-      creates: false,
-    },
-    sortDirection: "DESC",
-    sortBy: "createdAt",
-    shouldUpdateWithNoQuery: false,
-  },
+  filters: null,
   isSearching: false,
   query: "",
   noResults: false,
@@ -29,7 +19,7 @@ const defaultProductState: ProductState = {
 
 export interface ProductState {
   items: ProductProps[];
-  filters: FilterActionProps;
+  filters: ModelProductFilterInput | null;
   isSearching: boolean;
   query: string;
   noResults: boolean;
@@ -54,23 +44,15 @@ export default (
         isSearching: false,
         noResults: true,
       };
+    case SET_SEARCH_QUERY:
+      return {
+        ...state,
+        query: action.query,
+      };
     case GET_PRODUCTS:
       return {
         ...state,
         isSearching: true,
-        noResults: false,
-      };
-    case GET_PRODUCTS_BY_TYPE:
-      return {
-        ...state,
-        isSearching: true,
-        filters: {
-          ...state.filters,
-          type: {
-            cake: action.productType.cake,
-            creates: action.productType.creates,
-          },
-        },
         noResults: false,
       };
     case SET_FILTERS:
@@ -81,16 +63,7 @@ export default (
     case RESET_FILTERS:
       return {
         ...state,
-        filters: {
-          searchType: "all",
-          type: {
-            cake: true,
-            creates: false,
-          },
-          sortDirection: "DESC",
-          sortBy: "createdAt",
-          shouldUpdateWithNoQuery: false,
-        },
+        filters: null,
       };
     default:
       return state;

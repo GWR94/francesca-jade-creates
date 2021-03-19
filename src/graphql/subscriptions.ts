@@ -24,10 +24,6 @@ export const onCreateOrder = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -44,8 +40,6 @@ export const onCreateOrder = /* GraphQL */ `
             key
           }
         }
-        price
-        shippingCost
         customOptions
       }
       stripePaymentIntent
@@ -72,8 +66,6 @@ export const onCreateOrder = /* GraphQL */ `
                 instructions
                 dimensions
               }
-              price
-              shippingCost
               customOptions
             }
             stripePaymentIntent
@@ -161,10 +153,6 @@ export const onCreateOrder = /* GraphQL */ `
               inputType
               description
               featureType
-              price {
-                item
-                postage
-              }
               value {
                 array
                 range
@@ -228,10 +216,6 @@ export const onUpdateOrder = /* GraphQL */ `
             inputType
             description
             featureType
-            price {
-              item
-              postage
-            }
             value {
               array
               range
@@ -248,8 +232,6 @@ export const onUpdateOrder = /* GraphQL */ `
             key
           }
         }
-        price
-        shippingCost
         customOptions
       }
       stripePaymentIntent
@@ -276,8 +258,6 @@ export const onUpdateOrder = /* GraphQL */ `
                 instructions
                 dimensions
               }
-              price
-              shippingCost
               customOptions
             }
             stripePaymentIntent
@@ -365,10 +345,6 @@ export const onUpdateOrder = /* GraphQL */ `
               inputType
               description
               featureType
-              price {
-                item
-                postage
-              }
               value {
                 array
                 range
@@ -440,10 +416,6 @@ export const onCreateProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range
@@ -493,10 +465,6 @@ export const onUpdateProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range
@@ -546,10 +514,6 @@ export const onDeleteProduct = /* GraphQL */ `
           inputType
           description
           featureType
-          price {
-            item
-            postage
-          }
           value {
             array
             range

@@ -8,8 +8,6 @@ export interface GraphQlProduct {
   tagline: string;
   image: S3ImageProps;
   variant: Variant;
-  price: number;
-  shippingCost: number;
   customOptions: string[];
 }
 

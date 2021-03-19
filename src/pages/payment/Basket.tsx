@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API, graphqlOperation } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -33,7 +33,7 @@ import Login from "../home/Login";
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NODE_ENV === "production") {
-  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string); // FIXME - Remove after testing
+  stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string); // FIXME - Change to regular key after testing
 } else {
   stripePromise = loadStripe(process.env.STRIPE_PUBLIC_KEY_TEST as string);
 }
@@ -64,7 +64,7 @@ const initialState = {
  * @param userAttributes - Object containing relevant data for the user such
  * as their sub (id), email address, phone number etc.
  */
-const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
+const Basket: React.FC<BasketProps> = (): JSX.Element => {
   // make styles from the external styles object
   const useStyles = makeStyles(styles);
   // execute the useStyles function into a variable to use those styles
@@ -78,7 +78,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
     items: basketItems, // rename items to basketItems so it's clearer
     checkout: { cost, products }, // get checkout products and accumulative cost
   } = useSelector(({ basket }: AppState): BasketStoreState => basket);
-  const { id, email } = useSelector(({ user }: AppState): UserState => user);
+  const { id } = useSelector(({ user }: AppState): UserState => user);
 
   // create state for the product and initialise it with blank input values
   const [state, setState] = useState<BasketState>(initialState);
@@ -102,11 +102,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   };
 
   // isMounted is for suppressing React error for updating state on unmounted component
-  let isMounted = false;
   useEffect(() => {
-    // set isMounted to true when the component mounts
-    isMounted = true;
-
     const handleRetrieveSession = async (sessionId: string): Promise<void> => {
       const { session } = await API.post("orderlambda", "/orders/retrieve-session", {
         body: { id: sessionId },
@@ -123,28 +119,23 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
 
     const { user } = state;
 
-    if (isMounted) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionId = urlParams.get("session_id");
-      const cancelled = Boolean(urlParams.get("cancel"));
-      if (!user) {
-        getUserInfo(); //FIXME - Test
-      }
-      if (sessionId) {
-        handleRetrieveSession(sessionId);
-      } else if (cancelled) {
-        setState({ ...state, cancelled, isLoading: false });
-      } else {
-        // clear the checkout basket when the user navigates to the page to clear up old data
-        dispatch(actions.clearCheckout());
-        setState({ ...state, isLoading: false, user: null });
-        // get the users' data and set it into state within the getUserInfo function
-        // getUserInfo();
-      }
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get("session_id");
+    const cancelled = Boolean(urlParams.get("cancel"));
+    if (!user) {
+      getUserInfo(); //FIXME - Test
     }
-    return (): void => {
-      isMounted = false;
-    };
+    if (sessionId) {
+      handleRetrieveSession(sessionId);
+    } else if (cancelled) {
+      setState({ ...state, cancelled, isLoading: false });
+    } else {
+      // clear the checkout basket when the user navigates to the page to clear up old data
+      dispatch(actions.clearCheckout());
+      setState({ ...state, isLoading: false, user: null });
+      // get the users' data and set it into state within the getUserInfo function
+      // getUserInfo();
+    }
   }, []);
 
   /**
@@ -155,6 +146,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   const handleCreateCheckout = async (): Promise<void> => {
     const { user } = state;
     if (!user) await getUserInfo();
+
+    const { attributes } = await Auth.currentAuthenticatedUser();
 
     try {
       // show ui loading effects
@@ -175,14 +168,6 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           JSON.stringify(options),
         ),
       }));
-
-      if (!userAttributes) {
-        // If there are no userAttributes, then the session can't be created, so notify the user
-        return openSnackbar({
-          severity: INTENT.Danger,
-          message: "Unable to create session. Please try again.",
-        });
-      }
 
       /**
        * create an input object for creating a new order with the graphql createOrder
@@ -205,8 +190,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
           address_postcode: "",
         },
         userInfo: {
-          emailAddress: userAttributes.email,
-          name: user?.username ?? userAttributes.email,
+          emailAddress: attributes.email,
+          name: user?.username ?? attributes.email,
         },
       };
 
@@ -228,7 +213,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
               region: "eu-west-2",
             }),
           })),
-          email,
+          email: attributes.email,
           orderId,
         },
       };
@@ -369,7 +354,8 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
                   variant="caption"
                   style={{ color: COLORS.TextGray, marginLeft: 20 }}
                 >
-                  £{product.price.toFixed(2)} + £{product.shippingCost.toFixed(2)} P&P
+                  £{product.variant!.price.item.toFixed(2)} + £
+                  {product.variant!.price.postage.toFixed(2)} P&P
                 </Typography>
               </div>
             ))}
@@ -465,7 +451,7 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
   return isLoading ? (
     <Loading />
   ) : (
-    <>
+    <div className="content-container">
       <div className={classes.container}>
         <Typography variant="h4" style={{ marginTop: 10 }}>
           Shopping Basket
@@ -509,14 +495,16 @@ const Basket: React.FC<BasketProps> = ({ userAttributes }): JSX.Element => {
             </Typography>
           </div>
         ) : (
-          <NonIdealState
-            title="No items in basket"
-            Icon={<InfoOutlined />}
-            subtext="Please add items to the basket to see them in here"
-          />
+          <div className={classes.nonIdealContainer}>
+            <NonIdealState
+              title="No items in basket"
+              Icon={<InfoOutlined />}
+              subtext="Please add items to the basket to see them in here"
+            />
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

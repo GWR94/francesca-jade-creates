@@ -1,4 +1,4 @@
-import { Storage } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { Variant } from "../pages/products/interfaces/Variants.i";
@@ -112,4 +112,17 @@ export const getProductPrice = (variants: Variant[], showMax = false): string =>
     : min === max
     ? `£${min.toFixed(2)}`
     : `From £${min.toFixed(2)}${showMax ? ` to £${max.toFixed(2)} incl. P&P` : ""}`;
+};
+
+export const checkUserAdmin = async (): Promise<boolean> => {
+  const user = await Auth.currentAuthenticatedUser();
+  if (user.signInUserSession.accessToken.payload["cognito:groups"].includes("Admin")) {
+    return true;
+  }
+  return false;
+};
+
+export const getUserData = async () => {
+  const user = await Auth.currentUserInfo();
+  return user;
 };

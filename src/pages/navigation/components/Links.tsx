@@ -130,6 +130,7 @@ const Links: React.FC<LinksProps> = ({
               variant: "text",
               Icon: <AccountBoxRounded className={classes.navIcon} />,
             }}
+            closeNav={closeNav}
           />
         )}
         <div

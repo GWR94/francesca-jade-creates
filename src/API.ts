@@ -42,19 +42,18 @@ export type FeaturesInput = {
   inputType: string,
   description?: string | null,
   featureType: string,
-  price?: PriceInput | null,
   value: FeatureValueInput,
-};
-
-export type PriceInput = {
-  item: number,
-  postage: number,
 };
 
 export type FeatureValueInput = {
   array?: Array< string | null > | null,
   range?: Array< number | null > | null,
   number?: number | null,
+};
+
+export type PriceInput = {
+  item: number,
+  postage: number,
 };
 
 export type ModelProductConditionInput = {
@@ -211,8 +210,6 @@ export type StripeProductInput = {
   tagline: string,
   image: S3ObjectInput,
   variant?: VariantsInput | null,
-  price: number,
-  shippingCost: number,
   customOptions: Array< string | null >,
 };
 
@@ -331,11 +328,6 @@ export type CreateProductMutation = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -397,11 +389,6 @@ export type UpdateProductMutation = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -463,11 +450,6 @@ export type DeleteProductMutation = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -543,8 +525,6 @@ export type RegisterUserMutation = {
               key: string,
             } | null > | null,
           } | null,
-          price: number,
-          shippingCost: number,
           customOptions: Array< string | null >,
         } >,
         stripePaymentIntent: string | null,
@@ -668,11 +648,6 @@ export type RegisterUserMutation = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -752,8 +727,6 @@ export type UpdateUserMutation = {
               key: string,
             } | null > | null,
           } | null,
-          price: number,
-          shippingCost: number,
           customOptions: Array< string | null >,
         } >,
         stripePaymentIntent: string | null,
@@ -877,11 +850,6 @@ export type UpdateUserMutation = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -939,11 +907,6 @@ export type CreateOrderMutation = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -963,8 +926,6 @@ export type CreateOrderMutation = {
           key: string,
         } | null > | null,
       } | null,
-      price: number,
-      shippingCost: number,
       customOptions: Array< string | null >,
     } >,
     stripePaymentIntent: string | null,
@@ -997,8 +958,6 @@ export type CreateOrderMutation = {
               instructions: string | null,
               dimensions: string,
             } | null,
-            price: number,
-            shippingCost: number,
             customOptions: Array< string | null >,
           } >,
           stripePaymentIntent: string | null,
@@ -1099,11 +1058,6 @@ export type CreateOrderMutation = {
             inputType: string,
             description: string | null,
             featureType: string,
-            price:  {
-              __typename: "Price",
-              item: number,
-              postage: number,
-            } | null,
             value:  {
               __typename: "FeatureValue",
               array: Array< string | null > | null,
@@ -1181,11 +1135,6 @@ export type UpdateOrderMutation = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -1205,8 +1154,6 @@ export type UpdateOrderMutation = {
           key: string,
         } | null > | null,
       } | null,
-      price: number,
-      shippingCost: number,
       customOptions: Array< string | null >,
     } >,
     stripePaymentIntent: string | null,
@@ -1239,8 +1186,6 @@ export type UpdateOrderMutation = {
               instructions: string | null,
               dimensions: string,
             } | null,
-            price: number,
-            shippingCost: number,
             customOptions: Array< string | null >,
           } >,
           stripePaymentIntent: string | null,
@@ -1341,11 +1286,6 @@ export type UpdateOrderMutation = {
             inputType: string,
             description: string | null,
             featureType: string,
-            price:  {
-              __typename: "Price",
-              item: number,
-              postage: number,
-            } | null,
             value:  {
               __typename: "FeatureValue",
               array: Array< string | null > | null,
@@ -1444,8 +1384,6 @@ export type GetUserQuery = {
               key: string,
             } | null > | null,
           } | null,
-          price: number,
-          shippingCost: number,
           customOptions: Array< string | null >,
         } >,
         stripePaymentIntent: string | null,
@@ -1569,11 +1507,6 @@ export type GetUserQuery = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -1634,11 +1567,6 @@ export type ListOrdersQuery = {
             inputType: string,
             description: string | null,
             featureType: string,
-            price:  {
-              __typename: "Price",
-              item: number,
-              postage: number,
-            } | null,
             value:  {
               __typename: "FeatureValue",
               array: Array< string | null > | null,
@@ -1658,8 +1586,6 @@ export type ListOrdersQuery = {
             key: string,
           } | null > | null,
         } | null,
-        price: number,
-        shippingCost: number,
         customOptions: Array< string | null >,
       } >,
       stripePaymentIntent: string | null,
@@ -1680,8 +1606,6 @@ export type ListOrdersQuery = {
               id: string,
               title: string,
               tagline: string,
-              price: number,
-              shippingCost: number,
               customOptions: Array< string | null >,
             } >,
             stripePaymentIntent: string | null,
@@ -1836,11 +1760,6 @@ export type GetProductQuery = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -1905,11 +1824,6 @@ export type ListProductsQuery = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -1960,11 +1874,6 @@ export type OnCreateOrderSubscription = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -1984,8 +1893,6 @@ export type OnCreateOrderSubscription = {
           key: string,
         } | null > | null,
       } | null,
-      price: number,
-      shippingCost: number,
       customOptions: Array< string | null >,
     } >,
     stripePaymentIntent: string | null,
@@ -2018,8 +1925,6 @@ export type OnCreateOrderSubscription = {
               instructions: string | null,
               dimensions: string,
             } | null,
-            price: number,
-            shippingCost: number,
             customOptions: Array< string | null >,
           } >,
           stripePaymentIntent: string | null,
@@ -2120,11 +2025,6 @@ export type OnCreateOrderSubscription = {
             inputType: string,
             description: string | null,
             featureType: string,
-            price:  {
-              __typename: "Price",
-              item: number,
-              postage: number,
-            } | null,
             value:  {
               __typename: "FeatureValue",
               array: Array< string | null > | null,
@@ -2197,11 +2097,6 @@ export type OnUpdateOrderSubscription = {
           inputType: string,
           description: string | null,
           featureType: string,
-          price:  {
-            __typename: "Price",
-            item: number,
-            postage: number,
-          } | null,
           value:  {
             __typename: "FeatureValue",
             array: Array< string | null > | null,
@@ -2221,8 +2116,6 @@ export type OnUpdateOrderSubscription = {
           key: string,
         } | null > | null,
       } | null,
-      price: number,
-      shippingCost: number,
       customOptions: Array< string | null >,
     } >,
     stripePaymentIntent: string | null,
@@ -2255,8 +2148,6 @@ export type OnUpdateOrderSubscription = {
               instructions: string | null,
               dimensions: string,
             } | null,
-            price: number,
-            shippingCost: number,
             customOptions: Array< string | null >,
           } >,
           stripePaymentIntent: string | null,
@@ -2357,11 +2248,6 @@ export type OnUpdateOrderSubscription = {
             inputType: string,
             description: string | null,
             featureType: string,
-            price:  {
-              __typename: "Price",
-              item: number,
-              postage: number,
-            } | null,
             value:  {
               __typename: "FeatureValue",
               array: Array< string | null > | null,
@@ -2442,11 +2328,6 @@ export type OnCreateProductSubscription = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -2503,11 +2384,6 @@ export type OnUpdateProductSubscription = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,
@@ -2564,11 +2440,6 @@ export type OnDeleteProductSubscription = {
         inputType: string,
         description: string | null,
         featureType: string,
-        price:  {
-          __typename: "Price",
-          item: number,
-          postage: number,
-        } | null,
         value:  {
           __typename: "FeatureValue",
           array: Array< string | null > | null,

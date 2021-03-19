@@ -41,7 +41,7 @@ export interface BasketState {
 const getAccumulativeCostFromProducts = (products: CheckoutProductProps[]): number => {
   // reduce the products array, which will return the accumulative cost.
   const cost = products.reduce((acc, product) => {
-    return acc + product.price + product.shippingCost;
+    return acc + product.variant!.price.item + product.variant!.price.postage;
   }, 0);
   // round the result and return it.
   return Math.round(cost * 100) / 100;

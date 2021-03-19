@@ -1,391 +1,1729 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ProductCard /> should render correctly when the user is NOT admin and product type is 'Creates' 1`] = `
-<Fragment>
-  <Blueprint3.Card
-    className="product__card animate fadeIn"
-    elevation={2}
-    interactive={true}
-    onClick={[Function]}
-  >
-    <i
-      className="fas fa-pencil-alt product__icon"
-      onClick={[Function]}
-      role="button"
-      style={
-        Object {
-          "color": "#9370f6",
-        }
-      }
-      tabIndex={0}
-    />
+exports[`<ProductCard /> Cake Product should match snapshot correctly when the user is NOT an admin' 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #ffa3f9;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Racing Cake"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Request a Quote"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Request a Quote"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="product__text-container"
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #ffa3f9;"
     >
       <div
-        className="product__title"
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
       >
-        <strong>
-          Name Frame
-        </strong>
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
-      <p
-        className="product__price"
+      <div
+        class="MuiCardContent-root makeStyles-root"
       >
-        £14.50 + £4.50 postage
-      </p>
-      <ChipContainer
-        tags={
-          Array [
-            "Personalised",
-            "Name",
-            "Frame",
-          ]
-        }
-        type="Creates"
-      />
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Racing Cake"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Request a Quote"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Request a Quote"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
-    <div
-      className="product__image-container"
-    >
-      <S3Image
-        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
-        theme={
-          Object {
-            "photoImg": Object {
-              "alignItems": "center",
-              "display": "flex",
-              "justifyContent": "center",
-              "width": "100%",
-            },
-          }
-        }
-      />
-    </div>
-  </Blueprint3.Card>
-  <Blueprint3.Alert
-    canEscapeKeyCancel={false}
-    canOutsideClickCancel={false}
-    cancelButtonText="Cancel"
-    confirmButtonText="Delete"
-    icon="trash"
-    intent="danger"
-    isOpen={false}
-    onCancel={[Function]}
-    onConfirm={[Function]}
-  >
-    <p>
-      Are you sure you want to delete "
-      Name Frame
-      "?
-    </p>
-    <p>
-      This cannot be undone.
-    </p>
-  </Blueprint3.Alert>
-</Fragment>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
-exports[`<ProductCard /> should render correctly when the user is NOT an admin and the product is of type 'Cake' 1`] = `
-<Fragment>
-  <Blueprint3.Card
-    className="product__card animate fadeIn"
-    elevation={2}
-    interactive={true}
-    onClick={[Function]}
-  >
-    <i
-      className="fas fa-birthday-cake product__icon"
-      onClick={[Function]}
-      role="button"
-      style={
-        Object {
-          "color": "#fd4ef2",
-        }
-      }
-      tabIndex={0}
-    />
+exports[`<ProductCard /> Cake Product should match snapshot correctly when user IS admin 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #ffa3f9;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Racing Cake"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Request a Quote"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Request a Quote"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="product__text-container"
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #ffa3f9;"
     >
       <div
-        className="product__title"
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
       >
-        <strong>
-          Racing Cake
-        </strong>
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
-      <p
-        className="product__price"
+      <div
+        class="MuiCardContent-root makeStyles-root"
       >
-        Customer requests quote
-      </p>
-      <ChipContainer
-        tags={
-          Array [
-            "Cake",
-            "Racing",
-          ]
-        }
-        type="Cake"
-      />
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Racing Cake"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Request a Quote"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Request a Quote"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
-    <div
-      className="product__image-container"
-    >
-      <S3Image
-        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357819265-racecarcrop.jpg"
-        theme={
-          Object {
-            "photoImg": Object {
-              "alignItems": "center",
-              "display": "flex",
-              "justifyContent": "center",
-              "width": "100%",
-            },
-          }
-        }
-      />
-    </div>
-  </Blueprint3.Card>
-  <Blueprint3.Alert
-    canEscapeKeyCancel={false}
-    canOutsideClickCancel={false}
-    cancelButtonText="Cancel"
-    confirmButtonText="Delete"
-    icon="trash"
-    intent="danger"
-    isOpen={false}
-    onCancel={[Function]}
-    onConfirm={[Function]}
-  >
-    <p>
-      Are you sure you want to delete "
-      Racing Cake
-      "?
-    </p>
-    <p>
-      This cannot be undone.
-    </p>
-  </Blueprint3.Alert>
-</Fragment>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
-exports[`<ProductCard /> should render correctly when user IS admin and the product is of type "Cake" 1`] = `
-<Fragment>
-  <Blueprint3.Card
-    className="product__card animate fadeIn"
-    elevation={2}
-    interactive={true}
-    onClick={[Function]}
-  >
-    <i
-      className="fas fa-birthday-cake product__icon"
-      onClick={[Function]}
-      role="button"
-      style={
-        Object {
-          "color": "#fd4ef2",
-        }
-      }
-      tabIndex={0}
-    />
+exports[`<ProductCard /> Cake Product should open menu when clicking on menu-dots (as admin) 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #ffa3f9;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Racing Cake"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Request a Quote"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Request a Quote"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="product__text-container"
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #ffa3f9;"
     >
       <div
-        className="product__title"
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
       >
-        <strong>
-          Racing Cake
-        </strong>
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
-      <p
-        className="product__price"
+      <div
+        class="MuiCardContent-root makeStyles-root"
       >
-        Customer requests quote
-      </p>
-      <ChipContainer
-        tags={
-          Array [
-            "Cake",
-            "Racing",
-          ]
-        }
-        type="Cake"
-      />
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Racing Cake"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Request a Quote"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Request a Quote"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 23.59v-3.6c-5.01-.26-9-4.42-9-9.49C2 5.26 6.26 1 11.5 1S21 5.26 21 10.5c0 4.95-3.44 9.93-8.57 12.4l-1.43.69zM11.5 3C7.36 3 4 6.36 4 10.5S7.36 18 11.5 18H13v2.3c3.64-2.3 6-6.08 6-9.8C19 6.36 15.64 3 11.5 3zm-1 11.5h2v2h-2zm2-1.5h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
-    <div
-      className="product__image-container"
-    >
-      <S3Image
-        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584357819265-racecarcrop.jpg"
-        theme={
-          Object {
-            "photoImg": Object {
-              "alignItems": "center",
-              "display": "flex",
-              "justifyContent": "center",
-              "width": "100%",
-            },
-          }
-        }
-      />
-    </div>
-    <div
-      className="new-product__button-container"
-    >
-      <Blueprint3.Button
-        intent="danger"
-        onClick={[Function]}
-        style={
-          Object {
-            "margin": "8px 4px 0",
-          }
-        }
-        text="Delete"
-      />
-      <Blueprint3.Button
-        intent="warning"
-        onClick={[Function]}
-        style={
-          Object {
-            "margin": "8px 4px 0",
-          }
-        }
-        text="Edit"
-      />
-    </div>
-  </Blueprint3.Card>
-  <Blueprint3.Alert
-    canEscapeKeyCancel={false}
-    canOutsideClickCancel={false}
-    cancelButtonText="Cancel"
-    confirmButtonText="Delete"
-    icon="trash"
-    intent="danger"
-    isOpen={false}
-    onCancel={[Function]}
-    onConfirm={[Function]}
-  >
-    <p>
-      Are you sure you want to delete "
-      Racing Cake
-      "?
-    </p>
-    <p>
-      This cannot be undone.
-    </p>
-  </Blueprint3.Alert>
-</Fragment>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
-exports[`<ProductCard /> should render correctly when user IS admin and the product is of type "Creates" 1`] = `
-<Fragment>
-  <Blueprint3.Card
-    className="product__card animate fadeIn"
-    elevation={2}
-    interactive={true}
-    onClick={[Function]}
+exports[`<ProductCard /> Creates product should open menu when clicking on menu-dots (as admin) 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    style=""
   >
-    <i
-      className="fas fa-pencil-alt product__icon"
-      onClick={[Function]}
-      role="button"
-      style={
-        Object {
-          "color": "#9370f6",
-        }
-      }
-      tabIndex={0}
-    />
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #dedede;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Wedding Day Frame"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Add to Shopping Basket"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Add to Shopping Basket"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
     <div
-      className="product__text-container"
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #dedede;"
     >
       <div
-        className="product__title"
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
       >
-        <strong>
-          Name Frame
-        </strong>
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
-      <p
-        className="product__price"
+      <div
+        class="MuiCardContent-root makeStyles-root"
       >
-        £14.50 + £4.50 postage
-      </p>
-      <ChipContainer
-        tags={
-          Array [
-            "Personalised",
-            "Name",
-            "Frame",
-          ]
-        }
-        type="Creates"
-      />
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Wedding Day Frame"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Add to Shopping Basket"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Add to Shopping Basket"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
-    <div
-      className="product__image-container"
-    >
-      <S3Image
-        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
-        theme={
-          Object {
-            "photoImg": Object {
-              "alignItems": "center",
-              "display": "flex",
-              "justifyContent": "center",
-              "width": "100%",
-            },
-          }
-        }
-      />
-    </div>
-    <div
-      className="new-product__button-container"
-    >
-      <Blueprint3.Button
-        intent="danger"
-        onClick={[Function]}
-        style={
-          Object {
-            "margin": "8px 4px 0",
-          }
-        }
-        text="Delete"
-      />
-      <Blueprint3.Button
-        intent="warning"
-        onClick={[Function]}
-        style={
-          Object {
-            "margin": "8px 4px 0",
-          }
-        }
-        text="Edit"
-      />
-    </div>
-  </Blueprint3.Card>
-  <Blueprint3.Alert
-    canEscapeKeyCancel={false}
-    canOutsideClickCancel={false}
-    cancelButtonText="Cancel"
-    confirmButtonText="Delete"
-    icon="trash"
-    intent="danger"
-    isOpen={false}
-    onCancel={[Function]}
-    onConfirm={[Function]}
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`<ProductCard /> Creates product should render correctly when the user is NOT admin 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    style=""
   >
-    <p>
-      Are you sure you want to delete "
-      Name Frame
-      "?
-    </p>
-    <p>
-      This cannot be undone.
-    </p>
-  </Blueprint3.Alert>
-</Fragment>
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #dedede;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Wedding Day Frame"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Add to Shopping Basket"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Add to Shopping Basket"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #dedede;"
+    >
+      <div
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
+      >
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="MuiCardContent-root makeStyles-root"
+      >
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Wedding Day Frame"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Add to Shopping Basket"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Add to Shopping Basket"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`<ProductCard /> Creates product should render correctly when user IS admin 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    style=""
+  >
+    <div>
+      <div
+        class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+        data-testid="card-container"
+        style="border-top: 3px solid #dedede;"
+      >
+        <div
+          class="MuiCardHeader-root makeStyles-root"
+          style="text-align: center;"
+        >
+          <div
+            class="MuiCardHeader-content"
+          >
+            <span
+              class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+            >
+              <div
+                class="makeStyles-content"
+              >
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 60%; margin: auto auto 10px;"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                />
+                <span
+                  class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                  style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+                />
+              </div>
+            </span>
+          </div>
+          <div
+            class="MuiCardHeader-action"
+          >
+            <button
+              aria-label="extra options"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+              data-testid="menu-dots"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiCardContent-root makeStyles-root"
+        >
+          <div
+            class="MuiCardMedia-root makeStyles-media"
+            title="Wedding Day Frame"
+          >
+            <div>
+              <div
+                style="position: relative;"
+              >
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                  style="display: none;"
+                />
+                <div />
+              </div>
+            </div>
+            <span
+              class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+              style="width: 100%; height: 440px;"
+            />
+          </div>
+          <button
+            aria-label="Add to Shopping Basket"
+            class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+            tabindex="0"
+            title="Add to Shopping Basket"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="MuiPaper-root MuiCard-root makeStyles-card MuiPaper-elevation2 MuiPaper-rounded"
+      data-testid="card-container"
+      style="border-top: 3px solid #dedede;"
+    >
+      <div
+        class="MuiCardHeader-root makeStyles-root"
+        style="text-align: center;"
+      >
+        <div
+          class="MuiCardHeader-content"
+        >
+          <span
+            class="MuiTypography-root MuiCardHeader-title makeStyles-headerContainer MuiTypography-h5 MuiTypography-displayBlock"
+          >
+            <div
+              class="makeStyles-content"
+            >
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 60%; margin: auto auto 10px;"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+              />
+              <span
+                class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-wave"
+                style="width: 80%; height: 10px; margin: auto auto 6px auto;"
+              />
+            </div>
+          </span>
+        </div>
+        <div
+          class="MuiCardHeader-action"
+        >
+          <button
+            aria-label="extra options"
+            class="MuiButtonBase-root MuiIconButton-root makeStyles-options"
+            data-testid="menu-dots"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="MuiCardContent-root makeStyles-root"
+      >
+        <div
+          class="MuiCardMedia-root makeStyles-media"
+          title="Wedding Day Frame"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="display: none;"
+              />
+              <div />
+            </div>
+          </div>
+          <span
+            class="MuiSkeleton-root MuiSkeleton-rect MuiSkeleton-wave"
+            style="width: 100%; height: 440px;"
+          />
+        </div>
+        <button
+          aria-label="Add to Shopping Basket"
+          class="MuiButtonBase-root MuiFab-root makeStyles-fab"
+          tabindex="0"
+          title="Add to Shopping Basket"
+          type="button"
+        >
+          <span
+            class="MuiFab-label"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm-8.9-5h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4l-3.87 7H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2z"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

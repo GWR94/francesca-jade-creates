@@ -1,29 +1,17 @@
-import { History } from "history";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
-import { UserAttributeProps, CognitoUserProps } from "./Accounts.i";
+import { CognitoUserProps, UserAttributeProps } from "./Accounts.i";
 import { S3ObjectInput } from "../../../API";
 import { ImageProps } from "../../products/interfaces/NewProduct.i";
 
-export interface ProfileProps extends ProfileStateProps {
-  userAttributes: UserAttributeProps | null; //object container user attributes
-  history: History;
+export interface ProfileProps {
+  userAttributes: UserAttributeProps;
   user: CognitoUserProps;
-  // styles object containing classNames.
-  classes: {
-    [key: string]: string;
-  };
 }
 
 export interface ProfileStateProps {
   sub?: string | null;
   username?: string | null;
 }
-
-export interface PhoneNumber {
-  code?: string | null;
-  value: string;
-}
-
 export interface ProfileState {
   isLoading: boolean; // boolean which shows/hides loading ui effects
   isEditing: boolean; // boolean which allows/disallows editing of components
@@ -58,4 +46,5 @@ export interface ProfileState {
     emailConfirm: boolean;
     phoneNumber: boolean;
   };
+  isCognitoUser: boolean;
 }

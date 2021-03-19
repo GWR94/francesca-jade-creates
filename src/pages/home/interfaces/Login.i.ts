@@ -1,13 +1,14 @@
 export interface LoginProps {
   showButton?: boolean;
-  props?: {
+  props: {
     variant: "text" | "outlined" | "contained" | undefined;
-    class: string;
+    classOverride?: string;
     text?: string;
     align?: string;
     color: "inherit" | "default" | "primary" | "secondary" | undefined;
     Icon: JSX.Element;
   };
+  closeNav?: () => void;
 }
 
 export interface LoginState {

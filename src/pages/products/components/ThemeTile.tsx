@@ -1,6 +1,5 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import styles from "../styles/popularTheme.style";
 
 export interface ThemeTileProps {
@@ -8,6 +7,7 @@ export interface ThemeTileProps {
   title: string;
   subtitle: string;
   tileClass: string;
+  switchToSearch: (theme: string) => void;
 }
 
 const ThemeTile: React.FC<ThemeTileProps> = ({
@@ -15,18 +15,17 @@ const ThemeTile: React.FC<ThemeTileProps> = ({
   title,
   subtitle,
   tileClass,
+  switchToSearch,
 }): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-
   const [isHovering, setHovering] = useState<boolean>(false);
   const id = `tile-${tileClass}`;
-  const history = useHistory();
   return (
     <div
       className={classes.container}
       id={id}
-      onClick={(): void => history.push(`/themes?current=${title}`)}
+      onClick={(): void => switchToSearch(title)}
       role="button"
       tabIndex={0}
       onMouseOver={(): void => handleHoverChange(id)}

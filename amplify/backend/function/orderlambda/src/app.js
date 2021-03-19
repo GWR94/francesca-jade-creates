@@ -58,7 +58,7 @@ const getPublicS3URL = (s3Image) => {
 const getProducts = (products) => {
   return products
     .map(
-      ({ image, title, tagline, price, shippingCost }) => `
+      ({ image, title, tagline, variant }) => `
     <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
@@ -120,7 +120,9 @@ const getProducts = (products) => {
                         <div style="font-family:Roboto, sans-serif;font-size:14px;line-height:1;text-align:left;color:rgba(0,0,0,0.7);">
                           <p>${title}</p>
                           <p>${tagline}</p>
-                          <p>£${price.toFixed(2)} + £${shippingCost.toFixed(2)}</p>
+                          <p>£${variant.price.item.toFixed(
+                            2,
+                          )} + £${variant.price.postage.toFixed(2)}</p>
                         </div>
                       </td>
                     </tr>
@@ -169,7 +171,9 @@ app.post("/orders/create-checkout-session", async (req, res) => {
             description: product.tagline || "",
             images: [product.image],
           },
-          unit_amount: Math.round((product.price + product.shippingCost) * 100),
+          unit_amount: Math.round(
+            (product.variant.price.item + product.variant.price.postage) * 100,
+          ),
         },
         quantity: 1,
       });

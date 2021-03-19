@@ -1,4 +1,12 @@
-import { Container, makeStyles, Paper, Tab, Tabs, Typography } from "@material-ui/core";
+import {
+  Container,
+  makeStyles,
+  Paper,
+  Tab,
+  Tabs,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import { breakpoints } from "../../../themes";
 import PopularThemes from "./PopularThemes";
@@ -6,6 +14,7 @@ import SearchThemes from "./SearchThemes";
 
 interface ThemesProps {
   admin: boolean;
+  switchToSearch: (theme: string) => void;
 }
 
 type ThemeTabs = "popular" | "search";
@@ -54,24 +63,20 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
     theme: "",
   });
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const theme = urlParams.get("current");
-    if (theme) {
-      setState({
-        ...state,
-        theme,
-        currentTab: "search",
-      });
-    }
-  }, [window.location.search]);
+  const isSmallMobile = useMediaQuery("(max-width: 340px");
 
   const renderCurrentTab = (): JSX.Element | null => {
     const { currentTab, theme } = state;
     let renderedTab: JSX.Element | null = null;
     switch (currentTab) {
       case "popular":
-        renderedTab = <PopularThemes />;
+        renderedTab = (
+          <PopularThemes
+            switchToSearch={(theme): void =>
+              setState({ ...state, currentTab: "search", theme })
+            }
+          />
+        );
         break;
       case "search":
         renderedTab = <SearchThemes selectedTheme={theme} admin={admin} />;
@@ -88,7 +93,7 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
         <Typography variant="h4" style={{ paddingTop: 12 }} gutterBottom>
           Themes
         </Typography>
-        <div className={classes.textContainer}>
+        <div>
           <Typography variant="subtitle1" className={classes.text}>
             Whether it&apos;s a Minion themed cake for the kids, a beautiful bespoke frame
             for a wedding, or some cupcakes for a birthday party - we&apos;ve got you
@@ -110,8 +115,8 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
             textColor="primary"
             centered
           >
-            <Tab value="popular" label="Popular Themes" />
-            <Tab value="search" label="Search Themes" />
+            <Tab value="popular" label={isSmallMobile ? "Popular" : "Popular Themes"} />
+            <Tab value="search" label={isSmallMobile ? "Search" : "Search Themes"} />
           </Tabs>
           {renderCurrentTab()}
         </Paper>

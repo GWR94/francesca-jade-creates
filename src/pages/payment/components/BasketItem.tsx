@@ -26,6 +26,13 @@ import BasketCustomOptions from "./BasketCustomOptions";
 import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
 /**
+ * TODO
+ * [ ] Put ALL products & filter logic into redux and remove async actions from redux if poss
+ * [ ] Remove all unnecessary data from reducers (admin etc)
+ *
+ */
+
+/**
  * Functional component to render one item (product) that is in the customers' shopping basket. The component
  * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
  * add their own customisable options for the product that they're attempting to purchase.
@@ -65,6 +72,14 @@ const BasketItem: React.FC<BasketProps> = ({
   const basket = useRef<HTMLDivElement>(null) as MutableRefObject<HTMLDivElement>;
   // retrieve products and cost from redux store.
   const { products } = useSelector(({ basket }: AppState) => basket.checkout);
+
+  const getMinPrice = (product: BasketItemProps, isItem: boolean): string => {
+    let min = Infinity;
+    product.variants.forEach((variant) => {
+      min = Math.min(isItem ? variant.price.item : variant.price.postage, min);
+    });
+    return min.toFixed(2);
+  };
 
   /**
    * When the component mounts, or the currentVariant state changes, check to see if
@@ -143,8 +158,8 @@ const BasketItem: React.FC<BasketProps> = ({
           title,
           tagline,
           image,
-          price: currentVariant!.price.item,
-          shippingCost: currentVariant!.price.postage,
+          // price: currentVariant!.price.item,
+          // shippingCost: currentVariant!.price.postage,
           variant: currentVariant,
           customOptions,
         }),
@@ -232,12 +247,14 @@ const BasketItem: React.FC<BasketProps> = ({
             />
           </div>
           <div className={classes.textContainer}>
-            <Typography variant="h5" className={classes.title}>
-              {item.title}
-            </Typography>
-            <Typography variant="subtitle1" className={classes.subtext}>
-              {item.tagline}
-            </Typography>
+            <>
+              <Typography variant="h5" className={classes.title}>
+                {item.title}
+              </Typography>
+              <Typography variant="subtitle1" className={classes.subtext}>
+                {item.tagline}
+              </Typography>
+            </>
             {/*
               If there are more than one variants for the user to choose from, render a 
               Select component with all of the variants inside, so the user can pick their
@@ -245,58 +262,76 @@ const BasketItem: React.FC<BasketProps> = ({
               variant. If there was only one variant, that variant would already have been
               picked during the useEffect hook.
             */}
-            {item.variants.length > 1 && (
-              <>
-                <Typography
-                  variant="subtitle1"
-                  className={classes.text}
-                  style={{ marginBottom: 10 }}
-                >
-                  Please select the variant you wish to purchase
-                </Typography>
-
-                <FormControl variant="outlined" size="small" style={{ width: "100%" }}>
-                  <InputLabel>Pick Variant</InputLabel>
-                  <Select
-                    value={variantIndex}
-                    onChange={handleVariantChange}
-                    fullWidth
-                    label="Pick Variant"
-                  >
-                    {/* Map the variants into their own MenuItem component */}
-                    {item.variants.map((variant, i) => {
-                      // Set the value to be the variantName if it exists, or the dimensions if not
-                      const value = variant?.variantName ?? variant?.dimensions;
-                      return (
-                        <MenuItem value={i} key={i}>
-                          {value}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-              </>
-            )}
             <div className={classes.infoContainer}>
               {/*
                 If the user has chosen a variant (currentVariant isn't null), then show
                 the prices (shipping cost and unit price) for the variant to the user.
               */}
-              {currentVariant !== null && (
-                <div>
+              <div className={classes.priceContainer}>
+                {currentVariant === null && (
+                  <Typography variant="caption">From</Typography>
+                )}
+                <div className={classes.priceInner}>
                   <div className={classes.costContainer}>
                     <MonetizationOn className={classes.icon} />
-                    <Typography>£{currentVariant.price.item.toFixed(2)}</Typography>
+
+                    <Typography>
+                      £
+                      {currentVariant !== null
+                        ? currentVariant.price.item.toFixed(2)
+                        : getMinPrice(item, true)}
+                    </Typography>
                   </div>
                   <div className={classes.costContainer} style={{ marginLeft: 8 }}>
                     <LocalShipping className={classes.icon} />
-                    <Typography>£{currentVariant.price.postage.toFixed(2)}</Typography>
+                    <Typography>
+                      £
+                      {currentVariant !== null
+                        ? currentVariant.price.postage.toFixed(2)
+                        : getMinPrice(item, false)}
+                    </Typography>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
+        {item.variants.length > 1 && (
+          <>
+            <Typography
+              variant="subtitle1"
+              className={classes.text}
+              style={{ marginBottom: 10 }}
+            >
+              Please select the variant you wish to purchase
+            </Typography>
+
+            <FormControl
+              variant="outlined"
+              size="small"
+              style={{ width: "80%", margin: "0 auto 10px", display: "block" }}
+            >
+              <InputLabel>Pick Variant</InputLabel>
+              <Select
+                value={variantIndex}
+                onChange={handleVariantChange}
+                fullWidth
+                label="Pick Variant"
+              >
+                {/* Map the variants into their own MenuItem component */}
+                {item.variants.map((variant, i) => {
+                  // Set the value to be the variantName if it exists, or the dimensions if not
+                  const value = variant?.variantName ?? variant?.dimensions;
+                  return (
+                    <MenuItem value={i} key={i}>
+                      {value}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </>
+        )}
 
         {currentVariant && (
           /**

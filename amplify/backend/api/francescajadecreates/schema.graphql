@@ -78,8 +78,6 @@ type StripeProduct {
   tagline: String!
   image: S3Object!
   variant: Variants
-  price: Float!
-  shippingCost: Float!
   customOptions: [String]!
 }
 
@@ -121,7 +119,6 @@ type Features {
   inputType: String!
   description: String
   featureType: String!
-  price: Price
   value: FeatureValue!
 }
 

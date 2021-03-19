@@ -4,7 +4,11 @@ import { breakpoints } from "../../../themes";
 import styles from "../styles/popularTheme.style";
 import ThemeTile from "./ThemeTile";
 
-const PopularThemes: React.FC = (): JSX.Element => {
+interface PopularThemesProps {
+  switchToSearch: (theme) => void;
+}
+
+const PopularThemes: React.FC<PopularThemesProps> = ({ switchToSearch }): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
@@ -400,7 +404,7 @@ const PopularThemes: React.FC = (): JSX.Element => {
       tileClass: "memory",
     },
     {
-      title: "Friends",
+      title: "Friendship",
       subtitle:
         "Let your friends feel the love with a friendship themed cake or creation!",
       tileClass: "friends",
@@ -416,6 +420,7 @@ const PopularThemes: React.FC = (): JSX.Element => {
               handleHoverChange(id, isLeaving)
             }
             key={i}
+            switchToSearch={(theme): void => switchToSearch(theme)}
             {...props}
           />
         ))}
@@ -427,6 +432,7 @@ const PopularThemes: React.FC = (): JSX.Element => {
               handleHoverChange(id, isLeaving)
             }
             key={i}
+            switchToSearch={(theme): void => switchToSearch(theme)}
             {...props}
           />
         ))}

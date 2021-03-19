@@ -272,7 +272,6 @@ export const rootTheme = createMuiTheme({
         backgroundColor: COLORS.DarkPink,
       },
     },
-
     MuiTab: {
       textColorPrimary: {
         "&$selected": {

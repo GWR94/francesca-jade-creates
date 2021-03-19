@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // @ts-expect-error
 import { isEmail } from "validator";
 import {
@@ -18,8 +18,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import { API } from "aws-amplify";
-import { useSelector } from "react-redux";
+import { API, Auth } from "aws-amplify";
 import { Autocomplete } from "@material-ui/lab";
 import { spongesArr, buttercreamArr, dripArr, jamArr } from "../../../utils/data";
 import {
@@ -27,7 +26,6 @@ import {
   QuoteDialogProps,
   CakeSize,
 } from "../interfaces/QuoteDialog.i";
-import { AppState } from "../../../store/store";
 import { openSnackbar } from "../../../utils/Notifier";
 
 /**
@@ -98,8 +96,6 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({ open, onClose, cake }) => {
     toppings,
     isSubmitting,
   } = state;
-  // get the current authenticated users' username from the redux store
-  const { username } = useSelector(({ user }: AppState) => user);
 
   /**
    * Function to send a quote (based on the users' input values on the quote
@@ -116,6 +112,9 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({ open, onClose, cake }) => {
       ...state,
       isSubmitting: true,
     });
+
+    const { username } = await Auth.currentUserInfo();
+
     // execute the lambda function with the cake parameters and user details passed as parameters
     const res = await API.post("orderlambda", "/orders/send-quote-email", {
       body: {

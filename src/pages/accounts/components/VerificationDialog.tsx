@@ -28,7 +28,8 @@ const VerificationDialog: React.FC<Props> = ({
 
   const handleVerificationCode = async (attr: string): Promise<void> => {
     try {
-      await Auth.verifyCurrentUserAttributeSubmit(attr, code);
+      const x = await Auth.verifyCurrentUserAttributeSubmit(attr, code);
+      console.log(x);
       openSnackbar({
         severity: "success",
         message: "Email address successfully verified",

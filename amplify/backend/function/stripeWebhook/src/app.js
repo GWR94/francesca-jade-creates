@@ -71,7 +71,7 @@ const getPublicS3URL = (s3Image) => {
 
 const getProducts = (products) => {
   return products
-    .map(({ image, title, customOptions: options, price, shippingCost }) => {
+    .map(({ image, title, customOptions: options, variant }) => {
       const customOptions = options.map((option) => JSON.parse(option));
       return `
 <div style="">
@@ -127,9 +127,9 @@ const getProducts = (products) => {
                     <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                       <div style="font-family:Roboto, sans-serif;font-size:13px;line-height:1;text-align:left;color:rbga(0,0,0,60%);">
                         <h3 style="text-align:center">${title}</h3>
-                        <p><span style="font-weight:bold">Cost:</span> £${price.toFixed(
+                        <p><span style="font-weight:bold">Cost:</span> £${variant.price.item.toFixed(
                           2,
-                        )} + £${shippingCost.toFixed(2)} </span></p>
+                        )} + £${variant.price.postage.toFixed(2)} </span></p>
                         <p style="font-size:14px;margin-top:24px;text-decoration:underline;">Custom Options</p>
                         ${customOptions
                           .filter((option) => option !== null)

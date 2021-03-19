@@ -3,10 +3,6 @@ import {
   CognitoUserSession,
   ClientMetadata,
 } from "amazon-cognito-identity-js";
-import { History } from "history";
-import { FetchProductsSuccessAction } from "../../../interfaces/products.redux.i";
-import { CurrentTabTypes, SetCurrentTabAction } from "../../../interfaces/user.redux.i";
-import { ProductProps } from "./Product.i";
 
 export interface UserAttributeProps {
   sub?: string;
@@ -33,26 +29,15 @@ export interface CognitoUserProps {
   };
 }
 
-export interface AccountsMapState {
-  admin: boolean;
-  sub: string | null;
-  products: ProductProps[];
-  currentTab: CurrentTabTypes;
-}
-
-export interface AccountsMapProps {
-  fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
-  setCurrentTab: (currentTab: CurrentTabTypes) => SetCurrentTabAction;
-}
-
-export interface AccountPageProps {
-  currentTab?: CurrentTabTypes;
-  sub?: string | null;
-  userAttributes: UserAttributeProps | null;
-  admin: boolean;
+export interface AccountsPageProps {
+  userAttributes: UserAttributeProps;
   user: CognitoUserProps;
-  setCurrentTab?: (tab: CurrentTabTypes) => void;
-  history: History;
-  products: ProductProps[];
-  fetchProductsSuccess?: (products: ProductProps[]) => FetchProductsSuccessAction;
+  admin: boolean;
 }
+
+export type CurrentTabTypes =
+  | "profile"
+  | "create"
+  | "products"
+  | "orders"
+  | "adminOrders";

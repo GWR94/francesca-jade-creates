@@ -2,9 +2,11 @@ import { makeStyles, TextField } from "@material-ui/core";
 import { SearchRounded } from "@material-ui/icons";
 import { Autocomplete } from "@material-ui/lab";
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import NonIdealState from "../../../common/containers/NonIdealState";
 import { themes } from "../../../utils/data";
 import ProductsList from "./ProductsList";
+import * as actions from "../../../actions/products.actions";
 
 interface SearchThemesProps {
   selectedTheme: string;
@@ -15,14 +17,25 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
   selectedTheme,
   admin,
 }): JSX.Element => {
-  const [theme, setTheme] = useState<string>("");
+  const [theme, setTheme] = useState<string>(selectedTheme || "");
+  console.log(theme);
+  const dispatch = useDispatch();
+
+  const handleSetTheme = (theme: string): void => {
+    dispatch(
+      actions.setSearchFilters({
+        tags: {
+          contains: theme,
+        },
+      }),
+    );
+    dispatch(actions.getProducts());
+    setTheme(theme);
+  };
 
   useEffect(() => {
-    setTheme(selectedTheme);
-    return (): void => {
-      setTheme("");
-    };
-  }, [selectedTheme]);
+    handleSetTheme(theme);
+  }, []);
 
   const useStyles = makeStyles({
     input: {
@@ -36,16 +49,15 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
     _event: React.ChangeEvent<{}>,
     theme: string | null,
   ): void => {
-    setTheme(theme as string);
+    handleSetTheme(theme as string);
   };
 
   return (
     <div>
       <Autocomplete
-        freeSolo
         options={themes}
         className={classes.input}
-        value={selectedTheme}
+        value={theme}
         onChange={handleThemeChange}
         renderInput={(params): JSX.Element => (
           <TextField

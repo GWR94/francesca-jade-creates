@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { API, graphqlOperation, Auth, Storage } from "aws-amplify";
 import validate from "validate.js";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Container,
   Grid,
@@ -14,25 +14,19 @@ import {
   Chip,
   Typography,
   ThemeProvider,
-  withStyles,
   InputAdornment,
   Tooltip,
   useMediaQuery,
+  makeStyles,
 } from "@material-ui/core";
 import { LockOpen } from "@material-ui/icons";
 import { getUser } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
-import {
-  ProfileProps,
-  ProfileState,
-  PhoneNumber,
-  ProfileStateProps,
-} from "../interfaces/Profile.i";
+import { ProfileProps, ProfileState } from "../interfaces/Profile.i";
 import { updateUser } from "../../../graphql/mutations";
 import { ImageProps, UploadedFile } from "../../products/interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
-import euroNumbers from "../../../utils/europeanCodes";
 import ImagePicker from "../../../common/containers/ImagePicker";
 import PasswordChange from "./PasswordChange";
 import VerificationDialog from "./VerificationDialog";
@@ -79,6 +73,7 @@ const initialState: ProfileState = {
     error: "",
   },
   displayImage: null,
+  isCognitoUser: false,
 };
 
 /**
@@ -86,61 +81,17 @@ const initialState: ProfileState = {
  * credentials including display image, contact information, username, shipping
  * address etc.
  */
-const Profile: React.FC<ProfileProps> = ({
-  user,
-  userAttributes,
-  sub,
-  classes,
-}): JSX.Element => {
+const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element => {
+  console.log(user);
   // set state to be initial state when the component mounts.
-  const [state, setState] = useState<ProfileState>({ ...initialState });
+  const [state, setState] = useState<ProfileState>(initialState);
   // use the useMediaQuery hook to determine if the screen is less than 600px (returns boolean)
   const desktop = useMediaQuery("(min-width: 600px)");
 
-  /**
-   * Function used for splitting the num into two parts, one with the country code (if
-   * there is a valid one), and the actual phone number. i.e +447930543754 would return
-   * { code: "+44", value: "7930543754" } - so it can be easily translated for the country
-   * code dropdown in the component
-   * @param {string} num - The original number which may or may not have a country code
-   * as part of the string.
-   */
-  const getCountryCode = (num: string): PhoneNumber => {
-    // set length to be the minimum possible amount for the country code - 2.
-    let length = 2;
-    // set i to be 0 so it can iterate through all possible euroNumbers.
-    let i = 0;
-    /**
-     * if the length is 4 or higher, then there is no valid countryCode, so fall back to return
-     * the final object (code is null).
-     */
-    while (length < 4) {
-      // retrieve the substring of 0 to length.
-      const code = num.substring(0, length);
-      // if there is a match, return it.
-      if (code === euroNumbers[i].value) {
-        return {
-          code,
-          value: num.substring(length),
-        };
-      }
-      // iterate through all the euroNumbers
-      i++;
-      /**
-       * if you get to the end of the array, add one to the length of the substring,
-       * reset i back to zero and try again.
-       */
-      if (i === euroNumbers.length) {
-        length++;
-        i = 0;
-      }
-    }
-    // if there isn't a match then return the whole number in value, and set code to null.
-    return {
-      code: null,
-      value: num,
-    };
-  };
+  const useStyles = makeStyles(styles);
+  const classes = useStyles();
+
+  const sub = useSelector(({ user }: AppState) => user.id);
 
   /**
    * Function to retrieve the users data from the database using the getUser graphQL
@@ -148,26 +99,18 @@ const Profile: React.FC<ProfileProps> = ({
    * effects are removed with the isLoading boolean state to be set to false.
    */
   const handleRetrieveData = async (): Promise<void> => {
+    const { signInUserSession } = await Auth.currentAuthenticatedUser();
+    const { attributes } = await Auth.currentAuthenticatedUser();
+
+    let isCognitoUser = false;
+    if (signInUserSession?.accessToken.payload?.["cognito:groups"]?.length >= 1) {
+      isCognitoUser = true;
+    }
     const { username } = state;
     try {
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
-      console.log(data);
       // set res to null so it can be changed if the criteria is met.
-      let res: PhoneNumber | null = null;
-      /**
-       * if the userAttributes object has a phoneNumber in it, then use the getCountryCode
-       * method to extract the number and country code into separate variables (so they can be
-       * used in the component). res.value = phone number res.code = country code.
-       */
-      if (userAttributes?.phone_number) {
-        res = getCountryCode(userAttributes.phone_number);
-      }
-      /**
-       * If the userAttributes object is present and the email_verified property is false
-       * then the user should be notified that their email isn't verified with an error/danger
-       * snackbar.
-       */
       if (userAttributes && !userAttributes.email_verified) {
         openSnackbar({
           severity: INTENT.Danger,
@@ -188,14 +131,8 @@ const Profile: React.FC<ProfileProps> = ({
         },
         email: {
           ...state.email,
-          value: userAttributes?.email ?? "",
-          verified: userAttributes?.email_verified ?? false,
-        },
-        phoneNumber: {
-          ...state.phoneNumber,
-          value: res?.value ?? "",
-          code: res?.code ?? "+44",
-          verified: userAttributes?.phone_number_verified ?? false,
+          value: attributes.email ?? "",
+          verified: attributes?.email_verified ?? false,
         },
         displayImage: data?.getUser?.profileImage ?? null,
         shippingAddress: {
@@ -207,6 +144,7 @@ const Profile: React.FC<ProfileProps> = ({
           postcode: data.getUser?.shippingAddress?.address_postcode ?? "",
         },
         isLoading: false,
+        isCognitoUser,
       });
     } catch (err) {
       /**
@@ -316,30 +254,6 @@ const Profile: React.FC<ProfileProps> = ({
   };
 
   /**
-   * Function to verify the user's phone number
-   */
-  const handleVerifyPhone = async (): Promise<void> => {
-    // retrieve the input phone number from state
-    const { phoneNumber } = state;
-    if (!phoneNumber) return;
-    // place the values that need to be updated into an object
-    const updatedAttributes = {
-      phone_number: `${phoneNumber.code}${phoneNumber.value}`,
-    };
-    // try to update the user attributes via Auth's updateUserAttributes method
-    try {
-      await Auth.updateUserAttributes(user, updatedAttributes);
-    } catch (err) {
-      // if there are any errors, notify the user.
-      openSnackbar({
-        severity: "error",
-        message: "Unable to update phone number. Please try again.",
-      });
-    }
-    onUpdateProfile();
-  };
-
-  /**
    * Function which sends a verification code to confirm that the user is the owner
    * of the selected attribute (usually email). Once the user has retrieved the code, it
    * can be entered in the modal to confirm their identity.
@@ -385,7 +299,7 @@ const Profile: React.FC<ProfileProps> = ({
      * if email is verified and the input user email matches the userAttributes
      * email, notify the user that it's already verified
      */
-    if (userAttributes?.email_verified && email.value === userAttributes?.email) {
+    if (userAttributes.email_verified && email.value === userAttributes.email) {
       openSnackbar({
         severity: "info",
         message: `${email.value} is already verified.`,
@@ -421,7 +335,7 @@ const Profile: React.FC<ProfileProps> = ({
    */
   const checkUpdateCredentials = (): void => {
     // destructure all of the relevant pieces of state to be used in the method.
-    const { email, phoneNumber, shippingAddress } = state;
+    const { email, shippingAddress } = state;
     // initialise the errors variable to be false, and only change it if there are any errors
     let errors = false;
     // check that the email is valid by using validate.js
@@ -438,24 +352,6 @@ const Profile: React.FC<ProfileProps> = ({
       });
     }
 
-    const ValidPhoneNumberRegex = /^[+]?[(]?[0-9]{3}[)]?[-.]?[0-9]{3}[-.]?[0-9]{4,6}$/im;
-    const validPhoneNumber = ValidPhoneNumberRegex.test(
-      `${phoneNumber.code}${phoneNumber.value}`,
-    );
-    /**
-     * if there is a value in phoneNumber.value and that value doesn't pass the regexp test (validPhoneNumber
-     * is false), then set the error variable to true and set the phoneNumbers error to a valid error string.
-     */
-    if (phoneNumber.value.length && !validPhoneNumber) {
-      errors = true;
-      setState({
-        ...state,
-        phoneNumber: {
-          ...phoneNumber,
-          error: "Please enter a valid phone number.",
-        },
-      });
-    }
     /**
      * Validation checks for shippingAddress's values. Destructure all of the values from shippingAddress and
      * check their lengths. If any of the required attributes are too short then set errors to true and reflect
@@ -484,13 +380,8 @@ const Profile: React.FC<ProfileProps> = ({
     // if there are any errors, return so the user can change their errors before submitting
     if (errors) return;
     // if the user hasn't verified their email address, the handleVerifyEmail method should be called.
-    if (!email.verified || email.value !== userAttributes?.email) {
+    if (!email.verified || email.value !== userAttributes.email) {
       handleVerifyEmail(true);
-      return;
-    }
-    // if the phoneNumber is not verified, then handleVerifyPhone should be called.
-    if (!phoneNumber.verified && phoneNumber.value) {
-      handleVerifyPhone();
       return;
     }
     onUpdateProfile();
@@ -500,12 +391,14 @@ const Profile: React.FC<ProfileProps> = ({
     isLoading,
     isEditing,
     username,
+    isCognitoUser,
     email,
     shippingAddress,
     displayImage,
     dialogOpen,
   } = state;
   const size = desktop ? "medium" : "small";
+
   return (
     <>
       <Container>
@@ -521,7 +414,7 @@ const Profile: React.FC<ProfileProps> = ({
               </Typography>
               <Typography className={classes.heading}>Login Credentials</Typography>
               <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={isCognitoUser ? 12 : 6}>
                   <TextField
                     label="Username"
                     value={username.value}
@@ -534,44 +427,46 @@ const Profile: React.FC<ProfileProps> = ({
                         username: { value: e.target.value, error: "" },
                       })
                     }
-                    disabled={!isEditing}
+                    disabled={!isEditing || isCognitoUser}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled
-                    value="************"
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    size={size}
-                    fullWidth
-                    InputProps={{
-                      endAdornment: isEditing && (
-                        <InputAdornment position="end">
-                          <Tooltip
-                            title="Click to change password"
-                            placement="left"
-                            arrow
-                          >
-                            <LockOpen
-                              onClick={(): void =>
-                                setState({
-                                  ...state,
-                                  dialogOpen: {
-                                    ...dialogOpen,
-                                    password: true,
-                                  },
-                                })
-                              }
-                              style={{ cursor: "pointer" }}
-                            />
-                          </Tooltip>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
+                {!isCognitoUser && (
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      value="************"
+                      label="Password"
+                      type="password"
+                      variant="outlined"
+                      size={size}
+                      disabled
+                      fullWidth
+                      InputProps={{
+                        endAdornment: isEditing && (
+                          <InputAdornment position="end">
+                            <Tooltip
+                              title="Click to change password"
+                              placement="left"
+                              arrow
+                            >
+                              <LockOpen
+                                onClick={(): void =>
+                                  setState({
+                                    ...state,
+                                    dialogOpen: {
+                                      ...dialogOpen,
+                                      password: true,
+                                    },
+                                  })
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                            </Tooltip>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12}>
                   <OutlinedContainer
                     label="Display Image"
@@ -615,7 +510,6 @@ const Profile: React.FC<ProfileProps> = ({
                         },
                       })
                     }
-                    className={classes.input}
                     disabled={!isEditing}
                     fullWidth
                   />
@@ -630,9 +524,9 @@ const Profile: React.FC<ProfileProps> = ({
                   >
                     <ThemeProvider theme={greenAndRedTheme}>
                       <Chip
-                        label={email.verified ? "Verified" : "Unverified"}
+                        label={userAttributes.email_verified ? "Verified" : "Unverified"}
                         size="small"
-                        color={email.verified ? "primary" : "secondary"}
+                        color={userAttributes.email_verified ? "primary" : "secondary"}
                         style={{
                           cursor: isEditing ? "pointer" : "not-allowed",
                         }}
@@ -677,7 +571,6 @@ const Profile: React.FC<ProfileProps> = ({
                     onChange={(e): void =>
                       setState({
                         ...state,
-
                         shippingAddress: {
                           ...shippingAddress,
                           line2: e.target.value,
@@ -702,7 +595,6 @@ const Profile: React.FC<ProfileProps> = ({
                     onChange={(e): void =>
                       setState({
                         ...state,
-
                         shippingAddress: {
                           ...shippingAddress,
                           city: e.target.value,
@@ -787,7 +679,6 @@ const Profile: React.FC<ProfileProps> = ({
           </>
         )}
       </Container>
-
       <PasswordChange
         open={dialogOpen.password}
         closeDialog={(): void =>
@@ -852,9 +743,4 @@ const Profile: React.FC<ProfileProps> = ({
   );
 };
 
-const mapStateToProps = ({ user }: AppState): ProfileStateProps => ({
-  sub: user.id,
-  username: user.username,
-});
-
-export default connect(mapStateToProps, null)(withStyles(styles)(Profile));
+export default Profile;

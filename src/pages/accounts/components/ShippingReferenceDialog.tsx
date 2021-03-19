@@ -13,10 +13,8 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { API } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { AppState } from "../../../store/store";
 import { COLORS } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
@@ -58,8 +56,6 @@ const ShippingReferenceDialog = ({
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
-  const { username } = useSelector(({ user }: AppState) => user);
-
   /**
    * Function to send a confirmation email to the user who ordered a product once
    * the admin has marked an order as sent and tracking information has been added.
@@ -72,8 +68,10 @@ const ShippingReferenceDialog = ({
     // set sending to true so loading UI effects are shown
     setState({ ...state, isSending: true });
 
+    const { username } = await Auth.currentUserInfo();
+
     const getSum = (total: number, product: GraphQlProduct): number =>
-      total + product.price * 100 + product.shippingCost * 100;
+      total + product.variant.price.item * 100 + product.variant.price.postage * 100;
 
     const cost = order.products.reduce(getSum, 0) / 100;
     try {

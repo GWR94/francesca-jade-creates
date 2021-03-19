@@ -26,7 +26,7 @@ import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { COLORS } from "../../themes";
 import styles from "../styles/productCard.style";
-import { getCompressedKey } from "../../utils";
+import { checkUserAdmin, getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/products/components/QuoteDialog";
 import { AppState } from "../../store/store";
 import DeleteProductAlert from "../alerts/DeleteProductAlert";
@@ -39,7 +39,10 @@ import DeleteProductAlert from "../alerts/DeleteProductAlert";
  * @param admin - Boolean value to determine if the current authenticated user is an
  * admin and can view admin only settings/inputs.
  */
-const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  admin = false,
+}): JSX.Element => {
   // create styles for component
   const useStyles = makeStyles({
     // spread all styles from stylesheet
@@ -59,10 +62,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
       },
     },
   });
-
-  console.log(product);
-
-  const admin = useSelector(({ user }: AppState) => user.admin);
 
   const classes = useStyles();
   // destructure product for ease of variable use
@@ -114,6 +113,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
           // push the user to the full product page when they click on the card
           history.push(`/${type === "Cake" ? "cakes" : "creates"}/${id}`);
         }}
+        data-testid="card-container"
         className={classes.card}
         // depending on the product type, place a border on top of the card with a color
         style={{
@@ -134,6 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
             admin && (
               <IconButton
                 aria-label="extra options"
+                data-testid="menu-dots"
                 onClick={(e): void => {
                   // stop propagation to avoid unintended side effects
                   e.stopPropagation();

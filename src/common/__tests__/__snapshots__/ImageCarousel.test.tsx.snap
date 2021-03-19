@@ -1,253 +1,431 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ImageCarousel /> should render correctly when multiple images in image array prop 1`] = `
-<Fragment>
-  <div
-    className="carousel__container"
-  >
-    <Carousel
-      activeIndex={0}
-      enableTouch={true}
-      interval={5000}
-      keyboard={true}
-      next={[Function]}
-      pause="hover"
-      previous={[Function]}
-      slide={true}
-    >
-      <CarouselIndicators
-        activeIndex={0}
-        className="carousel__indicators"
-        items={
-          Array [
-            Object {
-              "bucket": "fjadecreatesmedia121747-production",
-              "key": "/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG",
-              "region": "eu-west-2",
-            },
-            Object {
-              "bucket": "fjadecreatesmedia121747-production",
-              "key": "/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106247322-IMG_0088.JPG",
-              "region": "eu-west-2",
-            },
-          ]
-        }
-        onClickHandler={[Function]}
-      />
-      <CarouselItem
-        appear={false}
-        enter={true}
-        exit={true}
-        in={false}
-        key="0"
-        mountOnEnter={false}
-        onEnter={[Function]}
-        onEntered={[Function]}
-        onEntering={[Function]}
-        onExit={[Function]}
-        onExited={[Function]}
-        onExiting={[Function]}
-        slide={true}
-        tag="div"
-        timeout={600}
-        unmountOnExit={false}
-      >
-        <div
-          className="update__image-container"
-        >
-          <S3Image
-            imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
-            theme={
-              Object {
-                "photoImg": Object {
-                  "width": "100%",
-                },
-              }
-            }
-          />
-        </div>
-      </CarouselItem>
-      <CarouselItem
-        appear={false}
-        enter={true}
-        exit={true}
-        in={false}
-        key="1"
-        mountOnEnter={false}
-        onEnter={[Function]}
-        onEntered={[Function]}
-        onEntering={[Function]}
-        onExit={[Function]}
-        onExited={[Function]}
-        onExiting={[Function]}
-        slide={true}
-        tag="div"
-        timeout={600}
-        unmountOnExit={false}
-      >
-        <div
-          className="update__image-container"
-        >
-          <S3Image
-            imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106247322-IMG_0088.JPG"
-            theme={
-              Object {
-                "photoImg": Object {
-                  "width": "100%",
-                },
-              }
-            }
-          />
-        </div>
-      </CarouselItem>
-      <CarouselControl
-        direction="prev"
-        directionText="Previous"
-        onClickHandler={[Function]}
-      />
-      <CarouselControl
-        direction="next"
-        directionText="Next"
-        onClickHandler={[Function]}
-      />
-    </Carousel>
-  </div>
-  <Blueprint3.Dialog
-    canOutsideClickClose={true}
-    icon="trash"
-    isOpen={false}
-    onClose={[Function]}
-    title="Are you sure?"
-  >
-    <div
-      className="update__alert-container"
-    >
-      <p
-        className="text-center"
-      >
-        Are you sure you want to delete this image?
-      </p>
-      <p
-        className="text-center"
-      >
-        Other images can be added at a later date.
-      </p>
-      <S3Image
-        imgKey={null}
-        theme={
-          Object {
-            "photoImg": Object {
-              "marginBottom": "20px",
-              "maxWidth": "100%",
-            },
-          }
-        }
-      />
+exports[`<ImageCarousel /> Snapshot tests should match snapshot correctly when product is cake 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
       <div
-        className="dialog__button-container"
+        class=""
       >
-        <Blueprint3.Button
-          intent="danger"
-          onClick={[Function]}
-          style={
-            Object {
-              "margin": "0 5px",
-            }
-          }
-          text="Cancel"
-        />
-        <Blueprint3.Button
-          intent="success"
-          onClick={[Function]}
-          style={
-            Object {
-              "margin": "0 5px",
-            }
-          }
-          text="Confirm"
-        />
+        <div
+          style="position: relative;"
+        >
+          <div
+            class="carousel"
+          >
+            <div
+              aria-live="polite"
+              class="horizontalSlider___281Ls carousel__slider carousel__slider--horizontal"
+              role="listbox"
+              tabindex="0"
+            >
+              <div
+                class="carousel__slider-tray-wrapper carousel__slider-tray-wrap--horizontal"
+              >
+                <ul
+                  class="sliderTray___-vHFQ sliderAnimation___300FY carousel__slider-tray carousel__slider-tray--horizontal"
+                  style="width: 300%; transform: translateX(0%) translateX(0px); flex-direction: row;"
+                >
+                  <li
+                    aria-selected="true"
+                    class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--visible"
+                    role="option"
+                    style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                    tabindex="0"
+                  >
+                    <div
+                      class="slideInner___2mfX9 carousel__inner-slide"
+                    >
+                      <div>
+                        <div
+                          style="position: relative;"
+                        >
+                          <img
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                            style="width: 100%;"
+                          />
+                          <div />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li
+                    aria-selected="false"
+                    class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--hidden"
+                    role="option"
+                    style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                    tabindex="-1"
+                  >
+                    <div
+                      class="slideInner___2mfX9 carousel__inner-slide"
+                    >
+                      <div>
+                        <div
+                          style="position: relative;"
+                        >
+                          <img
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                            style="width: 100%;"
+                          />
+                          <div />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li
+                    aria-selected="false"
+                    class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--hidden"
+                    role="option"
+                    style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                    tabindex="-1"
+                  >
+                    <div
+                      class="slideInner___2mfX9 carousel__inner-slide"
+                    >
+                      <div>
+                        <div
+                          style="position: relative;"
+                        >
+                          <img
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                            style="width: 100%;"
+                          />
+                          <div />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <button
+              aria-label="previous"
+              class="buttonBack___1mlaL carousel__back-button makeStyles-backButton-6 animated pulse infinite"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root makeStyles-svg-5"
+                data-testid="back-button"
+                focusable="false"
+                style="color: rgb(255, 128, 247);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="next"
+              class="buttonNext___2mOCa carousel__next-button makeStyles-forwardButton-7 animated pulse infinite"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root makeStyles-svg-5"
+                data-testid="next-button"
+                focusable="false"
+                style="color: rgb(255, 128, 247);"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </Blueprint3.Dialog>
-</Fragment>
+  </body>,
+  "container": <div>
+    <div
+      class=""
+    >
+      <div
+        style="position: relative;"
+      >
+        <div
+          class="carousel"
+        >
+          <div
+            aria-live="polite"
+            class="horizontalSlider___281Ls carousel__slider carousel__slider--horizontal"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              class="carousel__slider-tray-wrapper carousel__slider-tray-wrap--horizontal"
+            >
+              <ul
+                class="sliderTray___-vHFQ sliderAnimation___300FY carousel__slider-tray carousel__slider-tray--horizontal"
+                style="width: 300%; transform: translateX(0%) translateX(0px); flex-direction: row;"
+              >
+                <li
+                  aria-selected="true"
+                  class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--visible"
+                  role="option"
+                  style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                  tabindex="0"
+                >
+                  <div
+                    class="slideInner___2mfX9 carousel__inner-slide"
+                  >
+                    <div>
+                      <div
+                        style="position: relative;"
+                      >
+                        <img
+                          src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                          style="width: 100%;"
+                        />
+                        <div />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  aria-selected="false"
+                  class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--hidden"
+                  role="option"
+                  style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="slideInner___2mfX9 carousel__inner-slide"
+                  >
+                    <div>
+                      <div
+                        style="position: relative;"
+                      >
+                        <img
+                          src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                          style="width: 100%;"
+                        />
+                        <div />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  aria-selected="false"
+                  class="slide___3-Nqo slideHorizontal___1NzNV carousel__slide carousel__slide--hidden"
+                  role="option"
+                  style="width: 33.333333333333336%; padding-bottom: 40%; position: relative;"
+                  tabindex="-1"
+                >
+                  <div
+                    class="slideInner___2mfX9 carousel__inner-slide"
+                  >
+                    <div>
+                      <div
+                        style="position: relative;"
+                      >
+                        <img
+                          src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                          style="width: 100%;"
+                        />
+                        <div />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <button
+            aria-label="previous"
+            class="buttonBack___1mlaL carousel__back-button makeStyles-backButton-6 animated pulse infinite"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root makeStyles-svg-5"
+              data-testid="back-button"
+              focusable="false"
+              style="color: rgb(255, 128, 247);"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+              />
+            </svg>
+          </button>
+          <button
+            aria-label="next"
+            class="buttonNext___2mOCa carousel__next-button makeStyles-forwardButton-7 animated pulse infinite"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root makeStyles-svg-5"
+              data-testid="next-button"
+              focusable="false"
+              style="color: rgb(255, 128, 247);"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
-exports[`<ImageCarousel /> should render correctly when only one image is in image array prop 1`] = `
-<Fragment>
-  <div
-    className="carousel__container"
-  >
-    <div
-      className="update__image-container"
-    >
-      <S3Image
-        imgKey="/public/eu-west-2:1f7a6231-22c8-459a-a078-69ef91991a5e/1584106241635-IMG_0299.JPEG"
-        theme={
-          Object {
-            "photoImg": Object {
-              "width": "100%",
-            },
-          }
-        }
-      />
-    </div>
-  </div>
-  <Blueprint3.Dialog
-    canOutsideClickClose={true}
-    icon="trash"
-    isOpen={false}
-    onClose={[Function]}
-    title="Are you sure?"
-  >
-    <div
-      className="update__alert-container"
-    >
-      <p
-        className="text-center"
-      >
-        Are you sure you want to delete this image?
-      </p>
-      <p
-        className="text-center"
-      >
-        Other images can be added at a later date.
-      </p>
-      <S3Image
-        imgKey={null}
-        theme={
-          Object {
-            "photoImg": Object {
-              "marginBottom": "20px",
-              "maxWidth": "100%",
-            },
-          }
-        }
-      />
+exports[`<ImageCarousel /> Snapshot tests should match the snapshot correctly when product is creation 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
       <div
-        className="dialog__button-container"
+        class=""
       >
-        <Blueprint3.Button
-          intent="danger"
-          onClick={[Function]}
-          style={
-            Object {
-              "margin": "0 5px",
-            }
-          }
-          text="Cancel"
-        />
-        <Blueprint3.Button
-          intent="success"
-          onClick={[Function]}
-          style={
-            Object {
-              "margin": "0 5px",
-            }
-          }
-          text="Confirm"
-        />
+        <div
+          style="position: relative;"
+        >
+          <div>
+            <div
+              style="position: relative;"
+            >
+              <img
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                style="width: 100%;"
+              />
+              <div />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </Blueprint3.Dialog>
-</Fragment>
+  </body>,
+  "container": <div>
+    <div
+      class=""
+    >
+      <div
+        style="position: relative;"
+      >
+        <div>
+          <div
+            style="position: relative;"
+          >
+            <img
+              src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+              style="width: 100%;"
+            />
+            <div />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

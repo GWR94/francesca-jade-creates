@@ -15,6 +15,7 @@ import {
   Checkbox,
   InputLabel,
   makeStyles,
+  Drawer,
 } from "@material-ui/core";
 import { API } from "aws-amplify";
 import { useDebounce } from "use-debounce";
@@ -24,13 +25,21 @@ import { SearchRounded, RefreshRounded } from "@material-ui/icons";
 import { SearchType, FilterProps, SortDirection } from "../interfaces/ProductList.i";
 import { searchFilterTheme } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
-import { listProducts, searchProducts } from "../../../graphql/queries";
+import { listProducts } from "../../../graphql/queries";
 import { ProductProps } from "../../accounts/interfaces/Product.i";
 import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
-import { FilterActionProps, SortBy } from "../../../interfaces/products.redux.i";
+import { SortBy } from "../../../interfaces/products.redux.i";
 import * as actions from "../../../actions/products.actions";
 import styles from "../../accounts/styles/searchFilter.style";
+
+interface SearchFilterState {
+  searchType: SearchType;
+  cakeSelected: boolean;
+  createsSelected: boolean;
+  sortDirection: "ASC" | "DESC";
+  sortBy: "createdAt" | "price";
+}
 
 /**
  * Component which allows the user to filter out products to fit their needs.
@@ -44,10 +53,21 @@ import styles from "../../accounts/styles/searchFilter.style";
 const SearchFilter: React.FC<SearchFilterProps> = ({
   admin,
   type = null,
-  setSearchResults,
+  filterOpen,
+  closeDrawer,
 }): JSX.Element => {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+
+  const [state, setState] = useState<SearchFilterState>({
+    searchType: "all",
+    cakeSelected: true,
+    createsSelected: true,
+    sortDirection: "ASC",
+    sortBy: "createdAt",
+  });
+
+  const { searchType, sortBy, sortDirection, cakeSelected, createsSelected } = state;
 
   // create state for searchQuery to be held within.
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -56,14 +76,29 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
    * after the user has finished typing
    */
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
-  const [searchResults, setSearch] = useState<ProductProps[] | null>([]);
 
   const dispatch = useDispatch();
 
-  // retrieve the filters set in the store with redux's useSelector
-  const filters: FilterActionProps = useSelector(
-    ({ products }: AppState) => products.filters,
-  );
+  const { query, items, filters } = useSelector(({ products }: AppState) => products);
+
+  console.log(filters);
+
+  // useEffect(() => {
+  //   return (): void => {
+  //     dispatch(actions.setSearchQuery(""));
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      dispatch(
+        actions.setSearchFilters({
+          title: { contains: debouncedSearchQuery.replace(/[^a-z]/g, "") },
+        }),
+      );
+      dispatch(actions.getProducts());
+    }
+  }, [debouncedSearchQuery]);
 
   /**
    * Function to find the minimum price from an array of variants and return
@@ -84,191 +119,194 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     return min;
   };
 
-  /**
-   * Function to sort the input array of products, based on the sorting method that the user
-   * has set (createdAt or price), and the sort direction that the user has set (Descending/
-   * Ascending), and then return it.
-   * @param { ProductProps[] | null = searchResults} products - An unsorted array
-   * of products, which will be sorted and returned. If there is no parameter set for
-   * products, use the searchResults array as a default value.
-   */
-  const sortSearchResults = (products: ProductProps[] | null = searchResults): void => {
-    const { sortBy, sortDirection } = filters;
-    // initialise an array to hold the values of the sorted products.
-    let sorted: ProductProps[] = [];
-    // if there are no products, set searchResults to null to reset search to default results
-    if (!products) return setSearchResults(null);
-    if (sortBy === "price") {
-      /**
-       * create a variable for the cake - no need to filter as there are no set
-       * prices for them.
-       */
-      const cakes = products.filter((product) => product.type === "Cake");
-      /**
-       * create a variable for the creations, and sort it based on the price, using the
-       * getMinPriceFromVariants function.
-       */
-      const creates = products
-        // filter products where product.type is creates
-        .filter((product) => product.type === "Creates")
-        // sort them based on sort direction
-        .sort((a: ProductProps, b: ProductProps) => {
-          return getMinPriceFromVariants(a.variants) < getMinPriceFromVariants(b.variants)
-            ? sortDirection === "DESC"
-              ? 1
-              : -1
-            : sortDirection === "DESC"
-            ? -1
-            : 1;
-        });
-      /**
-       * If the sortDirection is descending, place cakes after creates because cakes do not
-       * have a set price so they should be placed after. If it's ascending, reverse this.
-       */
-      sortDirection === "DESC"
-        ? (sorted = [...creates, ...cakes])
-        : (sorted = [...cakes, ...creates]);
-    } else {
-      // sort the products based on the createdAt prop.
-      sorted = products.sort((a, b) =>
-        //@ts-expect-error
-        a.createdAt > b.createdAt
-          ? sortDirection === "DESC"
-            ? 1
-            : -1
-          : sortDirection === "ASC"
-          ? -1
-          : 1,
-      );
-    }
-    setSearchResults(sorted);
-  };
+  // /**
+  //  * Function to sort the input array of products, based on the sorting method that the user
+  //  * has set (createdAt or price), and the sort direction that the user has set (Descending/
+  //  * Ascending), and then return it.
+  //  * @param { ProductProps[] | null = searchResults} products - An unsorted array
+  //  * of products, which will be sorted and returned. If there is no parameter set for
+  //  * products, use the searchResults array as a default value.
+  //  */
+  // const sortSearchResults = (products: ProductProps[] | null = searchResults): void => {
+  //   const { sortBy, sortDirection } = filters;
+  //   // initialise an array to hold the values of the sorted products.
+  //   let sorted: ProductProps[] = [];
+  //   // if there are no products, set searchResults to null to reset search to default results
+  //   if (!products) return setSearchResults(null);
+  //   if (sortBy === "price") {
+  //     /**
+  //      * create a variable for the cake - no need to filter as there are no set
+  //      * prices for them.
+  //      */
+  //     const cakes = products.filter((product) => product.type === "Cake");
+  //     /**
+  //      * create a variable for the creations, and sort it based on the price, using the
+  //      * getMinPriceFromVariants function.
+  //      */
+  //     const creates = products
+  //       // filter products where product.type is creates
+  //       .filter((product) => product.type === "Creates")
+  //       // sort them based on sort direction
+  //       .sort((a: ProductProps, b: ProductProps) => {
+  //         return getMinPriceFromVariants(a.variants) < getMinPriceFromVariants(b.variants)
+  //           ? sortDirection === "DESC"
+  //             ? 1
+  //             : -1
+  //           : sortDirection === "DESC"
+  //           ? -1
+  //           : 1;
+  //       });
+  //     /**
+  //      * If the sortDirection is descending, place cakes after creates because cakes do not
+  //      * have a set price so they should be placed after. If it's ascending, reverse this.
+  //      */
+  //     sortDirection === "DESC"
+  //       ? (sorted = [...creates, ...cakes])
+  //       : (sorted = [...cakes, ...creates]);
+  //   } else {
+  //     // sort the products based on the createdAt prop.
+  //     sorted = products.sort((a, b) =>
+  //       //@ts-expect-error
+  //       a.createdAt > b.createdAt
+  //         ? sortDirection === "DESC"
+  //           ? 1
+  //           : -1
+  //         : sortDirection === "ASC"
+  //         ? -1
+  //         : 1,
+  //     );
+  //   }
+  //   setSearchResults(sorted);
+  // };
 
-  /**
-   * If the user is an admin, and there are no adminFilters set into state, set them
-   * into state when the component mounts.
-   */
-  useEffect(() => {
-    const { adminFilters } = filters;
-    if (admin && adminFilters === null && !type) {
-      dispatch(
-        actions.setSearchFilters({
-          ...filters,
-          adminFilters: {
-            cake: true,
-            creates: true,
-          },
-        }),
-      );
-    } else if (type) {
-      dispatch(
-        actions.setSearchFilters({
-          ...filters,
-          adminFilters: {
-            cake: type === "Cake",
-            creates: type === "Creates",
-          },
-        }),
-      );
-    }
-  }, []);
+  // /**
+  //  * If the user is an admin, and there are no adminFilters set into state, set them
+  //  * into state when the component mounts.
+  //  */
+  // useEffect(() => {
+  //   const { adminFilters } = filters;
+  //   if (admin && adminFilters === null && !type) {
+  //     dispatch(
+  //       actions.setSearchFilters({
+  //         ...filters,
+  //         adminFilters: {
+  //           cake: true,
+  //           creates: true,
+  //         },
+  //       }),
+  //     );
+  //   } else if (type) {
+  //     dispatch(
+  //       actions.setSearchFilters({
+  //         ...filters,
+  //         adminFilters: {
+  //           cake: type === "Cake",
+  //           creates: type === "Creates",
+  //         },
+  //       }),
+  //     );
+  //   }
+  // }, []);
 
   /**
    * Function to filter the products based on the users' input, which will be
    * executed every time the searchQuery state or filters object (from redux)
    * is changed.
    */
-  useEffect(() => {
-    const { searchType, adminFilters, shouldUpdateWithNoQuery } = filters;
+  // useEffect(() => {
+  //   const { searchType, adminFilters, shouldUpdateWithNoQuery } = filters;
 
-    /**
-     * Function to transform the user input filters into a filters that can be
-     * used in the graphQL searchProducts query.
-     */
-    const handleSearchProducts = async (): Promise<void> => {
-      //@ts-expect-error
-      const filter: FilterProps = {};
-      if (!searchQuery.length && !shouldUpdateWithNoQuery) return setSearchResults(null);
-      /**
-       * This filter allows the user to find all products where the products tags, title, tagline or
-       * description matches that of a product.
-       */
-      if (searchQuery.length > 0) {
-        if (searchType === "all") {
-          filter.or = [
-            { tags: { matchPhrasePrefix: searchQuery } },
-            { title: { matchPhrasePrefix: searchQuery } },
-            { description: { matchPhrasePrefix: searchQuery } },
-          ];
-        } else {
-          filter.or = [{ [searchType]: { matchPhrasePrefix: searchQuery } }];
-        }
-      }
+  //   /**
+  //    * Function to transform the user input filters into a filters that can be
+  //    * used in the graphQL searchProducts query.
+  //    */
+  //   const handleSearchProducts = async (): Promise<void> => {
+  //     //@ts-expect-error
+  //     const filter: FilterProps = {};
+  //     if (!searchQuery.length && !shouldUpdateWithNoQuery) return setSearchResults(null);
+  //     /**
+  //      * This filter allows the user to find all products where the products tags, title, tagline or
+  //      * description matches that of a product.
+  //      */
+  //     if (searchQuery.length > 0) {
+  //       if (searchType === "all") {
+  //         filter.or = [
+  //           { tags: { eq: searchQuery } },
+  //           { title: { eq: searchQuery } },
+  //           { description: { eq: searchQuery } },
+  //         ];
+  //       } else {
+  //         filter.or = [{ [searchType]: { eq: searchQuery } }];
+  //       }
+  //     }
 
-      /**
-       * If there are any admin filters that have been passed through props, then they
-       * need to be added to the filtering object.
-       */
-      if (adminFilters) {
-        // destructure the adminFilters so they can be accessed easily.
-        const { cake, creates } = adminFilters;
-        /**
-         * if the cake boolean value is true and creates boolean is false, then you only
-         * want to show cakes. This means that the filtering.and needs to be set to equal
-         * (eq) "Cake". If the opposite is true then filtering.and needs to be set to equal
-         * "Creates". If cake & creates are both true/false then the type needs to be set
-         * to be the type, which will come from props.
-         */
-        if (cake && !creates) {
-          filter.and = [{ type: { eq: "Cake" } }];
-        } else if (!cake && creates) {
-          filter.and = [{ type: { eq: "Creates" } }];
-        }
-      } else {
-        /**
-         * if there are no admin filters and there is a type, set the filter to return only
-         * that type.
-         */
-        if (type) {
-          filter.and = [{ type: { eq: type } }];
-        }
-      }
-      // execute the searchProducts query, with any filters if there are any
-      try {
-        const { data } = await API.graphql({
-          query: listProducts,
-          variables: {
-            filter: !_.isEmpty(filter) ? filter : undefined,
-            limit: 1000,
-          },
-          // @ts-ignore
-          authMode: "API_KEY",
-        });
+  //     /**
+  //      * If there are any admin filters that have been passed through props, then they
+  //      * need to be added to the filtering object.
+  //      */
+  //     if (adminFilters) {
+  //       // destructure the adminFilters so they can be accessed easily.
+  //       const { cake, creates } = adminFilters;
+  //       /**
+  //        * if the cake boolean value is true and creates boolean is false, then you only
+  //        * want to show cakes. This means that the filtering.and needs to be set to equal
+  //        * (eq) "Cake". If the opposite is true then filtering.and needs to be set to equal
+  //        * "Creates". If cake & creates are both true/false then the type needs to be set
+  //        * to be the type, which will come from props.
+  //        */
+  //       if (cake && !creates) {
+  //         filter.and = [{ type: { eq: "Cake" } }];
+  //       } else if (!cake && creates) {
+  //         filter.and = [{ type: { eq: "Creates" } }];
+  //       }
+  //     } else {
+  //       /**
+  //        * if there are no admin filters and there is a type, set the filter to return only
+  //        * that type.
+  //        */
+  //       if (type) {
+  //         filter.and = [{ type: { eq: type } }];
+  //       }
+  //     }
+  //     // execute the searchProducts query, with any filters if there are any
+  //     try {
+  //       const { data } = await API.graphql({
+  //         query: listProducts,
+  //         variables: {
+  //           filter: !_.isEmpty(filter) ? filter : undefined,
+  //           limit: 1000,
+  //         },
+  //         // @ts-ignore
+  //         authMode: "API_KEY",
+  //       });
 
-        const products = data.listProducts.items;
-        // sort the products, so they can be sorted and set into state inside that function.
-        sortSearchResults(products);
-      } catch (err) {
-        setSearch(null);
-        setSearchResults(null);
-        console.error(err);
-      }
-    };
-    // execute the function
-    handleSearchProducts();
-    // execute useEffect when any filter or debouncedSearchQuery is changed
-  }, [filters, debouncedSearchQuery]);
-
-  const {
-    searchType,
-    adminFilters,
-    sortBy,
-    sortDirection,
-    shouldUpdateWithNoQuery,
-  } = filters;
-
+  //       const products = data.listProducts.items;
+  //       // sort the products, so they can be sorted and set into state inside that function.
+  //       sortSearchResults(products);
+  //     } catch (err) {
+  //       setSearch(null);
+  //       setSearchResults(null);
+  //       console.error(err);
+  //     }
+  //   };
+  //   // execute the function
+  //   handleSearchProducts();
+  //   // execute useEffect when any filter or debouncedSearchQuery is changed
+  // }, [filters, debouncedSearchQuery]);
   return (
-    <>
+    <Drawer
+      open={filterOpen}
+      anchor="top"
+      ModalProps={{
+        // If the user clicks outside the drawer, it will close
+        onBackdropClick: closeDrawer,
+        // disable the default scroll lock so the user can still scroll while open
+        disableScrollLock: true,
+      }}
+      SlideProps={{
+        unmountOnExit: false,
+      }}
+    >
       <ThemeProvider theme={searchFilterTheme}>
         <div className={classes.container}>
           <Grid container spacing={0}>
@@ -295,18 +333,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       <RefreshRounded
                         style={{ cursor: "pointer" }}
                         // when clicking button, it resets all inputs and puts search results back to default
-                        onClick={(): void => {
-                          dispatch(
-                            actions.setSearchFilters({
-                              ...filters,
-                              shouldUpdateWithNoQuery: false,
-                            }),
-                          );
-                          // clear search query input
-                          setSearchQuery("");
-                          // set searchResults to null so it will return to default state.
-                          setSearchResults(null);
-                        }}
+                        onClick={(): void => {}}
                       />
                     </InputAdornment>
                   ),
@@ -316,15 +343,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   const query = e.target.value;
                   // set query into state
                   setSearchQuery(query);
-                  // if the shouldUpdateWithNoQuery boolean is true, change it to false in redux store
-                  if (shouldUpdateWithNoQuery) {
-                    dispatch(
-                      actions.setSearchFilters({
-                        ...filters,
-                        shouldUpdateWithNoQuery: false,
-                      }),
-                    );
-                  }
                 }}
               />
             </Grid>
@@ -335,26 +353,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 <Select
                   variant="outlined"
                   value={searchType}
-                  onChange={(e): void => {
-                    // if the shouldUpdateWithNoQuery boolean is true, change it to false in redux store
-                    if (shouldUpdateWithNoQuery) {
-                      dispatch(
-                        actions.setSearchFilters({
-                          ...filters,
-                          shouldUpdateWithNoQuery: false,
-                        }),
-                      );
-                    }
-                    // retrieve the user input
-                    const searchType = e.target.value;
-                    // set searchType in the redux store (filters)
-                    dispatch(
-                      actions.setSearchFilters({
-                        ...filters,
-                        searchType: searchType as SearchType,
-                      }),
-                    );
-                  }}
+                  onChange={(e): void => {}}
                   fullWidth
                   margin="dense"
                   label="From"
@@ -371,7 +370,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           </Grid>
           <Grid container>
             {/* only show adminFilters checkboxes if admin boolean is true and adminFilters isn't null */}
-            {!type && admin && adminFilters && (
+            {!type && admin && (
               <Grid item xs={4}>
                 {/* create Checkbox component for selecting adminFilters (cake/creates filters) */}
                 <FormControl fullWidth>
@@ -383,7 +382,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       control={
                         // create Checkbox for cake
                         <Checkbox
-                          checked={adminFilters.cake}
+                          checked={cakesSelected}
                           onChange={(): void => {
                             // turn true to false and vice versa when changing
                             const updatedAdmin = {
@@ -408,22 +407,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                       control={
                         // create Checkbox for creates
                         <Checkbox
-                          checked={adminFilters.creates}
-                          onChange={(): void => {
-                            // turn true to false and vice versa when changing
-                            const updatedAdmin = {
-                              ...adminFilters,
-                              creates: !adminFilters.creates,
-                            };
-                            // update adminFilters and shouldUpdateWithNoQuery in redux store
-                            dispatch(
-                              actions.setSearchFilters({
-                                ...filters,
-                                shouldUpdateWithNoQuery: true,
-                                adminFilters: updatedAdmin,
-                              }),
-                            );
-                          }}
+                          checked={createsSelected}
+                          onChange={(): void => {}}
                           name="Creations"
                         />
                       }
@@ -445,16 +430,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   aria-label="Sort By"
                   name="SortBy"
                   value={sortBy}
-                  onChange={(e): void => {
-                    // set sortBy and shouldUpdateWithNoQuery in redux store
-                    dispatch(
-                      actions.setSearchFilters({
-                        ...filters,
-                        shouldUpdateWithNoQuery: true,
-                        sortBy: e.target.value as SortBy,
-                      }),
-                    );
-                  }}
+                  onChange={(e): void => {}}
                 >
                   {/* Create Radio buttons for each filter */}
                   <FormControlLabel
@@ -498,7 +474,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           </Grid>
         </div>
       </ThemeProvider>
-    </>
+    </Drawer>
   );
 };
 

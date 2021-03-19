@@ -1,9 +1,8 @@
-import { ProductProps } from "../../accounts/interfaces/Product.i";
-
 export interface SearchFilterProps {
   type?: string;
   admin: boolean;
-  setSearchResults: (results: ProductProps[] | null) => void;
+  filterOpen: boolean;
+  closeDrawer: () => void;
 }
 
 export interface ProductFilterType {

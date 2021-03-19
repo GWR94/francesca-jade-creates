@@ -1,18 +1,24 @@
-import { Dispatch, Store } from "redux";
+import { Dispatch } from "redux";
 import { API } from "aws-amplify";
+import { ModelProductFilterInput } from "../API";
 import { listProducts } from "../graphql/queries";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
 import {
-  FETCH_PRODUCTS_SUCCESS,
   FETCH_PRODUCTS_FAILURE,
-  SET_FILTERS,
+  FETCH_PRODUCTS_SUCCESS,
   GET_PRODUCTS,
+  RESET_FILTERS,
+  SET_FILTERS,
+  SET_SEARCH_QUERY,
   FetchProductsFailureAction,
   FetchProductsSuccessAction,
   GetProductsAction,
+  ResetFiltersAction,
   SetFiltersAction,
-  FilterActionProps,
+  SetSearchQueryAction,
 } from "../interfaces/products.redux.i";
+import { AppState } from "../store/store";
+import { SearchType } from "../pages/products/interfaces/ProductList.i";
 
 export const fetchProductsSuccess = (
   products: ProductProps[],
@@ -21,106 +27,53 @@ export const fetchProductsSuccess = (
   products,
 });
 
+export const setSearchQuery = (query: string): SetSearchQueryAction => ({
+  type: SET_SEARCH_QUERY,
+  query,
+});
+
 export const fetchProductsFailure = (): FetchProductsFailureAction => ({
   type: FETCH_PRODUCTS_FAILURE,
 });
 
-export const setSearchFilters = (filters: FilterActionProps): SetFiltersAction => ({
+export const setSearchFilters = (filters: ModelProductFilterInput): SetFiltersAction => ({
   type: SET_FILTERS,
   filters,
+});
+
+export const resetSearchFilters = (): ResetFiltersAction => ({
+  type: RESET_FILTERS,
 });
 
 export const handleGetProducts = (): GetProductsAction => ({
   type: GET_PRODUCTS,
 });
 
-export const getProducts = (searchQuery?: string) => {
+export const getProducts = () => {
   return async (
     dispatch: Dispatch,
-  ): Promise<
-    FetchProductsSuccessAction | FetchProductsFailureAction | GetProductsAction
-  > => {
+    getState: () => AppState,
+  ): Promise<FetchProductsSuccessAction | FetchProductsFailureAction> => {
+    const {
+      products: { filters },
+    } = getState();
     try {
       dispatch(handleGetProducts());
       const { data } = await API.graphql({
         query: listProducts,
         variables: {
-          filter: searchQuery
-            ? {
-                or: [
-                  { tags: { contains: searchQuery } },
-                  { title: { contains: searchQuery } },
-                  { description: { contains: searchQuery } },
-                ],
-              }
-            : null,
-          limit: 100,
-        },
-        // @ts-ignore
-        authMode: "API_KEY",
-      });
-      return dispatch(fetchProductsSuccess(data.listProducts.items));
-    } catch (error) {
-      console.error(error);
-      return dispatch(fetchProductsFailure());
-    }
-  };
-};
-
-export const getProductsByType = (type: "Cake" | "Creates", searchQuery?: string) => {
-  return async (
-    dispatch: Dispatch,
-  ): Promise<FetchProductsSuccessAction | FetchProductsFailureAction> => {
-    try {
-      const { data } = await API.graphql({
-        query: listProducts,
-        variables: {
-          filters: {
-            or: searchQuery
-              ? [
-                  { tags: { contains: searchQuery } },
-                  { title: { contains: searchQuery } },
-                  { description: { contains: searchQuery } },
-                ]
-              : null,
-            and: [
-              {
-                type: {
-                  eq: type,
-                },
-              },
-            ],
-          },
-        },
-      });
-      return dispatch(fetchProductsSuccess(data.listProducts.items));
-    } catch (error) {
-      console.error(error);
-      return dispatch(fetchProductsFailure());
-    }
-  };
-};
-
-export const getProductsByTheme = (theme: string) => {
-  return async (
-    dispatch: Dispatch,
-  ): Promise<FetchProductsSuccessAction | FetchProductsFailureAction> => {
-    try {
-      const { data } = await API.graphql({
-        query: listProducts,
-        variables: {
           filter: {
-            tags: {
-              contains: theme,
-            },
+            ...filters,
           },
           limit: 100,
         },
         // @ts-ignore
         authMode: "API_KEY",
       });
+      console.log(data.listProducts.items);
       return dispatch(fetchProductsSuccess(data.listProducts.items));
     } catch (error) {
+      console.error(error);
       return dispatch(fetchProductsFailure());
     }
   };

@@ -1,5 +1,7 @@
 import React, { RefObject } from "react";
 import { Menu, MenuItem, Divider, makeStyles, useMediaQuery } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   FaceRounded,
   ShoppingCartRounded,
@@ -7,17 +9,15 @@ import {
   MailOutlineRounded,
   ExitToAppOutlined,
 } from "@material-ui/icons";
-import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import * as actions from "../../../actions/user.actions";
-import { CurrentTabTypes } from "../../../interfaces/user.redux.i";
+import { CurrentTabTypes } from "../../accounts/interfaces/Accounts.i";
+import { AppState } from "../../../store/store";
 
 interface AccountMenuProps {
   closeNav: () => void; // function to close navbar if it's open
   accountRef: RefObject<HTMLDivElement>; // ref for accounts link
   menuOpen: boolean; // boolean to determine if menu is open
   setMenuOpen: (value: boolean) => void; // function to control menuOpen
-  admin: boolean; // boolean to determine if current user is admin
   signOut: () => void; // function to sign out
 }
 
@@ -26,9 +26,9 @@ const AccountsMenu = ({
   accountRef,
   menuOpen,
   setMenuOpen,
-  admin,
   signOut,
 }: AccountMenuProps): JSX.Element => {
+  const { admin } = useSelector(({ user }: AppState) => user);
   // store the useHistory hook into a variable so it can be used within the component
   const history = useHistory();
   /**
@@ -37,6 +37,7 @@ const AccountsMenu = ({
    * the screen is larger desktop will be true.
    */
   const desktop = useMediaQuery("(min-width: 600px)");
+  const dispatch = useDispatch();
   // make styles using the styles and store it into a variable that can be executed.
   const useStyles = makeStyles({
     menu: {
@@ -79,7 +80,6 @@ const AccountsMenu = ({
   // execute useStyles to create the classes object - which will contain all styles
   const classes = useStyles();
   // store useDispatch hook into a variable so it can be used throughout component
-  const dispatch = useDispatch();
 
   const handleClose = (tab: CurrentTabTypes): void => {
     // close nav via function passed from props
@@ -90,9 +90,9 @@ const AccountsMenu = ({
      * dispatch setCurrentTab action with the input tab parameter, so the correct
      * tab is displayed when going back to accounts page.
      */
-    dispatch(actions.setCurrentTab(tab));
     // navigate to accounts page.
-    history.push("/account");
+    dispatch(actions.setCurrentTab(tab));
+    history.push(`/account`);
   };
   return (
     <Menu

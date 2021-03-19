@@ -22,19 +22,19 @@ import { openSnackbar } from "../../utils/Notifier";
 import * as userActions from "../../actions/user.actions";
 import * as basketActions from "../../actions/basket.actions";
 
+interface NavBarProps {
+  admin: boolean;
+}
+
 /**
  * NavBar component which renders relevant links and features to navigate around the
  * site efficiently.
  */
-const NavBar: React.FC = (): JSX.Element => {
+const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
-
-  const location = useLocation();
-
-  const { admin } = useSelector(({ user }: AppState) => user);
 
   const mobile = useMediaQuery("(max-width: 760px)");
 
@@ -69,7 +69,6 @@ const NavBar: React.FC = (): JSX.Element => {
     // push to home page
     history.push("/");
   };
-  const isHome = location.pathname.length <= 1;
   const items = useSelector(({ basket }: AppState) => basket.items);
   return (
     <>
@@ -84,9 +83,9 @@ const NavBar: React.FC = (): JSX.Element => {
             className={`${classes.nav} animate__animated animate__slideInDown`}
             position="relative"
             style={{
-              background: isHome ? "transparent" : "#fff",
+              background: "#fff",
             }}
-            elevation={isHome ? 0 : 4}
+            elevation={4}
           >
             <Container className={classes.main}>
               <img
@@ -111,12 +110,12 @@ const NavBar: React.FC = (): JSX.Element => {
                 >
                   <MenuRounded
                     onClick={(): void => {
-                      isHome ? history.push("/themes") : setNavOpen(!navOpen);
+                      setNavOpen(!navOpen);
                     }}
                     className={classes.menuIcon}
                     style={{
                       marginTop: -6,
-                      color: isHome ? "#fff" : COLORS.LightPink,
+                      color: COLORS.LightPink,
                     }}
                   />
                 </Badge>

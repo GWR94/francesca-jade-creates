@@ -41,8 +41,13 @@ const OutlinedContainer: React.SFC<OutlinedProps> = ({
     label: {
       fontSize: "11px",
       background: "#fff",
-      fontWeight: 300,
-      padding: "0 5px",
+      fontWeight: 400,
+      padding: "2px 3px 0",
+      color: disabled
+        ? "rgba(0, 0, 0, 0.38) !important"
+        : "rgba(0, 0, 0, 0.87) !important",
+      lineHeight: "1.1876em",
+      letterSpacing: "0.00938em",
     },
     content: {
       minHeight: 45,

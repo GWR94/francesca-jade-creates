@@ -19,10 +19,12 @@ import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
 import PasswordInput from "../../common/inputs/PasswordInput";
 import styles from "./styles/login.style";
 import { breakpoints } from "../../themes";
-// TODO
-// [ ] Add loading for login button (HOC?)
 
-const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element => {
+const Login: React.FC<LoginProps> = ({
+  showButton = false,
+  props,
+  closeNav,
+}): JSX.Element => {
   const [state, setState] = useState<LoginState>({
     username: "",
     password: "",
@@ -45,6 +47,7 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
     try {
       await Auth.signIn(username, password);
       closeDialog();
+      if (closeNav) closeNav();
     } catch (err) {
       console.error(err);
       openSnackbar({
@@ -54,7 +57,7 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
     }
     setState({ ...state, loggingIn: false });
   };
-  const { classOverride, text, variant, align, Icon } = props;
+  const { classOverride, text, Icon } = props;
 
   const {
     username,
@@ -96,8 +99,8 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
       <Dialog open={isOpen} onClose={closeDialog} fullScreen={fullscreen}>
         <div className={classes.container}>
           {fullscreen && (
-            <IconButton className={classes.closeIcon}>
-              <Close onClick={closeDialog} />
+            <IconButton className={classes.closeIcon} onClick={closeDialog}>
+              <Close />
             </IconButton>
           )}
           <div className={classes.federated}>
@@ -113,12 +116,13 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
                 size={fullscreen ? "small" : "large"}
                 startIcon={<i className={`fab fa-google ${classes.icon}`} />}
                 style={{ marginBottom: "10px" }}
-                onClick={async (): Promise<ICredentials> =>
+                onClick={async (): Promise<void> => {
                   // @ts-ignore
                   await Auth.federatedSignIn({
                     provider: "Google",
-                  })
-                }
+                  });
+                  if (closeNav) closeNav();
+                }}
               >
                 Login with Google
               </Button>
@@ -127,12 +131,13 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
                 size={fullscreen ? "small" : "large"}
                 style={{ marginBottom: "10px" }}
                 startIcon={<i className={`fab fa-facebook-f ${classes.icon}`} />}
-                onClick={async (): Promise<ICredentials> =>
+                onClick={async (): Promise<void> => {
                   // @ts-ignore
                   await Auth.federatedSignIn({
                     provider: "Facebook",
-                  })
-                }
+                  });
+                  if (closeNav) closeNav();
+                }}
               >
                 Login with Facebook
               </Button>
@@ -140,12 +145,13 @@ const Login: React.FC<LoginProps> = ({ showButton = false, props }): JSX.Element
                 className={`${classes.button} ${classes.amazon}`}
                 size={fullscreen ? "small" : "large"}
                 startIcon={<i className={`fab fa-amazon ${classes.icon}`} />}
-                onClick={async (): Promise<ICredentials> =>
+                onClick={async (): Promise<void> => {
                   // @ts-ignore
                   await Auth.federatedSignIn({
                     provider: "LoginWithAmazon",
-                  })
-                }
+                  });
+                  if (closeNav) closeNav();
+                }}
               >
                 Login with Amazon
               </Button>

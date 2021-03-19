@@ -7,19 +7,13 @@ import UserActionTypes, {
 
 const defaultUserState: UserState = {
   id: null,
-  username: null,
-  admin: false,
   currentTab: "profile",
-  email: null,
-  emailVerified: false,
+  admin: false,
 };
 
 export interface UserState {
   id: string | null;
-  username: string | null;
   admin: boolean;
-  email: string | null;
-  emailVerified: boolean;
   currentTab: CurrentTabTypes;
 }
 
@@ -29,18 +23,15 @@ export default (state = defaultUserState, action: UserActionTypes): UserState =>
       return {
         ...state,
         id: action.id,
-        username: action.username,
         admin: action.admin,
-        email: action.email,
-        emailVerified: action.emailVerified,
-      };
-    case SET_CURRENT_TAB:
-      return {
-        ...state,
-        currentTab: action.currentTab,
       };
     case CLEAR_USER:
       return defaultUserState;
+    case SET_CURRENT_TAB:
+      return {
+        ...state,
+        currentTab: action.tab,
+      };
     default:
       return state;
   }

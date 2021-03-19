@@ -22,7 +22,7 @@ export interface AppState {
 const persistConfig = {
   key: "root",
   storage: storageSession,
-  blacklist: ["products"],
+  blacklist: ["products", "user"],
 };
 
 const rootReducer = combineReducers({

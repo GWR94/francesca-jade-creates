@@ -18,7 +18,7 @@ interface NonIdealProps {
  * @param {Icon} Icon - The icon that is displayed in the top left of the component
  * @param {string} subtext - The description of the non-ideal component.
  */
-const NonIdealState: React.SFC<NonIdealProps> = ({
+const NonIdealState: React.FC<NonIdealProps> = ({
   title,
   Icon,
   subtext,
@@ -42,12 +42,14 @@ const NonIdealState: React.SFC<NonIdealProps> = ({
 
   return (
     // set the correct theme for the component
-    <ThemeProvider theme={nonIdealStateTheme}>
-      <div className={classes.nonIdealState}>
-        {Icon}
-        <Typography variant="h5">{title}</Typography>
-        <Typography variant="subtitle2">{subtext}</Typography>
-        <div className={classes.buttonContainer}>
+    <div className={classes.nonIdealState}>
+      {Icon}
+      <Typography variant="h5" style={{ textAlign: "center" }}>
+        {title}
+      </Typography>
+      <Typography variant="subtitle2">{subtext}</Typography>
+      <div className={classes.buttonContainer}>
+        <ThemeProvider theme={nonIdealStateTheme}>
           <Button
             color="primary"
             variant="outlined"
@@ -62,9 +64,18 @@ const NonIdealState: React.SFC<NonIdealProps> = ({
           >
             Go to Creations
           </Button>
-        </div>
+        </ThemeProvider>
       </div>
-    </ThemeProvider>
+      <div className={classes.buttonContainer}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={(): void => history.push("/themes")}
+        >
+          Browse Themes
+        </Button>
+      </div>
+    </div>
   );
 };
 

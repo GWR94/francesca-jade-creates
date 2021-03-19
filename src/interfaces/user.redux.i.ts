@@ -1,14 +1,10 @@
 export const SET_USER = "SET_USER";
 export const CLEAR_USER = "CLEAR_USER";
 export const SET_CURRENT_TAB = "SET_CURRENT_TAB";
-
 export interface SetUserAction {
   type: typeof SET_USER;
   id: string;
-  username: string;
   admin: boolean;
-  email: string;
-  emailVerified: boolean;
 }
 
 export interface ClearUserAction {
@@ -17,7 +13,7 @@ export interface ClearUserAction {
 
 export interface SetCurrentTabAction {
   type: typeof SET_CURRENT_TAB;
-  currentTab: CurrentTabTypes;
+  tab: CurrentTabTypes;
 }
 
 export type CurrentTabTypes =

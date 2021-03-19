@@ -203,7 +203,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * If there are any errors at any point in the function, notify the user with a
        * danger snackbar with a relevant message.
        */
-      console.error(err);
       openSnackbar({
         severity: "error",
         message: "Failed to removed image. Please try again.",
@@ -330,12 +329,14 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
               {/*  Buttons to control the playback of the carousel */}
               <ButtonBack className={`${classes.backButton} animated pulse infinite`}>
                 <ChevronLeft
+                  data-testid="back-button"
                   className={classes.svg}
                   style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />
               </ButtonBack>
               <ButtonNext className={`${classes.forwardButton} animated pulse infinite`}>
                 <ChevronRight
+                  data-testid="next-button"
                   className={classes.svg}
                   style={{ color: type === "Cake" ? COLORS.Pink : COLORS.Gray }}
                 />

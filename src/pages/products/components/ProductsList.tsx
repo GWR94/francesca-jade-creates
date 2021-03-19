@@ -51,33 +51,31 @@ const ProductsList: React.FC<ProductListProps> = ({
   // set initial state for component
   const [state, setState] = useState<ProductListState>(initialState);
 
-  const getProducts = (): void => {
+  useEffect(() => {
     if (type) {
       /**
        * if there is a type prop that was passed down from the parent, dispatch the
        * getProducts action with the type passed as the parameter. This will return
        * all of the products which are of that type.
        */
-      dispatch(actions.getProducts(type));
-    } else if (theme) {
-      dispatch(actions.getProductsByTheme(theme));
-    } else {
-      /**
-       * If there is no type prop, then dispatch the getProducts action with no
-       * parameters. This will return all of the products no matter what the type.
-       */
+      dispatch(
+        actions.setSearchFilters({
+          type: {
+            eq: type,
+          },
+        }),
+      );
       dispatch(actions.getProducts());
     }
-    setState({ ...state, isLoading: false });
-  };
-
-  useEffect(() => {
-    getProducts();
-  }, [theme, type]);
-
-  useEffect(() => {
-    getProducts();
   }, []);
+
+  // useEffect(() => {
+  //   getProducts();
+  // }, [theme, type]);
+
+  // useEffect(() => {
+  //   getProducts();
+  // }, []);
 
   const desktop = useMediaQuery("(min-width: 600px)");
 
@@ -92,7 +90,7 @@ const ProductsList: React.FC<ProductListProps> = ({
    * Retrieve the items from the products store by destructuring it and renaming
    * it to products for clarity's sake.
    */
-  const { items: products, isSearching } = useSelector(
+  const { items: products, isSearching, noResults } = useSelector(
     ({ products }: AppState) => products,
   );
   /**
@@ -103,23 +101,8 @@ const ProductsList: React.FC<ProductListProps> = ({
   const results = theme ? products || [] : searchResults || products;
 
   const isCake = type === "Cake";
-
-  return isSearching ? (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: desktop ? 600 : 300,
-        width: "100%",
-      }}
-    >
-      <CircularProgress
-        size={desktop ? 100 : 50}
-        style={{ color: isCake ? COLORS.LightPink : COLORS.LightGray }}
-      />
-    </div>
-  ) : (
+  console.log(isSearching);
+  return (
     <>
       {!theme && (
         <div
@@ -138,21 +121,38 @@ const ProductsList: React.FC<ProductListProps> = ({
           />
         </div>
       )}
-      {results.length > 0 ? (
-        <Grid container spacing={2}>
-          {/* 
+      {!noResults ? (
+        isSearching ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: desktop ? 600 : 300,
+              width: "100%",
+            }}
+          >
+            <CircularProgress
+              size={desktop ? 100 : 50}
+              style={{ color: isCake ? COLORS.LightPink : COLORS.LightGray }}
+            />
+          </div>
+        ) : (
+          <Grid container spacing={2}>
+            {/* 
             Map the results to a Grid item to control the responsive layout,
             and render a ProductCard component with the mapped product data
             passed through as props (and admin if the user is an admin).
           */}
-          {results.slice(min, max).map(
-            (product: ProductProps): JSX.Element => (
-              <Grid item md={4} sm={6} xs={12} key={product.id}>
-                <ProductCard admin={admin} product={product} />
-              </Grid>
-            ),
-          )}
-        </Grid>
+            {results.slice(min, max).map(
+              (product: ProductProps): JSX.Element => (
+                <Grid item md={4} sm={6} xs={12} key={product.id}>
+                  <ProductCard admin={admin} product={product} />
+                </Grid>
+              ),
+            )}
+          </Grid>
+        )
       ) : (
         // If there are no products, show the NonIdealState component to notify the user
         <NonIdealState
@@ -179,31 +179,15 @@ const ProductsList: React.FC<ProductListProps> = ({
         the filterOpen boolean is true 
       */}
       {!theme && (
-        <Drawer
-          open={filterOpen}
-          anchor="top"
-          ModalProps={{
-            // If the user clicks outside the drawer, it will close
-            onBackdropClick: (): void => setState({ ...state, filterOpen: false }),
-            // disable the default scroll lock so the user can still scroll while open
-            disableScrollLock: true,
-          }}
-          SlideProps={{
-            unmountOnExit: false,
-          }}
-        >
-          {/* Render the SearchFilter component */}
-          <SearchFilter
-            admin={admin}
-            type={type}
-            setSearchResults={(searchResults): void =>
-              setState({ ...state, searchResults })
-            }
-          />
-        </Drawer>
+        <SearchFilter
+          admin={admin}
+          type={type}
+          filterOpen={filterOpen}
+          closeDrawer={(): void => setState({ ...state, filterOpen: false })}
+        />
       )}
     </>
   );
 };
 
-export default React.memo(ProductsList);
+export default ProductsList;

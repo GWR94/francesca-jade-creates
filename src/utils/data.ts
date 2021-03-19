@@ -116,8 +116,6 @@ export const jamArr = [
   "Spiced Apple",
 ];
 
-export const phoneNumberReg = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im;
-
 export const themes = [
   "Wedding",
   "Anniversary",

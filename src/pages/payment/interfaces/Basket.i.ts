@@ -33,8 +33,8 @@ export interface CheckoutProductProps {
   tagline: string;
   image: S3ImageProps;
   variant: Variant | null;
-  price: number;
-  shippingCost: number;
+  // price: number;
+  // shippingCost: number;
   customOptions?: CustomOptionArrayType;
 }
 

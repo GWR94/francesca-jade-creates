@@ -6,7 +6,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import React, { FC } from "react";
 import ReactDOM from "react-dom";
 import Amplify from "aws-amplify";
-import { ThemeProvider } from "@material-ui/core";
+import { StylesProvider, ThemeProvider } from "@material-ui/core";
 import config from "./aws-exports";
 import AppRouter from "./routes/Router";
 import "remove-focus-outline";
@@ -76,25 +76,27 @@ Amplify.configure({
 export const App: FC = (): JSX.Element => (
   <>
     <Notifier />
-    <Provider store={persist.store}>
-      <PersistGate loading={null} persistor={persist.persistor}>
-        <ThemeProvider theme={rootTheme}>
-          <div
-            id="app"
-            style={{
-              background: "#F2B7D0",
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "stretch",
-              position: "relative",
-            }}
-          >
-            <AppRouter />
-          </div>
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
+    <StylesProvider>
+      <Provider store={persist.store}>
+        <PersistGate loading={null} persistor={persist.persistor}>
+          <ThemeProvider theme={rootTheme}>
+            <div
+              id="app"
+              style={{
+                background: "#F2B7D0",
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "stretch",
+                position: "relative",
+              }}
+            >
+              <AppRouter />
+            </div>
+          </ThemeProvider>
+        </PersistGate>
+      </Provider>
+    </StylesProvider>
   </>
 );
 

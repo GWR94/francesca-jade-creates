@@ -55,6 +55,7 @@ export default createStyles({
     borderRadius: 5,
     border: `1px solid ${COLORS.DisabledGray}`,
     width: 500,
+    margin: "0 auto",
     [breakpoints.down("xs")]: {
       width: "100%",
     },
@@ -140,6 +141,17 @@ export default createStyles({
       fontSize: "0.9rem",
     },
   },
+  priceContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  priceInner: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
   MuiInputBase: {
     padding: 0,
   },
@@ -180,5 +192,8 @@ export default createStyles({
   },
   checkoutContainer: {
     marginBottom: 10,
+  },
+  nonIdealContainer: {
+    marginTop: "25vh",
   },
 });

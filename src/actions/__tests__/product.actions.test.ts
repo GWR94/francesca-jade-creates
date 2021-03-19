@@ -1,28 +1,12 @@
-import { fetchProductsSuccess } from "./../products.actions";
-import axios from "axios";
 import configureStore from "redux-mock-store";
 import thunk from "redux-thunk";
-import MockAdapter from "axios-mock-adapter";
-import moxios from "moxios";
-import * as actions from "../../actions/products.actions";
+import Amplify, { API } from "aws-amplify";
+import * as actions from "../products.actions";
 import * as types from "../../interfaces/products.redux.i";
 import { ProductProps } from "../../pages/accounts/interfaces/Product.i";
-import { Dispatch } from "redux";
+import awsExports from "../../aws-exports";
 
-const getProducts = () => (dispatch: Dispatch): Promise<void> => {
-  dispatch(actions.getProducts());
-  return axios
-    .get("/products")
-    .then((response) => {
-      dispatch(actions.fetchProductsSuccess(response.data));
-      return response;
-    })
-    .catch((error) => {
-      dispatch(actions.fetchProductsFailure());
-      console.log(error);
-      return error;
-    });
-};
+Amplify.configure(awsExports);
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -79,39 +63,168 @@ const products: ProductProps[] = [
 ];
 
 describe("product actions", () => {
-  beforeEach(() => {
-    // store.clearActions();
-    moxios.install();
-  });
+  const store = mockStore({});
 
   afterEach(() => {
-    moxios.uninstall();
+    store.clearActions();
   });
 
   describe("getProducts()", () => {
-    it("should dispatch an action to retrieve products and put them into store", () => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent();
-        request.respondWith({
-          status: 200,
-          response: products[0],
+    it("should dispatch a successful action to retrieve products", () => {
+      API.graphql = jest.fn().mockImplementation(() => {
+        return new Promise((res) => {
+          res({
+            // resolve to simulate success
+            data: {
+              listProducts: {
+                items: products,
+              },
+            },
+          });
         });
       });
-      const store = mockStore({});
 
       const expectedActions = [
         {
-          type: types.GET_PRODUCTS,
+          type: types.FETCH_PRODUCTS_REQUEST,
         },
         {
           type: types.FETCH_PRODUCTS_SUCCESS,
-          products: [products[0]],
+          products,
         },
       ];
-
-      return store.dispatch(actions.getProducts()).then(() => {
+      // @ts-ignore - error showing for "required" type even though its optional
+      store.dispatch(actions.getProducts()).then(() => {
         expect(store.getActions()).toEqual(expectedActions);
       });
+    });
+
+    it("should dispatch an unsuccessful action in the event of error", () => {
+      API.graphql = jest.fn().mockImplementation(() => {
+        return new Promise((_res, rej) => {
+          rej(); // reject promise to mimic failure
+        });
+      });
+
+      const expectedActions = [
+        {
+          type: types.FETCH_PRODUCTS_REQUEST,
+        },
+        {
+          type: types.FETCH_PRODUCTS_FAILURE,
+        },
+      ];
+      store.dispatch(actions.getProducts()).then(() => {
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+    });
+  });
+
+  describe("getProductByTheme()", () => {
+    it("should dispatch a successful action to retrieve product based on theme", () => {
+      API.graphql = jest.fn().mockImplementation(() => {
+        return new Promise((res) => {
+          res({
+            data: {
+              listProducts: {
+                items: products,
+              },
+            },
+          }); // reject promise to mimic failure
+        });
+      });
+      const expectedActions = [
+        {
+          type: types.FETCH_PRODUCTS_THEME_REQUEST,
+          theme: "Family",
+        },
+        {
+          type: types.FETCH_PRODUCTS_SUCCESS,
+          products,
+        },
+      ];
+      store.dispatch(actions.getProductsByTheme("Family")).then(() => {
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+    });
+
+    it("should dispatch an unsuccessful action in the event of an error", () => {
+      API.graphql = jest.fn().mockImplementation(() => {
+        return new Promise((_res, rej) => {
+          rej(); // reject promise to mimic failure
+        });
+      });
+
+      const expectedActions = [
+        {
+          type: types.FETCH_PRODUCTS_THEME_REQUEST,
+          theme: "Love",
+        },
+        {
+          type: types.FETCH_PRODUCTS_FAILURE,
+        },
+      ];
+      store.dispatch(actions.getProductsByTheme("Love")).then(() => {
+        expect(store.getActions()).toEqual(expectedActions);
+      });
+    });
+  });
+
+  describe("setSearchFilters()", () => {
+    it("should dispatch the correct action when successfully updating filters - test 1", () => {
+      const expectedActions = [
+        {
+          type: types.SET_FILTERS,
+          filters: {
+            searchType: "all",
+            sortDirection: "DESC",
+            adminFilters: null,
+            sortBy: "createdAt",
+            shouldUpdateWithNoQuery: false,
+          },
+        },
+      ];
+      store.dispatch(
+        actions.setSearchFilters({
+          searchType: "all",
+          sortDirection: "DESC",
+          adminFilters: null,
+          sortBy: "createdAt",
+          shouldUpdateWithNoQuery: false,
+        }),
+      );
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+
+    it("should dispatch the correct action when successfully updating filters - test 2", () => {
+      const expectedActions = [
+        {
+          type: types.SET_FILTERS,
+          filters: {
+            searchType: "all",
+            sortDirection: "ASC",
+            adminFilters: {
+              cake: true,
+              creates: true,
+            },
+            sortBy: "price",
+            shouldUpdateWithNoQuery: false,
+          },
+        },
+      ];
+      store.dispatch(
+        actions.setSearchFilters({
+          searchType: "all",
+          sortDirection: "ASC",
+          adminFilters: {
+            cake: true,
+            creates: true,
+          },
+          sortBy: "price",
+          shouldUpdateWithNoQuery: false,
+        }),
+      );
+      expect(store.getActions()).toEqual(expectedActions);
     });
   });
 });

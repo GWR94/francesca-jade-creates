@@ -163,7 +163,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
     let price = 0;
     products.map((product) => {
       // add the price of the product and shipping cost to price
-      price += product.price + product.shippingCost;
+      price += product.variant.price.item + product.variant.price.postage;
     });
     // return price in correct format as string
     return `£${price.toFixed(2)}`;
@@ -268,7 +268,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
             </Grid>
             <Divider className={classes.divider} />
             {order.products.map((product, i) => {
-              const { title, price, shippingCost, variant, customOptions } = product;
+              const { title, variant, customOptions } = product;
               const options: {
                 [key: string]: string | string[];
               }[] = [];
@@ -292,7 +292,8 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
                     <Typography className={classes.details}>
                       Cost:
                       <span className={classes.data}>
-                        £{price.toFixed(2)} + £{shippingCost.toFixed(2)} P&P
+                        £{variant.price.item.toFixed(2)} + £
+                        {variant.price.postage.toFixed(2)} P&P
                       </span>
                     </Typography>
                     {variant.variantName !== variant.dimensions && (
