@@ -15,45 +15,16 @@ export interface RouterState {
 }
 
 export interface RouterDispatchProps {
-  clearBasket: () => ClearBasketAction;
-  setUser: (
-    id: string,
-    username: string,
-    admin: boolean,
-    email: string,
-    emailVerified: boolean,
-  ) => SetUserAction;
-  clearUser: () => ClearUserAction;
-  fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
+  setUser: (id: string, admin: boolean) => SetUserAction;
 }
 
 export interface RouterProps {
-  clearBasket: () => ClearBasketAction;
-  setUser: (
-    id: string,
-    username: string,
-    admin: boolean,
-    email: string,
-    emailVerified: boolean,
-  ) => SetUserAction;
-  clearUser: () => ClearUserAction;
-  fetchProductsSuccess: (products: ProductProps[]) => FetchProductsSuccessAction;
-  products?: ProductProps[];
-  sub: string | null;
+  setUser: (id: string, admin: boolean) => SetUserAction;
 }
 export interface RouterStateProps {
   sub: string | null;
   products: ProductProps[];
 }
-
-export interface ProductData {
-  value: {
-    data: {
-      [key: string]: ProductProps;
-    };
-  };
-}
-
 export interface SignInUserData {
   Session: CognitoUserSession;
   authenticationFlorType: string;

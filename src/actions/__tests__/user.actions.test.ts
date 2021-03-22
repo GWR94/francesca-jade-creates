@@ -12,9 +12,7 @@ describe("user actions", () => {
         email: "test@test.com",
         emailVerified: true,
       };
-      expect(
-        actions.setUser("123abc", "jamesgower", true, "test@test.com", true),
-      ).toEqual(expectedAction);
+      expect(actions.setUser("123abc", true)).toEqual(expectedAction);
     });
   });
 

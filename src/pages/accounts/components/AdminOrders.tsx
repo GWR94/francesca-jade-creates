@@ -59,6 +59,7 @@ const AdminOrders = (): JSX.Element => {
   const getOrders = async (): Promise<void> => {
     // retrieve the orders data via the listOrders graphql query
     const { data } = await API.graphql(graphqlOperation(listOrders));
+    console.log(data);
     // store the actual items into a variable
     const items: OrderProps[] = data.listOrders.items;
     // sort the items via their createdAt data (descending)

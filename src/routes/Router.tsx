@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Router, Route, Switch, Redirect, RouteComponentProps } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Hub, Auth, API, graphqlOperation } from "aws-amplify";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { CognitoUserAttribute, CognitoUser } from "amazon-cognito-identity-js";
 import { Dispatch } from "redux";
 import Landing from "../pages/home/Landing";
@@ -15,6 +15,7 @@ import {
   SignInUserData,
   HubCapsule,
   RouterProps,
+  RouterDispatchProps,
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
 import Loading from "../common/Loading";
@@ -55,7 +56,6 @@ class AppRouter extends React.Component<RouterProps> {
   public async componentDidMount(): Promise<void> {
     // @ts-ignore
     Hub.listen("auth", this.onHubCapsule);
-
     const { user } = this.state;
     // listener for auth changes such as signIn, signOut, signUp etc.
     if (!user) await this.getUserData();
@@ -68,7 +68,6 @@ class AppRouter extends React.Component<RouterProps> {
    * users' data
    */
   private registerNewUser = async (signInData: SignInUserData): Promise<void> => {
-    console.log("REGISTER");
     /**
      * Get the id from signInData - it's in different locations based on what provider user
      * logged in with. This will be used to check if the user is already a part of the database
@@ -145,30 +144,32 @@ class AppRouter extends React.Component<RouterProps> {
    */
   public getUserData = async (): Promise<void> => {
     const { setUser } = this.props;
-    const user = await Auth.currentAuthenticatedUser();
-    if (user) {
-      /**
-       * if the current user is part of the Admin group in the cognito groups array, then set
-       * this.admin to true, otherwise set it to false.
-       */
-      this.admin =
-        user.signInUserSession?.idToken?.payload["cognito:groups"]?.includes("Admin") ??
-        false;
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      if (user) {
+        /**
+         * if the current user is part of the Admin group in the cognito groups array, then set
+         * this.admin to true, otherwise set it to false.
+         */
+        this.admin =
+          user.signInUserSession?.idToken?.payload["cognito:groups"]?.includes("Admin") ??
+          false;
 
-      /**
-       * if there is a user object, set it into state and set isLoading to false to stop any
-       * loading UI effects. Then call getUserAttributes() as the callback function.
-       */
-      const userAttributes = await this.getUserAttributes(user);
-      if (userAttributes?.sub) {
-        setUser(userAttributes.sub, this.admin);
+        /**
+         * if there is a user object, set it into state and set isLoading to false to stop any
+         * loading UI effects. Then call getUserAttributes() as the callback function.
+         */
+        const userAttributes = await this.getUserAttributes(user);
+        if (userAttributes?.sub) {
+          setUser(userAttributes.sub, this.admin);
+        }
+        this.setState({
+          user,
+          userAttributes,
+          isLoading: false,
+        });
       }
-      this.setState({
-        user,
-        userAttributes,
-        isLoading: false,
-      });
-    } else {
+    } catch (err) {
       /**
        * If there is no user object from Auth.currentAuthUser then set this.admin to be false, and
        * set the user object to null, and remove loading UI effects by setting isLoading to false.
@@ -212,7 +213,7 @@ class AppRouter extends React.Component<RouterProps> {
     }
   };
 
-  public render() {
+  public render(): JSX.Element {
     const { userAttributes, isLoading, user } = this.state;
     return (
       <Router history={history}>
@@ -282,17 +283,13 @@ class AppRouter extends React.Component<RouterProps> {
                 <Route
                   path="/account/:id"
                   component={(
-                    matchParams: RouteComponentProps<{
+                    _: RouteComponentProps<{
                       id: string;
                     }>,
                   ): JSX.Element =>
                     this.admin ? (
                       <div className="content-container">
-                        <UpdateProduct
-                          history={history}
-                          update
-                          id={matchParams.match.params.id}
-                        />
+                        <UpdateProduct update id={_.match.params.id} />
                       </div>
                     ) : (
                       <Redirect to="/" />
@@ -314,7 +311,7 @@ class AppRouter extends React.Component<RouterProps> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch): RouterDispatchProps => ({
   setUser: (id: string, admin: boolean): SetUserAction =>
     dispatch(userActions.setUser(id, admin)),
 });

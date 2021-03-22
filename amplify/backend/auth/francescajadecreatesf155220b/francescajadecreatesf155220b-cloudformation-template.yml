@@ -157,7 +157,23 @@ Parameters:
     Type: String
   
             
+        
+  authProviders:
+    Type: CommaDelimitedList
+      
   hostedUIProviderCreds:
+    Type: String
+  
+            
+  facebookAppId:
+    Type: String
+  
+            
+  googleClientId:
+    Type: String
+  
+            
+  amazonAppId:
     Type: String
   
             
@@ -166,10 +182,6 @@ Parameters:
   
             
             
-        
-  authProviders:
-    Type: CommaDelimitedList
-      
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
   
@@ -811,8 +823,17 @@ Outputs :
     Condition: ShouldOutputAppClientSecrets
   
   
+  GoogleWebClient:
+    Value: !Ref googleClientId
   
   
   
+  
+  FacebookWebClient:
+    Value: !Ref facebookAppId
+  
+  
+  AmazonWebClient:
+    Value: !Ref amazonAppId
   
   

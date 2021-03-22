@@ -13,7 +13,11 @@
     },
     "categories": {
       "auth": {
-        "francescajadecreatesf155220b": {}
+        "francescajadecreatesf155220b": {
+          "facebookAppId": "3322422957832312",
+          "googleClientId": "623764640437-32v09c3trgih8d5tfiknjkqs24b7r1ai.apps.googleusercontent.com",
+          "amazonAppId": "amzn1.application-oa2-client.93cd208e7df94957b4678f4c511e9d5c"
+        }
       },
       "function": {
         "orderlambda": {

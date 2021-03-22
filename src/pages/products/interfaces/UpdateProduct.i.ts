@@ -1,12 +1,8 @@
-import { History } from "history";
 import { ProductProps } from "../../accounts/interfaces/Product.i";
 
 export interface UpdateProps {
-  history: History;
-  id?: string | undefined;
-  admin: boolean;
+  id: string | undefined;
   update?: boolean;
-  setCurrentTab?: (tab: string) => void;
 }
 
 export interface UpdateState {
