@@ -17,20 +17,16 @@ import {
   makeStyles,
   Drawer,
 } from "@material-ui/core";
-import { API } from "aws-amplify";
 import { useDebounce } from "use-debounce";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchRounded, RefreshRounded } from "@material-ui/icons";
+import _ from "underscore";
 import { searchFilterTheme } from "../../../themes";
 import { SearchFilterProps } from "../interfaces/SearchFilter.i";
-import { listProducts } from "../../../graphql/queries";
-import { ProductProps } from "../../accounts/interfaces/Product.i";
-import { Variant } from "../interfaces/Variants.i";
 import { AppState } from "../../../store/store";
 import { SearchType, SortBy, SortDirection } from "../../../interfaces/products.redux.i";
 import * as actions from "../../../actions/products.actions";
 import styles from "../../accounts/styles/searchFilter.style";
-import _ from "underscore";
 
 interface SearchFilterState {
   searchType: SearchType;
@@ -83,6 +79,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   );
 
   useEffect(() => {
+    if (!filterOpen) return;
     if (searchQuery.length > 0) {
       if (searchType === "all") {
         dispatch(
@@ -124,6 +121,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   }, [debouncedSearchQuery]);
 
   useEffect(() => {
+    if (!filterOpen) return;
     if (cakeSelected && !createsSelected) {
       dispatch(
         actions.setSearchFilters({

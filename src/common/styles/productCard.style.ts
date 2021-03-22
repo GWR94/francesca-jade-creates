@@ -6,7 +6,7 @@ export default createStyles({
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     position: "relative",
     margin: "0 auto",
     width: "100%",
@@ -16,6 +16,9 @@ export default createStyles({
     "@media (max-width: 400px)": {
       width: "100%",
     },
+  },
+  cardContent: {
+    height: "100%",
   },
   media: {
     overflow: "hidden",
@@ -36,6 +39,7 @@ export default createStyles({
   title: {
     textAlign: "left",
     fontSize: "1.2rem",
+    paddingRight: 20,
     fontWeight: "bold",
     [breakpoints.down("sm")]: {
       fontSize: "1.1rem",
@@ -44,6 +48,7 @@ export default createStyles({
   root: {
     padding: 0,
     paddingBottom: "0 !important",
+    height: "100%",
   },
   content: {
     minHeight: 90,
@@ -53,6 +58,7 @@ export default createStyles({
     width: "100%",
     height: "100%",
     padding: "10px 15px 0",
+    boxSizing: "border-box",
   },
   headerContainer: {
     // minHeight: 50,
@@ -60,6 +66,7 @@ export default createStyles({
     alignItems: "center",
     justifyContent: "center",
     textAlign: "left",
+    height: "100%",
   },
   options: {
     position: "absolute",

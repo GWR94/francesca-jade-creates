@@ -123,6 +123,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
             title: classes.headerContainer,
             // content: classes.content,
             root: classes.root,
+            content: classes.cardContent,
           }}
           action={
             /**
@@ -171,10 +172,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
               </div>
             ) : (
               <div className={classes.content}>
-                <div>
-                  <Typography className={classes.title}>{title}</Typography>
-                  <Typography className={classes.tagline}>{tagline || ""}</Typography>
-                </div>
+                <Typography className={classes.title}>{title}</Typography>
+                <Typography className={classes.tagline}>{tagline || ""}</Typography>
                 <Typography className={classes.price}>{handleGetPrices()}</Typography>
               </div>
             )

@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  CircularProgress,
-  Drawer,
-  Grid,
-  makeStyles,
-  useMediaQuery,
-} from "@material-ui/core";
+import { CircularProgress, Grid, makeStyles, useMediaQuery } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded, Warning } from "@material-ui/icons";
 import ProductCard from "../../../common/containers/ProductCard";
@@ -69,21 +63,12 @@ const ProductsList: React.FC<ProductListProps> = ({
     }
   }, []);
 
-  // useEffect(() => {
-  //   getProducts();
-  // }, [theme, type]);
-
-  // useEffect(() => {
-  //   getProducts();
-  // }, []);
-
   const desktop = useMediaQuery("(min-width: 600px)");
 
   // destructure relevant data from state
   const {
     filterOpen,
     searchResults,
-    isLoading,
     page: { min, max },
   } = state;
   /**
@@ -146,7 +131,7 @@ const ProductsList: React.FC<ProductListProps> = ({
             {results.slice(min, max).map(
               (product: ProductProps): JSX.Element => (
                 <Grid item md={4} sm={6} xs={12} key={product.id}>
-                  <ProductCard admin={admin} product={product} />
+                  <ProductCard product={product} />
                 </Grid>
               ),
             )}

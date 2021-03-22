@@ -1,7 +1,7 @@
-import { getMinPriceFromVariants } from "./../utils/index";
 import { Dispatch } from "redux";
 import { API } from "aws-amplify";
 import _ from "underscore";
+import { getMinPriceFromVariants } from "../utils/index";
 import { ModelProductFilterInput } from "../API";
 import { listProducts } from "../graphql/queries";
 import { ProductProps } from "../pages/accounts/interfaces/Product.i";
@@ -12,16 +12,16 @@ import {
   RESET_FILTERS,
   SET_FILTERS,
   SET_SEARCH_QUERY,
+  SET_SORT_BY,
   FetchProductsFailureAction,
   FetchProductsSuccessAction,
   GetProductsAction,
   ResetFiltersAction,
   SetFiltersAction,
   SetSearchQueryAction,
-  SortDirection,
   SetSortByAction,
-  SET_SORT_BY,
   SortBy,
+  SortDirection,
 } from "../interfaces/products.redux.i";
 import { AppState } from "../store/store";
 
@@ -82,11 +82,17 @@ export const getProducts = () => {
         // @ts-ignore
         authMode: "API_KEY",
       });
+      let sorted;
       if (sortBy === "price") {
+        /**
+         * retrieve cakes as a separate array, so it can be put last as there are
+         * no prices for cakes, and it seems counterproductive to put them anywhere
+         * else when sorting via price
+         */
         const cakes = data.listProducts.items.filter(
           (product: ProductProps) => product.type === "Cake",
         );
-        const sortedCreates = data.listProducts.items
+        const creates = data.listProducts.items
           .filter((product: ProductProps) => product.type !== "Cake")
           .sort((a: ProductProps, b: ProductProps) => {
             return getMinPriceFromVariants(a?.variants) >
@@ -98,9 +104,9 @@ export const getProducts = () => {
               ? -1
               : 1;
           });
-        return dispatch(fetchProductsSuccess([...sortedCreates, ...cakes]));
+        sorted = [...creates, ...cakes];
       } else {
-        const sorted = data.listProducts.items.sort((a: ProductProps, b: ProductProps) =>
+        sorted = data.listProducts.items.sort((a: ProductProps, b: ProductProps) =>
           sortDirection === "ASC"
             ? a.updatedAt > b.updatedAt
               ? 1
@@ -109,9 +115,8 @@ export const getProducts = () => {
             ? 1
             : -1,
         );
-
-        return dispatch(fetchProductsSuccess(sorted));
       }
+      return dispatch(fetchProductsSuccess(sorted));
     } catch (error) {
       console.error(error);
       return dispatch(fetchProductsFailure());
