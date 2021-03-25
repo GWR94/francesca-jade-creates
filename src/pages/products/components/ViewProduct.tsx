@@ -205,114 +205,116 @@ const ViewProduct: React.FC<ViewProps> = ({ id }): JSX.Element | null => {
     <Loading />
   ) : (
     <>
-      <Container className={classes.container}>
-        {/* Render a large title and a smaller tagline to briefly describe the product */}
-        <div>
-          <Typography variant="h4" className={classes.title}>
-            {title}
-          </Typography>
-          {tagline && (
-            <Typography variant="h6" className={classes.tagline}>
-              {tagline}
+      <div className="content-container">
+        <Container className={classes.container}>
+          {/* Render a large title and a smaller tagline to briefly describe the product */}
+          <div>
+            <Typography variant="h4" className={classes.title}>
+              {title}
             </Typography>
-          )}
-          {/* Map all of the tags into a chip to show to the user */}
-          <ChipContainer tags={tags} type={type} openLink />
-        </div>
-        {/* Set the jsx from description to innerHTML of the description div */}
-        <div
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: description }}
-          style={{ marginBottom: 10 }}
-        />
-        <Divider style={{ marginBottom: 16 }} variant="middle" />
-        <Grid container spacing={2} alignItems="center" justify="center">
-          <Grid item xs={12} sm={7} style={{ marginBottom: 30 }}>
-            {/* Render the images from the product */}
-            <ImageGallery
-              items={images}
-              thumbnailPosition="bottom"
-              showNav={images.length >= 1}
-              showPlayButton={images.length > 1}
-              autoPlay={images.length > 1}
-              showThumbnails={images.length > 1}
-            />
-            {/* 
+            {tagline && (
+              <Typography variant="h6" className={classes.tagline}>
+                {tagline}
+              </Typography>
+            )}
+            {/* Map all of the tags into a chip to show to the user */}
+            <ChipContainer tags={tags} type={type} openLink />
+          </div>
+          {/* Set the jsx from description to innerHTML of the description div */}
+          <div
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: description }}
+            style={{ marginBottom: 10 }}
+          />
+          <Divider style={{ marginBottom: 16 }} variant="middle" />
+          <Grid container spacing={2} alignItems="center" justify="center">
+            <Grid item xs={12} sm={7} style={{ marginBottom: 30 }}>
+              {/* Render the images from the product */}
+              <ImageGallery
+                items={images}
+                thumbnailPosition="bottom"
+                showNav={images.length >= 1}
+                showPlayButton={images.length > 1}
+                autoPlay={images.length > 1}
+                showThumbnails={images.length > 1}
+              />
+              {/* 
             If the product type is a cake, then the user must request a quote,
             as there are no set prices for cakes.
           */}
-            {type === "Cake" && (
-              <div className={classes.buttonContainer}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  className={classes.button}
-                  // open the QuoteDialog component on click
-                  onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
-                  startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
-                >
-                  Request a Quote
-                </Button>
-              </div>
+              {type === "Cake" && (
+                <div className={classes.buttonContainer}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.button}
+                    // open the QuoteDialog component on click
+                    onClick={(): void => setState({ ...state, quoteDialogOpen: true })}
+                    startIcon={<i className={`fas fa-credit-card ${classes.viewIcon}`} />}
+                  >
+                    Request a Quote
+                  </Button>
+                </div>
+              )}
+            </Grid>
+            {type === "Creates" && (
+              <Grid item xs={12} sm={5} style={{ marginBottom: 30 }}>
+                {/* Describe the product and show variants in ViewVariants component */}
+                <ViewVariants
+                  variants={variants}
+                  customOptions={customOptions}
+                  type={type}
+                />
+                <div className={classes.buttonContainer}>
+                  {sub ? (
+                    /**
+                     * If there is a users' sub (user is logged in) and setPrice is true, then
+                     * a button to add the current item to the basket should be rendered
+                     */
+                    setPrice && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        onClick={handleAddToBasket}
+                        startIcon={
+                          <i className={`fas fa-shopping-cart ${classes.viewIcon}`} />
+                        }
+                      >
+                        Add to Basket
+                      </Button>
+                    )
+                  ) : (
+                    // If there is no sub, then the user isn't logged in, so they must first do that.
+                    <Login
+                      showButton
+                      props={{
+                        variant: "contained",
+                        color: "primary",
+                        classOverride: classes.button,
+                        text: "Login to Purchase",
+                        align: "center",
+                        Icon: (
+                          <i
+                            className={`fas fa-user ${classes.viewIcon}`}
+                            style={{ paddingRight: 5 }}
+                          />
+                        ),
+                      }}
+                    />
+                  )}
+                </div>
+              </Grid>
             )}
           </Grid>
-          {type === "Creates" && (
-            <Grid item xs={12} sm={5} style={{ marginBottom: 30 }}>
-              {/* Describe the product and show variants in ViewVariants component */}
-              <ViewVariants
-                variants={variants}
-                customOptions={customOptions}
-                type={type}
-              />
-              <div className={classes.buttonContainer}>
-                {sub ? (
-                  /**
-                   * If there is a users' sub (user is logged in) and setPrice is true, then
-                   * a button to add the current item to the basket should be rendered
-                   */
-                  setPrice && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.button}
-                      onClick={handleAddToBasket}
-                      startIcon={
-                        <i className={`fas fa-shopping-cart ${classes.viewIcon}`} />
-                      }
-                    >
-                      Add to Basket
-                    </Button>
-                  )
-                ) : (
-                  // If there is no sub, then the user isn't logged in, so they must first do that.
-                  <Login
-                    showButton
-                    props={{
-                      variant: "contained",
-                      color: "primary",
-                      classOverride: classes.button,
-                      text: "Login to Purchase",
-                      align: "center",
-                      Icon: (
-                        <i
-                          className={`fas fa-user ${classes.viewIcon}`}
-                          style={{ paddingRight: 5 }}
-                        />
-                      ),
-                    }}
-                  />
-                )}
-              </div>
-            </Grid>
-          )}
-        </Grid>
-        {/* Render the dialog to allow the user to request a quote */}
-        <QuoteDialog
-          open={quoteDialogOpen}
-          onClose={(): void => setState({ ...state, quoteDialogOpen: false })}
-          cake={product.title}
-        />
-      </Container>
+          {/* Render the dialog to allow the user to request a quote */}
+          <QuoteDialog
+            open={quoteDialogOpen}
+            onClose={(): void => setState({ ...state, quoteDialogOpen: false })}
+            cake={product.title}
+          />
+        </Container>
+      </div>
     </>
   );
 };

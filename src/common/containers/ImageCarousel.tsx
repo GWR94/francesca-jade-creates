@@ -25,14 +25,14 @@ import { getCompressedKey } from "../../utils";
  * to delete and save as cover photo by clicking on the relevant icons on the image.
  */
 const ImageCarousel: React.FC<ImageCarouselProps> = ({
-  type,
+  type = "Cake",
   images,
   update,
   id,
   isCentered,
   deleteImages,
   handleUpdateImages,
-  cover,
+  cover = 0,
 }) => {
   const [state, setState] = useState<ImageCarouselState>({
     keyToDelete: "",

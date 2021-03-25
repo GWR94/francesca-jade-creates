@@ -41,7 +41,7 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 let stripe;
 let endpointSecret;
 let url;
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV !== "production") {
   stripe = require("stripe")(process.env.STRIPE_SECRET_KEY_TEST);
   endpointSecret = process.env.STRIPE_ENDPOINT_SECRET_TEST;
   url = "http://localhost:3000";
@@ -61,8 +61,6 @@ app.use(function (req, res, next) {
   );
   next();
 });
-
-const checkPrivileges = (credentials) => {};
 
 const getPublicS3URL = (s3Image) => {
   const { key, bucket, region } = s3Image;
@@ -323,7 +321,7 @@ const emailHandler = (req, res) => {
   <div style="background-color:#FEB5D5">
     <!--[if mso | IE]>
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -339,7 +337,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:600px;"
+              class="" style="vertical-align:top;width:600px;"
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -383,7 +381,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -399,7 +397,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:600px;"
+              class="" style="vertical-align:top;width:600px;"
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -432,7 +430,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -448,7 +446,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:600px;"
+              class="" style="vertical-align:top;width:600px;"
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -458,7 +456,7 @@ const emailHandler = (req, res) => {
                       <p style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:100%;"> </p>
                       <!--[if mso | IE]>
         <table
-           align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:560px;" role="presentation" width="560px"
+          align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:560px;" role="presentation" width="560px"
         >
           <tr>
             <td style="height:0;line-height:0;">
@@ -495,7 +493,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -507,7 +505,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -523,7 +521,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:200px;"
+              class="" style="vertical-align:top;width:200px;"
             >
           <![endif]-->
               <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -544,7 +542,7 @@ const emailHandler = (req, res) => {
             </td>
           
             <td
-               class="" style="vertical-align:top;width:200px;"
+              class="" style="vertical-align:top;width:200px;"
             >
           <![endif]-->
               <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -567,7 +565,7 @@ const emailHandler = (req, res) => {
             </td>
           
             <td
-               class="" style="vertical-align:top;width:200px;"
+              class="" style="vertical-align:top;width:200px;"
             >
           <![endif]-->
               <div class="mj-column-per-33-333333333333336 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -604,7 +602,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -620,7 +618,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:360px;"
+              class="" style="vertical-align:top;width:360px;"
             >
           <![endif]-->
               <div class="mj-column-per-60 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -658,7 +656,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -674,7 +672,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:600px;"
+              class="" style="vertical-align:top;width:600px;"
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -711,7 +709,7 @@ const emailHandler = (req, res) => {
       </table>
       
       <table
-         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+        align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
       >
         <tr>
           <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
@@ -727,7 +725,7 @@ const emailHandler = (req, res) => {
         <tr>
       
             <td
-               class="" style="vertical-align:top;width:600px;"
+              class="" style="vertical-align:top;width:600px;"
             >
           <![endif]-->
               <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
@@ -737,7 +735,7 @@ const emailHandler = (req, res) => {
                       <p style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:100%;"> </p>
                       <!--[if mso | IE]>
         <table
-           align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:560px;" role="presentation" width="560px"
+          align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #ffffff;font-size:1px;margin:0px auto;width:560px;" role="presentation" width="560px"
         >
           <tr>
             <td style="height:0;line-height:0;">

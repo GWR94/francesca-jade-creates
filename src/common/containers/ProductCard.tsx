@@ -26,7 +26,7 @@ import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
 import { COLORS } from "../../themes";
 import styles from "../styles/productCard.style";
-import { checkUserAdmin, getCompressedKey } from "../../utils";
+import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/products/components/QuoteDialog";
 import { AppState } from "../../store/store";
 import DeleteProductAlert from "../alerts/DeleteProductAlert";

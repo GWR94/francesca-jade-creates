@@ -1,7 +1,7 @@
 import React, { RefObject } from "react";
 import { Menu, MenuItem, Divider, makeStyles, useMediaQuery } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   FaceRounded,
   ShoppingCartRounded,
@@ -11,7 +11,6 @@ import {
 } from "@material-ui/icons";
 import * as actions from "../../../actions/user.actions";
 import { CurrentTabTypes } from "../../accounts/interfaces/Accounts.i";
-import { AppState } from "../../../store/store";
 
 interface AccountMenuProps {
   closeNav: () => void; // function to close navbar if it's open
@@ -19,6 +18,7 @@ interface AccountMenuProps {
   menuOpen: boolean; // boolean to determine if menu is open
   setMenuOpen: (value: boolean) => void; // function to control menuOpen
   signOut: () => void; // function to sign out
+  admin: boolean;
 }
 
 const AccountsMenu = ({
@@ -27,8 +27,8 @@ const AccountsMenu = ({
   menuOpen,
   setMenuOpen,
   signOut,
+  admin,
 }: AccountMenuProps): JSX.Element => {
-  const { admin } = useSelector(({ user }: AppState) => user);
   // store the useHistory hook into a variable so it can be used within the component
   const history = useHistory();
   /**

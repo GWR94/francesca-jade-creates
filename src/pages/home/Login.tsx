@@ -19,6 +19,7 @@ import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
 import PasswordInput from "../../common/inputs/PasswordInput";
 import styles from "./styles/login.style";
 import { breakpoints } from "../../themes";
+import VerifyDialog from "./components/VerifyDialog";
 
 const Login: React.FC<LoginProps> = ({
   showButton = false,
@@ -30,6 +31,7 @@ const Login: React.FC<LoginProps> = ({
     password: "",
     passwordDialogOpen: false,
     accountDialogOpen: false,
+    verifyDialogOpen: false,
     loggingIn: false,
     isOpen: false,
   });
@@ -50,6 +52,10 @@ const Login: React.FC<LoginProps> = ({
       if (closeNav) closeNav();
     } catch (err) {
       console.error(err);
+      if (err.code === "UserNotConfirmedException") {
+        console.log("TRUE");
+        return setState({ ...state, loggingIn: false, verifyDialogOpen: true });
+      }
       openSnackbar({
         severity: "error",
         message: "Failed to sign in. Please check your username and password.",
@@ -64,6 +70,7 @@ const Login: React.FC<LoginProps> = ({
     password,
     passwordDialogOpen,
     accountDialogOpen,
+    verifyDialogOpen,
     loggingIn,
     isOpen,
   } = state;
@@ -211,6 +218,11 @@ const Login: React.FC<LoginProps> = ({
         <CreateAccountDialog
           isOpen={accountDialogOpen}
           onClose={(): void => setState({ ...state, accountDialogOpen: false })}
+        />
+        <VerifyDialog
+          username={username}
+          isOpen={verifyDialogOpen}
+          onClose={(): void => setState({ ...state, verifyDialogOpen: false })}
         />
       </Dialog>
     </>

@@ -88,10 +88,7 @@ const DeleteImageDialog: React.FC<DeleteDialogProps> = ({
         </Button>
         <Button
           color="primary"
-          onClick={(): Promise<void> => {
-            console.log(keyToDelete);
-            handleDeleteImage(keyToDelete);
-          }}
+          onClick={(): Promise<void> => handleDeleteImage(keyToDelete)}
           style={{ margin: "0 5px" }}
         >
           Confirm

@@ -15,7 +15,6 @@ import {
   SignInUserData,
   HubCapsule,
   RouterProps,
-  RouterDispatchProps,
 } from "./interfaces/Router.i";
 import { attributesToObject } from "../utils/index";
 import Loading from "../common/Loading";
@@ -36,6 +35,7 @@ import Creations from "../pages/products/components/Creations";
 import Cakes from "../pages/products/components/Cakes";
 import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
 import { SetUserAction } from "../interfaces/user.redux.i";
+import { openSnackbar } from "../utils/Notifier";
 
 export const history = createBrowserHistory();
 
@@ -193,7 +193,10 @@ class AppRouter extends React.Component<RouterProps> {
     switch (capsule.payload.event) {
       // if the user is signing in, get the users' data.
       case "signIn":
-        console.log("signed in");
+        openSnackbar({
+          severity: "success",
+          message: "Successfully sign in.",
+        });
         await this.getUserData();
         await this.registerNewUser(capsule.payload.data);
         break;
@@ -244,9 +247,7 @@ class AppRouter extends React.Component<RouterProps> {
                       };
                     };
                   }): JSX.Element => (
-                    <div className="content-container">
-                      <ViewProduct id={_.match.params.id} type="Creates" />
-                    </div>
+                    <ViewProduct id={_.match.params.id} type="Creates" />
                   )}
                 />
                 <Route path="/themes" component={Themes} />
@@ -259,11 +260,7 @@ class AppRouter extends React.Component<RouterProps> {
                         id: string;
                       };
                     };
-                  }): JSX.Element => (
-                    <div className="content-container">
-                      <ViewProduct id={_.match.params.id} type="Cake" />
-                    </div>
-                  )}
+                  }): JSX.Element => <ViewProduct id={_.match.params.id} type="Cake" />}
                 />
                 <Route
                   path="/account"
@@ -311,7 +308,7 @@ class AppRouter extends React.Component<RouterProps> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch): RouterDispatchProps => ({
+const mapDispatchToProps = (dispatch: Dispatch): RouterProps => ({
   setUser: (id: string, admin: boolean): SetUserAction =>
     dispatch(userActions.setUser(id, admin)),
 });

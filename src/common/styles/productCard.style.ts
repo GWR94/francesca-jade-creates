@@ -1,3 +1,4 @@
+import { COLORS } from "./../../themes/index";
 import { createStyles } from "@material-ui/core";
 import { FONTS, breakpoints } from "../../themes";
 
@@ -10,6 +11,7 @@ export default createStyles({
     position: "relative",
     margin: "0 auto",
     width: "100%",
+    WebkitTapHighlightColor: COLORS.P,
     "@media (max-width: 599px)": {
       width: 320,
     },

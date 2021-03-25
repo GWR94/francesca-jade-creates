@@ -3,7 +3,12 @@ import { DeleteRounded, EditRounded, FileCopyRounded } from "@material-ui/icons"
 import React from "react";
 import { COLORS } from "../../../themes";
 import { getReadableStringFromArray } from "../../../utils";
-import { Feature, FeatureType, Variant, VariantsState } from "../interfaces/Variants.i";
+import {
+  Feature,
+  FeatureType,
+  UpdateVariantProps,
+  Variant,
+} from "../interfaces/Variants.i";
 import styles from "../styles/variants.style";
 
 interface VariantCardProps {
@@ -11,7 +16,7 @@ interface VariantCardProps {
   variants: Variant[];
   i: number;
   updateVariants: (variants: Variant[]) => void;
-  updateVariantData: (state: Partial<VariantsState>) => void;
+  updateVariantData: (state: UpdateVariantProps) => void;
   currentFeatures: Feature[];
 }
 

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   Typography,
   TextField,
-  Button,
   Grid,
   withStyles,
   FormControl,
@@ -12,10 +11,16 @@ import {
 } from "@material-ui/core";
 import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/variants.style";
-import { Feature, VariantsProps, VariantsState } from "../interfaces/Variants.i";
+import {
+  Feature,
+  UpdateVariantProps,
+  Variant,
+  VariantsProps,
+  VariantsState,
+} from "../interfaces/Variants.i";
 import { openSnackbar } from "../../../utils/Notifier";
-import VariantCard from "./VariantCard";
 import FeatureInput from "./FeatureInput";
+import VariantCard from "./VariantCard";
 
 /**
  * TODO
@@ -29,13 +34,10 @@ const initialState: VariantsState = {
     item: 0,
     postage: 0,
   },
-  features: [],
   currentIdx: 1,
   variantName: "",
   errors: {
     dimensions: "",
-    item: "",
-    postage: "",
     priceItem: "",
     priceShipping: "",
     variantName: "",
@@ -45,6 +47,7 @@ const initialState: VariantsState = {
   instructions: "",
   featureIdx: null,
   featureDesc: "",
+  features: [],
 };
 
 /**
@@ -59,44 +62,23 @@ class Variants extends Component<VariantsProps, VariantsState> {
    * Method to add (or update) a variant and place it into the variants array
    * saved in state.
    */
-  private handleAddVariant = (updatedFeatures?: Feature[]): void => {
+  private handleAddVariant = (features?: Feature[]): void => {
     const {
       price,
       dimensions,
-      features,
       currentIdx,
       errors,
-      inputType,
-      featureName,
       variantIdx,
-      featureType,
       variantName,
       instructions,
-      featureDesc,
     } = this.state;
     const { updateVariants, variants } = this.props;
-    const updatedErrors = {
-      action: "",
-      name: "",
-      range: "",
-      array: "",
-      dimensions: "",
-      item: "",
-      postage: "",
-      priceItem: "",
-      priceShipping: "",
-      variantName: "",
-      instructions: "",
-    };
+    const updatedErrors: { [key: string]: string } = {};
     let anyError = false;
     // if there are errors, notify the user by setting them in state, which will be visually shown to user
     if (variantName.length > 0 && variantName.length < 4) {
       anyError = true;
       updatedErrors.variantName = "Please enter a descriptive name (min 4 chars).";
-    }
-    if (instructions.length > 0 && instructions.length < 15) {
-      anyError = true;
-      updatedErrors.instructions = "Please enter a valid description (min 15 chars).";
     }
     if (!dimensions?.length) {
       anyError = true;
@@ -109,10 +91,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
     if (price.postage <= 0) {
       anyError = true;
       updatedErrors.priceShipping = "Please enter a valid shipping cost.";
-    }
-    if (variantName.length > 0 && variantName.length < 4) {
-      anyError = true;
-      updatedErrors.variantName = "Please enter at least 4 characters.";
     }
     if (instructions.length > 0 && instructions.length < 15) {
       anyError = true;
@@ -130,14 +108,13 @@ class Variants extends Component<VariantsProps, VariantsState> {
     // save updatedVariants into a variable so it can be easily mutated
     const updatedVariants = variants;
     // create a variable with the new variant data in it.
-    const variant = {
+    const variant: Variant = {
       dimensions,
       price,
-      features: updatedFeatures?.length ? updatedFeatures : features,
+      features: features ?? [],
       variantName,
       instructions,
     };
-    console.log(variant);
     // if there is a variantIdx then the variant in that index needs to overwritten with the variant variable
     if (variantIdx !== null) {
       updatedVariants[variantIdx] = variant;
@@ -154,11 +131,6 @@ class Variants extends Component<VariantsProps, VariantsState> {
         item: 0,
         postage: 0,
       },
-      featureName: "",
-      inputType: "",
-      featureType: "",
-      features: [],
-      featureDesc: "",
       currentIdx: currentIdx + 1,
     });
     // update variants in parent with updateVariants function from props.
@@ -310,23 +282,36 @@ class Variants extends Component<VariantsProps, VariantsState> {
             size={size}
             type={type}
             variantIdx={variantIdx}
-            variants={variants}
-            updateVariants={updateVariants}
             handleAddVariant={(features?): void => this.handleAddVariant(features)}
+            variantFeatures={features}
             handleCancel={(): void =>
               this.setState({
                 variantIdx: null,
                 dimensions: "",
-                featureType: "",
-                featureName: "",
-                inputType: "",
-                features: [],
+                instructions: "",
+                price: {
+                  item: 0,
+                  postage: 0,
+                },
               })
             }
-            features={features}
-            clearFeatures={(features): void => this.setState({ features })}
-            updateVariantData={(data): void => this.setState({ ...data })}
           />
+          <Grid container spacing={1}>
+            {variants?.length > 0 &&
+              variants.map((variant: Variant, i: number) => (
+                <VariantCard
+                  variant={variant}
+                  i={i}
+                  key={i}
+                  variants={variants}
+                  updateVariants={updateVariants}
+                  currentFeatures={variant.features}
+                  updateVariantData={(data: UpdateVariantProps): void => {
+                    this.setState({ ...data });
+                  }}
+                />
+              ))}
+          </Grid>
         </OutlinedContainer>
       </div>
     );

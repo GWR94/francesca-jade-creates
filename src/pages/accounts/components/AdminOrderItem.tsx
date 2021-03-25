@@ -11,9 +11,11 @@ import {
   useMediaQuery,
   makeStyles,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@material-ui/core";
 import { ExpandMoreRounded } from "@material-ui/icons";
-import AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { API } from "aws-amplify";
 import { COLORS } from "../../../themes";
@@ -23,6 +25,7 @@ import { S3ImageProps } from "../interfaces/Product.i";
 import styles from "../styles/adminOrders.style";
 import ShippingReferenceDialog from "./ShippingReferenceDialog";
 import { getReadableStringFromArray } from "../../../utils";
+import ImageCarousel from "../../../common/containers/ImageCarousel";
 
 interface AdminOrderItemProps {
   order: OrderProps;
@@ -38,13 +41,17 @@ interface AdminOrderItemState {
   isSettingProcessed: boolean;
   dialogOpen: boolean;
   showID: boolean;
+  imageDialogOpen: boolean;
+  currentImages: S3ImageProps[];
 }
 
-const initialState = {
+const initialState: AdminOrderItemState = {
   expanded: false,
   isSettingProcessed: false,
   dialogOpen: false,
   showID: false,
+  imageDialogOpen: false,
+  currentImages: [],
 };
 
 const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
@@ -59,61 +66,6 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-
-  const getSignedUrls = (images: S3ImageProps[]): void => {
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.ACCESS_KEY_AWS,
-      secretAccessKey: process.env.SECRET_KEY_AWS,
-      signatureVersion: "v4",
-      region: "eu-west-2",
-    });
-
-    /**
-     * Iterate through each of the images in the array, get the signed URL
-     * for each, and simulate a click to open all images to be downloaded.
-     */
-    for (const image of images) {
-      const url = s3.getSignedUrl("getObject", {
-        Bucket: image.bucket,
-        Key: `public/${image.key}`,
-        Expires: 60 * 5,
-      });
-
-      // create an a element to open the link
-      const a = document.createElement("a");
-      // set the download attribute to be the signed url
-      a.setAttribute("download", url);
-      // set target to _blank so it opens in a new window if it doesn't auto download
-      a.setAttribute("target", "_blank");
-      // set the href to be the signed url
-      a.setAttribute("href", url);
-      // click the a element, which will open/download the image
-      a.click();
-    }
-  };
-
-  /**
-   * Function to render a download button to the admin so they can
-   * download all of the user's custom images (if there are any)
-   * @param product - The completed product with all custom images and
-   * data which will be used to retrieve the custom options from.
-   */
-  const downloadProductImages = (product: GraphQlProduct): void => {
-    // destructure customOptions from product
-    const { customOptions } = product;
-    const images: S3ImageProps[] = [];
-    customOptions
-      // filter out any falsy values (null or undefined)
-      .filter((option) => option)
-      // parse the JSON into an object
-      .map((option) => JSON.parse(option))
-      // filter out all but the images object
-      .filter((option) => Object.keys(option)[0] === "Images")
-      // push the s3 images to the images array so it can be used
-      .map((option) => images.push(...(Object.values(option)[0] as S3ImageProps[])));
-
-    getSignedUrls(images);
-  };
 
   /**
    * Function to update the order status of the input order - i.e if the
@@ -135,7 +87,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
           orderId: order.id,
         },
       });
-      setTimeout(async () => {
+      setTimeout(() => {
         // set loading to be false to remove UI loading effects
         setState({
           ...state,
@@ -169,7 +121,21 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
     return `£${price.toFixed(2)}`;
   };
 
-  const { isSettingProcessed, dialogOpen, showID } = state;
+  const handleViewImages = (options: { [key: string]: unknown }[]): void => {
+    const imagesArr = options.filter((option) => option.hasOwnProperty("Images"))[0] as {
+      [key: string]: S3ImageProps[];
+    };
+    const images = Object.values(imagesArr)[0] as S3ImageProps[];
+    setState({ ...state, imageDialogOpen: true, currentImages: images });
+  };
+
+  const {
+    isSettingProcessed,
+    dialogOpen,
+    showID,
+    imageDialogOpen,
+    currentImages,
+  } = state;
   return (
     <>
       <Accordion
@@ -308,38 +274,41 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
                     <Typography className={classes.details} style={{ marginTop: 10 }}>
                       Custom Options:
                     </Typography>
-                    {options
-                      .filter((option) => Object.keys(option)[0] !== "Images")
-                      .map((option) => {
-                        const title = Object.keys(option)[0];
-                        const value = Object.values(option)[0];
-                        const isArray = Array.isArray(value);
-                        return (
-                          <div>
-                            <Typography className={classes.details}>
-                              {title}:
-                              {!isArray && <span className={classes.data}>{value}</span>}
-                            </Typography>
-                            {isArray && (
-                              <Typography className={classes.data}>
+                    {options.map((option) => {
+                      const title = Object.keys(option)[0];
+                      const value = Object.values(option)[0];
+                      const isArray = Array.isArray(value);
+                      return (
+                        <div>
+                          <Typography className={classes.details}>
+                            {title}:
+                            {!isArray ? (
+                              <span className={classes.data}>{value}</span>
+                            ) : title === "Images" ? (
+                              <span className={classes.data}>
+                                {value.length} uploaded.
+                              </span>
+                            ) : (
+                              <span className={classes.data}>
                                 {getReadableStringFromArray(value as string[])}
-                              </Typography>
+                              </span>
                             )}
-                          </div>
-                        );
-                      })}
+                          </Typography>
+                        </div>
+                      );
+                    })}
                     <div className={classes.buttonContainer}>
                       {options.some((option) => option?.hasOwnProperty("Images")) && (
                         <Button
                           variant="text"
-                          onClick={(): void => downloadProductImages(product)}
+                          onClick={(): void => handleViewImages(options)}
                           size="small"
                           color="primary"
                           style={{
                             marginTop: 12,
                           }}
                         >
-                          Download Custom Images
+                          View Custom Images
                         </Button>
                       )}
                     </div>
@@ -400,6 +369,25 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
         closeDialog={(): void => setState({ ...state, dialogOpen: false })}
         desktop={desktop}
       />
+      <Dialog
+        open={imageDialogOpen}
+        onClose={(): void => setState({ ...state, imageDialogOpen: false })}
+        fullScreen={useMediaQuery("(max-width: 640px)")}
+      >
+        <DialogTitle>Custom Images</DialogTitle>
+        <div className={classes.dialog}>
+          <ImageCarousel images={currentImages} />
+        </div>
+        <DialogActions>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={(): void => setState({ ...state, imageDialogOpen: false })}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

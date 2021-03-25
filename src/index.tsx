@@ -10,6 +10,7 @@ import { StylesProvider, ThemeProvider } from "@material-ui/core";
 import config from "./aws-exports";
 import AppRouter from "./routes/Router";
 import "remove-focus-outline";
+import "./themes/styles.css";
 import "normalize.css";
 import "animate.css/animate.min.css";
 import "@stripe/stripe-js";
@@ -17,7 +18,6 @@ import configureStore from "./store/store";
 import { rootTheme } from "./themes";
 import Notifier from "./utils/Notifier";
 import { isLocalhost, hasLocalhost, hasHostname } from "./utils";
-import "./themes/styles.css";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line global-require

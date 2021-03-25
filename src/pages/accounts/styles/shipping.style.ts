@@ -23,4 +23,14 @@ export default createStyles({
   dialog: {
     minWidth: "400px !important",
   },
+  label: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    right: 22, //do not overlap icon
+    bottom: 0, //maximize container height so label wont be cut horizontaly
+  },
+  labelShrinked: {
+    right: "unset", //show complete label if shrinked
+  },
 });

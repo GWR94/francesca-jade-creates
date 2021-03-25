@@ -22,11 +22,11 @@
       "function": {
         "orderlambda": {
           "deploymentBucketName": "amplify-francescajadecreates-staging-102644-deployment",
-          "s3Key": "amplify-builds/orderlambda-3264435658623854705a-build.zip"
+          "s3Key": "amplify-builds/orderlambda-5672566638547136594e-build.zip"
         },
         "stripeWebhook": {
           "deploymentBucketName": "amplify-francescajadecreates-staging-102644-deployment",
-          "s3Key": "amplify-builds/stripeWebhook-52504856495276764172-build.zip"
+          "s3Key": "amplify-builds/stripeWebhook-4b687535653934704b74-build.zip"
         }
       }
     }

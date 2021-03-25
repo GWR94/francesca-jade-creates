@@ -12,6 +12,7 @@ export type CreateProductInput = {
   setPrice?: boolean | null,
   type: string,
   tags: Array< string | null >,
+  searchField?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
   variants?: Array< VariantsInput | null > | null,
@@ -64,6 +65,7 @@ export type ModelProductConditionInput = {
   setPrice?: ModelBooleanInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
+  searchField?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelProductConditionInput | null > | null,
@@ -118,6 +120,68 @@ export type ModelBooleanInput = {
   attributeType?: ModelAttributeTypes | null,
 };
 
+export type Product = {
+  __typename: "Product",
+  id?: string,
+  title?: string,
+  description?: string,
+  tagline?: string,
+  images?: Images,
+  customOptions?: Array< string | null > | null,
+  setPrice?: boolean | null,
+  type?: string,
+  tags?: Array< string | null >,
+  searchField?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  variants?:  Array<Variants | null > | null,
+};
+
+export type Images = {
+  __typename: "Images",
+  cover?: number,
+  collection?:  Array<S3Object | null >,
+};
+
+export type S3Object = {
+  __typename: "S3Object",
+  bucket?: string,
+  region?: string,
+  key?: string,
+};
+
+export type Variants = {
+  __typename: "Variants",
+  variantName?: string | null,
+  instructions?: string | null,
+  dimensions?: string,
+  features?:  Array<Features | null >,
+  price?: Price,
+  images?:  Array<S3Object | null > | null,
+};
+
+export type Features = {
+  __typename: "Features",
+  name?: string,
+  inputType?: string,
+  description?: string | null,
+  featureType?: string,
+  value?: FeatureValue,
+};
+
+export type FeatureValue = {
+  __typename: "FeatureValue",
+  array?: Array< string | null > | null,
+  range?: Array< number | null > | null,
+  number?: number | null,
+};
+
+export type Price = {
+  __typename: "Price",
+  item?: number,
+  postage?: number,
+};
+
 export type UpdateProductInput = {
   id: string,
   title?: string | null,
@@ -128,6 +192,7 @@ export type UpdateProductInput = {
   setPrice?: boolean | null,
   type?: string | null,
   tags?: Array< string | null > | null,
+  searchField?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
   variants?: Array< VariantsInput | null > | null,
@@ -176,6 +241,80 @@ export type ModelUserConditionInput = {
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
+};
+
+export type User = {
+  __typename: "User",
+  id?: string,
+  username?: string,
+  email?: string,
+  name?: string | null,
+  registered?: boolean | null,
+  orders?: ModelOrderConnection,
+  profileImage?: S3Object,
+  shippingAddress?: ShippingAddress,
+  savedProducts?:  Array<SavedProduct | null > | null,
+  trackingInfo?: string | null,
+  createdAt?: string,
+  updatedAt?: string,
+};
+
+export type ModelOrderConnection = {
+  __typename: "ModelOrderConnection",
+  items?:  Array<Order | null > | null,
+  nextToken?: string | null,
+};
+
+export type Order = {
+  __typename: "Order",
+  id?: string,
+  products?:  Array<StripeProduct >,
+  stripePaymentIntent?: string | null,
+  user?: User,
+  shippingAddress?: ShippingAddress,
+  createdAt?: string,
+  stripeOrderId?: string | null,
+  paymentStatus?: string | null,
+  orderProcessed?: boolean,
+  userInfo?: UserInfo,
+  shipped?: boolean | null,
+  updatedAt?: string,
+};
+
+export type StripeProduct = {
+  __typename: "StripeProduct",
+  id?: string,
+  title?: string,
+  tagline?: string,
+  image?: S3Object,
+  variant?: Variants,
+  customOptions?: Array< string | null >,
+};
+
+export type ShippingAddress = {
+  __typename: "ShippingAddress",
+  city?: string,
+  country?: string,
+  address_line1?: string,
+  address_line2?: string | null,
+  address_postcode?: string,
+};
+
+export type UserInfo = {
+  __typename: "UserInfo",
+  emailAddress?: string,
+  name?: string,
+};
+
+export type SavedProduct = {
+  __typename: "SavedProduct",
+  id?: string,
+  title?: string,
+  description?: string,
+  image?: S3Object,
+  type?: string,
+  tagline?: string,
+  variants?:  Array<Variants | null >,
 };
 
 export type UpdateUserInput = {
@@ -266,6 +405,7 @@ export type ModelProductFilterInput = {
   setPrice?: ModelBooleanInput | null,
   type?: ModelStringInput | null,
   tags?: ModelStringInput | null,
+  searchField?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelProductFilterInput | null > | null,
@@ -289,19 +429,25 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
+export type ModelProductConnection = {
+  __typename: "ModelProductConnection",
+  items?:  Array<Product | null > | null,
+  nextToken?: string | null,
+};
+
 export type CreateProductMutationVariables = {
-  input: CreateProductInput,
+  input?: CreateProductInput,
   condition?: ModelProductConditionInput | null,
 };
 
 export type CreateProductMutation = {
-  createProduct:  {
+  createProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -311,36 +457,37 @@ export type CreateProductMutation = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -351,18 +498,18 @@ export type CreateProductMutation = {
 };
 
 export type UpdateProductMutationVariables = {
-  input: UpdateProductInput,
+  input?: UpdateProductInput,
   condition?: ModelProductConditionInput | null,
 };
 
 export type UpdateProductMutation = {
-  updateProduct:  {
+  updateProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -372,36 +519,37 @@ export type UpdateProductMutation = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -412,18 +560,18 @@ export type UpdateProductMutation = {
 };
 
 export type DeleteProductMutationVariables = {
-  input: DeleteProductInput,
+  input?: DeleteProductInput,
   condition?: ModelProductConditionInput | null,
 };
 
 export type DeleteProductMutation = {
-  deleteProduct:  {
+  deleteProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -433,36 +581,37 @@ export type DeleteProductMutation = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -473,21 +622,21 @@ export type DeleteProductMutation = {
 };
 
 export type RegisterUserMutationVariables = {
-  input: CreateUserInput,
+  input?: CreateUserInput,
   condition?: ModelUserConditionInput | null,
 };
 
 export type RegisterUserMutation = {
-  registerUser:  {
+  registerUser?:  {
     __typename: "User",
     id: string,
     username: string,
     email: string,
-    name: string | null,
-    registered: boolean | null,
-    orders:  {
+    name?: string | null,
+    registered?: boolean | null,
+    orders?:  {
       __typename: "ModelOrderConnection",
-      items:  Array< {
+      items?:  Array< {
         __typename: "Order",
         id: string,
         products:  Array< {
@@ -501,24 +650,24 @@ export type RegisterUserMutation = {
             region: string,
             key: string,
           },
-          variant:  {
+          variant?:  {
             __typename: "Variants",
-            variantName: string | null,
-            instructions: string | null,
+            variantName?: string | null,
+            instructions?: string | null,
             dimensions: string,
             features:  Array< {
               __typename: "Features",
               name: string,
               inputType: string,
-              description: string | null,
+              description?: string | null,
               featureType: string,
             } | null >,
-            price:  {
+            price?:  {
               __typename: "Price",
               item: number,
               postage: number,
             } | null,
-            images:  Array< {
+            images?:  Array< {
               __typename: "S3Object",
               bucket: string,
               region: string,
@@ -527,44 +676,44 @@ export type RegisterUserMutation = {
           } | null,
           customOptions: Array< string | null >,
         } >,
-        stripePaymentIntent: string | null,
-        user:  {
+        stripePaymentIntent?: string | null,
+        user?:  {
           __typename: "User",
           id: string,
           username: string,
           email: string,
-          name: string | null,
-          registered: boolean | null,
-          orders:  {
+          name?: string | null,
+          registered?: boolean | null,
+          orders?:  {
             __typename: "ModelOrderConnection",
-            items:  Array< {
+            items?:  Array< {
               __typename: "Order",
               id: string,
-              stripePaymentIntent: string | null,
+              stripePaymentIntent?: string | null,
               createdAt: string,
-              stripeOrderId: string | null,
-              paymentStatus: string | null,
+              stripeOrderId?: string | null,
+              paymentStatus?: string | null,
               orderProcessed: boolean,
-              shipped: boolean | null,
+              shipped?: boolean | null,
               updatedAt: string,
             } | null > | null,
-            nextToken: string | null,
+            nextToken?: string | null,
           } | null,
-          profileImage:  {
+          profileImage?:  {
             __typename: "S3Object",
             bucket: string,
             region: string,
             key: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
-          savedProducts:  Array< {
+          savedProducts?:  Array< {
             __typename: "SavedProduct",
             id: string,
             title: string,
@@ -579,52 +728,52 @@ export type RegisterUserMutation = {
             tagline: string,
             variants:  Array< {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null >,
           } | null > | null,
-          trackingInfo: string | null,
+          trackingInfo?: string | null,
           createdAt: string,
           updatedAt: string,
         } | null,
-        shippingAddress:  {
+        shippingAddress?:  {
           __typename: "ShippingAddress",
           city: string,
           country: string,
           address_line1: string,
-          address_line2: string | null,
+          address_line2?: string | null,
           address_postcode: string,
         } | null,
         createdAt: string,
-        stripeOrderId: string | null,
-        paymentStatus: string | null,
+        stripeOrderId?: string | null,
+        paymentStatus?: string | null,
         orderProcessed: boolean,
         userInfo:  {
           __typename: "UserInfo",
           emailAddress: string,
           name: string,
         },
-        shipped: boolean | null,
+        shipped?: boolean | null,
         updatedAt: string,
       } | null > | null,
-      nextToken: string | null,
+      nextToken?: string | null,
     } | null,
-    profileImage:  {
+    profileImage?:  {
       __typename: "S3Object",
       bucket: string,
       region: string,
       key: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
-    savedProducts:  Array< {
+    savedProducts?:  Array< {
       __typename: "SavedProduct",
       id: string,
       title: string,
@@ -639,28 +788,28 @@ export type RegisterUserMutation = {
       tagline: string,
       variants:  Array< {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -668,28 +817,28 @@ export type RegisterUserMutation = {
         } | null > | null,
       } | null >,
     } | null > | null,
-    trackingInfo: string | null,
+    trackingInfo?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
 export type UpdateUserMutationVariables = {
-  input: UpdateUserInput,
+  input?: UpdateUserInput,
   condition?: ModelUserConditionInput | null,
 };
 
 export type UpdateUserMutation = {
-  updateUser:  {
+  updateUser?:  {
     __typename: "User",
     id: string,
     username: string,
     email: string,
-    name: string | null,
-    registered: boolean | null,
-    orders:  {
+    name?: string | null,
+    registered?: boolean | null,
+    orders?:  {
       __typename: "ModelOrderConnection",
-      items:  Array< {
+      items?:  Array< {
         __typename: "Order",
         id: string,
         products:  Array< {
@@ -703,24 +852,24 @@ export type UpdateUserMutation = {
             region: string,
             key: string,
           },
-          variant:  {
+          variant?:  {
             __typename: "Variants",
-            variantName: string | null,
-            instructions: string | null,
+            variantName?: string | null,
+            instructions?: string | null,
             dimensions: string,
             features:  Array< {
               __typename: "Features",
               name: string,
               inputType: string,
-              description: string | null,
+              description?: string | null,
               featureType: string,
             } | null >,
-            price:  {
+            price?:  {
               __typename: "Price",
               item: number,
               postage: number,
             } | null,
-            images:  Array< {
+            images?:  Array< {
               __typename: "S3Object",
               bucket: string,
               region: string,
@@ -729,44 +878,44 @@ export type UpdateUserMutation = {
           } | null,
           customOptions: Array< string | null >,
         } >,
-        stripePaymentIntent: string | null,
-        user:  {
+        stripePaymentIntent?: string | null,
+        user?:  {
           __typename: "User",
           id: string,
           username: string,
           email: string,
-          name: string | null,
-          registered: boolean | null,
-          orders:  {
+          name?: string | null,
+          registered?: boolean | null,
+          orders?:  {
             __typename: "ModelOrderConnection",
-            items:  Array< {
+            items?:  Array< {
               __typename: "Order",
               id: string,
-              stripePaymentIntent: string | null,
+              stripePaymentIntent?: string | null,
               createdAt: string,
-              stripeOrderId: string | null,
-              paymentStatus: string | null,
+              stripeOrderId?: string | null,
+              paymentStatus?: string | null,
               orderProcessed: boolean,
-              shipped: boolean | null,
+              shipped?: boolean | null,
               updatedAt: string,
             } | null > | null,
-            nextToken: string | null,
+            nextToken?: string | null,
           } | null,
-          profileImage:  {
+          profileImage?:  {
             __typename: "S3Object",
             bucket: string,
             region: string,
             key: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
-          savedProducts:  Array< {
+          savedProducts?:  Array< {
             __typename: "SavedProduct",
             id: string,
             title: string,
@@ -781,52 +930,52 @@ export type UpdateUserMutation = {
             tagline: string,
             variants:  Array< {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null >,
           } | null > | null,
-          trackingInfo: string | null,
+          trackingInfo?: string | null,
           createdAt: string,
           updatedAt: string,
         } | null,
-        shippingAddress:  {
+        shippingAddress?:  {
           __typename: "ShippingAddress",
           city: string,
           country: string,
           address_line1: string,
-          address_line2: string | null,
+          address_line2?: string | null,
           address_postcode: string,
         } | null,
         createdAt: string,
-        stripeOrderId: string | null,
-        paymentStatus: string | null,
+        stripeOrderId?: string | null,
+        paymentStatus?: string | null,
         orderProcessed: boolean,
         userInfo:  {
           __typename: "UserInfo",
           emailAddress: string,
           name: string,
         },
-        shipped: boolean | null,
+        shipped?: boolean | null,
         updatedAt: string,
       } | null > | null,
-      nextToken: string | null,
+      nextToken?: string | null,
     } | null,
-    profileImage:  {
+    profileImage?:  {
       __typename: "S3Object",
       bucket: string,
       region: string,
       key: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
-    savedProducts:  Array< {
+    savedProducts?:  Array< {
       __typename: "SavedProduct",
       id: string,
       title: string,
@@ -841,28 +990,28 @@ export type UpdateUserMutation = {
       tagline: string,
       variants:  Array< {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -870,19 +1019,19 @@ export type UpdateUserMutation = {
         } | null > | null,
       } | null >,
     } | null > | null,
-    trackingInfo: string | null,
+    trackingInfo?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
 export type CreateOrderMutationVariables = {
-  input: CreateOrderInput,
+  input?: CreateOrderInput,
   condition?: ModelOrderConditionInput | null,
 };
 
 export type CreateOrderMutation = {
-  createOrder:  {
+  createOrder?:  {
     __typename: "Order",
     id: string,
     products:  Array< {
@@ -896,30 +1045,30 @@ export type CreateOrderMutation = {
         region: string,
         key: string,
       },
-      variant:  {
+      variant?:  {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -928,17 +1077,17 @@ export type CreateOrderMutation = {
       } | null,
       customOptions: Array< string | null >,
     } >,
-    stripePaymentIntent: string | null,
-    user:  {
+    stripePaymentIntent?: string | null,
+    user?:  {
       __typename: "User",
       id: string,
       username: string,
       email: string,
-      name: string | null,
-      registered: boolean | null,
-      orders:  {
+      name?: string | null,
+      registered?: boolean | null,
+      orders?:  {
         __typename: "ModelOrderConnection",
-        items:  Array< {
+        items?:  Array< {
           __typename: "Order",
           id: string,
           products:  Array< {
@@ -952,41 +1101,41 @@ export type CreateOrderMutation = {
               region: string,
               key: string,
             },
-            variant:  {
+            variant?:  {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null,
             customOptions: Array< string | null >,
           } >,
-          stripePaymentIntent: string | null,
-          user:  {
+          stripePaymentIntent?: string | null,
+          user?:  {
             __typename: "User",
             id: string,
             username: string,
             email: string,
-            name: string | null,
-            registered: boolean | null,
-            orders:  {
+            name?: string | null,
+            registered?: boolean | null,
+            orders?:  {
               __typename: "ModelOrderConnection",
-              nextToken: string | null,
+              nextToken?: string | null,
             } | null,
-            profileImage:  {
+            profileImage?:  {
               __typename: "S3Object",
               bucket: string,
               region: string,
               key: string,
             } | null,
-            shippingAddress:  {
+            shippingAddress?:  {
               __typename: "ShippingAddress",
               city: string,
               country: string,
               address_line1: string,
-              address_line2: string | null,
+              address_line2?: string | null,
               address_postcode: string,
             } | null,
-            savedProducts:  Array< {
+            savedProducts?:  Array< {
               __typename: "SavedProduct",
               id: string,
               title: string,
@@ -994,47 +1143,47 @@ export type CreateOrderMutation = {
               type: string,
               tagline: string,
             } | null > | null,
-            trackingInfo: string | null,
+            trackingInfo?: string | null,
             createdAt: string,
             updatedAt: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
           createdAt: string,
-          stripeOrderId: string | null,
-          paymentStatus: string | null,
+          stripeOrderId?: string | null,
+          paymentStatus?: string | null,
           orderProcessed: boolean,
           userInfo:  {
             __typename: "UserInfo",
             emailAddress: string,
             name: string,
           },
-          shipped: boolean | null,
+          shipped?: boolean | null,
           updatedAt: string,
         } | null > | null,
-        nextToken: string | null,
+        nextToken?: string | null,
       } | null,
-      profileImage:  {
+      profileImage?:  {
         __typename: "S3Object",
         bucket: string,
         region: string,
         key: string,
       } | null,
-      shippingAddress:  {
+      shippingAddress?:  {
         __typename: "ShippingAddress",
         city: string,
         country: string,
         address_line1: string,
-        address_line2: string | null,
+        address_line2?: string | null,
         address_postcode: string,
       } | null,
-      savedProducts:  Array< {
+      savedProducts?:  Array< {
         __typename: "SavedProduct",
         id: string,
         title: string,
@@ -1049,28 +1198,28 @@ export type CreateOrderMutation = {
         tagline: string,
         variants:  Array< {
           __typename: "Variants",
-          variantName: string | null,
-          instructions: string | null,
+          variantName?: string | null,
+          instructions?: string | null,
           dimensions: string,
           features:  Array< {
             __typename: "Features",
             name: string,
             inputType: string,
-            description: string | null,
+            description?: string | null,
             featureType: string,
             value:  {
               __typename: "FeatureValue",
-              array: Array< string | null > | null,
-              range: Array< number | null > | null,
-              number: number | null,
+              array?: Array< string | null > | null,
+              range?: Array< number | null > | null,
+              number?: number | null,
             },
           } | null >,
-          price:  {
+          price?:  {
             __typename: "Price",
             item: number,
             postage: number,
           } | null,
-          images:  Array< {
+          images?:  Array< {
             __typename: "S3Object",
             bucket: string,
             region: string,
@@ -1078,39 +1227,39 @@ export type CreateOrderMutation = {
           } | null > | null,
         } | null >,
       } | null > | null,
-      trackingInfo: string | null,
+      trackingInfo?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
     createdAt: string,
-    stripeOrderId: string | null,
-    paymentStatus: string | null,
+    stripeOrderId?: string | null,
+    paymentStatus?: string | null,
     orderProcessed: boolean,
     userInfo:  {
       __typename: "UserInfo",
       emailAddress: string,
       name: string,
     },
-    shipped: boolean | null,
+    shipped?: boolean | null,
     updatedAt: string,
   } | null,
 };
 
 export type UpdateOrderMutationVariables = {
-  input: UpdateOrderInput,
+  input?: UpdateOrderInput,
   condition?: ModelOrderConditionInput | null,
 };
 
 export type UpdateOrderMutation = {
-  updateOrder:  {
+  updateOrder?:  {
     __typename: "Order",
     id: string,
     products:  Array< {
@@ -1124,30 +1273,30 @@ export type UpdateOrderMutation = {
         region: string,
         key: string,
       },
-      variant:  {
+      variant?:  {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -1156,17 +1305,17 @@ export type UpdateOrderMutation = {
       } | null,
       customOptions: Array< string | null >,
     } >,
-    stripePaymentIntent: string | null,
-    user:  {
+    stripePaymentIntent?: string | null,
+    user?:  {
       __typename: "User",
       id: string,
       username: string,
       email: string,
-      name: string | null,
-      registered: boolean | null,
-      orders:  {
+      name?: string | null,
+      registered?: boolean | null,
+      orders?:  {
         __typename: "ModelOrderConnection",
-        items:  Array< {
+        items?:  Array< {
           __typename: "Order",
           id: string,
           products:  Array< {
@@ -1180,41 +1329,41 @@ export type UpdateOrderMutation = {
               region: string,
               key: string,
             },
-            variant:  {
+            variant?:  {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null,
             customOptions: Array< string | null >,
           } >,
-          stripePaymentIntent: string | null,
-          user:  {
+          stripePaymentIntent?: string | null,
+          user?:  {
             __typename: "User",
             id: string,
             username: string,
             email: string,
-            name: string | null,
-            registered: boolean | null,
-            orders:  {
+            name?: string | null,
+            registered?: boolean | null,
+            orders?:  {
               __typename: "ModelOrderConnection",
-              nextToken: string | null,
+              nextToken?: string | null,
             } | null,
-            profileImage:  {
+            profileImage?:  {
               __typename: "S3Object",
               bucket: string,
               region: string,
               key: string,
             } | null,
-            shippingAddress:  {
+            shippingAddress?:  {
               __typename: "ShippingAddress",
               city: string,
               country: string,
               address_line1: string,
-              address_line2: string | null,
+              address_line2?: string | null,
               address_postcode: string,
             } | null,
-            savedProducts:  Array< {
+            savedProducts?:  Array< {
               __typename: "SavedProduct",
               id: string,
               title: string,
@@ -1222,47 +1371,47 @@ export type UpdateOrderMutation = {
               type: string,
               tagline: string,
             } | null > | null,
-            trackingInfo: string | null,
+            trackingInfo?: string | null,
             createdAt: string,
             updatedAt: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
           createdAt: string,
-          stripeOrderId: string | null,
-          paymentStatus: string | null,
+          stripeOrderId?: string | null,
+          paymentStatus?: string | null,
           orderProcessed: boolean,
           userInfo:  {
             __typename: "UserInfo",
             emailAddress: string,
             name: string,
           },
-          shipped: boolean | null,
+          shipped?: boolean | null,
           updatedAt: string,
         } | null > | null,
-        nextToken: string | null,
+        nextToken?: string | null,
       } | null,
-      profileImage:  {
+      profileImage?:  {
         __typename: "S3Object",
         bucket: string,
         region: string,
         key: string,
       } | null,
-      shippingAddress:  {
+      shippingAddress?:  {
         __typename: "ShippingAddress",
         city: string,
         country: string,
         address_line1: string,
-        address_line2: string | null,
+        address_line2?: string | null,
         address_postcode: string,
       } | null,
-      savedProducts:  Array< {
+      savedProducts?:  Array< {
         __typename: "SavedProduct",
         id: string,
         title: string,
@@ -1277,28 +1426,28 @@ export type UpdateOrderMutation = {
         tagline: string,
         variants:  Array< {
           __typename: "Variants",
-          variantName: string | null,
-          instructions: string | null,
+          variantName?: string | null,
+          instructions?: string | null,
           dimensions: string,
           features:  Array< {
             __typename: "Features",
             name: string,
             inputType: string,
-            description: string | null,
+            description?: string | null,
             featureType: string,
             value:  {
               __typename: "FeatureValue",
-              array: Array< string | null > | null,
-              range: Array< number | null > | null,
-              number: number | null,
+              array?: Array< string | null > | null,
+              range?: Array< number | null > | null,
+              number?: number | null,
             },
           } | null >,
-          price:  {
+          price?:  {
             __typename: "Price",
             item: number,
             postage: number,
           } | null,
-          images:  Array< {
+          images?:  Array< {
             __typename: "S3Object",
             bucket: string,
             region: string,
@@ -1306,47 +1455,47 @@ export type UpdateOrderMutation = {
           } | null > | null,
         } | null >,
       } | null > | null,
-      trackingInfo: string | null,
+      trackingInfo?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
     createdAt: string,
-    stripeOrderId: string | null,
-    paymentStatus: string | null,
+    stripeOrderId?: string | null,
+    paymentStatus?: string | null,
     orderProcessed: boolean,
     userInfo:  {
       __typename: "UserInfo",
       emailAddress: string,
       name: string,
     },
-    shipped: boolean | null,
+    shipped?: boolean | null,
     updatedAt: string,
   } | null,
 };
 
 export type GetUserQueryVariables = {
-  id: string,
+  id?: string,
 };
 
 export type GetUserQuery = {
-  getUser:  {
+  getUser?:  {
     __typename: "User",
     id: string,
     username: string,
     email: string,
-    name: string | null,
-    registered: boolean | null,
-    orders:  {
+    name?: string | null,
+    registered?: boolean | null,
+    orders?:  {
       __typename: "ModelOrderConnection",
-      items:  Array< {
+      items?:  Array< {
         __typename: "Order",
         id: string,
         products:  Array< {
@@ -1360,24 +1509,24 @@ export type GetUserQuery = {
             region: string,
             key: string,
           },
-          variant:  {
+          variant?:  {
             __typename: "Variants",
-            variantName: string | null,
-            instructions: string | null,
+            variantName?: string | null,
+            instructions?: string | null,
             dimensions: string,
             features:  Array< {
               __typename: "Features",
               name: string,
               inputType: string,
-              description: string | null,
+              description?: string | null,
               featureType: string,
             } | null >,
-            price:  {
+            price?:  {
               __typename: "Price",
               item: number,
               postage: number,
             } | null,
-            images:  Array< {
+            images?:  Array< {
               __typename: "S3Object",
               bucket: string,
               region: string,
@@ -1386,44 +1535,44 @@ export type GetUserQuery = {
           } | null,
           customOptions: Array< string | null >,
         } >,
-        stripePaymentIntent: string | null,
-        user:  {
+        stripePaymentIntent?: string | null,
+        user?:  {
           __typename: "User",
           id: string,
           username: string,
           email: string,
-          name: string | null,
-          registered: boolean | null,
-          orders:  {
+          name?: string | null,
+          registered?: boolean | null,
+          orders?:  {
             __typename: "ModelOrderConnection",
-            items:  Array< {
+            items?:  Array< {
               __typename: "Order",
               id: string,
-              stripePaymentIntent: string | null,
+              stripePaymentIntent?: string | null,
               createdAt: string,
-              stripeOrderId: string | null,
-              paymentStatus: string | null,
+              stripeOrderId?: string | null,
+              paymentStatus?: string | null,
               orderProcessed: boolean,
-              shipped: boolean | null,
+              shipped?: boolean | null,
               updatedAt: string,
             } | null > | null,
-            nextToken: string | null,
+            nextToken?: string | null,
           } | null,
-          profileImage:  {
+          profileImage?:  {
             __typename: "S3Object",
             bucket: string,
             region: string,
             key: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
-          savedProducts:  Array< {
+          savedProducts?:  Array< {
             __typename: "SavedProduct",
             id: string,
             title: string,
@@ -1438,52 +1587,52 @@ export type GetUserQuery = {
             tagline: string,
             variants:  Array< {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null >,
           } | null > | null,
-          trackingInfo: string | null,
+          trackingInfo?: string | null,
           createdAt: string,
           updatedAt: string,
         } | null,
-        shippingAddress:  {
+        shippingAddress?:  {
           __typename: "ShippingAddress",
           city: string,
           country: string,
           address_line1: string,
-          address_line2: string | null,
+          address_line2?: string | null,
           address_postcode: string,
         } | null,
         createdAt: string,
-        stripeOrderId: string | null,
-        paymentStatus: string | null,
+        stripeOrderId?: string | null,
+        paymentStatus?: string | null,
         orderProcessed: boolean,
         userInfo:  {
           __typename: "UserInfo",
           emailAddress: string,
           name: string,
         },
-        shipped: boolean | null,
+        shipped?: boolean | null,
         updatedAt: string,
       } | null > | null,
-      nextToken: string | null,
+      nextToken?: string | null,
     } | null,
-    profileImage:  {
+    profileImage?:  {
       __typename: "S3Object",
       bucket: string,
       region: string,
       key: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
-    savedProducts:  Array< {
+    savedProducts?:  Array< {
       __typename: "SavedProduct",
       id: string,
       title: string,
@@ -1498,28 +1647,28 @@ export type GetUserQuery = {
       tagline: string,
       variants:  Array< {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -1527,7 +1676,7 @@ export type GetUserQuery = {
         } | null > | null,
       } | null >,
     } | null > | null,
-    trackingInfo: string | null,
+    trackingInfo?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1540,9 +1689,9 @@ export type ListOrdersQueryVariables = {
 };
 
 export type ListOrdersQuery = {
-  listOrders:  {
+  listOrders?:  {
     __typename: "ModelOrderConnection",
-    items:  Array< {
+    items?:  Array< {
       __typename: "Order",
       id: string,
       products:  Array< {
@@ -1556,30 +1705,30 @@ export type ListOrdersQuery = {
           region: string,
           key: string,
         },
-        variant:  {
+        variant?:  {
           __typename: "Variants",
-          variantName: string | null,
-          instructions: string | null,
+          variantName?: string | null,
+          instructions?: string | null,
           dimensions: string,
           features:  Array< {
             __typename: "Features",
             name: string,
             inputType: string,
-            description: string | null,
+            description?: string | null,
             featureType: string,
             value:  {
               __typename: "FeatureValue",
-              array: Array< string | null > | null,
-              range: Array< number | null > | null,
-              number: number | null,
+              array?: Array< string | null > | null,
+              range?: Array< number | null > | null,
+              number?: number | null,
             },
           } | null >,
-          price:  {
+          price?:  {
             __typename: "Price",
             item: number,
             postage: number,
           } | null,
-          images:  Array< {
+          images?:  Array< {
             __typename: "S3Object",
             bucket: string,
             region: string,
@@ -1588,17 +1737,17 @@ export type ListOrdersQuery = {
         } | null,
         customOptions: Array< string | null >,
       } >,
-      stripePaymentIntent: string | null,
-      user:  {
+      stripePaymentIntent?: string | null,
+      user?:  {
         __typename: "User",
         id: string,
         username: string,
         email: string,
-        name: string | null,
-        registered: boolean | null,
-        orders:  {
+        name?: string | null,
+        registered?: boolean | null,
+        orders?:  {
           __typename: "ModelOrderConnection",
-          items:  Array< {
+          items?:  Array< {
             __typename: "Order",
             id: string,
             products:  Array< {
@@ -1608,55 +1757,55 @@ export type ListOrdersQuery = {
               tagline: string,
               customOptions: Array< string | null >,
             } >,
-            stripePaymentIntent: string | null,
-            user:  {
+            stripePaymentIntent?: string | null,
+            user?:  {
               __typename: "User",
               id: string,
               username: string,
               email: string,
-              name: string | null,
-              registered: boolean | null,
-              trackingInfo: string | null,
+              name?: string | null,
+              registered?: boolean | null,
+              trackingInfo?: string | null,
               createdAt: string,
               updatedAt: string,
             } | null,
-            shippingAddress:  {
+            shippingAddress?:  {
               __typename: "ShippingAddress",
               city: string,
               country: string,
               address_line1: string,
-              address_line2: string | null,
+              address_line2?: string | null,
               address_postcode: string,
             } | null,
             createdAt: string,
-            stripeOrderId: string | null,
-            paymentStatus: string | null,
+            stripeOrderId?: string | null,
+            paymentStatus?: string | null,
             orderProcessed: boolean,
             userInfo:  {
               __typename: "UserInfo",
               emailAddress: string,
               name: string,
             },
-            shipped: boolean | null,
+            shipped?: boolean | null,
             updatedAt: string,
           } | null > | null,
-          nextToken: string | null,
+          nextToken?: string | null,
         } | null,
-        profileImage:  {
+        profileImage?:  {
           __typename: "S3Object",
           bucket: string,
           region: string,
           key: string,
         } | null,
-        shippingAddress:  {
+        shippingAddress?:  {
           __typename: "ShippingAddress",
           city: string,
           country: string,
           address_line1: string,
-          address_line2: string | null,
+          address_line2?: string | null,
           address_postcode: string,
         } | null,
-        savedProducts:  Array< {
+        savedProducts?:  Array< {
           __typename: "SavedProduct",
           id: string,
           title: string,
@@ -1671,22 +1820,22 @@ export type ListOrdersQuery = {
           tagline: string,
           variants:  Array< {
             __typename: "Variants",
-            variantName: string | null,
-            instructions: string | null,
+            variantName?: string | null,
+            instructions?: string | null,
             dimensions: string,
             features:  Array< {
               __typename: "Features",
               name: string,
               inputType: string,
-              description: string | null,
+              description?: string | null,
               featureType: string,
             } | null >,
-            price:  {
+            price?:  {
               __typename: "Price",
               item: number,
               postage: number,
             } | null,
-            images:  Array< {
+            images?:  Array< {
               __typename: "S3Object",
               bucket: string,
               region: string,
@@ -1694,46 +1843,46 @@ export type ListOrdersQuery = {
             } | null > | null,
           } | null >,
         } | null > | null,
-        trackingInfo: string | null,
+        trackingInfo?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null,
-      shippingAddress:  {
+      shippingAddress?:  {
         __typename: "ShippingAddress",
         city: string,
         country: string,
         address_line1: string,
-        address_line2: string | null,
+        address_line2?: string | null,
         address_postcode: string,
       } | null,
       createdAt: string,
-      stripeOrderId: string | null,
-      paymentStatus: string | null,
+      stripeOrderId?: string | null,
+      paymentStatus?: string | null,
       orderProcessed: boolean,
       userInfo:  {
         __typename: "UserInfo",
         emailAddress: string,
         name: string,
       },
-      shipped: boolean | null,
+      shipped?: boolean | null,
       updatedAt: string,
     } | null > | null,
-    nextToken: string | null,
+    nextToken?: string | null,
   } | null,
 };
 
 export type GetProductQueryVariables = {
-  id: string,
+  id?: string,
 };
 
 export type GetProductQuery = {
-  getProduct:  {
+  getProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -1743,36 +1892,37 @@ export type GetProductQuery = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -1789,15 +1939,15 @@ export type ListProductsQueryVariables = {
 };
 
 export type ListProductsQuery = {
-  listProducts:  {
+  listProducts?:  {
     __typename: "ModelProductConnection",
-    items:  Array< {
+    items?:  Array< {
       __typename: "Product",
       id: string,
       title: string,
       description: string,
       tagline: string,
-      images:  {
+      images?:  {
         __typename: "Images",
         cover: number,
         collection:  Array< {
@@ -1807,36 +1957,37 @@ export type ListProductsQuery = {
           key: string,
         } | null >,
       } | null,
-      customOptions: Array< string | null > | null,
-      setPrice: boolean | null,
+      customOptions?: Array< string | null > | null,
+      setPrice?: boolean | null,
       type: string,
       tags: Array< string | null >,
-      createdAt: string | null,
-      updatedAt: string | null,
-      variants:  Array< {
+      searchField?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      variants?:  Array< {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -1844,12 +1995,12 @@ export type ListProductsQuery = {
         } | null > | null,
       } | null > | null,
     } | null > | null,
-    nextToken: string | null,
+    nextToken?: string | null,
   } | null,
 };
 
 export type OnCreateOrderSubscription = {
-  onCreateOrder:  {
+  onCreateOrder?:  {
     __typename: "Order",
     id: string,
     products:  Array< {
@@ -1863,30 +2014,30 @@ export type OnCreateOrderSubscription = {
         region: string,
         key: string,
       },
-      variant:  {
+      variant?:  {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -1895,17 +2046,17 @@ export type OnCreateOrderSubscription = {
       } | null,
       customOptions: Array< string | null >,
     } >,
-    stripePaymentIntent: string | null,
-    user:  {
+    stripePaymentIntent?: string | null,
+    user?:  {
       __typename: "User",
       id: string,
       username: string,
       email: string,
-      name: string | null,
-      registered: boolean | null,
-      orders:  {
+      name?: string | null,
+      registered?: boolean | null,
+      orders?:  {
         __typename: "ModelOrderConnection",
-        items:  Array< {
+        items?:  Array< {
           __typename: "Order",
           id: string,
           products:  Array< {
@@ -1919,41 +2070,41 @@ export type OnCreateOrderSubscription = {
               region: string,
               key: string,
             },
-            variant:  {
+            variant?:  {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null,
             customOptions: Array< string | null >,
           } >,
-          stripePaymentIntent: string | null,
-          user:  {
+          stripePaymentIntent?: string | null,
+          user?:  {
             __typename: "User",
             id: string,
             username: string,
             email: string,
-            name: string | null,
-            registered: boolean | null,
-            orders:  {
+            name?: string | null,
+            registered?: boolean | null,
+            orders?:  {
               __typename: "ModelOrderConnection",
-              nextToken: string | null,
+              nextToken?: string | null,
             } | null,
-            profileImage:  {
+            profileImage?:  {
               __typename: "S3Object",
               bucket: string,
               region: string,
               key: string,
             } | null,
-            shippingAddress:  {
+            shippingAddress?:  {
               __typename: "ShippingAddress",
               city: string,
               country: string,
               address_line1: string,
-              address_line2: string | null,
+              address_line2?: string | null,
               address_postcode: string,
             } | null,
-            savedProducts:  Array< {
+            savedProducts?:  Array< {
               __typename: "SavedProduct",
               id: string,
               title: string,
@@ -1961,47 +2112,47 @@ export type OnCreateOrderSubscription = {
               type: string,
               tagline: string,
             } | null > | null,
-            trackingInfo: string | null,
+            trackingInfo?: string | null,
             createdAt: string,
             updatedAt: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
           createdAt: string,
-          stripeOrderId: string | null,
-          paymentStatus: string | null,
+          stripeOrderId?: string | null,
+          paymentStatus?: string | null,
           orderProcessed: boolean,
           userInfo:  {
             __typename: "UserInfo",
             emailAddress: string,
             name: string,
           },
-          shipped: boolean | null,
+          shipped?: boolean | null,
           updatedAt: string,
         } | null > | null,
-        nextToken: string | null,
+        nextToken?: string | null,
       } | null,
-      profileImage:  {
+      profileImage?:  {
         __typename: "S3Object",
         bucket: string,
         region: string,
         key: string,
       } | null,
-      shippingAddress:  {
+      shippingAddress?:  {
         __typename: "ShippingAddress",
         city: string,
         country: string,
         address_line1: string,
-        address_line2: string | null,
+        address_line2?: string | null,
         address_postcode: string,
       } | null,
-      savedProducts:  Array< {
+      savedProducts?:  Array< {
         __typename: "SavedProduct",
         id: string,
         title: string,
@@ -2016,28 +2167,28 @@ export type OnCreateOrderSubscription = {
         tagline: string,
         variants:  Array< {
           __typename: "Variants",
-          variantName: string | null,
-          instructions: string | null,
+          variantName?: string | null,
+          instructions?: string | null,
           dimensions: string,
           features:  Array< {
             __typename: "Features",
             name: string,
             inputType: string,
-            description: string | null,
+            description?: string | null,
             featureType: string,
             value:  {
               __typename: "FeatureValue",
-              array: Array< string | null > | null,
-              range: Array< number | null > | null,
-              number: number | null,
+              array?: Array< string | null > | null,
+              range?: Array< number | null > | null,
+              number?: number | null,
             },
           } | null >,
-          price:  {
+          price?:  {
             __typename: "Price",
             item: number,
             postage: number,
           } | null,
-          images:  Array< {
+          images?:  Array< {
             __typename: "S3Object",
             bucket: string,
             region: string,
@@ -2045,34 +2196,34 @@ export type OnCreateOrderSubscription = {
           } | null > | null,
         } | null >,
       } | null > | null,
-      trackingInfo: string | null,
+      trackingInfo?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
     createdAt: string,
-    stripeOrderId: string | null,
-    paymentStatus: string | null,
+    stripeOrderId?: string | null,
+    paymentStatus?: string | null,
     orderProcessed: boolean,
     userInfo:  {
       __typename: "UserInfo",
       emailAddress: string,
       name: string,
     },
-    shipped: boolean | null,
+    shipped?: boolean | null,
     updatedAt: string,
   } | null,
 };
 
 export type OnUpdateOrderSubscription = {
-  onUpdateOrder:  {
+  onUpdateOrder?:  {
     __typename: "Order",
     id: string,
     products:  Array< {
@@ -2086,30 +2237,30 @@ export type OnUpdateOrderSubscription = {
         region: string,
         key: string,
       },
-      variant:  {
+      variant?:  {
         __typename: "Variants",
-        variantName: string | null,
-        instructions: string | null,
+        variantName?: string | null,
+        instructions?: string | null,
         dimensions: string,
         features:  Array< {
           __typename: "Features",
           name: string,
           inputType: string,
-          description: string | null,
+          description?: string | null,
           featureType: string,
           value:  {
             __typename: "FeatureValue",
-            array: Array< string | null > | null,
-            range: Array< number | null > | null,
-            number: number | null,
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
           },
         } | null >,
-        price:  {
+        price?:  {
           __typename: "Price",
           item: number,
           postage: number,
         } | null,
-        images:  Array< {
+        images?:  Array< {
           __typename: "S3Object",
           bucket: string,
           region: string,
@@ -2118,17 +2269,17 @@ export type OnUpdateOrderSubscription = {
       } | null,
       customOptions: Array< string | null >,
     } >,
-    stripePaymentIntent: string | null,
-    user:  {
+    stripePaymentIntent?: string | null,
+    user?:  {
       __typename: "User",
       id: string,
       username: string,
       email: string,
-      name: string | null,
-      registered: boolean | null,
-      orders:  {
+      name?: string | null,
+      registered?: boolean | null,
+      orders?:  {
         __typename: "ModelOrderConnection",
-        items:  Array< {
+        items?:  Array< {
           __typename: "Order",
           id: string,
           products:  Array< {
@@ -2142,41 +2293,41 @@ export type OnUpdateOrderSubscription = {
               region: string,
               key: string,
             },
-            variant:  {
+            variant?:  {
               __typename: "Variants",
-              variantName: string | null,
-              instructions: string | null,
+              variantName?: string | null,
+              instructions?: string | null,
               dimensions: string,
             } | null,
             customOptions: Array< string | null >,
           } >,
-          stripePaymentIntent: string | null,
-          user:  {
+          stripePaymentIntent?: string | null,
+          user?:  {
             __typename: "User",
             id: string,
             username: string,
             email: string,
-            name: string | null,
-            registered: boolean | null,
-            orders:  {
+            name?: string | null,
+            registered?: boolean | null,
+            orders?:  {
               __typename: "ModelOrderConnection",
-              nextToken: string | null,
+              nextToken?: string | null,
             } | null,
-            profileImage:  {
+            profileImage?:  {
               __typename: "S3Object",
               bucket: string,
               region: string,
               key: string,
             } | null,
-            shippingAddress:  {
+            shippingAddress?:  {
               __typename: "ShippingAddress",
               city: string,
               country: string,
               address_line1: string,
-              address_line2: string | null,
+              address_line2?: string | null,
               address_postcode: string,
             } | null,
-            savedProducts:  Array< {
+            savedProducts?:  Array< {
               __typename: "SavedProduct",
               id: string,
               title: string,
@@ -2184,47 +2335,47 @@ export type OnUpdateOrderSubscription = {
               type: string,
               tagline: string,
             } | null > | null,
-            trackingInfo: string | null,
+            trackingInfo?: string | null,
             createdAt: string,
             updatedAt: string,
           } | null,
-          shippingAddress:  {
+          shippingAddress?:  {
             __typename: "ShippingAddress",
             city: string,
             country: string,
             address_line1: string,
-            address_line2: string | null,
+            address_line2?: string | null,
             address_postcode: string,
           } | null,
           createdAt: string,
-          stripeOrderId: string | null,
-          paymentStatus: string | null,
+          stripeOrderId?: string | null,
+          paymentStatus?: string | null,
           orderProcessed: boolean,
           userInfo:  {
             __typename: "UserInfo",
             emailAddress: string,
             name: string,
           },
-          shipped: boolean | null,
+          shipped?: boolean | null,
           updatedAt: string,
         } | null > | null,
-        nextToken: string | null,
+        nextToken?: string | null,
       } | null,
-      profileImage:  {
+      profileImage?:  {
         __typename: "S3Object",
         bucket: string,
         region: string,
         key: string,
       } | null,
-      shippingAddress:  {
+      shippingAddress?:  {
         __typename: "ShippingAddress",
         city: string,
         country: string,
         address_line1: string,
-        address_line2: string | null,
+        address_line2?: string | null,
         address_postcode: string,
       } | null,
-      savedProducts:  Array< {
+      savedProducts?:  Array< {
         __typename: "SavedProduct",
         id: string,
         title: string,
@@ -2239,28 +2390,28 @@ export type OnUpdateOrderSubscription = {
         tagline: string,
         variants:  Array< {
           __typename: "Variants",
-          variantName: string | null,
-          instructions: string | null,
+          variantName?: string | null,
+          instructions?: string | null,
           dimensions: string,
           features:  Array< {
             __typename: "Features",
             name: string,
             inputType: string,
-            description: string | null,
+            description?: string | null,
             featureType: string,
             value:  {
               __typename: "FeatureValue",
-              array: Array< string | null > | null,
-              range: Array< number | null > | null,
-              number: number | null,
+              array?: Array< string | null > | null,
+              range?: Array< number | null > | null,
+              number?: number | null,
             },
           } | null >,
-          price:  {
+          price?:  {
             __typename: "Price",
             item: number,
             postage: number,
           } | null,
-          images:  Array< {
+          images?:  Array< {
             __typename: "S3Object",
             bucket: string,
             region: string,
@@ -2268,40 +2419,40 @@ export type OnUpdateOrderSubscription = {
           } | null > | null,
         } | null >,
       } | null > | null,
-      trackingInfo: string | null,
+      trackingInfo?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
-    shippingAddress:  {
+    shippingAddress?:  {
       __typename: "ShippingAddress",
       city: string,
       country: string,
       address_line1: string,
-      address_line2: string | null,
+      address_line2?: string | null,
       address_postcode: string,
     } | null,
     createdAt: string,
-    stripeOrderId: string | null,
-    paymentStatus: string | null,
+    stripeOrderId?: string | null,
+    paymentStatus?: string | null,
     orderProcessed: boolean,
     userInfo:  {
       __typename: "UserInfo",
       emailAddress: string,
       name: string,
     },
-    shipped: boolean | null,
+    shipped?: boolean | null,
     updatedAt: string,
   } | null,
 };
 
 export type OnCreateProductSubscription = {
-  onCreateProduct:  {
+  onCreateProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -2311,36 +2462,37 @@ export type OnCreateProductSubscription = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -2351,13 +2503,13 @@ export type OnCreateProductSubscription = {
 };
 
 export type OnUpdateProductSubscription = {
-  onUpdateProduct:  {
+  onUpdateProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -2367,36 +2519,37 @@ export type OnUpdateProductSubscription = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,
@@ -2407,13 +2560,13 @@ export type OnUpdateProductSubscription = {
 };
 
 export type OnDeleteProductSubscription = {
-  onDeleteProduct:  {
+  onDeleteProduct?:  {
     __typename: "Product",
     id: string,
     title: string,
     description: string,
     tagline: string,
-    images:  {
+    images?:  {
       __typename: "Images",
       cover: number,
       collection:  Array< {
@@ -2423,36 +2576,37 @@ export type OnDeleteProductSubscription = {
         key: string,
       } | null >,
     } | null,
-    customOptions: Array< string | null > | null,
-    setPrice: boolean | null,
+    customOptions?: Array< string | null > | null,
+    setPrice?: boolean | null,
     type: string,
     tags: Array< string | null >,
-    createdAt: string | null,
-    updatedAt: string | null,
-    variants:  Array< {
+    searchField?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    variants?:  Array< {
       __typename: "Variants",
-      variantName: string | null,
-      instructions: string | null,
+      variantName?: string | null,
+      instructions?: string | null,
       dimensions: string,
       features:  Array< {
         __typename: "Features",
         name: string,
         inputType: string,
-        description: string | null,
+        description?: string | null,
         featureType: string,
         value:  {
           __typename: "FeatureValue",
-          array: Array< string | null > | null,
-          range: Array< number | null > | null,
-          number: number | null,
+          array?: Array< string | null > | null,
+          range?: Array< number | null > | null,
+          number?: number | null,
         },
       } | null >,
-      price:  {
+      price?:  {
         __typename: "Price",
         item: number,
         postage: number,
       } | null,
-      images:  Array< {
+      images?:  Array< {
         __typename: "S3Object",
         bucket: string,
         region: string,

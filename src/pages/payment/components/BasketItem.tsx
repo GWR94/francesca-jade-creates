@@ -26,13 +26,6 @@ import BasketCustomOptions from "./BasketCustomOptions";
 import { BasketItemState, BasketProps } from "../interfaces/BasketItem.i";
 
 /**
- * TODO
- * [ ] Put ALL products & filter logic into redux and remove async actions from redux if poss
- * [ ] Remove all unnecessary data from reducers (admin etc)
- *
- */
-
-/**
  * Functional component to render one item (product) that is in the customers' shopping basket. The component
  * will allow the customer to view, edit and delete the item from the basket, but will also allow the user to
  * add their own customisable options for the product that they're attempting to purchase.

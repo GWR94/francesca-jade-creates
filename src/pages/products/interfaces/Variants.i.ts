@@ -14,6 +14,18 @@ export interface VariantsProps {
   updateVariants: (variants: Variant[]) => void;
 }
 
+export interface UpdateVariantProps {
+  dimensions: string;
+  price: {
+    item: number;
+    postage: number;
+  };
+  features: Feature[];
+  variantName: string;
+  instructions: string;
+  variantIdx: number | null;
+}
+
 export interface Feature {
   name: string; // the name of the feature set by admin
   featureType: FeatureType; // see FeatureType interface below
@@ -35,41 +47,19 @@ export interface VariantsState {
     item: number;
     postage: number;
   };
-  // the name of the current feature
-  featureName: string;
-  // see featureType interface below
-  featureType: FeatureType;
-  // see inputType interface below
-  inputType: InputType;
-  // the value to be used if inputType is "array".
-  array: string[];
-  // the value to be used if inputType is "range"
-  range: number[];
-  // the value to be used if inputType is "number"
-  number: number;
   // the index of the current selected variant
   currentIdx: number;
-  // array to hold all of the completed features
+  // array for holding current variants features
   features: Feature[];
   // the name of the current variant
   variantName: string;
   // object for tracking each inputs' errors
   errors: {
-    action: string;
-    name: string;
-    range: string;
-    array: string;
+    variantName: string;
     dimensions: string;
-    item: string;
-    postage: string;
     priceItem: string;
     priceShipping: string;
-    featureName: string;
-    featureType: string;
-    variantName: string;
-    inputType: string;
     instructions: string;
-    description: string;
   };
   // the index of the selected variant
   variantIdx: number | null;

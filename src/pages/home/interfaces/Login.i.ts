@@ -16,6 +16,7 @@ export interface LoginState {
   password: string;
   passwordDialogOpen: boolean;
   accountDialogOpen: boolean;
+  verifyDialogOpen: boolean;
   loggingIn: boolean;
   isOpen: boolean;
 }

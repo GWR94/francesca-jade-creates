@@ -12,6 +12,9 @@ import {
   Select,
   Typography,
   makeStyles,
+  Grid,
+  FormGroup,
+  Divider,
 } from "@material-ui/core";
 import { API, Auth } from "aws-amplify";
 import React, { useState } from "react";
@@ -35,7 +38,10 @@ interface ShippingReferenceState {
   trackingArray: { [key: string]: string }[];
   inputError: string;
   isSending: boolean;
+  provider: DeliveryProvider;
 }
+
+type DeliveryProvider = "Royal Mail" | "DPD" | "Hermes" | "Yodel";
 
 const initialState: ShippingReferenceState = {
   trackingSelect: "",
@@ -43,6 +49,7 @@ const initialState: ShippingReferenceState = {
   trackingArray: [],
   inputError: "",
   isSending: false,
+  provider: "Royal Mail",
 };
 
 const ShippingReferenceDialog = ({
@@ -64,7 +71,7 @@ const ShippingReferenceDialog = ({
    * the confirmation email.
    */
   const handleSendConfirmation = async (): Promise<void> => {
-    const { trackingArray, inputValue } = state;
+    const { trackingArray, inputValue, provider } = state;
     // set sending to true so loading UI effects are shown
     setState({ ...state, isSending: true });
 
@@ -78,7 +85,7 @@ const ShippingReferenceDialog = ({
       await API.post("orderlambda", "/orders/send-shipping-information", {
         body: {
           // add order to body
-          order: order,
+          order,
           trackingInfo:
             // if there is an array of tracking numbers, use that
             trackingArray.length > 0
@@ -90,6 +97,7 @@ const ShippingReferenceDialog = ({
                 null,
           username,
           cost,
+          provider,
         },
       });
       openSnackbar({
@@ -106,6 +114,13 @@ const ShippingReferenceDialog = ({
     closeDialog();
   };
 
+  const handleValidateLabel = (label: string): string => {
+    if (label.length > 28) {
+      return label.slice(0, 28) + "...";
+    }
+    return label;
+  };
+
   /**
    * Function to render an input based on the selected trackingSelect index
    * from state.
@@ -113,7 +128,7 @@ const ShippingReferenceDialog = ({
    * to.
    */
   const renderShippingInput = (order: OrderProps): JSX.Element | null => {
-    const { trackingSelect, inputValue, trackingArray, inputError } = state;
+    const { trackingSelect, inputValue, trackingArray, inputError, provider } = state;
     let jsx: JSX.Element | null = null;
     switch (trackingSelect) {
       // if trackingSelect is "all" render a single text field
@@ -144,17 +159,11 @@ const ShippingReferenceDialog = ({
          */
         jsx =
           trackingArray.length < order.products.length ? (
-            <div
-              style={{
-                display: "inline-flex",
-                width: "100%",
-                marginTop: 8,
-              }}
-            >
+            <div>
               {/* Render the TextField component for current product */}
               <TextField
                 variant="outlined"
-                label={`${order.products[trackingArray.length].title}`}
+                label={order.products[trackingArray.length].title}
                 onChange={(e): void => {
                   setState({
                     ...state,
@@ -165,11 +174,13 @@ const ShippingReferenceDialog = ({
                 value={inputValue}
                 error={!!inputError}
                 helperText={inputError}
-                style={{ width: "75%" }}
+                style={{ marginTop: 10 }}
+                fullWidth
               />
               {/* Allow the admin to confirm their tracking number and move onto the next product */}
               <Button
-                variant="text"
+                variant="outlined"
+                fullWidth
                 onClick={(): void => {
                   const title = order.products[trackingArray.length].title;
                   if (!trackingArray.length) {
@@ -201,10 +212,6 @@ const ShippingReferenceDialog = ({
                     }
                   });
                 }}
-                style={{
-                  width: "25%",
-                  height: 54,
-                }}
                 disabled={!inputValue.length}
               >
                 Add Item
@@ -220,7 +227,7 @@ const ShippingReferenceDialog = ({
     return jsx;
   };
 
-  const { trackingSelect, inputValue, trackingArray, isSending } = state;
+  const { trackingSelect, inputValue, trackingArray, isSending, provider } = state;
 
   return (
     <Dialog
@@ -236,25 +243,53 @@ const ShippingReferenceDialog = ({
       <DialogTitle>Enter Shipping References</DialogTitle>
       <DialogContent>
         <Typography>Do you have tracking information for the products?</Typography>
-        <div className={classes.selectContainer}>
-          <FormControl variant="outlined" fullWidth>
-            <InputLabel>Tracking Data</InputLabel>
-            <Select
-              value={trackingSelect}
-              onChange={(e): void =>
-                setState({ ...state, trackingSelect: e.target.value as TrackingSelect })
-              }
-              label="Tracking Data"
-              fullWidth
-            >
-              {order?.products.length! > 1 && (
-                <MenuItem value="one">Yes, 1 for each item</MenuItem>
-              )}
-              <MenuItem value="all">Yes, 1 for all items</MenuItem>
-              <MenuItem value="none">No, just email customer</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
+        <Grid container spacing={1} style={{ marginTop: 10 }}>
+          <Grid item xs={trackingSelect === "" || trackingSelect === "none" ? 12 : 7}>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel>Tracking Data</InputLabel>
+              <Select
+                value={trackingSelect}
+                onChange={(e): void =>
+                  setState({
+                    ...state,
+                    trackingSelect: e.target.value as TrackingSelect,
+                  })
+                }
+                label="Tracking Data"
+                fullWidth
+              >
+                {order?.products.length! > 1 && (
+                  <MenuItem value="one">Yes, 1 for each item</MenuItem>
+                )}
+                <MenuItem value="all">Yes, 1 for all items</MenuItem>
+                <MenuItem value="none">No, just email customer</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {(trackingSelect === "all" || trackingSelect === "one") && (
+            <Grid item xs={5}>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel shrink variant="outlined">
+                  Delivery Provider
+                </InputLabel>
+                <Select
+                  value={provider}
+                  fullWidth
+                  label="Delivery Provider"
+                  variant="outlined"
+                  onChange={(_e, provider): void =>
+                    setState({ ...state, provider: provider as DeliveryProvider })
+                  }
+                >
+                  <MenuItem value="Royal Mail">Royal Mail</MenuItem>
+                  <MenuItem value="DPD">DPD</MenuItem>
+                  <MenuItem value="Hermes">Hermes</MenuItem>
+                  <MenuItem value="Yodel">Yodel</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          )}
+        </Grid>
         {trackingSelect.length > 0 && renderShippingInput(order as OrderProps)}
         <ol className={classes.trackingList}>
           {trackingArray.map((track, i) => {

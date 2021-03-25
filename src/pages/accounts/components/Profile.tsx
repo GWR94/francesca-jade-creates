@@ -82,7 +82,6 @@ const initialState: ProfileState = {
  * address etc.
  */
 const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element => {
-  console.log(user);
   // set state to be initial state when the component mounts.
   const [state, setState] = useState<ProfileState>(initialState);
   // use the useMediaQuery hook to determine if the screen is less than 600px (returns boolean)
@@ -111,7 +110,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
       // execute the getUser query with the sub as the id as a parameter.
       const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
       // set res to null so it can be changed if the criteria is met.
-      if (userAttributes && !userAttributes.email_verified) {
+      if (userAttributes && !userAttributes.email_verified && !isCognitoUser) {
         openSnackbar({
           severity: INTENT.Danger,
           message: `Your email address isn't verified.
@@ -524,9 +523,17 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
                   >
                     <ThemeProvider theme={greenAndRedTheme}>
                       <Chip
-                        label={userAttributes.email_verified ? "Verified" : "Unverified"}
+                        label={
+                          userAttributes.email_verified || isCognitoUser
+                            ? "Verified"
+                            : "Unverified"
+                        }
                         size="small"
-                        color={userAttributes.email_verified ? "primary" : "secondary"}
+                        color={
+                          userAttributes.email_verified || isCognitoUser
+                            ? "primary"
+                            : "secondary"
+                        }
                         style={{
                           cursor: isEditing ? "pointer" : "not-allowed",
                         }}

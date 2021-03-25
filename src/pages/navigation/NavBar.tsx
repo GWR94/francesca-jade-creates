@@ -12,7 +12,7 @@ import { Auth } from "aws-amplify";
 import Headroom from "react-headroom";
 import { useDispatch, useSelector } from "react-redux";
 import { MenuRounded } from "@material-ui/icons";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import logo from "../../img/logo.png";
 import styles from "./styles/nav.style";
 import Links from "./components/Links";
@@ -31,8 +31,6 @@ interface NavBarProps {
  * site efficiently.
  */
 const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
-  console.log(admin);
-
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -131,6 +129,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
                   closeNav={(): void => setNavOpen(false)}
                   signOut={handleSignOut}
                   navOpen={navOpen}
+                  admin={admin}
                   setLoginOpen={(): void => setLoginOpen(true)}
                 />
               )}
@@ -143,6 +142,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
               <Collapse in={navOpen}>
                 <Links
                   mobile
+                  admin={admin}
                   closeNav={(): void => setNavOpen(false)}
                   signOut={handleSignOut}
                   navOpen={loginOpen}

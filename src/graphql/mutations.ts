@@ -24,6 +24,7 @@ export const createProduct = /* GraphQL */ `
       setPrice
       type
       tags
+      searchField
       createdAt
       updatedAt
       variants {
@@ -76,6 +77,7 @@ export const updateProduct = /* GraphQL */ `
       setPrice
       type
       tags
+      searchField
       createdAt
       updatedAt
       variants {
@@ -128,6 +130,7 @@ export const deleteProduct = /* GraphQL */ `
       setPrice
       type
       tags
+      searchField
       createdAt
       updatedAt
       variants {

@@ -353,6 +353,7 @@ export const getProduct = /* GraphQL */ `
       setPrice
       type
       tags
+      searchField
       createdAt
       updatedAt
       variants {
@@ -407,6 +408,7 @@ export const listProducts = /* GraphQL */ `
         setPrice
         type
         tags
+        searchField
         createdAt
         updatedAt
         variants {

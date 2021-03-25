@@ -12,32 +12,21 @@ import {
   TextField,
   makeStyles,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChipInput from "../../../common/inputs/ChipInput";
 import { getReadableStringFromArray } from "../../../utils";
 import { marks } from "../../../utils/data";
 import { openSnackbar } from "../../../utils/Notifier";
-import {
-  Feature,
-  FeatureType,
-  InputType,
-  Variant,
-  VariantsState,
-} from "../interfaces/Variants.i";
+import { Feature, FeatureType, InputType } from "../interfaces/Variants.i";
 import styles from "../styles/variants.style";
-import VariantCard from "./VariantCard";
 
 interface FeatureInputProps {
   size: "small" | "medium";
   type: "Cake" | "Creates";
-  featureIdx: number | null;
-  addFeaturesToVariant: (features: Feature[]) => void;
-  variantIdx: number;
+  variantFeatures: Feature[];
+  variantIdx: number | null;
   handleAddVariant: (features?: Feature[]) => void;
-  variants: Variant[];
-  updateVariants: (variants: Variant[]) => void;
   handleCancel: () => void;
-  updateVariantData: (state: Partial<VariantsState>) => void;
 }
 
 interface FeatureInputState {
@@ -86,15 +75,15 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
   variantIdx,
   handleAddVariant,
   handleCancel,
-  variants,
-  updateVariants,
-  updateVariantData,
+  variantFeatures,
 }) => {
   const [state, setState] = useState<FeatureInputState>(initialState);
 
-  // useEffect(() => {
-  //   setState({ ...state, featureIdx });
-  // }, [featureIdx]);
+  useEffect(() => {
+    if (variantFeatures) {
+      setState({ ...state, features: variantFeatures });
+    }
+  }, [variantFeatures]);
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
@@ -118,7 +107,6 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
       // if chosen features is passed as a parameter, use it.
       features = chosenFeatures;
     }
-    console.log(features);
     if (!features.length) return null;
 
     /**
@@ -225,7 +213,6 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
       );
     });
     // return the jsx array to be rendered
-    console.log(data);
     return data;
   };
 
@@ -716,25 +703,6 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
           {variantIdx !== null ? "Update Variant" : "Save Variant"}
         </Button>
       </div>
-      <Grid container spacing={1}>
-        {variants?.length > 0 &&
-          variants.map((variant: Variant, i: number) => (
-            <VariantCard
-              variant={variant}
-              i={i}
-              key={i}
-              variants={variants}
-              updateVariants={updateVariants}
-              currentFeatures={features}
-              updateVariantData={(data): void => {
-                if (data.features) {
-                  setState({ ...state, features: data.features });
-                }
-                updateVariantData(data);
-              }}
-            />
-          ))}
-      </Grid>
     </>
   );
 };

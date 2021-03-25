@@ -17,6 +17,16 @@ export default createStyles({
       fontSize: "0.9rem",
     },
   },
+  dialog: {
+    height: 600,
+    width: 500,
+    padding: 20,
+    margin: "auto",
+    boxSizing: "border-box",
+    [breakpoints.down("xs")]: {
+      width: "100%",
+    },
+  },
   paidTag: {
     borderRadius: 3,
     border: `2px solid ${COLORS.SuccessGreen}`,

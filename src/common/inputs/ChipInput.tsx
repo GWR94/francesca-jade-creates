@@ -26,7 +26,6 @@ const ChipInput: React.FC<ChipInputProps> = ({
   freeSolo = false,
   placeholder,
 }) => {
-  console.log(errors);
   return (
     <Autocomplete
       multiple
