@@ -116,9 +116,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       }
     } else {
       dispatch(actions.resetSearchFilters());
+      if (type) {
+        dispatch(
+          actions.setSearchFilters({
+            type: { eq: type },
+          }),
+        );
+      }
     }
     dispatch(actions.getProducts());
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, searchType]);
 
   useEffect(() => {
     if (!filterOpen) return;

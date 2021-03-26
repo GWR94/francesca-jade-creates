@@ -108,10 +108,10 @@ export const getProducts = () => {
       } else {
         sorted = data.listProducts.items.sort((a: ProductProps, b: ProductProps) =>
           sortDirection === "ASC"
-            ? a.updatedAt > b.updatedAt
+            ? a?.updatedAt > b?.updatedAt
               ? 1
               : -1
-            : a.updatedAt < b.updatedAt
+            : a?.updatedAt < b?.updatedAt
             ? 1
             : -1,
         );

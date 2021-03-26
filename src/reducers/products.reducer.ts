@@ -42,7 +42,7 @@ export default (
         ...state,
         items: action.products,
         isSearching: false,
-        noResults: false,
+        noResults: action.products.length <= 0,
       };
     case FETCH_PRODUCTS_FAILURE:
       return {
