@@ -93,24 +93,24 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 },
               },
               {
-                title: { contains: debouncedSearchQuery.toLowerCase() },
-              },
-              {
-                tagline: { contains: debouncedSearchQuery.toLowerCase() },
+                searchField: { contains: debouncedSearchQuery.toLowerCase() },
               },
             ],
+            and: type ? [{ type: { eq: type } }] : null,
           }),
         );
       } else if (searchType === "themes") {
         dispatch(
           actions.setSearchFilters({
             tags: { contains: debouncedSearchQuery },
+            and: type ? [{ type: { eq: type } }] : null,
           }),
         );
       } else {
         dispatch(
           actions.setSearchFilters({
             searchField: { contains: debouncedSearchQuery },
+            and: type ? [{ type: { eq: type } }] : null,
           }),
         );
       }
@@ -122,7 +122,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
   useEffect(() => {
     if (!filterOpen) return;
-    if (cakeSelected && !createsSelected) {
+    if ((cakeSelected && !createsSelected) || type === "Cake") {
       dispatch(
         actions.setSearchFilters({
           ...filters,
@@ -133,7 +133,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           ],
         }),
       );
-    } else if (!cakeSelected && createsSelected) {
+    } else if ((!cakeSelected && createsSelected) || type === "Creates") {
       dispatch(
         actions.setSearchFilters({
           ...filters,
@@ -158,7 +158,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       }
     }
     dispatch(actions.getProducts());
-  }, [cakeSelected, createsSelected]);
+  }, [cakeSelected, createsSelected, type]);
 
   return (
     <Drawer
@@ -328,7 +328,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     control={<Radio />}
                     label={!type && admin ? "Date" : "Date Added"}
                   />
-                  <FormControlLabel value="price" control={<Radio />} label="Price" />
+                  <FormControlLabel
+                    value="price"
+                    disabled={type === "Cake"}
+                    control={<Radio />}
+                    label="Price"
+                    style={{
+                      cursor: type === "Cake" ? "not-allowed" : "pointer",
+                    }}
+                  />
                 </RadioGroup>
               </FormControl>
             </Grid>

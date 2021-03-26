@@ -108,7 +108,6 @@
     "animate.css": "^4.1.1",
     "aws-amplify": "^2.3.0",
     "aws-amplify-react": "^3.1.9",
-    "aws-sdk": "^2.853.0",
     "client-compress": "^2.2.2",
     "core-js": "^3.6.5",
     "dayjs": "^1.8.33",
