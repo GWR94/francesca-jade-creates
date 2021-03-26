@@ -22,7 +22,7 @@ import UpdateProduct from "../pages/products/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import * as userActions from "../actions/user.actions";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import background from "../img/pinkbg.jpg";
+import background from "../img/annie-spratt-nWiS2rgtVts-unsplash.jpg";
 import Footer from "../pages/navigation/Footer";
 import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";

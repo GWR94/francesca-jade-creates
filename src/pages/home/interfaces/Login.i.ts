@@ -6,7 +6,7 @@ export interface LoginProps {
     text?: string;
     align?: string;
     color: "inherit" | "default" | "primary" | "secondary" | undefined;
-    Icon: JSX.Element;
+    Icon?: JSX.Element;
   };
   closeNav?: () => void;
 }
@@ -18,7 +18,6 @@ export interface LoginState {
   accountDialogOpen: boolean;
   verifyDialogOpen: boolean;
   loggingIn: boolean;
-  isOpen: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix

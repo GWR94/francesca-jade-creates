@@ -1,7 +1,9 @@
 import { Variant } from "../../products/interfaces/Variants.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
-import { UserAttributeProps } from "../../accounts/interfaces/Accounts.i";
-import { ProfileProps } from "../../accounts/interfaces/Profile.i";
+import {
+  UserAttributeProps,
+  CognitoUserProps,
+} from "../../accounts/interfaces/Accounts.i";
 
 export interface BasketItemProps {
   id: string;
@@ -20,7 +22,7 @@ export interface BasketProps {
 export interface BasketState {
   isLoading: boolean;
   isSubmitting: boolean;
-  user: ProfileProps | null;
+  user: CognitoUserProps | null;
   activeStep: number;
   currentIdx: number;
   session: any; //FIXME

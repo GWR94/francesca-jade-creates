@@ -4,7 +4,7 @@ import { S3ObjectInput } from "../../../API";
 import { ImageProps } from "../../products/interfaces/NewProduct.i";
 
 export interface ProfileProps {
-  userAttributes: UserAttributeProps;
+  userAttributes: UserAttributeProps | null;
   user: CognitoUserProps;
 }
 

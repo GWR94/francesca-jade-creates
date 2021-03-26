@@ -1,12 +1,12 @@
 import { green } from "@material-ui/core/colors";
-import { createMuiTheme, createStyles } from "@material-ui/core";
+import { createMuiTheme } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 export enum COLORS {
   PalePink = "#fff2fe",
   LightPink = "#ffa3f9",
-  Pink = "#ff80f7",
-  DarkPink = "#fd4ef2",
+  Pink = "#FDB5D5",
+  DarkPink = "#fc8bbd",
   DarkGrey = "#878787",
   Gray = "#b8b8b8",
   LightGray = "#dedede",

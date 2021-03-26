@@ -1,7 +1,7 @@
 import { ProductProps } from "../../accounts/interfaces/Product.i";
 
 export interface UpdateProps {
-  id: string | undefined;
+  id?: string | undefined;
   update?: boolean;
 }
 

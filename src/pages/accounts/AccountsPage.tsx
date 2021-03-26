@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Tabs, Tab } from "@material-ui/core";
 import {
   AccountCircleTwoTone,
   ShoppingCartTwoTone,
   CreateTwoTone,
 } from "@material-ui/icons";
-import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../../actions/user.actions";
 import AdminProducts from "./components/AdminProducts";
@@ -25,10 +24,8 @@ const AccountsPage: React.FC<AccountsPageProps> = ({
   userAttributes,
   admin,
 }): JSX.Element => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const { currentTab } = useSelector(({ user }: AppState) => user);
-  console.log(admin);
   const renderCurrentTab = (): JSX.Element | null => {
     let tab: JSX.Element | null;
     switch (currentTab) {
@@ -39,7 +36,7 @@ const AccountsPage: React.FC<AccountsPageProps> = ({
         tab = <AdminProducts admin={admin} />;
         break;
       case "create":
-        tab = <UpdateProduct history={history} admin={admin} />;
+        tab = <UpdateProduct />;
         break;
       case "orders":
         tab = <Orders />;

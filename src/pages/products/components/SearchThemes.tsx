@@ -18,7 +18,6 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
   admin,
 }): JSX.Element => {
   const [theme, setTheme] = useState<string>(selectedTheme || "");
-  console.log(theme);
   const dispatch = useDispatch();
 
   const handleSetTheme = (theme: string): void => {

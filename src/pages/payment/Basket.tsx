@@ -294,7 +294,7 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
                 setIndex={(idx: number): void => setState({ ...state, currentIdx: idx })}
               />
               <div className={classes.stepButtonContainer}>
-                {!user ? (
+                {!id ? (
                   <Login
                     showButton
                     props={{

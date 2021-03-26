@@ -1,10 +1,10 @@
 import React from "react";
-import { fireEvent, getByRole, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import * as amplify from "aws-amplify";
 import thunk from "redux-thunk";
-import { CardHeader, StylesProvider } from "@material-ui/core";
+import { StylesProvider } from "@material-ui/core";
 import * as redux from "react-redux";
 import ProductCard from "../containers/ProductCard";
 import { cakeProduct, createsProduct } from "../../__mocks__/products";
@@ -24,7 +24,7 @@ describe("<ProductCard />", () => {
     storageSpy.mockReturnValue(new Promise((res) => res));
   });
 
-  const generateClassName = (rule, styleSheet): string =>
+  const generateClassName = (rule: { key: string }, styleSheet: any): string =>
     `${styleSheet.options.classNamePrefix}-${rule.key}`;
 
   describe("Cake Product", () => {
@@ -32,7 +32,7 @@ describe("<ProductCard />", () => {
       // create shallow wrapper
       const wrapper = render(
         <StylesProvider generateClassName={generateClassName}>
-          <ProductCard product={cakeProduct} admin />
+          <ProductCard product={cakeProduct} />
         </StylesProvider>,
       );
       // match snapshot
@@ -42,7 +42,7 @@ describe("<ProductCard />", () => {
     it("should render the correct colours for a Cake product", () => {
       const wrapper = render(
         <StylesProvider generateClassName={generateClassName}>
-          <ProductCard product={cakeProduct} admin />
+          <ProductCard product={cakeProduct} />
         </StylesProvider>,
       );
       expect(wrapper.getByTestId("card-container")).toHaveStyle({
@@ -82,7 +82,7 @@ describe("<ProductCard />", () => {
               },
             })}
           >
-            <ProductCard product={cakeProduct} admin />
+            <ProductCard product={cakeProduct} />
           </Provider>
         </StylesProvider>,
       );
@@ -106,7 +106,7 @@ describe("<ProductCard />", () => {
               },
             })}
           >
-            <ProductCard product={createsProduct} admin />
+            <ProductCard product={createsProduct} />
           </Provider>
         </StylesProvider>,
       );
@@ -130,7 +130,7 @@ describe("<ProductCard />", () => {
               },
             })}
           >
-            <ProductCard product={createsProduct} admin />
+            <ProductCard product={createsProduct} />
           </Provider>
         </StylesProvider>,
       );
@@ -176,7 +176,7 @@ describe("<ProductCard />", () => {
               },
             })}
           >
-            <ProductCard product={createsProduct} admin />
+            <ProductCard product={createsProduct} />
           </Provider>
         </StylesProvider>,
       );

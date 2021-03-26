@@ -20,7 +20,7 @@ export interface ProductProps {
   tags: string[];
   setPrice: boolean;
   variants: Variant[];
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface CustomOptions {

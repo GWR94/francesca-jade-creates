@@ -38,7 +38,6 @@ const CustomOptionsDialog = ({
             const data: { [key: string]: string[] | S3ImageProps[] } = JSON.parse(option);
             const key = Object.keys(data)[0];
             const values = Object.values(data)[0];
-            console.log(values);
             return key === "Images" ? (
               values.length > 0 && (
                 <div key={i}>

@@ -543,7 +543,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
    * @param {React.ChangeEvent} e - event containing the data which shows
    * the updated information from the TinyMCE editor.
    */
-  const handleEditorChange = (e: React.ChangeEvent<{}>): void => {
+  const handleEditorChange = (e: React.ChangeEvent<any>): void => {
     const { product } = state;
     setState({
       ...state,
@@ -873,7 +873,6 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
           size={!isDesktop ? "small" : "medium"}
           setPrice={product.setPrice}
           updateVariants={(variants: Variant[]): void => {
-            console.log(variants);
             setState({
               ...state,
               product: {

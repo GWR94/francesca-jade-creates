@@ -15,7 +15,7 @@ import { Close } from "@material-ui/icons";
 import ChangePasswordDialog from "./components/ChangePasswordDialog";
 import { openSnackbar } from "../../utils/Notifier";
 import CreateAccountDialog from "./components/CreateAccountDialog";
-import { LoginProps, LoginState, ICredentials } from "./interfaces/Login.i";
+import { LoginProps, LoginState } from "./interfaces/Login.i";
 import PasswordInput from "../../common/inputs/PasswordInput";
 import styles from "./styles/login.style";
 import { breakpoints } from "../../themes";
@@ -33,7 +33,6 @@ const Login: React.FC<LoginProps> = ({
     accountDialogOpen: false,
     verifyDialogOpen: false,
     loggingIn: false,
-    isOpen: false,
   });
 
   const fullscreen = useMediaQuery(breakpoints.down("xs"));
@@ -41,24 +40,27 @@ const Login: React.FC<LoginProps> = ({
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
-  const closeDialog = (): void => setState({ ...state, isOpen: false });
+  const [isOpen, setOpen] = useState(false);
+
+  const closeDialog = (): void => {
+    setOpen(false);
+  };
 
   const handleSignIn = async (): Promise<void> => {
     const { username, password } = state;
     setState({ ...state, loggingIn: true });
     try {
       await Auth.signIn(username, password);
+      closeNav?.();
       closeDialog();
-      if (closeNav) closeNav();
     } catch (err) {
       console.error(err);
       if (err.code === "UserNotConfirmedException") {
-        console.log("TRUE");
         return setState({ ...state, loggingIn: false, verifyDialogOpen: true });
       }
       openSnackbar({
         severity: "error",
-        message: "Failed to sign in. Please check your username and password.",
+        message: err.message,
       });
     }
     setState({ ...state, loggingIn: false });
@@ -72,7 +74,6 @@ const Login: React.FC<LoginProps> = ({
     accountDialogOpen,
     verifyDialogOpen,
     loggingIn,
-    isOpen,
   } = state;
   return (
     <>
@@ -86,7 +87,7 @@ const Login: React.FC<LoginProps> = ({
             color={props?.color ?? "inherit"}
             className={classOverride || classes.button}
             disableElevation
-            onClick={(): void => setState({ ...state, isOpen: true })}
+            onClick={(): void => setOpen(true)}
           >
             {Icon && Icon}
             {text ?? "Login to Continue"}
@@ -96,7 +97,7 @@ const Login: React.FC<LoginProps> = ({
         <div
           role="button"
           tabIndex={0}
-          onClick={(): void => setState({ ...state, isOpen: true })}
+          onClick={(): void => setOpen(true)}
           className={classOverride || classes.button}
         >
           {Icon && Icon}
@@ -106,7 +107,13 @@ const Login: React.FC<LoginProps> = ({
       <Dialog open={isOpen} onClose={closeDialog} fullScreen={fullscreen}>
         <div className={classes.container}>
           {fullscreen && (
-            <IconButton className={classes.closeIcon} onClick={closeDialog}>
+            <IconButton
+              className={classes.closeIcon}
+              onClick={(): void => {
+                closeNav?.();
+                closeDialog;
+              }}
+            >
               <Close />
             </IconButton>
           )}
@@ -128,7 +135,8 @@ const Login: React.FC<LoginProps> = ({
                   await Auth.federatedSignIn({
                     provider: "Google",
                   });
-                  if (closeNav) closeNav();
+                  closeNav?.();
+                  closeDialog();
                 }}
               >
                 Login with Google
@@ -143,7 +151,8 @@ const Login: React.FC<LoginProps> = ({
                   await Auth.federatedSignIn({
                     provider: "Facebook",
                   });
-                  if (closeNav) closeNav();
+                  closeNav?.();
+                  closeDialog();
                 }}
               >
                 Login with Facebook
@@ -157,7 +166,8 @@ const Login: React.FC<LoginProps> = ({
                   await Auth.federatedSignIn({
                     provider: "LoginWithAmazon",
                   });
-                  if (closeNav) closeNav();
+                  closeNav?.();
+                  closeDialog();
                 }}
               >
                 Login with Amazon

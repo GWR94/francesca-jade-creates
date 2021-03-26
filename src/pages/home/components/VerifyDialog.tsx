@@ -24,7 +24,6 @@ const VerifyDialog: React.FC<VerifyDialogProps> = ({
   isOpen,
   onClose,
 }): JSX.Element => {
-  console.log(username);
   const useStyles = makeStyles({
     resend: {
       color: "#337ab7",
