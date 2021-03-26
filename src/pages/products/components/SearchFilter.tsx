@@ -102,7 +102,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       } else if (searchType === "themes") {
         dispatch(
           actions.setSearchFilters({
-            tags: { contains: debouncedSearchQuery },
+            tags: {
+              contains:
+                debouncedSearchQuery.substring(0, 1).toUpperCase() +
+                debouncedSearchQuery.substring(1).toLowerCase(),
+            },
             and: type ? [{ type: { eq: type } }] : null,
           }),
         );
@@ -129,7 +133,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
   useEffect(() => {
     if (!filterOpen) return;
-    if ((cakeSelected && !createsSelected) || type === "Cake") {
+    if (cakeSelected && !createsSelected) {
       dispatch(
         actions.setSearchFilters({
           ...filters,
@@ -140,7 +144,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           ],
         }),
       );
-    } else if ((!cakeSelected && createsSelected) || type === "Creates") {
+    } else if (!cakeSelected && createsSelected) {
       dispatch(
         actions.setSearchFilters({
           ...filters,
@@ -156,6 +160,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       delete filters?.and;
       if (_.isEmpty(filters)) {
         dispatch(actions.resetSearchFilters);
+        if (type) {
+          dispatch(
+            actions.setSearchFilters({
+              type: { eq: type },
+            }),
+          );
+        }
       } else {
         dispatch(
           actions.setSearchFilters({
@@ -165,7 +176,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       }
     }
     dispatch(actions.getProducts());
-  }, [cakeSelected, createsSelected, type]);
+  }, [cakeSelected, createsSelected]);
 
   return (
     <Drawer
