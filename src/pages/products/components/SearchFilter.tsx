@@ -91,8 +91,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     debouncedSearchQuery.substring(0, 1).toUpperCase() +
                     debouncedSearchQuery.substring(1).toLowerCase(),
                 },
-              },
-              {
                 searchField: { contains: debouncedSearchQuery.toLowerCase() },
               },
             ],
@@ -113,7 +111,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       } else {
         dispatch(
           actions.setSearchFilters({
-            searchField: { contains: debouncedSearchQuery },
+            searchField: { contains: debouncedSearchQuery.toLowerCase() },
             and: type ? [{ type: { eq: type } }] : null,
           }),
         );
@@ -220,6 +218,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                         // when clicking button, it resets all inputs and puts search results back to default
                         onClick={(): void => {
                           dispatch(actions.resetSearchFilters());
+                          if (type) {
+                            dispatch(
+                              actions.setSearchFilters({
+                                type: { eq: type },
+                              }),
+                            );
+                          }
                           dispatch(actions.getProducts());
                         }}
                       />
@@ -251,7 +256,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 >
                   {/* create all MenuItem's for use inside the Select input */}
                   <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="title">Title</MenuItem>
+                  <MenuItem value="title">Description</MenuItem>
                   <MenuItem value="tags">Themes</MenuItem>
                 </Select>
               </FormControl>
