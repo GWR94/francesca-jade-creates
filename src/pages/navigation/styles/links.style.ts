@@ -3,7 +3,7 @@ import { FONTS, COLORS } from "../../../themes/index";
 
 export default createStyles({
   badge: {
-    backgroundColor: COLORS.LightPink,
+    backgroundColor: COLORS.Pink,
     color: "#fff",
     marginRight: 3,
   },
@@ -55,7 +55,7 @@ export default createStyles({
     "&:hover": {
       paddingTop: 2,
       textDecoration: "none",
-      borderBottom: `2px solid ${COLORS.LightPink}`,
+      borderBottom: `2px solid ${COLORS.DarkPink} !important`,
     },
   },
   linkActive: {
@@ -76,7 +76,7 @@ export default createStyles({
     "&:hover": {
       paddingBottom: 2,
       textDecoration: "none",
-      borderBottom: `2px solid ${COLORS.LightPink}`,
+      borderBottom: `2px solid ${COLORS.DarkPink}`,
     },
   },
   linkActiveDiv: {
@@ -97,7 +97,7 @@ export default createStyles({
     textTransform: "uppercase",
     "&:hover": {
       textDecoration: "none",
-      borderBottom: `2px solid ${COLORS.LightPink}`,
+      borderBottom: `2px solid ${COLORS.DarkPink}`,
     },
   },
   navIcon: {

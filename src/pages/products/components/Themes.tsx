@@ -63,6 +63,15 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
     theme: "",
   });
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const theme = urlParams.get("current");
+    if (theme) {
+      setState({ theme, currentTab: "search" });
+      urlParams.delete("current");
+    }
+  }, []);
+
   const isSmallMobile = useMediaQuery("(max-width: 340px");
 
   const renderCurrentTab = (): JSX.Element | null => {

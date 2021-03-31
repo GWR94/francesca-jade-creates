@@ -20,6 +20,9 @@ const FAQ = (): JSX.Element => {
       fontSize: "1.1rem",
       textAlign: "left",
     },
+    text: {
+      color: "rgba(0,0,0,0.6)",
+    },
     contact: {
       width: 500,
       margin: "20px auto",
@@ -38,14 +41,14 @@ const FAQ = (): JSX.Element => {
         <Typography variant="h4" gutterBottom>
           Frequently Asked Questions
         </Typography>
-        <Typography variant="h5" style={{ textAlign: "left" }}>
+        <Typography variant="h6" style={{ textAlign: "left" }}>
           Orders
         </Typography>
         <div style={{ marginLeft: 10 }}>
           <Typography className={classes.title}>
             How can I track the status of my order?
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" gutterBottom className={classes.text}>
             To track the status of your order you must be signed in and go to your Orders
             page (from the Accounts dropdown menu), or click{" "}
             <Link to="/account?page=orders">here</Link>
@@ -53,7 +56,7 @@ const FAQ = (): JSX.Element => {
           <Typography className={classes.title}>
             How can do I make changes to my order?
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" gutterBottom className={classes.text}>
             If you need to make any changes to an order that has already been completed,
             please email us as soon as possible to let us know about any changes at{" "}
             <a href="mailto:contact@francescajadecreates.com">
@@ -65,7 +68,7 @@ const FAQ = (): JSX.Element => {
           <Typography className={classes.title}>
             How do I request a personalised cake?
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" gutterBottom className={classes.text}>
             To request a personalised cake you must first view the cake that you wish to
             view, and click on the &quot;Request a Quote&quot; button, or click on the
             pink &quot;?&quot; button at the bottom of the product card. Both of these
@@ -73,56 +76,86 @@ const FAQ = (): JSX.Element => {
             can respond with your quote.
           </Typography>
         </div>
-        <Typography variant="h5" style={{ textAlign: "left" }}>
+        <Typography variant="h6" style={{ textAlign: "left" }}>
           Products
         </Typography>
         <div style={{ marginLeft: 10 }}>
           <Typography className={classes.title}>
             What ingredients are used to create your cakes?
           </Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
           <Typography className={classes.title}>
             What materials are used to create your frames?
           </Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
         </div>
-        <Typography variant="h5" style={{ textAlign: "left" }}>
+        <Typography variant="h6" style={{ textAlign: "left" }}>
           Shipping & Orders
         </Typography>
         <div style={{ marginLeft: 10 }}>
           <Typography className={classes.title}>What is your return policy?</Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
           <Typography className={classes.title}>
             What are the shipping options?
           </Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
           <Typography className={classes.title}>What is your return policy?</Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
           <Typography className={classes.title}>Do you ship internationally?</Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" gutterBottom className={classes.text}>
             Orders are currently only able to be taken from customers in the United
             Kingdom on this website. International orders can be taken from our Etsy site{" "}
             <a href="/">here</a>.
           </Typography>
           <Typography className={classes.title}>When will I receive my item?</Typography>
-          <Typography variant="body1" gutterBottom style={{ color: "red" }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ color: "red" }}
+            className={classes.text}
+          >
             .......
           </Typography>
         </div>
         <div className={classes.contact}>
-          <Typography variant="body1">
-            If these FAQ's don't answer your questions, feel free to get in touch with us
-            via the Contact Us page.
+          <Typography variant="body1" className={classes.text}>
+            If these FAQ&apos;s don&apos;t answer your questions, feel free to get in
+            touch with us via the Contact Us page.
           </Typography>
           <Button
             variant="contained"

@@ -110,7 +110,14 @@ const Footer = (): JSX.Element | null => {
           />
         </Tooltip>
         <Tooltip title="Francesca Jade Creates Etsy" arrow>
-          <i className={`fab fa-etsy ${classes.icon}`} />
+          <i
+            className={`fab fa-etsy ${classes.icon}`}
+            onClick={(): void => {
+              window.location.href = "https://www.etsy.com/uk/shop/FrancescaJadeCreates";
+            }}
+            role="button"
+            tabIndex={0}
+          />
         </Tooltip>
       </div>
       <a

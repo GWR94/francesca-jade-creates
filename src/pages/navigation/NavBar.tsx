@@ -106,7 +106,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
                     vertical: "top",
                     horizontal: "right",
                   }}
-                  style={{ marginTop: 6, color: COLORS.DarkPink }}
+                  style={{ marginTop: 6, color: COLORS.LightPink }}
                 >
                   <MenuRounded
                     onClick={(): void => {
@@ -115,7 +115,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
                     className={classes.menuIcon}
                     style={{
                       marginTop: -6,
-                      color: COLORS.LightPink,
+                      color: COLORS.Pink,
                     }}
                   />
                 </Badge>

@@ -66,15 +66,6 @@ const NonIdealState: React.FC<NonIdealProps> = ({
           </Button>
         </ThemeProvider>
       </div>
-      <div className={classes.buttonContainer}>
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={(): void => history.push("/themes")}
-        >
-          Browse Themes
-        </Button>
-      </div>
     </div>
   );
 };

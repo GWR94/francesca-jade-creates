@@ -4,7 +4,7 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 
 export enum COLORS {
   PalePink = "#fff2fe",
-  LightPink = "#ffa3f9",
+  LightPink = "#ffdbeb",
   Pink = "#FDB5D5",
   DarkPink = "#fc8bbd",
   DarkGrey = "#878787",
@@ -51,7 +51,7 @@ export const nonIdealStateTheme = createMuiTheme({
       main: COLORS.DarkPink,
     },
     secondary: {
-      main: COLORS.Gray,
+      main: COLORS.DarkGrey,
     },
   },
   overrides: {
@@ -72,7 +72,7 @@ export const nonIdealStateTheme = createMuiTheme({
       },
       label: {
         [breakpoints.down("sm")]: {
-          fontSize: "0.7rem",
+          fontSize: "0.8rem",
         },
       },
     },
@@ -193,7 +193,7 @@ export const rootTheme = createMuiTheme({
       colorPrimary: {
         color: "#fff",
         marginRight: 3,
-        backgroundColor: "#ffa3f9",
+        backgroundColor: COLORS.DarkPink,
       },
       badge: {
         height: 15,

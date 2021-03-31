@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   Grid,
 } from "@material-ui/core";
+import { isEmail } from "validator";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { API } from "aws-amplify";
 import React, { useState } from "react";
@@ -16,24 +17,32 @@ interface ContactState {
   firstName: string;
   lastName: string;
   email: string;
-  phoneNumber: string;
   message: string;
   isSubmitting: boolean;
+  errors: {
+    firstName: string;
+    email: string;
+    message: string;
+  };
 }
 
 const initialState = {
   firstName: "",
   lastName: "",
   email: "",
-  phoneNumber: "",
   message: "",
   isSubmitting: false,
+  errors: {
+    firstName: "",
+    email: "",
+    message: "",
+  },
 };
 
 const ContactForm = (): JSX.Element => {
   const [state, setState] = useState<ContactState>(initialState);
 
-  const { firstName, lastName, email, message, isSubmitting } = state;
+  const { firstName, lastName, email, message, isSubmitting, errors } = state;
 
   const handleSendMessage = async (): Promise<void> => {
     setState({ ...state, isSubmitting: true });
@@ -61,6 +70,33 @@ const ContactForm = (): JSX.Element => {
       setState({ ...state, isSubmitting: false });
     }
   };
+
+  const handleValidation = (): void => {
+    const errors = state.errors;
+    let anyError = false;
+    if (firstName.length === 0) {
+      anyError = true;
+      errors.firstName = "Please enter your first name.";
+    }
+    if (email.length === 0) {
+      anyError = true;
+      errors.email = "Please enter your email address.";
+    }
+    if (!isEmail(email)) {
+      anyError = true;
+      errors.email = "Please enter a valid email address.";
+    }
+    if (message.length < 10) {
+      anyError = true;
+      errors.message = "Please enter a descriptive message - 10 chars min.";
+    }
+    if (anyError) {
+      setState({ ...state, errors });
+    } else {
+      handleSendMessage();
+    }
+  };
+
   const breakpoints = createBreakpoints({});
   const useStyles = makeStyles({
     form: {
@@ -87,10 +123,18 @@ const ContactForm = (): JSX.Element => {
         <Grid item xs={12} sm={6}>
           <TextField
             value={firstName}
-            onChange={(e): void => setState({ ...state, firstName: e.target.value })}
+            onChange={(e): void =>
+              setState({
+                ...state,
+                firstName: e.target.value,
+                errors: { ...errors, firstName: "" },
+              })
+            }
             variant="outlined"
             label="First Name"
             required
+            error={!!errors.firstName}
+            helperText={errors.firstName}
             size={mobile ? "small" : "medium"}
             fullWidth
           />
@@ -108,9 +152,17 @@ const ContactForm = (): JSX.Element => {
         <Grid item xs={12}>
           <TextField
             value={email}
-            onChange={(e): void => setState({ ...state, email: e.target.value })}
+            onChange={(e): void =>
+              setState({
+                ...state,
+                email: e.target.value,
+                errors: { ...errors, email: "" },
+              })
+            }
             variant="outlined"
             required
+            error={!!errors.email}
+            helperText={errors.email}
             label="Email Address"
             size={mobile ? "small" : "medium"}
             fullWidth
@@ -119,18 +171,26 @@ const ContactForm = (): JSX.Element => {
         <Grid item xs={12}>
           <TextField
             value={message}
-            onChange={(e): void => setState({ ...state, message: e.target.value })}
+            onChange={(e): void =>
+              setState({
+                ...state,
+                message: e.target.value,
+                errors: { ...errors, message: "" },
+              })
+            }
             variant="outlined"
             label="Message"
             multiline
             required
+            error={!!errors.message}
+            helperText={errors.message}
             fullWidth
             rows={4}
             size={mobile ? "small" : "medium"}
           />
         </Grid>
       </Grid>
-      <Button onClick={handleSendMessage} variant="outlined" color="primary">
+      <Button onClick={handleValidation} variant="outlined" color="primary">
         {isSubmitting ? <CircularProgress size={20} /> : "Send Message"}
       </Button>
       <Typography

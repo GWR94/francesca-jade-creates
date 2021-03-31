@@ -72,7 +72,7 @@ const SearchThemes: React.FC<SearchThemesProps> = ({
       ) : (
         <NonIdealState
           title="Please enter a theme to begin the search"
-          Icon={<SearchRounded />}
+          Icon={<SearchRounded style={{ height: 40, width: 40 }} />}
           subtext="Or view other products below"
         />
       )}

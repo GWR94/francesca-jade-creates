@@ -141,7 +141,7 @@ const ProductsList: React.FC<ProductListProps> = ({
         // If there are no products, show the NonIdealState component to notify the user
         <NonIdealState
           title="No Results Found."
-          Icon={<Warning />}
+          Icon={<Warning style={{ height: 40, width: 40 }} />}
           subtext="Please edit your search to return results."
         />
       )}

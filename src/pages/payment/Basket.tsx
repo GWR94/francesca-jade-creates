@@ -132,7 +132,7 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
     } else {
       // clear the checkout basket when the user navigates to the page to clear up old data
       dispatch(actions.clearCheckout());
-      setState({ ...state, isLoading: false, user: null });
+      setState({ ...state, isLoading: false, user: null, activeStep: 2 });
       // get the users' data and set it into state within the getUserInfo function
       // getUserInfo();
     }
@@ -425,10 +425,11 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
               Thank you for your purchase!
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
-              You should receive a confirmation email at {session.customer_email} shortly.
+              You should receive a confirmation email at{" "}
+              {session?.customer_email ?? "test@test.com"} shortly.
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
-              Your order ID is {session.metadata.orderId}
+              Your order ID is {session?.metadata?.orderId ?? "123"}
             </Typography>
             <Button
               variant="outlined"
@@ -498,7 +499,7 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
           <div className={classes.nonIdealContainer}>
             <NonIdealState
               title="No items in basket"
-              Icon={<InfoOutlined />}
+              Icon={<InfoOutlined style={{ height: 40, width: 40 }} />}
               subtext="Please add items to the basket to see them in here"
             />
           </div>

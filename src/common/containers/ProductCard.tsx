@@ -115,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
         className={classes.card}
         // depending on the product type, place a border on top of the card with a color
         style={{
-          borderTop: `3px solid ${type === "Cake" ? COLORS.LightPink : COLORS.LightGray}`,
+          borderTop: `3px solid ${type === "Cake" ? COLORS.Pink : COLORS.Gray}`,
         }}
       >
         <CardHeader

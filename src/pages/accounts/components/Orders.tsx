@@ -157,7 +157,7 @@ const Orders: React.FC = (): JSX.Element => {
       <div className={classes.nonIdealContainer}>
         <NonIdealState
           title="No Orders"
-          Icon={<ErrorOutline />}
+          Icon={<ErrorOutline style={{ height: 40, width: 40 }} />}
           subtext="You have not completed any orders. Place an order to see them here."
         />
       </div>

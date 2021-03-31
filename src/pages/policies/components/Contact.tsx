@@ -6,11 +6,10 @@ import {
   Grid,
   Link,
   makeStyles,
-  TextField,
   Typography,
 } from "@material-ui/core";
 import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
-import React, { useState } from "react";
+import React from "react";
 import avatar from "../../../img/avatar.png";
 import { COLORS } from "../../../themes";
 import ContactForm from "./ContactForm";
@@ -34,7 +33,6 @@ const Contact = (): JSX.Element => {
       fontStyle: "italic",
     },
     innerContainer: {
-      border: `3px solid ${COLORS.LightPink}`,
       width: 200,
       height: 120,
       display: "flex",
@@ -99,12 +97,12 @@ const Contact = (): JSX.Element => {
                   color: "red",
                 }}
               >
-                Hi, i'm ......... and I ........
+                Hi, i&apos;m ......... and I ........
               </Typography>
               <Typography className={classes.overview}>
-                If you have any questions or queries, please get in touch and we'll be
-                happy to help. Feel free to contact us via any of the methods below and we
-                will be sure to be in touch as soon as possible.
+                If you have any questions or queries, please get in touch and we&apos;ll
+                be happy to help. Feel free to contact us via any of the methods below and
+                we will be sure to be in touch as soon as possible.
               </Typography>
               <Typography
                 className={classes.overview}
@@ -129,6 +127,10 @@ const Contact = (): JSX.Element => {
                   color="inherit"
                   size="small"
                   variant="outlined"
+                  onClick={(): string =>
+                    (window.location.href =
+                      "https://www.facebook.com/francescajadecreates/")
+                  }
                   style={{ color: COLORS.FacebookBlue, borderColor: COLORS.FacebookBlue }}
                 >
                   Open Facebook
@@ -152,6 +154,10 @@ const Contact = (): JSX.Element => {
                     color: COLORS.InstagramPurple,
                     borderColor: COLORS.InstagramPurple,
                   }}
+                  onClick={(): string =>
+                    (window.location.href =
+                      "https://www.instagram.com/francescajadecreates/")
+                  }
                   variant="outlined"
                   size="small"
                 >
@@ -172,6 +178,10 @@ const Contact = (): JSX.Element => {
                   color="inherit"
                   style={{ color: COLORS.ErrorRed, borderColor: COLORS.ErrorRed }}
                   size="small"
+                  onClick={(): string =>
+                    (window.location.href =
+                      "mailto:contact@francescajadecreates.co.uk?subject=Francesca Jade Creates Query")
+                  }
                   variant="outlined"
                 >
                   Open Client
