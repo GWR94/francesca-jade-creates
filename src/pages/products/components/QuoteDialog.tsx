@@ -27,6 +27,7 @@ import {
   CakeSize,
 } from "../interfaces/QuoteDialog.i";
 import { openSnackbar } from "../../../utils/Notifier";
+import { INTENT } from "../../../themes";
 
 /**
  * TODO
@@ -138,13 +139,13 @@ const QuoteDialog: React.FC<QuoteDialogProps> = ({ open, onClose, cake }) => {
     // if res isn't true, then there's been an error, so notify the user
     if (res !== true) {
       openSnackbar({
-        severity: "warning",
+        severity: INTENT.Warning,
         message: "Unable to sent quote. Please try again.",
       });
     } else {
       // if res is true, then close the dialog as operations are complete.
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Quote request successfully sent.",
       });
       onClose();

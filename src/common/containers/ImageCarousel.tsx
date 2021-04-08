@@ -103,10 +103,13 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
     );
     // if there's an error, notify the user
     if (!data)
-      openSnackbar({ severity: "error", message: "Unable to update cover image" });
+      openSnackbar({ severity: INTENT.Danger, message: "Unable to update cover image" });
     // if there is data, notify the user of success.
     else
-      openSnackbar({ severity: "success", message: "Successfully updated cover image." });
+      openSnackbar({
+        severity: INTENT.Success,
+        message: "Successfully updated cover image.",
+      });
   };
 
   // create the styles by executing the useStyles function.
@@ -192,7 +195,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * a relevant message.
        */
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Successfully removed image.",
       });
       // if the handleUpdateImages function is defined, execute it.
@@ -204,7 +207,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
        * danger snackbar with a relevant message.
        */
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Failed to removed image. Please try again.",
       });
     }

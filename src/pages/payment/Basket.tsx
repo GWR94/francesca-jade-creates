@@ -12,9 +12,16 @@ import {
   StepLabel,
   CircularProgress,
   useMediaQuery,
+  StepIcon,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import { InfoOutlined, WarningOutlined } from "@material-ui/icons";
+import {
+  ArrowRightAltRounded,
+  CheckOutlined,
+  CheckRounded,
+  InfoOutlined,
+  WarningOutlined,
+} from "@material-ui/icons";
 import { AppState } from "../../store/store";
 import BasketItem from "./components/BasketItem";
 import Loading from "../../common/Loading";
@@ -23,12 +30,13 @@ import { openSnackbar } from "../../utils/Notifier";
 import styles from "./styles/basket.style";
 import { CustomOptionArrayType, BasketProps, BasketState } from "./interfaces/Basket.i";
 import * as actions from "../../actions/basket.actions";
+import * as userActions from "../../actions/user.actions";
 import { COLORS, INTENT } from "../../themes";
 import { createOrder, updateOrder } from "../../graphql/mutations";
 import { UserState } from "../../reducers/user.reducer";
-import { getUser } from "../../graphql/queries";
+import { getUser, getOrder } from "../../graphql/queries";
 import { BasketState as BasketStoreState } from "../../reducers/basket.reducer";
-import { getCompressedKey, getPublicS3URL } from "../../utils/index";
+import { getCompressedKey, getPublicS3URL, removeEmojis } from "../../utils/index";
 import Login from "../home/Login";
 
 let stripePromise: Promise<Stripe | null>;
@@ -42,17 +50,17 @@ if (process.env.NODE_ENV === "production") {
  * TODO
  * [ ] Remove "Uploaded Image" text when theres no images uploaded
  * [ ] Test to see if you can remove skip button / notify user they have to skip
+ * [ ] Fix session not showing up instantly (isLoading)
  * [x] Check basket clears once purchase is complete
  */
 
 const initialState = {
-  isLoading: true,
   isSubmitting: false,
   user: null,
   activeStep: 0,
   currentIdx: 0,
   session: null,
-  cancelled: false,
+  order: null,
 };
 
 /**
@@ -80,6 +88,9 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
   } = useSelector(({ basket }: AppState): BasketStoreState => basket);
   const { id } = useSelector(({ user }: AppState): UserState => user);
 
+  const [isLoading, setLoading] = useState(true);
+  const [isCancelled, setCancelled] = useState(false);
+
   // create state for the product and initialise it with blank input values
   const [state, setState] = useState<BasketState>(initialState);
 
@@ -98,21 +109,24 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
     // use the getUser graphQL query with the users' id to retrieve the data
     const { data } = await API.graphql(graphqlOperation(getUser, { id }));
     // store it in state and remove loading UI effects
-    setState({ ...state, user: data.getUser, isLoading: false });
+    setState({ ...state, user: data.getUser });
   };
 
-  // isMounted is for suppressing React error for updating state on unmounted component
   useEffect(() => {
+    setLoading(true);
     const handleRetrieveSession = async (sessionId: string): Promise<void> => {
       const { session } = await API.post("orderlambda", "/orders/retrieve-session", {
         body: { id: sessionId },
       });
+      const { orderId } = session.metadata;
+      const { data } = await API.graphql(graphqlOperation(getOrder, { id: orderId }));
       setState({
         ...state,
         session,
-        activeStep: session.payment_status === "paid" ? 2 : -1,
-        isLoading: false,
+        activeStep: session.payment_status === "paid" ? 3 : -1,
+        order: data.getOrder,
       });
+      setLoading(false);
       // remove session id from url
       return window.history.pushState({}, document.title, window.location.pathname);
     };
@@ -122,19 +136,23 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get("session_id");
     const cancelled = Boolean(urlParams.get("cancel"));
-    if (!user) {
-      getUserInfo(); //FIXME - Test
-    }
+    // if (!user) {
+    //   // get the users' data and set it into state within the getUserInfo function
+    //   getUserInfo(); //FIXME - Test
+    // }
+    if (!user) getUserInfo();
     if (sessionId) {
+      dispatch(actions.clearCheckout());
       handleRetrieveSession(sessionId);
     } else if (cancelled) {
-      setState({ ...state, cancelled, isLoading: false });
+      setCancelled(true);
+      window.history.pushState({}, document.title, window.location.pathname);
+      setLoading(false);
     } else {
       // clear the checkout basket when the user navigates to the page to clear up old data
       dispatch(actions.clearCheckout());
-      setState({ ...state, isLoading: false, user: null, activeStep: 2 });
-      // get the users' data and set it into state within the getUserInfo function
-      // getUserInfo();
+      setState({ ...state, user: null });
+      setLoading(false);
     }
   }, []);
 
@@ -414,28 +432,50 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
           </div>
         );
       }
-      case 2: {
-        const { session } = state;
+      case 3: {
+        const { session, order } = state;
         return (
           <div className={classes.successContainer}>
-            <Typography variant="h4" gutterBottom>
-              Purchase Completed
+            <div className={classes.iconContainer}>
+              <CheckRounded color="inherit" style={{ color: "green" }} />
+            </div>
+            <Typography variant="h5">
+              Thanks {session.shipping.name.split(" ")[0]}!
             </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-              Thank you for your purchase!
+            <Typography variant="h5" gutterBottom>
+              Your purchase was successful.
             </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-              You should receive a confirmation email at{" "}
-              {session?.customer_email ?? "test@test.com"} shortly.
+            <Typography variant="subtitle1" style={{ margin: "12px auto" }}>
+              You should receive a confirmation email at {session.customer_email} shortly.
             </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-              Your order ID is {session?.metadata?.orderId ?? "123"}
+            <Typography variant="h6" style={{ textAlign: "left" }}>
+              Items Purchased:
+            </Typography>
+            {order?.products.map(({ title, variant: { price } }) => {
+              const updatedTitle = removeEmojis(title);
+              return (
+                <div className={classes.listContainer}>
+                  <ArrowRightAltRounded className={classes.icon} />
+                  <div className={classes.list}>
+                    <Typography className={classes.listTitle}>{updatedTitle}</Typography>
+                    <Typography className={classes.listPrice}>
+                      £{price.item.toFixed(2)} + £{price.postage.toFixed(2)} P&P
+                    </Typography>
+                  </div>
+                </div>
+              );
+            })}
+            <Typography className={classes.listTotal} gutterBottom>
+              TOTAL: £{(session.amount_total / 100).toFixed(2)}
             </Typography>
             <Button
               variant="outlined"
-              color="primary"
-              onClick={(): void => history.push("/account?page=orders")}
-              style={{ width: 120 }}
+              color="inherit"
+              onClick={(): void => {
+                dispatch(userActions.setCurrentTab("orders"));
+                history.push("/account");
+              }}
+              className={classes.trackButton}
             >
               Track Order
             </Button>
@@ -448,63 +488,74 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
   };
 
   const steps = ["Add Custom Options", "Purchase Items", "Purchase Completed"];
-  const { isLoading, activeStep, cancelled } = state;
-  return isLoading ? (
-    <Loading />
-  ) : (
+  const { activeStep, order } = state;
+  return (
     <div className="content-container">
-      <div className={classes.container}>
-        <Typography variant="h4" style={{ marginTop: 10 }}>
-          Shopping Basket
-        </Typography>
-        {basketItems.length > 0 ? (
-          <>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label, i) => (
-                <Step key={i}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            <div style={{ height: "100%", width: "100%" }}>
-              {activeStep === steps.length ? (
-                <div>
-                  <Typography>All steps completed</Typography>
-                  <Button onClick={(): void => setState({ ...state, activeStep: 0 })}>
-                    Reset
-                  </Button>
-                </div>
-              ) : (
-                getStepContent(activeStep)
-              )}
+      {isLoading ? (
+        <Loading size={80} />
+      ) : (
+        <div className={classes.container}>
+          <Typography variant="h4" style={{ marginTop: 10 }}>
+            Shopping Basket
+          </Typography>
+          {isCancelled ? (
+            <div className={classes.cancelContainer}>
+              <div>
+                <WarningOutlined
+                  color="error"
+                  fontSize="large"
+                  style={{
+                    display: "block",
+                    margin: "0 auto 10px",
+                    height: 50,
+                    width: 50,
+                  }}
+                />
+                <Typography variant="h5" gutterBottom>
+                  Purchase cancelled
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  You have not been charged.
+                </Typography>
+              </div>
+              <Typography variant="subtitle1">
+                Your items are still in the basket if you wish to continue with the
+                purchase.
+              </Typography>
+              <Button onClick={(): void => window.location.reload()} variant="outlined">
+                Go to Items
+              </Button>
             </div>
-          </>
-        ) : cancelled ? (
-          <div>
-            <WarningOutlined
-              color="error"
-              fontSize="large"
-              style={{ display: "block", margin: "0 auto" }}
-            />
-            <Typography variant="h6" gutterBottom>
-              Purchase cancelled.
-            </Typography>
-            <Typography variant="subtitle1">You have not been charged.</Typography>
-            <Typography variant="subtitle1">
-              Your items are still in the basket if you wish to continue with the
-              purchase.
-            </Typography>
-          </div>
-        ) : (
-          <div className={classes.nonIdealContainer}>
-            <NonIdealState
-              title="No items in basket"
-              Icon={<InfoOutlined style={{ height: 40, width: 40 }} />}
-              subtext="Please add items to the basket to see them in here"
-            />
-          </div>
-        )}
-      </div>
+          ) : basketItems.length > 0 || order ? (
+            <>
+              <Stepper activeStep={activeStep} alternativeLabel>
+                {steps.map((label, i) => (
+                  <Step key={i}>
+                    <StepLabel
+                      StepIconProps={{
+                        classes: { root: classes.stepRoot },
+                      }}
+                    >
+                      {label}
+                    </StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+              <div style={{ height: "100%", width: "100%" }}>
+                {getStepContent(activeStep)}
+              </div>
+            </>
+          ) : (
+            <div className={classes.nonIdealContainer}>
+              <NonIdealState
+                title="No items in basket"
+                Icon={<InfoOutlined style={{ height: 40, width: 40 }} />}
+                subtext="Please add items to the basket to see them in here"
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import { INTENT } from "../themes";
 
 let openSnackbarFn: { (props: SnackbarInput): void };
 
@@ -19,7 +20,7 @@ class Notifier extends React.Component {
   public readonly state: NotifierState = {
     open: false,
     message: "",
-    severity: "info",
+    severity: INTENT.Success,
   };
 
   public componentDidMount(): void {

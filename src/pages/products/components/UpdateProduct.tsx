@@ -39,6 +39,7 @@ import * as actions from "../../../actions/user.actions";
 import { ImageFile } from "../../../common/containers/interfaces/ImagePicker.i";
 import { cakeFeatures, createsFeatures, themes } from "../../../utils/data";
 import ChipInput from "../../../common/inputs/ChipInput";
+import { INTENT } from "../../../themes";
 
 const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
   const [state, setState] = useState<UpdateState>({
@@ -237,7 +238,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
        * If there is an error, visualise it to the user by using the snackbar alert system.
        */
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to upload image. Please try again.",
       });
       console.error(err);
@@ -286,7 +287,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
       );
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to compress image. Please try again.",
       });
     }
@@ -374,7 +375,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
        * user that there are errors and how to fix them.
        */
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Please fix the highlighted errors before continuing",
       });
       return;
@@ -438,7 +439,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
        * successfully updated
        */
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: `Successfully updated ${title}.`,
       });
 
@@ -460,7 +461,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: `Unable to updated ${title}. Please try again.`,
       });
     }
@@ -510,7 +511,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
       );
       // If successful then show this to the user by showing the success snackbar.
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: `${title} has been successfully created!`,
       });
       // set isUploading to false to stop loading ui effects, and close confirm dialog
@@ -531,7 +532,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
       console.error(err);
       // if there are any errors, notify the user with an error snackbar.
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: `Error adding ${title}. Please try again.`,
       });
     }
@@ -543,7 +544,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
    * @param {React.ChangeEvent} e - event containing the data which shows
    * the updated information from the TinyMCE editor.
    */
-  const handleEditorChange = (e: React.ChangeEvent<any>): void => {
+  const handleEditorChange = (e: React.ChangeEvent<{ getContent(): string }>): void => {
     const { product } = state;
     setState({
       ...state,
@@ -833,7 +834,7 @@ const UpdateProduct: React.FC<UpdateProps> = ({ update, id }): JSX.Element => {
                   };
                 } else if (prevState.product.tags.length > 5) {
                   openSnackbar({
-                    severity: "error",
+                    severity: INTENT.Danger,
                     message: `Please only add up to 5 collections.`,
                   });
                   return prevState;

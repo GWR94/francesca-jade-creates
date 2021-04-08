@@ -15,8 +15,9 @@ export default createStyles({
     width: "100%",
     margin: "0 auto",
     paddingTop: 10,
-    minHeight: "50vh",
+    minHeight: "80vh",
     display: "flex",
+    height: "100%",
     flexDirection: "column",
   },
   mainTitle: {
@@ -73,7 +74,7 @@ export default createStyles({
     flexDirection: "column",
     alignItems: "stretch",
     justifyContent: "space-evenly",
-    width: "100%",
+    width: "95%",
     paddingLeft: 12,
   },
   costContainer: {
@@ -96,13 +97,14 @@ export default createStyles({
     },
   },
   successContainer: {
-    width: "100%",
+    width: 400,
     display: "flex",
     height: "100%",
+    margin: "0 auto",
     flexDirection: "column",
-    minHeight: 400,
-    justifyContent: "space-evenly",
-    alignItems: "center",
+    [breakpoints.down("xs")]: {
+      width: "85%",
+    },
   },
   outerContainer: {
     display: "flex",
@@ -195,5 +197,61 @@ export default createStyles({
   },
   nonIdealContainer: {
     marginTop: "25vh",
+  },
+  iconContainer: {
+    border: `2px solid ${COLORS.SuccessGreen}`,
+    borderRadius: "50%",
+    padding: 5,
+    height: 30,
+    width: 30,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 15px",
+  },
+  listContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  list: {
+    marginLeft: 10,
+  },
+  listTitle: {
+    fontWeight: "bold",
+  },
+  listPrice: {
+    fontStyle: "italic",
+    marginLeft: 5,
+    color: "rgba(0,0,0,0.6)",
+  },
+  listTotal: {
+    fontWeight: "bold",
+    fontSize: "1.1rem",
+  },
+  stepRoot: {
+    color: `${COLORS.DarkPink} !important`,
+  },
+  trackButton: {
+    width: 120,
+    margin: "30px auto 10px",
+    borderColor: COLORS.DarkPink,
+    color: COLORS.DarkPink,
+    "&:hover": {
+      transition: "border-color 0.5s, color 0.5s",
+      background: "#fff",
+      color: COLORS.Pink,
+      borderColor: COLORS.Pink,
+    },
+  },
+  cancelContainer: {
+    height: 300,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    margin: "auto",
+    width: "90%",
   },
 });

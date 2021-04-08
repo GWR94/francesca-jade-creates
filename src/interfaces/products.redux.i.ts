@@ -22,7 +22,7 @@ export type SortBy = "updatedAt" | "price";
 
 export type SortDirection = "ASC" | "DESC";
 
-export type SearchType = "all" | "title" | "themes";
+export type SearchType = "all" | "title" | "tags";
 
 export interface GetProductsAction {
   type: typeof GET_PRODUCTS;

@@ -18,7 +18,7 @@ import {
 import { ExpandMoreRounded } from "@material-ui/icons";
 import dayjs from "dayjs";
 import { API } from "aws-amplify";
-import { COLORS } from "../../../themes";
+import { COLORS, INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import { S3ImageProps } from "../interfaces/Product.i";
@@ -98,7 +98,7 @@ const AdminOrderItem: React.FC<AdminOrderItemProps> = ({
       }, 1000);
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to update order status. Please try again.",
       });
     }

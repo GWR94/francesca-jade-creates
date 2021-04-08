@@ -16,7 +16,7 @@ import { Auth } from "aws-amplify";
 import { openSnackbar } from "../../../utils/Notifier";
 import PasswordInput from "../../../common/inputs/PasswordInput";
 import { CreateProps, CreateState } from "../interfaces/Create.i";
-import { FONTS } from "../../../themes";
+import { FONTS, INTENT } from "../../../themes";
 
 const initialState = {
   username: {
@@ -85,7 +85,7 @@ const CreateAccountDialog: React.FC<CreateProps> = ({ isOpen, onClose }): JSX.El
     } catch (err) {
       setState({ ...state, createLoading: false });
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: err.message,
       });
     }
@@ -140,7 +140,7 @@ const CreateAccountDialog: React.FC<CreateProps> = ({ isOpen, onClose }): JSX.El
     if (errors) {
       setState({ ...updatedState, createLoading: false });
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Please check the highlighted fields.",
       });
       return;
@@ -153,12 +153,12 @@ const CreateAccountDialog: React.FC<CreateProps> = ({ isOpen, onClose }): JSX.El
     try {
       await Auth.resendSignUp(username.value);
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Verification code resent.",
       });
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Failed to send email. Please try again.",
       });
     }
@@ -174,7 +174,7 @@ const CreateAccountDialog: React.FC<CreateProps> = ({ isOpen, onClose }): JSX.El
         codeLoading: false,
       });
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Account successfully created.",
       });
       onClose();
@@ -202,7 +202,7 @@ const CreateAccountDialog: React.FC<CreateProps> = ({ isOpen, onClose }): JSX.El
           message = err.message;
       }
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message,
       });
     }

@@ -24,6 +24,7 @@ import QuoteDialog from "./QuoteDialog";
 import { openSnackbar } from "../../../utils/Notifier";
 import ChipContainer from "../../../common/inputs/ChipContainer";
 import Login from "../../home/Login";
+import { INTENT } from "../../../themes";
 
 interface ViewProductState {
   // create boolean state value for loading to show/hide UI loading effects
@@ -176,12 +177,12 @@ const ViewProduct: React.FC<ViewProps> = ({ id }): JSX.Element | null => {
       );
       return openSnackbar({
         message: `Added ${product.title} to basket.`,
-        severity: "success",
+        severity: INTENT.Success,
       });
     } else {
       return openSnackbar({
         message: `${product.title} is already in the basket.`,
-        severity: "error",
+        severity: INTENT.Danger,
       });
     }
   };

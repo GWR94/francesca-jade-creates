@@ -248,10 +248,16 @@ export const rootTheme = createMuiTheme({
     MuiPaginationItem: {
       page: {
         "&$selected": {
-          backgroundColor: COLORS.DarkPink,
+          backgroundColor: COLORS.Pink,
           color: "#fff",
           "&:hover": {
-            backgroundColor: COLORS.LightPink,
+            backgroundColor: `${COLORS.DarkPink} !important`,
+          },
+          "&:focus": {
+            backgroundColor: COLORS.DarkPink,
+          },
+          "&:active": {
+            backgroundColor: COLORS.DarkPink,
           },
         },
       },

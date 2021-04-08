@@ -228,7 +228,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
       );
       // once completed, signify this to the user with a success snackbar.
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Profile Successfully Updated.",
       });
       // remove all loading UI effects and close all modals on completion
@@ -246,7 +246,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
        * error/danger snackbar with a relevant message.
        */
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Error updating profile. Please try again.",
       });
     }
@@ -277,7 +277,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
       });
     }
     openSnackbar({
-      severity: "info",
+      severity: INTENT.Info,
       message: `Verification code has been sent to ${email.value}`,
     });
   };
@@ -298,9 +298,9 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
      * if email is verified and the input user email matches the userAttributes
      * email, notify the user that it's already verified
      */
-    if (userAttributes.email_verified && email.value === userAttributes.email) {
+    if (userAttributes?.email_verified && email.value === userAttributes?.email) {
       openSnackbar({
-        severity: "info",
+        severity: INTENT.Info,
         message: `${email.value} is already verified.`,
       });
       return;
@@ -318,7 +318,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
     } catch (err) {
       // if there was an error, notify the user of the error.
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to update email address. Please try again.",
       });
     }
@@ -379,7 +379,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
     // if there are any errors, return so the user can change their errors before submitting
     if (errors) return;
     // if the user hasn't verified their email address, the handleVerifyEmail method should be called.
-    if (!email.verified || email.value !== userAttributes.email) {
+    if (!email.verified || email.value !== userAttributes?.email) {
       handleVerifyEmail(true);
       return;
     }
@@ -524,13 +524,13 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
                     <ThemeProvider theme={greenAndRedTheme}>
                       <Chip
                         label={
-                          userAttributes.email_verified || isCognitoUser
+                          userAttributes?.email_verified || isCognitoUser
                             ? "Verified"
                             : "Unverified"
                         }
                         size="small"
                         color={
-                          userAttributes.email_verified || isCognitoUser
+                          userAttributes?.email_verified || isCognitoUser
                             ? "primary"
                             : "secondary"
                         }

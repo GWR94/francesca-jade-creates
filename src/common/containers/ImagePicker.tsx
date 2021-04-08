@@ -12,7 +12,7 @@ import ReactCrop, { Crop } from "react-image-crop";
 import { ImagePickerProps, ImagePickerState } from "./interfaces/ImagePicker.i";
 import "react-image-crop/dist/ReactCrop.css";
 import { openSnackbar } from "../../utils/Notifier";
-import { COLORS } from "../../themes";
+import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/imagePicker.style";
 
 const initialState: ImagePickerState = {
@@ -238,7 +238,7 @@ class ImagePicker extends React.Component<ImagePickerProps, ImagePickerState> {
                   }
                 } catch (err) {
                   openSnackbar({
-                    severity: "error",
+                    severity: INTENT.Danger,
                     message: "Unable to parse image, please try again.",
                   });
                 }

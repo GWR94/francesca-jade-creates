@@ -87,9 +87,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             or: [
               {
                 tags: {
-                  contains:
-                    debouncedSearchQuery.substring(0, 1).toUpperCase() +
-                    debouncedSearchQuery.substring(1).toLowerCase(),
+                  contains: `${debouncedSearchQuery
+                    .substring(0, 1)
+                    .toUpperCase()}${debouncedSearchQuery.substring(1).toLowerCase()}`,
                 },
                 searchField: { contains: debouncedSearchQuery.toLowerCase() },
               },
@@ -97,13 +97,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
             and: type ? [{ type: { eq: type } }] : null,
           }),
         );
-      } else if (searchType === "themes") {
+      } else if (searchType === "tags") {
         dispatch(
           actions.setSearchFilters({
             tags: {
-              contains:
-                debouncedSearchQuery.substring(0, 1).toUpperCase() +
-                debouncedSearchQuery.substring(1).toLowerCase(),
+              contains: `${debouncedSearchQuery
+                .substring(0, 1)
+                .toUpperCase()}${debouncedSearchQuery.substring(1).toLowerCase()}`,
             },
             and: type ? [{ type: { eq: type } }] : null,
           }),

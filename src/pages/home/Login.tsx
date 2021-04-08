@@ -18,7 +18,7 @@ import CreateAccountDialog from "./components/CreateAccountDialog";
 import { LoginProps, LoginState } from "./interfaces/Login.i";
 import PasswordInput from "../../common/inputs/PasswordInput";
 import styles from "./styles/login.style";
-import { breakpoints } from "../../themes";
+import { breakpoints, INTENT } from "../../themes";
 import VerifyDialog from "./components/VerifyDialog";
 
 const Login: React.FC<LoginProps> = ({
@@ -59,7 +59,7 @@ const Login: React.FC<LoginProps> = ({
         return setState({ ...state, loggingIn: false, verifyDialogOpen: true });
       }
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: err.message,
       });
     }

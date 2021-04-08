@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import { openSnackbar } from "../../../utils/Notifier";
+import { INTENT } from "../../../themes";
 
 interface Props {
   open: boolean;
@@ -30,14 +31,14 @@ const VerificationDialog: React.FC<Props> = ({
     try {
       await Auth.verifyCurrentUserAttributeSubmit(attr, code);
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Email address successfully verified",
       });
       closeDialog();
       setTimeout((): void => window.location.reload(), 3000);
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Error updating email. Please check the code is valid.",
       });
     }

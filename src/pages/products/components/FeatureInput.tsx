@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import ChipInput from "../../../common/inputs/ChipInput";
+import { INTENT } from "../../../themes";
 import { getReadableStringFromArray } from "../../../utils";
 import { marks } from "../../../utils/data";
 import { openSnackbar } from "../../../utils/Notifier";
@@ -272,7 +273,7 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
         errors: updatedErrors,
       });
       return openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Please fix all of the errors before continuing.",
       });
     }
@@ -336,7 +337,7 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
         if (feature.name === featureName) {
           match = true;
           openSnackbar({
-            severity: "error",
+            severity: INTENT.Danger,
             message: `${feature.name} is already named as a feature.`,
           });
         }

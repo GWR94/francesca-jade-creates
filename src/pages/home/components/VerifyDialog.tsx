@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { Auth } from "aws-amplify";
 import React, { useState } from "react";
+import { INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 
 interface VerifyDialogProps {
@@ -45,12 +46,12 @@ const VerifyDialog: React.FC<VerifyDialogProps> = ({
     try {
       await Auth.resendSignUp(username);
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Verification code resent.",
       });
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Failed to send email. Please try again.",
       });
     }
@@ -62,7 +63,7 @@ const VerifyDialog: React.FC<VerifyDialogProps> = ({
       await Auth.confirmSignUp(username, code);
       setLoading(false);
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Account successfully verified.",
       });
       onClose();
@@ -87,7 +88,7 @@ const VerifyDialog: React.FC<VerifyDialogProps> = ({
           message = err.message;
       }
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message,
       });
     }

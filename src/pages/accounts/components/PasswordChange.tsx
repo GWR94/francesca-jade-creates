@@ -15,7 +15,7 @@ import { openSnackbar } from "../../../utils/Notifier";
 
 import PasswordInput from "../../../common/inputs/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/PasswordChange.i";
-import { COLORS, FONTS } from "../../../themes";
+import { COLORS, FONTS, INTENT } from "../../../themes";
 
 /**
  * TODO
@@ -79,7 +79,7 @@ const PasswordChange: React.FC<PasswordProps> = ({
       const res = await Auth.changePassword(user, oldPassword, newPassword);
       if (res === "SUCCESS") {
         openSnackbar({
-          severity: "success",
+          severity: INTENT.Success,
           message: "Successfully changed password.",
         });
         closeDialog();
@@ -87,7 +87,7 @@ const PasswordChange: React.FC<PasswordProps> = ({
     } catch (err) {
       console.error(err);
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Error updating password. Please check you input the correct password.",
       });
     }

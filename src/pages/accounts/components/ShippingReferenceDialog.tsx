@@ -13,12 +13,10 @@ import {
   Typography,
   makeStyles,
   Grid,
-  FormGroup,
-  Divider,
 } from "@material-ui/core";
 import { API, Auth } from "aws-amplify";
 import React, { useState } from "react";
-import { COLORS } from "../../../themes";
+import { COLORS, INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { GraphQlProduct, OrderProps } from "../interfaces/Orders.i";
 import styles from "../styles/shipping.style";
@@ -101,24 +99,17 @@ const ShippingReferenceDialog = ({
         },
       });
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Shipping information sent successfully.",
       });
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to send shipping information. Please try again.",
       });
     }
     setState(initialState);
     closeDialog();
-  };
-
-  const handleValidateLabel = (label: string): string => {
-    if (label.length > 28) {
-      return label.slice(0, 28) + "...";
-    }
-    return label;
   };
 
   /**
@@ -128,7 +119,7 @@ const ShippingReferenceDialog = ({
    * to.
    */
   const renderShippingInput = (order: OrderProps): JSX.Element | null => {
-    const { trackingSelect, inputValue, trackingArray, inputError, provider } = state;
+    const { trackingSelect, inputValue, trackingArray, inputError } = state;
     let jsx: JSX.Element | null = null;
     switch (trackingSelect) {
       // if trackingSelect is "all" render a single text field

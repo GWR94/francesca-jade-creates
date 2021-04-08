@@ -1,3 +1,4 @@
+import { OrderProps } from "../../accounts/interfaces/Orders.i";
 import { Variant } from "../../products/interfaces/Variants.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
 import {
@@ -20,13 +21,12 @@ export interface BasketProps {
   userAttributes: UserAttributeProps | null;
 }
 export interface BasketState {
-  isLoading: boolean;
   isSubmitting: boolean;
   user: CognitoUserProps | null;
   activeStep: number;
   currentIdx: number;
   session: any; //FIXME
-  cancelled: boolean;
+  order: OrderProps | null;
 }
 
 export interface CheckoutProductProps {

@@ -21,6 +21,7 @@ import {
 import { openSnackbar } from "../../../utils/Notifier";
 import FeatureInput from "./FeatureInput";
 import VariantCard from "./VariantCard";
+import { INTENT } from "../../../themes";
 
 /**
  * TODO
@@ -100,7 +101,7 @@ class Variants extends Component<VariantsProps, VariantsState> {
     if (anyError) {
       this.setState({ errors: { ...errors, ...updatedErrors } });
       return openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Please fix all of the errors before continuing.",
       });
     }

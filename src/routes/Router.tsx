@@ -36,6 +36,7 @@ import Cakes from "../pages/products/components/Cakes";
 import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
 import { SetUserAction } from "../interfaces/user.redux.i";
 import { openSnackbar } from "../utils/Notifier";
+import { INTENT } from "../themes";
 
 export const history = createBrowserHistory();
 
@@ -194,7 +195,7 @@ class AppRouter extends React.Component<RouterProps> {
       // if the user is signing in, get the users' data.
       case "signIn":
         openSnackbar({
-          severity: "success",
+          severity: INTENT.Success,
           message: "Successfully sign in.",
         });
         await this.getUserData();

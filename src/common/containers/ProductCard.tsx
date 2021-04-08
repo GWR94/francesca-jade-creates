@@ -24,7 +24,7 @@ import { useHistory } from "react-router-dom";
 import { openSnackbar } from "../../utils/Notifier";
 import * as actions from "../../actions/basket.actions";
 import { ProductCardProps } from "../../pages/accounts/interfaces/Product.i";
-import { COLORS } from "../../themes";
+import { COLORS, INTENT } from "../../themes";
 import styles from "../styles/productCard.style";
 import { getCompressedKey } from "../../utils";
 import QuoteDialog from "../../pages/products/components/QuoteDialog";
@@ -250,19 +250,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
                       // notify the user of successful action
                       openSnackbar({
                         message: `Added ${product.title} to basket.`,
-                        severity: "success",
+                        severity: INTENT.Success,
                       });
                     } else {
                       openSnackbar({
                         message: `${product.title} is already in the basket.`,
-                        severity: "error",
+                        severity: INTENT.Danger,
                       });
                     }
                   } catch (err) {
                     // notify the user of failed action
                     openSnackbar({
                       message: `Unable to add ${product.title} to basket. Please try again.`,
-                      severity: "error",
+                      severity: INTENT.Danger,
                     });
                   }
                 } else {

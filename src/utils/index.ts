@@ -1,8 +1,10 @@
 import { Auth, Storage } from "aws-amplify";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
+import { UserAttributeProps } from "../pages/accounts/interfaces/Accounts.i";
 import { S3ImageProps } from "../pages/accounts/interfaces/Product.i";
 import { Variant } from "../pages/products/interfaces/Variants.i";
 import { openSnackbar } from "./Notifier";
+import { INTENT } from "../themes";
 
 /**
  * helper method to put cognito user attributes array into an object that can
@@ -22,6 +24,13 @@ export const attributesToObject = (attributes: CognitoUserAttribute[]): any => {
   return obj;
 };
 
+export const removeEmojis = (text: string): string => {
+  return text.replace(
+    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
+    "",
+  );
+};
+
 /**
  * Function to remove an image that is stored in the cloud (S3)
  * @param key - the key of the image that wants to be removed from the cloud
@@ -33,7 +42,7 @@ export const handleRemoveFromS3 = async (key: string): Promise<void> => {
     if (key) await Storage.remove(key);
   } catch (err) {
     openSnackbar({
-      severity: "error",
+      severity: INTENT.Danger,
       message: "Unable to remove image. Please try again.",
     });
   }
@@ -122,7 +131,7 @@ export const checkUserAdmin = async (): Promise<boolean> => {
   return false;
 };
 
-export const getUserData = async () => {
+export const getUserData = async (): Promise<UserAttributeProps> => {
   const user = await Auth.currentUserInfo();
   return user;
 };

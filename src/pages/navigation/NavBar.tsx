@@ -17,7 +17,7 @@ import logo from "../../img/logo.png";
 import styles from "./styles/nav.style";
 import Links from "./components/Links";
 import { AppState } from "../../store/store";
-import { COLORS } from "../../themes";
+import { COLORS, INTENT } from "../../themes";
 import { openSnackbar } from "../../utils/Notifier";
 import * as userActions from "../../actions/user.actions";
 import * as basketActions from "../../actions/basket.actions";
@@ -56,13 +56,13 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
       dispatch(userActions.clearUser());
       // notify the user of success
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Successfully signed out.",
       });
     } catch (err) {
       // notify the user of error signing out
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Error signing out. Please try again.",
       });
     }

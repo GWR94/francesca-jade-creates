@@ -12,6 +12,7 @@ import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import { API } from "aws-amplify";
 import React, { useState } from "react";
 import { openSnackbar } from "../../../utils/Notifier";
+import { INTENT } from "../../../themes";
 
 interface ContactState {
   firstName: string;
@@ -57,14 +58,14 @@ const ContactForm = (): JSX.Element => {
       });
       if (res) {
         openSnackbar({
-          severity: "success",
+          severity: INTENT.Success,
           message: "Message sent successfully.",
         });
       }
       setState(initialState);
     } catch (err) {
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message: "Unable to send message. Please try again.",
       });
       setState({ ...state, isSubmitting: false });

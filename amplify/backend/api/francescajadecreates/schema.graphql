@@ -54,7 +54,7 @@ type Order
       { allow: groups, groups: ["Admin"], operations: [create, read, update, delete] }
     ]
   )
-  @model(mutations: { create: "createOrder", update: "updateOrder" }, queries: { list: "listOrders" }) {
+  @model(mutations: { create: "createOrder", update: "updateOrder" }, queries: { list: "listOrders", get: "getOrder" }) {
   id: String!
   products: [StripeProduct!]!
   stripePaymentIntent: String

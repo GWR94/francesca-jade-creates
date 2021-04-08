@@ -19,7 +19,7 @@ import { Close } from "@material-ui/icons";
 import { openSnackbar } from "../../../utils/Notifier";
 import PasswordInput from "../../../common/inputs/PasswordInput";
 import { PasswordProps, PasswordState } from "../interfaces/Password.i";
-import { breakpoints } from "../../../themes";
+import { breakpoints, INTENT } from "../../../themes";
 
 const initialState = {
   codeSent: false,
@@ -108,7 +108,7 @@ const ChangePasswordDialog: React.FC<PasswordProps> = ({ onClose, isOpen }) => {
           break;
       }
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message,
       });
     }
@@ -119,7 +119,7 @@ const ChangePasswordDialog: React.FC<PasswordProps> = ({ onClose, isOpen }) => {
     try {
       await Auth.forgotPasswordSubmit(username, code, newPassword);
       openSnackbar({
-        severity: "success",
+        severity: INTENT.Success,
         message: "Successfully changed password.",
       });
       setState(initialState);
@@ -147,7 +147,7 @@ const ChangePasswordDialog: React.FC<PasswordProps> = ({ onClose, isOpen }) => {
       }
 
       openSnackbar({
-        severity: "error",
+        severity: INTENT.Danger,
         message,
       });
     }
