@@ -246,6 +246,7 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
         params,
       );
       try {
+        console.log("updating");
         const { data } = await API.graphql(
           graphqlOperation(updateOrder, {
             input: {
