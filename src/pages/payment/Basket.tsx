@@ -245,15 +245,19 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
         "/orders/create-checkout-session",
         params,
       );
-
-      await API.graphql(
-        graphqlOperation(updateOrder, {
-          input: {
-            id: orderId,
-            stripeOrderId: response.id,
-          },
-        }),
-      );
+      try {
+        const { data } = await API.graphql(
+          graphqlOperation(updateOrder, {
+            input: {
+              id: orderId,
+              stripeOrderId: response.id,
+            },
+          }),
+        );
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
 
       // pass the session's id to stripe so it can be viewed by the user.
       const result = await stripe?.redirectToCheckout({
