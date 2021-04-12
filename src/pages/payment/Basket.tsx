@@ -187,35 +187,6 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
         ),
       }));
 
-      /**
-       * create an input object for creating a new order with the graphql createOrder
-       * mutation. Other fields will be added to the database (such as stripePaymentIntent
-       * and shippingAddress) by the server once the user completes payment (via stripeWebhook
-       * lambda function)
-       */
-      const input = {
-        id: orderId, // pass the unique orderId to be used as id
-        products: updatedProducts,
-        createdAt: new Date(),
-        orderUserId: id, // use the users id (sub) so orders are linked to the user
-        paymentStatus: "unpaid",
-        orderProcessed: false,
-        shippingAddress: {
-          city: "",
-          country: "",
-          address_line1: "",
-          address_line2: "",
-          address_postcode: "",
-        },
-        userInfo: {
-          emailAddress: attributes.email,
-          name: user?.username ?? attributes.email,
-        },
-      };
-
-      // execute the createOrder mutation with the input as the parameter.
-      await API.graphql(graphqlOperation(createOrder, { input }));
-
       const params = {
         body: {
           products: updatedProducts.map((product) => ({
@@ -245,20 +216,36 @@ const Basket: React.FC<BasketProps> = (): JSX.Element => {
         "/orders/create-checkout-session",
         params,
       );
-      try {
-        console.log("updating");
-        const { data } = await API.graphql(
-          graphqlOperation(updateOrder, {
-            input: {
-              id: orderId,
-              stripeOrderId: response.id,
-            },
-          }),
-        );
-        console.log(data);
-      } catch (err) {
-        console.error(err);
-      }
+
+      /**
+       * create an input object for creating a new order with the graphql createOrder
+       * mutation. Other fields will be added to the database (such as stripePaymentIntent
+       * and shippingAddress) by the server once the user completes payment (via stripeWebhook
+       * lambda function)
+       */
+      const input = {
+        id: orderId, // pass the unique orderId to be used as id
+        products: updatedProducts,
+        createdAt: new Date(),
+        orderUserId: id, // use the users id (sub) so orders are linked to the user
+        paymentStatus: "unpaid",
+        orderProcessed: false,
+        shippingAddress: {
+          city: "",
+          country: "",
+          address_line1: "",
+          address_line2: "",
+          address_postcode: "",
+        },
+        stripeOrderId: response.id,
+        userInfo: {
+          emailAddress: attributes.email,
+          name: user?.username ?? attributes.email,
+        },
+      };
+
+      // execute the createOrder mutation with the input as the parameter.
+      await API.graphql(graphqlOperation(createOrder, { input }));
 
       // pass the session's id to stripe so it can be viewed by the user.
       const result = await stripe?.redirectToCheckout({
