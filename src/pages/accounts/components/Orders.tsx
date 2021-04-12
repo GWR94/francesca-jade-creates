@@ -81,11 +81,11 @@ const Orders: React.FC = (): JSX.Element => {
         const { data } = await API.graphql(graphqlOperation(getUser, { id: sub }));
         const orders = data.getUser.orders.items;
         // set orders into state so it can be used throughout the component
-        setState({ ...state, orders, isLoading: false });
+        // setState({ ...state, orders, isLoading: false });
       } catch (err) {
         console.error(err);
         // remove all loading UI effects.
-        setState({ ...state, isLoading: false });
+        // setState({ ...state, isLoading: false });
       }
     };
 

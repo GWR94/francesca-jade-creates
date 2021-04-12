@@ -90,9 +90,6 @@ export default createStyles({
     justifyContent: "center",
     fontWeight: "bold",
     fontSize: "1rem",
-    [breakpoints.down("sm")]: {
-      fontSize: "0.8rem",
-    },
   },
   data: {
     fontStyle: "italic",
@@ -112,6 +109,12 @@ export default createStyles({
     display: "flex",
     justifyContent: "center",
     marginBottom: "0.35em",
+  },
+  imagesContainer: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    height: 500,
   },
   buttonContainer: {
     display: "flex",

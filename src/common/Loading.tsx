@@ -16,20 +16,13 @@ interface LoadingProps {
 const Loading: React.FC<LoadingProps> = ({
   size = 100,
   color = "inherit",
-  small = false,
 }): JSX.Element => {
   const useStyles = makeStyles({
     loading: {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      height: "calc(100vh - 54px)",
-    },
-    loadingSmall: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 60,
+      height: "calc(100vh - 170px)",
     },
     spinner: {
       margin: "0 auto",
@@ -38,7 +31,7 @@ const Loading: React.FC<LoadingProps> = ({
   });
   const classes = useStyles();
   return (
-    <div className={small ? classes.loadingSmall : classes.loading}>
+    <div className={classes.loading}>
       <CircularProgress size={size} color={color} className={classes.spinner} />
     </div>
   );

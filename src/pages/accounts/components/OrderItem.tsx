@@ -120,7 +120,11 @@ const OrderItem = ({
                     className={classes.unpaidTag}
                     size="small"
                     color="secondary"
+                    variant="outlined"
                     label="Unpaid"
+                    classes={{
+                      label: classes.unpaidLabel,
+                    }}
                   />
                 )}
               </div>
