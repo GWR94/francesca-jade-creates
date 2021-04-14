@@ -8,74 +8,14 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
 import React from "react";
 import avatar from "../../../img/avatar.png";
 import { COLORS } from "../../../themes";
 import ContactForm from "./ContactForm";
+import styles from "../styles/contact.style";
 
 const Contact = (): JSX.Element => {
-  const breakpoints = createBreakpoints({});
-
-  const useStyles = makeStyles({
-    avatar: {
-      height: 120,
-      width: 120,
-      margin: "0 auto",
-      border: `3px solid ${COLORS.LightGray}`,
-      [breakpoints.down("sm")]: {
-        margin: "0 auto 10px",
-        float: "none",
-      },
-    },
-    text: {
-      textAlign: "center",
-      fontStyle: "italic",
-    },
-    innerContainer: {
-      width: 200,
-      height: 120,
-      display: "flex",
-      margin: "auto auto 10px",
-      borderRadius: 15,
-      padding: 16,
-      alignItems: "center",
-      flexDirection: "column",
-      justifyContent: "space-between",
-    },
-    outerContainer: {
-      width: 800,
-      margin: "0 auto",
-      [breakpoints.down("sm")]: {
-        width: "80%",
-      },
-    },
-    icon: {
-      fontSize: "30px",
-      fontWeight: 500,
-      textAlign: "center",
-      height: 30,
-      width: 30,
-    },
-    dividerText: {
-      position: "absolute",
-      left: "50%",
-      transform: "translateX(-90px)",
-      background: "#fff",
-      top: -12,
-      width: 180,
-      textAlign: "center",
-      color: "rgba(0,0,0,0.5)",
-    },
-    overview: {
-      fontSize: "1rem",
-      textAlign: "justify",
-      marginRight: 30,
-      [breakpoints.down("sm")]: {
-        marginRight: 0,
-      },
-    },
-  });
+  const useStyles = makeStyles(styles);
   const classes = useStyles();
 
   return (
@@ -193,7 +133,7 @@ const Contact = (): JSX.Element => {
             <Divider style={{ margin: "30px 0" }} />
             <Typography className={classes.dividerText}>
               or fill out the form below
-            </Typography>{" "}
+            </Typography>
           </div>
         </div>
         <ContactForm />

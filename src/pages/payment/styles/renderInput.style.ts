@@ -1,5 +1,5 @@
 import { createStyles } from "@material-ui/core";
-import { COLORS } from "../../../themes";
+import { breakpoints, COLORS } from "../../../themes/index";
 
 export default createStyles({
   chip: {
@@ -13,7 +13,13 @@ export default createStyles({
   },
   formControl: {
     margin: 8,
-    minWidth: 120,
+    width: "80%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    [breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   uploadedImageContainer: {
     display: "flex",

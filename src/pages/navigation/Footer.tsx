@@ -125,7 +125,7 @@ const Footer = (): JSX.Element | null => {
         style={{
           fontSize: "0.7rem",
           paddingBottom: 10,
-          color: COLORS.Gray,
+          color: COLORS.LightGray,
         }}
         href="https://www.james-gower.dev/"
       >

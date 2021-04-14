@@ -123,7 +123,7 @@ export default createStyles({
     marginTop: 8,
   },
   buttonContainer: {
-    marginTop: 8,
+    marginTop: 15,
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",

@@ -17,6 +17,10 @@ export default createStyles({
       fontSize: "0.8rem",
     },
   },
+  accordion: {
+    width: "100%",
+    boxSizing: "border-box",
+  },
   secondaryHeading: {
     fontSize: "0.85rem",
     color: COLORS.TextGray,

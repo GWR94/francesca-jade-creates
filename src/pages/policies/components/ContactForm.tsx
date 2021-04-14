@@ -13,19 +13,7 @@ import { API } from "aws-amplify";
 import React, { useState } from "react";
 import { openSnackbar } from "../../../utils/Notifier";
 import { INTENT } from "../../../themes";
-
-interface ContactState {
-  firstName: string;
-  lastName: string;
-  email: string;
-  message: string;
-  isSubmitting: boolean;
-  errors: {
-    firstName: string;
-    email: string;
-    message: string;
-  };
-}
+import { ContactState } from "../interfaces/ContactForm.i";
 
 const initialState = {
   firstName: "",

@@ -63,6 +63,10 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
     theme: "",
   });
 
+  /**
+   * Retrieve theme from url if it exists, and set it into state and switch
+   * to search
+   */
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const theme = urlParams.get("current");
@@ -74,27 +78,7 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
 
   const isSmallMobile = useMediaQuery("(max-width: 340px");
 
-  const renderCurrentTab = (): JSX.Element | null => {
-    const { currentTab, theme } = state;
-    let renderedTab: JSX.Element | null = null;
-    switch (currentTab) {
-      case "popular":
-        renderedTab = (
-          <PopularThemes
-            switchToSearch={(theme): void =>
-              setState({ ...state, currentTab: "search", theme })
-            }
-          />
-        );
-        break;
-      case "search":
-        renderedTab = <SearchThemes selectedTheme={theme} admin={admin} />;
-        break;
-    }
-    return renderedTab;
-  };
-
-  const { currentTab } = state;
+  const { currentTab, theme } = state;
 
   return (
     <div className="content-container">
@@ -127,7 +111,15 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
             <Tab value="popular" label={isSmallMobile ? "Popular" : "Popular Themes"} />
             <Tab value="search" label={isSmallMobile ? "Search" : "Search Themes"} />
           </Tabs>
-          {renderCurrentTab()}
+          {currentTab === "search" ? (
+            <SearchThemes selectedTheme={theme} admin={admin} />
+          ) : (
+            <PopularThemes
+              switchToSearch={(theme): void =>
+                setState({ ...state, currentTab: "search", theme })
+              }
+            />
+          )}
         </Paper>
       </Container>
     </div>

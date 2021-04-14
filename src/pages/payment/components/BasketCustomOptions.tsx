@@ -11,9 +11,10 @@ import {
   makeStyles,
   FormControl,
   InputLabel,
+  useMediaQuery,
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
-import { COLORS } from "../../../themes";
+import { breakpoints, COLORS } from "../../../themes";
 import { Feature } from "../../products/interfaces/Variants.i";
 import styles from "../styles/basketCustomOptions.style";
 import { CustomOptionsProps, CustomOptionsState } from "../interfaces/Basket.i";
@@ -49,6 +50,8 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     currentColorScheme: "",
     imageCompleted: false,
   });
+
+  const mobile = useMediaQuery(breakpoints.down("xs"));
 
   // make styles from external styles object
   const useStyles = makeStyles(styles);
@@ -88,6 +91,7 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
     <div style={{ width: "100%", boxSizing: "border-box" }}>
       {!isCompleted &&
         currentVariant!.features.map((feature: Feature, i: number) => {
+          // check if feature is optional by checking the value on feature
           const optional =
             (feature.inputType === "number" && feature.value.number === 0) ||
             (feature.inputType === "range" && feature.value.range?.[0] === 0);
@@ -96,9 +100,9 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
               // expand if expanded is the current panel
               expanded={expanded === `panel${i}`}
               key={i}
+              className={classes.accordion}
               TransitionProps={{ unmountOnExit: false }}
               onChange={handlePanelChange(`panel${i}`)}
-              style={{ width: "100%", boxSizing: "border-box" }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMore />}
@@ -227,7 +231,14 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                     Please select the colour scheme you wish to use for the frame.
                   </Typography>
                   <div className={classes.formControl}>
-                    <FormControl variant="outlined" style={{ width: "80%" }}>
+                    <FormControl
+                      variant="outlined"
+                      style={{
+                        width: mobile ? "100%" : "80%",
+                        display: "flex",
+                        flexDirection: mobile ? "column" : "row",
+                      }}
+                    >
                       <InputLabel>Colour Scheme</InputLabel>
                       <Select
                         value={currentColorScheme}
@@ -247,25 +258,25 @@ const BasketCustomOptions: React.FC<CustomOptionsProps> = ({
                           </MenuItem>
                         ))}
                       </Select>
+                      <Button
+                        onClick={(): void => {
+                          const updatedCustomOptions = customOptions;
+                          updatedCustomOptions[colorIdx] = {
+                            "Color Scheme": currentColorScheme,
+                          };
+                          setState({
+                            ...state,
+                            currentColorScheme: "",
+                            expanded: `panel-notes`,
+                          });
+                          setCustomOptions(updatedCustomOptions);
+                        }}
+                        color="primary"
+                        disabled={!currentColorScheme}
+                      >
+                        Next
+                      </Button>
                     </FormControl>
-                    <Button
-                      onClick={(): void => {
-                        const updatedCustomOptions = customOptions;
-                        updatedCustomOptions[colorIdx] = {
-                          "Color Scheme": currentColorScheme,
-                        };
-                        setState({
-                          ...state,
-                          currentColorScheme: "",
-                          expanded: `panel-notes`,
-                        });
-                        setCustomOptions(updatedCustomOptions);
-                      }}
-                      color="primary"
-                      disabled={!currentColorScheme}
-                    >
-                      Next
-                    </Button>
                   </div>
                 </div>
               )}

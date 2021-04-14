@@ -11,10 +11,11 @@ import {
   DialogContent,
   DialogActions,
   makeStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { Storage } from "aws-amplify";
 import React, { useState, useEffect } from "react";
-import { INTENT } from "../../../themes";
+import { breakpoints, INTENT } from "../../../themes";
 import { openSnackbar } from "../../../utils/Notifier";
 import { UploadedFile } from "../../products/interfaces/NewProduct.i";
 import { S3ImageProps } from "../../accounts/interfaces/Product.i";
@@ -56,6 +57,9 @@ const RenderInput: React.FC<RenderInputProps> = ({
     maxNumber: 0,
     minNumber: 0,
   });
+
+  // check to see if user is on small screen
+  const mobile = useMediaQuery(breakpoints.down("xs"));
 
   /**
    * any time a value in feature changes, check the featureType and update the
@@ -152,7 +156,13 @@ const RenderInput: React.FC<RenderInputProps> = ({
             <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
               Please add {inputType === "range" ? "up to" : "exactly"} {maxNumber} items
             </Typography>
-            <div style={{ display: "inline-flex" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: mobile ? "column" : "row",
+                alignItems: "center",
+              }}
+            >
               {/* Render the chip input */}
               <ChipInput
                 value={currentInputValue as string[]}
@@ -227,6 +237,8 @@ const RenderInput: React.FC<RenderInputProps> = ({
             <div
               style={{
                 display: "flex",
+                alignItems: "center",
+                flexDirection: mobile ? "column" : "row",
                 width: "100%",
               }}
             >
@@ -257,6 +269,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
                 }}
                 color="primary"
                 disabled={(currentInputValue as string)?.length === 0}
+                style={{ marginLeft: 5 }}
               >
                 Next
               </Button>
@@ -274,7 +287,7 @@ const RenderInput: React.FC<RenderInputProps> = ({
       {
         if (value.array === undefined) return null;
         renderedFeature = (
-          <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          <div>
             {/* If there is a description, show it to the user. */}
             {feature.description && (
               <Typography variant="subtitle2" style={{ marginBottom: 8 }}>
@@ -283,9 +296,10 @@ const RenderInput: React.FC<RenderInputProps> = ({
             )}
             <div
               style={{
-                display: "inline-flex",
-                width: "100%",
+                display: "flex",
                 justifyContent: "center",
+                flexDirection: mobile ? "column" : "row",
+                width: "100%",
                 alignItems: "center",
               }}
             >
@@ -303,7 +317,6 @@ const RenderInput: React.FC<RenderInputProps> = ({
                       currentInputValue: e.target.value as string,
                     })
                   }
-                  style={{ minWidth: 220 }}
                 >
                   {/* Map each of the values into a MenuItem component, to render it
                   inside the select */}
