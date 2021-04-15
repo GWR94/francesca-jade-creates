@@ -5,7 +5,7 @@ import styles from "../styles/popularTheme.style";
 import ThemeTile from "./ThemeTile";
 
 interface PopularThemesProps {
-  switchToSearch: (theme) => void;
+  switchToSearch: (theme: string) => void;
 }
 
 const PopularThemes: React.FC<PopularThemesProps> = ({ switchToSearch }): JSX.Element => {

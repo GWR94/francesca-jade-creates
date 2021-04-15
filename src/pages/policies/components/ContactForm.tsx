@@ -31,10 +31,21 @@ const initialState = {
 const ContactForm = (): JSX.Element => {
   const [state, setState] = useState<ContactState>(initialState);
 
-  const { firstName, lastName, email, message, isSubmitting, errors } = state;
-
+  /**
+   * Function to handle sending the user inputted contact form data to the admin
+   * email address
+   */
   const handleSendMessage = async (): Promise<void> => {
-    setState({ ...state, isSubmitting: true });
+    const { firstName, lastName, email, message } = state;
+    // start ui loading animation for button
+    setState({
+      ...state,
+      isSubmitting: true,
+    });
+    /**
+     * Try to execute the send-message lambda, which will retrieve all of the
+     * data from the form body, and send it to the admin email address set.
+     */
     try {
       const res = await API.post("orderlambda", "/orders/send-message", {
         body: {
@@ -45,22 +56,34 @@ const ContactForm = (): JSX.Element => {
         },
       });
       if (res) {
+        // notify the user of success
         openSnackbar({
           severity: INTENT.Success,
           message: "Message sent successfully.",
         });
       }
+      // reset state to initial state
       setState(initialState);
     } catch (err) {
+      // notify the user of error
       openSnackbar({
         severity: INTENT.Danger,
         message: "Unable to send message. Please try again.",
       });
-      setState({ ...state, isSubmitting: false });
+      // stop ui loading animation for button
+      setState({
+        ...state,
+        isSubmitting: false,
+      });
     }
   };
 
+  /**
+   * Function to handle the client side validation of the contact form
+   * fields
+   */
   const handleValidation = (): void => {
+    const { firstName, email, message } = state;
     const errors = state.errors;
     let anyError = false;
     if (firstName.length === 0) {
@@ -105,6 +128,8 @@ const ContactForm = (): JSX.Element => {
 
   const classes = useStyles();
   const mobile = useMediaQuery(breakpoints.down("md"));
+
+  const { firstName, lastName, email, message, errors, isSubmitting } = state;
 
   return (
     <div className={classes.form}>
