@@ -12,9 +12,6 @@ module.exports = {
   node: {
     fs: "empty",
   },
-  externals: {
-    reactHelmet: "react-helmet",
-  },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({

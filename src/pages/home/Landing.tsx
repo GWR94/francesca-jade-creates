@@ -2,7 +2,6 @@ import { Grid, Typography, Container, makeStyles, Button } from "@material-ui/co
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { BrushRounded, CakeRounded } from "@material-ui/icons";
-import { Helmet } from "react-helmet";
 import logo from "../../img/logo.png";
 import styles from "./styles/landing.style";
 
@@ -20,19 +19,6 @@ const Landing: React.FC = (): JSX.Element => {
 
   return (
     <Container>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>Francesca Jade Creates</title>
-        <meta
-          name="description"
-          content="Bespoke Hand-crafted Cakes & Creations for any occasion."
-        />
-        <meta
-          name="image"
-          content="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png"
-        />
-        <meta name="type" content="website" />
-      </Helmet>
       <Grid container className={classes.container}>
         <Grid item xs={12} sm={6} className={classes.headingContainer}>
           <Typography

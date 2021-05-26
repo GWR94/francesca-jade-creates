@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet";
 import { makeStyles, Typography } from "@material-ui/core";
 import styles from "../styles/policy.style";
 
@@ -8,15 +7,6 @@ const PrivacyPolicy: React.FC = () => {
   const classes = useStyles();
   return (
     <div className="content-container">
-      <Helmet>
-        <title>Privacy Policy</title>
-        <meta name="description" content="Francesca Jade Creates Privacy Policy 2021" />
-        <meta
-          name="image"
-          content="https://francescajadecreatesimages102644-staging.s3.eu-west-2.amazonaws.com/public/logo.png"
-        />
-        <meta name="type" content="website" />
-      </Helmet>
       <div className={classes.container}>
         <Typography variant="h4" gutterBottom>
           Privacy Policy
