@@ -25,7 +25,7 @@ type Product
 type User
   @model(
     queries: { get: "getUser" }
-    mutations: { create: "registerUser", update: "updateUser" }
+    mutations: { create: "registerUser", update: "updateUser", delete: "deleteUser" }
     subscriptions: null
   )
   @auth(

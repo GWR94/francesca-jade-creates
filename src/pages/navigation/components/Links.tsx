@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Badge, makeStyles } from "@material-ui/core";
@@ -36,6 +36,13 @@ const Links: React.FC<LinksProps> = ({
 }): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false); // open/close navigation menu for mobile
   const [basketOpen, setBasketOpen] = useState(false); // open/close basket menu
+  const [isAccountsPage, setAccountsPage] = useState(false); // set accounts page link as active or not
+
+  useEffect(() => {
+    if (location.href.split("/").includes("account")) {
+      setAccountsPage(true);
+    }
+  }, [location.href]);
 
   /**
    * Find all of the items (if any) in the basket by using useSelector and returning just
@@ -53,6 +60,11 @@ const Links: React.FC<LinksProps> = ({
   const basketRef = React.useRef<HTMLDivElement>(null);
   const accountRef = React.useRef<HTMLDivElement>(null);
 
+  const handleLinkClick = (): void => {
+    setAccountsPage(false);
+    closeNav();
+  };
+
   return (
     <div className={mobile ? classes.mobileLinks : classes.links}>
       <div className={mobile ? classes.navMobile : classes.navLeft}>
@@ -61,7 +73,7 @@ const Links: React.FC<LinksProps> = ({
           exact
           activeClassName={classes.linkActive}
           className={classes.link}
-          onClick={closeNav}
+          onClick={handleLinkClick}
         >
           <HomeRounded className={classes.navIcon} />
           Home
@@ -70,7 +82,7 @@ const Links: React.FC<LinksProps> = ({
           to="/cakes"
           activeClassName={classes.linkActive}
           className={classes.link}
-          onClick={closeNav}
+          onClick={handleLinkClick}
         >
           <CakeRounded className={classes.navIcon} />
           Cakes
@@ -79,7 +91,7 @@ const Links: React.FC<LinksProps> = ({
           to="/creates"
           activeClassName={classes.linkActive}
           className={classes.link}
-          onClick={closeNav}
+          onClick={handleLinkClick}
         >
           <BrushRounded className={classes.navIcon} />
           Creations
@@ -90,7 +102,7 @@ const Links: React.FC<LinksProps> = ({
           to="/themes"
           activeClassName={classes.linkActive}
           className={classes.link}
-          onClick={closeNav}
+          onClick={handleLinkClick}
         >
           <LocalOfferRounded className={classes.navIcon} />
           Themes
@@ -102,11 +114,7 @@ const Links: React.FC<LinksProps> = ({
               role="button"
               tabIndex={0}
               ref={accountRef}
-              className={
-                window.location.href.split("/").includes("account")
-                  ? classes.linkActiveDiv
-                  : classes.link
-              }
+              className={!isAccountsPage ? classes.link : classes.linkActiveDiv}
             >
               <AccountBoxRounded className={classes.navIcon} />
               Account

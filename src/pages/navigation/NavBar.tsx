@@ -49,7 +49,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
   const handleSignOut = async (): Promise<void> => {
     try {
       // try to sign out
-      await Auth.signOut();
+      await Auth.signOut({ global: true });
       // clear basket reducer
       dispatch(basketActions.clearBasket());
       // clear user reducer

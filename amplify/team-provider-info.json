@@ -27,6 +27,10 @@
         "stripeWebhook": {
           "deploymentBucketName": "amplify-francescajadecreates-staging-102644-deployment",
           "s3Key": "amplify-builds/stripeWebhook-4b687535653934704b74-build.zip"
+        },
+        "api": {
+          "deploymentBucketName": "amplify-francescajadecreates-staging-102644-deployment",
+          "s3Key": "amplify-builds/api-7567302f5a6f496d4f54-build.zip"
         }
       }
     }

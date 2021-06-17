@@ -388,7 +388,7 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
               value={number}
               step={1}
               min={1}
-              max={32}
+              max={36}
               valueLabelDisplay="auto"
               onChange={(_e, number): void =>
                 setState({ ...state, number: number as number })
@@ -417,7 +417,7 @@ const FeatureInput: React.FC<FeatureInputProps> = ({
               value={range}
               step={1}
               min={0}
-              max={32}
+              max={36}
               valueLabelDisplay="auto"
               onChange={(_e, range): void =>
                 setState({ ...state, range: range as number[] })

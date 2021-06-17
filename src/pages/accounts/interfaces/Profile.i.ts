@@ -47,4 +47,6 @@ export interface ProfileState {
     phoneNumber: boolean;
   };
   isCognitoUser: boolean;
+  deleteDialogOpen: boolean;
+  isConfirming: boolean;
 }

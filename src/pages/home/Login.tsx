@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 import {
   Button,
@@ -35,16 +35,14 @@ const Login: React.FC<LoginProps> = ({
     loggingIn: false,
   });
 
-  const fullscreen = useMediaQuery(breakpoints.down("xs"));
+  const fullscreen = useMediaQuery(breakpoints.only("xs"));
 
   const useStyles = makeStyles(styles);
   const classes = useStyles();
 
   const [isOpen, setOpen] = useState(false);
 
-  const closeDialog = (): void => {
-    setOpen(false);
-  };
+  const closeDialog = (): void => setOpen(false);
 
   const handleSignIn = async (): Promise<void> => {
     const { username, password } = state;
@@ -54,7 +52,6 @@ const Login: React.FC<LoginProps> = ({
       closeNav?.();
       closeDialog();
     } catch (err) {
-      console.error(err);
       if (err.code === "UserNotConfirmedException") {
         return setState({ ...state, loggingIn: false, verifyDialogOpen: true });
       }
@@ -65,6 +62,17 @@ const Login: React.FC<LoginProps> = ({
     }
     setState({ ...state, loggingIn: false });
   };
+
+  const handleFormSubmit = (e: KeyboardEvent): void => {
+    if (e.code === "Enter") handleSignIn();
+  };
+
+  useEffect((): (() => void) => {
+    const passwordInput = document.getElementById("password");
+    passwordInput?.addEventListener("keyup", handleFormSubmit);
+    return (): void => passwordInput?.removeEventListener("keyup", handleFormSubmit);
+  }, []);
+
   const { classOverride, text, Icon } = props;
 
   const {
@@ -111,7 +119,7 @@ const Login: React.FC<LoginProps> = ({
               className={classes.closeIcon}
               onClick={(): void => {
                 closeNav?.();
-                closeDialog;
+                closeDialog();
               }}
             >
               <Close />

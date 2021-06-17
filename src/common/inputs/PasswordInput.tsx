@@ -36,6 +36,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         value={value}
         placeholder={placeholder}
         error={!!error}
+        id="password"
         color={error ? "secondary" : "primary"}
         onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
           setValue(e.target.value)

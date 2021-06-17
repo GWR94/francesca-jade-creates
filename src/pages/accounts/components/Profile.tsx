@@ -18,12 +18,14 @@ import {
   Tooltip,
   useMediaQuery,
   makeStyles,
+  DialogContentText,
+  CircularProgress,
 } from "@material-ui/core";
 import { LockOpen } from "@material-ui/icons";
 import { getUser } from "../../../graphql/queries";
 import Loading from "../../../common/Loading";
 import { ProfileProps, ProfileState } from "../interfaces/Profile.i";
-import { updateUser } from "../../../graphql/mutations";
+import { deleteUser, updateUser } from "../../../graphql/mutations";
 import { ImageProps, UploadedFile } from "../../products/interfaces/NewProduct.i";
 // @ts-ignore
 import awsExports from "../../../aws-exports";
@@ -74,6 +76,8 @@ const initialState: ProfileState = {
   },
   displayImage: null,
   isCognitoUser: false,
+  deleteDialogOpen: false,
+  isConfirming: false,
 };
 
 /**
@@ -249,6 +253,7 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
         severity: INTENT.Danger,
         message: "Error updating profile. Please try again.",
       });
+      console.error(err);
     }
   };
 
@@ -386,6 +391,39 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
     onUpdateProfile();
   };
 
+  const handleDeleteProfile = async (): Promise<void> => {
+    setState({ ...state, isConfirming: true });
+    const user = await Auth.currentUserPoolUser();
+    const accessToken = user.signInUserSession.accessToken.jwtToken;
+    try {
+      await API.post("common", "/common/delete-profile", {
+        body: {
+          accessToken,
+        },
+      });
+
+      await API.graphql(
+        graphqlOperation(deleteUser, {
+          input: {
+            id: sub,
+          },
+        }),
+      );
+
+      openSnackbar({
+        severity: "success",
+        message: "Account Successfully Deleted.",
+      });
+      await Auth.signOut({ global: true });
+      setState({ ...state, deleteDialogOpen: false, isConfirming: false });
+    } catch (err) {
+      openSnackbar({
+        severity: "error",
+        message: "Unable to delete account. Please try again later.",
+      });
+    }
+  };
+
   const {
     isLoading,
     isEditing,
@@ -394,7 +432,9 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
     email,
     shippingAddress,
     displayImage,
+    deleteDialogOpen,
     dialogOpen,
+    isConfirming,
   } = state;
   const size = desktop ? "medium" : "small";
 
@@ -659,6 +699,14 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
               </Grid>
               <div className={classes.buttonContainer}>
                 <Button
+                  variant="outlined"
+                  className={classes.buttonBottom}
+                  onClick={(): void => setState({ ...state, deleteDialogOpen: true })}
+                  color="secondary"
+                >
+                  Delete Profile
+                </Button>
+                <Button
                   variant="contained"
                   className={classes.buttonBottom}
                   onClick={(): void =>
@@ -686,6 +734,27 @@ const Profile: React.FC<ProfileProps> = ({ user, userAttributes }): JSX.Element 
           </>
         )}
       </Container>
+      <Dialog open={deleteDialogOpen}>
+        <DialogTitle>Account Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete your account? This action cannot be undone,
+            and will delete all of your stored data from this site.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            color="primary"
+            variant="text"
+            onClick={(): void => setState({ ...state, deleteDialogOpen: false })}
+          >
+            Cancel
+          </Button>
+          <Button color="secondary" variant="contained" onClick={handleDeleteProfile}>
+            {isConfirming ? <CircularProgress size={10} /> : "Confirm Deletion"}
+          </Button>
+        </DialogActions>
+      </Dialog>
       <PasswordChange
         open={dialogOpen.password}
         closeDialog={(): void =>

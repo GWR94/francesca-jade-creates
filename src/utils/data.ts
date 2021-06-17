@@ -70,6 +70,14 @@ export const marks = [
     value: 32,
     label: 32,
   },
+  {
+    value: 34,
+    label: 34,
+  },
+  {
+    value: 36,
+    label: 36,
+  },
 ];
 
 export const spongesArr = [

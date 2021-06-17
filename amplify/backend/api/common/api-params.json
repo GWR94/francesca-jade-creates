@@ -1,0 +1,38 @@
+{
+  "paths": [
+    {
+      "name": "/common",
+      "lambdaFunction": "api",
+      "privacy": {
+        "private": true,
+        "auth": [
+          "/POST"
+        ]
+      },
+      "policyResourceName": "/common"
+    }
+  ],
+  "resourceName": "common",
+  "apiName": "common",
+  "functionArns": [
+    {
+      "lambdaFunction": "api"
+    }
+  ],
+  "privacy": {
+    "auth": 1,
+    "unauth": 0,
+    "authRoleName": "amplify-francescajadecreates-staging-102644-authRole",
+    "unAuthRoleName": "amplify-francescajadecreates-staging-102644-unauthRole"
+  },
+  "dependsOn": [
+    {
+      "category": "function",
+      "resourceName": "api",
+      "attributes": [
+        "Name",
+        "Arn"
+      ]
+    }
+  ]
+}

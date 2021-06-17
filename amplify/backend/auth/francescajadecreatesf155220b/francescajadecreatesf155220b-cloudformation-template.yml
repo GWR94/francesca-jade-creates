@@ -161,6 +161,10 @@ Parameters:
   authProviders:
     Type: CommaDelimitedList
       
+  oAuthMetadata:
+    Type: String
+  
+            
   hostedUIProviderCreds:
     Type: String
   
@@ -176,11 +180,6 @@ Parameters:
   amazonAppId:
     Type: String
   
-            
-  oAuthMetadata:
-    Type: String
-  
-            
             
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
@@ -256,6 +255,7 @@ Resources:
       
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
+      SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: francef155220b_role_external_id
@@ -810,6 +810,9 @@ Outputs :
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
+  UserPoolArn:
+    Value: !GetAtt UserPool.Arn
+    Description:  Arn for the user pool
   UserPoolName:
     Value: !Ref userPoolName
   AppClientIDWeb:

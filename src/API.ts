@@ -329,6 +329,10 @@ export type UpdateUserInput = {
   trackingInfo?: string | null,
 };
 
+export type DeleteUserInput = {
+  id?: string | null,
+};
+
 export type CreateOrderInput = {
   id: string,
   products: Array< StripeProductInput >,
@@ -830,6 +834,208 @@ export type UpdateUserMutationVariables = {
 
 export type UpdateUserMutation = {
   updateUser?:  {
+    __typename: "User",
+    id: string,
+    username: string,
+    email: string,
+    name?: string | null,
+    registered?: boolean | null,
+    orders?:  {
+      __typename: "ModelOrderConnection",
+      items?:  Array< {
+        __typename: "Order",
+        id: string,
+        products:  Array< {
+          __typename: "StripeProduct",
+          id: string,
+          title: string,
+          tagline: string,
+          image:  {
+            __typename: "S3Object",
+            bucket: string,
+            region: string,
+            key: string,
+          },
+          variant?:  {
+            __typename: "Variants",
+            variantName?: string | null,
+            instructions?: string | null,
+            dimensions: string,
+            features:  Array< {
+              __typename: "Features",
+              name: string,
+              inputType: string,
+              description?: string | null,
+              featureType: string,
+            } | null >,
+            price?:  {
+              __typename: "Price",
+              item: number,
+              postage: number,
+            } | null,
+            images?:  Array< {
+              __typename: "S3Object",
+              bucket: string,
+              region: string,
+              key: string,
+            } | null > | null,
+          } | null,
+          customOptions: Array< string | null >,
+        } >,
+        stripePaymentIntent?: string | null,
+        user?:  {
+          __typename: "User",
+          id: string,
+          username: string,
+          email: string,
+          name?: string | null,
+          registered?: boolean | null,
+          orders?:  {
+            __typename: "ModelOrderConnection",
+            items?:  Array< {
+              __typename: "Order",
+              id: string,
+              stripePaymentIntent?: string | null,
+              createdAt: string,
+              stripeOrderId?: string | null,
+              paymentStatus?: string | null,
+              orderProcessed: boolean,
+              shipped?: boolean | null,
+              updatedAt: string,
+            } | null > | null,
+            nextToken?: string | null,
+          } | null,
+          profileImage?:  {
+            __typename: "S3Object",
+            bucket: string,
+            region: string,
+            key: string,
+          } | null,
+          shippingAddress?:  {
+            __typename: "ShippingAddress",
+            city: string,
+            country: string,
+            address_line1: string,
+            address_line2?: string | null,
+            address_postcode: string,
+          } | null,
+          savedProducts?:  Array< {
+            __typename: "SavedProduct",
+            id: string,
+            title: string,
+            description: string,
+            image:  {
+              __typename: "S3Object",
+              bucket: string,
+              region: string,
+              key: string,
+            },
+            type: string,
+            tagline: string,
+            variants:  Array< {
+              __typename: "Variants",
+              variantName?: string | null,
+              instructions?: string | null,
+              dimensions: string,
+            } | null >,
+          } | null > | null,
+          trackingInfo?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null,
+        shippingAddress?:  {
+          __typename: "ShippingAddress",
+          city: string,
+          country: string,
+          address_line1: string,
+          address_line2?: string | null,
+          address_postcode: string,
+        } | null,
+        createdAt: string,
+        stripeOrderId?: string | null,
+        paymentStatus?: string | null,
+        orderProcessed: boolean,
+        userInfo:  {
+          __typename: "UserInfo",
+          emailAddress: string,
+          name: string,
+        },
+        shipped?: boolean | null,
+        updatedAt: string,
+      } | null > | null,
+      nextToken?: string | null,
+    } | null,
+    profileImage?:  {
+      __typename: "S3Object",
+      bucket: string,
+      region: string,
+      key: string,
+    } | null,
+    shippingAddress?:  {
+      __typename: "ShippingAddress",
+      city: string,
+      country: string,
+      address_line1: string,
+      address_line2?: string | null,
+      address_postcode: string,
+    } | null,
+    savedProducts?:  Array< {
+      __typename: "SavedProduct",
+      id: string,
+      title: string,
+      description: string,
+      image:  {
+        __typename: "S3Object",
+        bucket: string,
+        region: string,
+        key: string,
+      },
+      type: string,
+      tagline: string,
+      variants:  Array< {
+        __typename: "Variants",
+        variantName?: string | null,
+        instructions?: string | null,
+        dimensions: string,
+        features:  Array< {
+          __typename: "Features",
+          name: string,
+          inputType: string,
+          description?: string | null,
+          featureType: string,
+          value:  {
+            __typename: "FeatureValue",
+            array?: Array< string | null > | null,
+            range?: Array< number | null > | null,
+            number?: number | null,
+          },
+        } | null >,
+        price?:  {
+          __typename: "Price",
+          item: number,
+          postage: number,
+        } | null,
+        images?:  Array< {
+          __typename: "S3Object",
+          bucket: string,
+          region: string,
+          key: string,
+        } | null > | null,
+      } | null >,
+    } | null > | null,
+    trackingInfo?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteUserMutationVariables = {
+  input?: DeleteUserInput,
+  condition?: ModelUserConditionInput | null,
+};
+
+export type DeleteUserMutation = {
+  deleteUser?:  {
     __typename: "User",
     id: string,
     username: string,

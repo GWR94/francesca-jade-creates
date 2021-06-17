@@ -507,6 +507,179 @@ export const updateUser = /* GraphQL */ `
     }
   }
 `;
+export const deleteUser = /* GraphQL */ `
+  mutation DeleteUser(
+    $input: DeleteUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    deleteUser(input: $input, condition: $condition) {
+      id
+      username
+      email
+      name
+      registered
+      orders {
+        items {
+          id
+          products {
+            id
+            title
+            tagline
+            image {
+              bucket
+              region
+              key
+            }
+            variant {
+              variantName
+              instructions
+              dimensions
+              features {
+                name
+                inputType
+                description
+                featureType
+              }
+              price {
+                item
+                postage
+              }
+              images {
+                bucket
+                region
+                key
+              }
+            }
+            customOptions
+          }
+          stripePaymentIntent
+          user {
+            id
+            username
+            email
+            name
+            registered
+            orders {
+              items {
+                id
+                stripePaymentIntent
+                createdAt
+                stripeOrderId
+                paymentStatus
+                orderProcessed
+                shipped
+                updatedAt
+              }
+              nextToken
+            }
+            profileImage {
+              bucket
+              region
+              key
+            }
+            shippingAddress {
+              city
+              country
+              address_line1
+              address_line2
+              address_postcode
+            }
+            savedProducts {
+              id
+              title
+              description
+              image {
+                bucket
+                region
+                key
+              }
+              type
+              tagline
+              variants {
+                variantName
+                instructions
+                dimensions
+              }
+            }
+            trackingInfo
+            createdAt
+            updatedAt
+          }
+          shippingAddress {
+            city
+            country
+            address_line1
+            address_line2
+            address_postcode
+          }
+          createdAt
+          stripeOrderId
+          paymentStatus
+          orderProcessed
+          userInfo {
+            emailAddress
+            name
+          }
+          shipped
+          updatedAt
+        }
+        nextToken
+      }
+      profileImage {
+        bucket
+        region
+        key
+      }
+      shippingAddress {
+        city
+        country
+        address_line1
+        address_line2
+        address_postcode
+      }
+      savedProducts {
+        id
+        title
+        description
+        image {
+          bucket
+          region
+          key
+        }
+        type
+        tagline
+        variants {
+          variantName
+          instructions
+          dimensions
+          features {
+            name
+            inputType
+            description
+            featureType
+            value {
+              array
+              range
+              number
+            }
+          }
+          price {
+            item
+            postage
+          }
+          images {
+            bucket
+            region
+            key
+          }
+        }
+      }
+      trackingInfo
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createOrder = /* GraphQL */ `
   mutation CreateOrder(
     $input: CreateOrderInput!
