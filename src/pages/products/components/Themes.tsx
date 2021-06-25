@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
-import { breakpoints } from "../../../themes";
+import { breakpoints, COLORS } from "../../../themes";
 import PopularThemes from "./PopularThemes";
 import SearchThemes from "./SearchThemes";
 
@@ -55,6 +55,15 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
       lineHeight: 1.1,
       margin: "10px auto",
     },
+    title: {
+      paddingTop: 12,
+      paddingBottom: 5,
+      position: "relative",
+      margin: "0 auto 20px",
+      width: 200,
+      borderBottom: `3px solid ${COLORS.Pink}`,
+      textAlign: "center",
+    },
   });
   const classes = useStyles();
 
@@ -83,8 +92,8 @@ const Themes: React.FC<ThemesProps> = ({ admin }) => {
   return (
     <div className="content-container">
       <Container>
-        <Typography variant="h4" style={{ paddingTop: 12 }} gutterBottom>
-          Themes
+        <Typography variant="h4" className={classes.title} gutterBottom>
+          THEMES
         </Typography>
         <div>
           <Typography variant="subtitle1" className={classes.text}>

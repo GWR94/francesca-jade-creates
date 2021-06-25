@@ -22,7 +22,7 @@ import UpdateProduct from "../pages/products/components/UpdateProduct";
 import Basket from "../pages/payment/Basket";
 import * as userActions from "../actions/user.actions";
 import AccountsPage from "../pages/accounts/AccountsPage";
-import background from "../img/annie-spratt-nWiS2rgtVts-unsplash.jpg";
+import background from "../img/bg.jpg";
 import Footer from "../pages/navigation/Footer";
 import PrivacyPolicy from "../pages/policies/components/PrivacyPolicy";
 import TermsOfService from "../pages/policies/components/TermsOfService";
@@ -194,16 +194,12 @@ class AppRouter extends React.Component<RouterProps> {
     switch (capsule.payload.event) {
       // if the user is signing in, get the users' data.
       case "signIn":
+        await this.getUserData();
+        await this.registerNewUser(capsule.payload.data);
         openSnackbar({
           severity: INTENT.Success,
           message: "Successfully sign in.",
         });
-        await this.getUserData();
-        await this.registerNewUser(capsule.payload.data);
-        break;
-      // if the user is signing up, register the user
-      case "signUp":
-        console.log("user signed up");
         break;
       // if the user is signing out, remove the user object from state.
       case "signOut":

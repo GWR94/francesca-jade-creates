@@ -135,7 +135,7 @@ const Login: React.FC<LoginProps> = ({
             <div className={classes.federatedButtons}>
               <Button
                 className={`${classes.button} ${classes.google}`}
-                size={fullscreen ? "small" : "large"}
+                size="small"
                 startIcon={<i className={`fab fa-google ${classes.icon}`} />}
                 style={{ marginBottom: "10px" }}
                 onClick={async (): Promise<void> => {
@@ -151,7 +151,7 @@ const Login: React.FC<LoginProps> = ({
               </Button>
               <Button
                 className={`${classes.button} ${classes.facebook}`}
-                size={fullscreen ? "small" : "large"}
+                size="small"
                 style={{ marginBottom: "10px" }}
                 startIcon={<i className={`fab fa-facebook-f ${classes.icon}`} />}
                 onClick={async (): Promise<void> => {
@@ -167,7 +167,7 @@ const Login: React.FC<LoginProps> = ({
               </Button>
               <Button
                 className={`${classes.button} ${classes.amazon}`}
-                size={fullscreen ? "small" : "large"}
+                size="small"
                 startIcon={<i className={`fab fa-amazon ${classes.icon}`} />}
                 onClick={async (): Promise<void> => {
                   // @ts-ignore

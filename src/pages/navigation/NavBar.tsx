@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from "react";
 import {
   Badge,
@@ -92,6 +93,7 @@ const NavBar: React.FC<NavBarProps> = ({ admin }: NavBarProps): JSX.Element => {
                 src={logo}
                 alt="Francesca Jade Creates"
                 className={mobile ? classes.logo : classes.logoFixed}
+                onClick={(): void => history.push("/")}
               />
               {/* 
                   If there are any items in the shopping basket and the user is viewing the

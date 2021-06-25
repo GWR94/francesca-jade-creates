@@ -9,7 +9,6 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@material-ui/core";
-import OutlinedContainer from "../../../common/containers/OutlinedContainer";
 import styles from "../styles/variants.style";
 import {
   Feature,
@@ -21,7 +20,7 @@ import {
 import { openSnackbar } from "../../../utils/Notifier";
 import FeatureInput from "./FeatureInput";
 import VariantCard from "./VariantCard";
-import { INTENT } from "../../../themes";
+import { COLORS, INTENT } from "../../../themes";
 
 /**
  * TODO
@@ -151,169 +150,177 @@ class Variants extends Component<VariantsProps, VariantsState> {
     const { classes, setPrice, variants, size, type, updateVariants } = this.props;
 
     return (
-      <div style={{ margin: "10px 0", width: "100%" }}>
-        <OutlinedContainer label="Variants" labelWidth={50} padding={24}>
-          <Typography gutterBottom>
-            Please complete all of the required fields then add the products&apos;
-            customisable features for each variant.
-          </Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={7}>
-              <TextField
-                variant="outlined"
-                label="Name (optional)"
-                fullWidth
-                size={size}
-                value={variantName}
-                error={!!errors.variantName}
-                helperText={errors.variantName}
-                onChange={(e): void =>
-                  this.setState({
-                    variantName: e.target.value,
-                    errors: { ...errors, variantName: "" },
-                  })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={5}>
-              <TextField
-                variant="outlined"
-                label="Dimensions"
-                fullWidth
-                size={size}
-                value={dimensions}
-                error={!!errors.dimensions}
-                helperText={errors.dimensions}
-                onChange={(e): void =>
-                  this.setState({
-                    dimensions: e.target.value,
-                    errors: { ...errors, dimensions: "" },
-                  })
-                }
-                style={{ marginBottom: 8 }}
-              />
-            </Grid>
+      <div
+        style={{
+          margin: "10px 0",
+          width: "100%",
+          border: `1px solid ${COLORS.BorderGray}`,
+          borderRadius: 5,
+          padding: 20,
+          boxSizing: "border-box",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Create Variants
+        </Typography>
+        <Typography gutterBottom>
+          Please complete all of the required fields then add the products&apos;
+          customisable features for each variant.
+        </Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={7}>
+            <TextField
+              variant="outlined"
+              label="Name (optional)"
+              fullWidth
+              size={size}
+              value={variantName}
+              error={!!errors.variantName}
+              helperText={errors.variantName}
+              onChange={(e): void =>
+                this.setState({
+                  variantName: e.target.value,
+                  errors: { ...errors, variantName: "" },
+                })
+              }
+            />
           </Grid>
-          <TextField
-            variant="outlined"
-            value={instructions}
-            size={size}
-            rows={3}
-            error={!!errors.instructions}
-            helperText={errors.instructions}
-            rowsMax={5}
-            onChange={(e): void =>
-              this.setState({
-                instructions: e.target.value,
-                errors: { ...errors, instructions: "" },
-              })
-            }
-            label="Instructions (optional)"
-            fullWidth
-            multiline
-            placeholder="Enter any instructions that may be needed to complete the purchase"
-            style={{ marginBottom: 8 }}
-          />
+          <Grid item xs={12} sm={5}>
+            <TextField
+              variant="outlined"
+              label="Dimensions"
+              fullWidth
+              size={size}
+              value={dimensions}
+              error={!!errors.dimensions}
+              helperText={errors.dimensions}
+              onChange={(e): void =>
+                this.setState({
+                  dimensions: e.target.value,
+                  errors: { ...errors, dimensions: "" },
+                })
+              }
+              style={{ marginBottom: 8 }}
+            />
+          </Grid>
+        </Grid>
+        <TextField
+          variant="outlined"
+          value={instructions}
+          size={size}
+          rows={3}
+          error={!!errors.instructions}
+          helperText={errors.instructions}
+          rowsMax={5}
+          onChange={(e): void =>
+            this.setState({
+              instructions: e.target.value,
+              errors: { ...errors, instructions: "" },
+            })
+          }
+          label="Instructions (optional)"
+          fullWidth
+          multiline
+          placeholder="Enter any instructions that may be needed to complete the purchase"
+          style={{ marginBottom: 8 }}
+        />
 
-          {setPrice && (
-            <Grid container spacing={1}>
-              <Grid item xs={6} sm={6}>
-                <FormControl
-                  error={!!errors.priceItem}
-                  fullWidth
-                  variant="outlined"
-                  size={size}
-                >
-                  <InputLabel error={!!errors.priceItem} htmlFor="item-adornment">
-                    Product Cost
-                  </InputLabel>
-                  <OutlinedInput
-                    id="item-adornment"
-                    value={price.item}
-                    type="number"
-                    onChange={(e): void => {
-                      this.setState({
-                        price: { ...price, item: parseFloat(e.target.value) },
-                        errors: { ...errors, priceItem: "" },
-                      });
-                    }}
-                    error={!!errors.priceItem}
-                    style={{ marginBottom: 8 }}
-                    startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                    labelWidth={90}
-                  />
-                </FormControl>
-                {errors?.priceItem?.length > 0 && (
-                  <Typography className={classes.error}>{errors.priceItem}</Typography>
-                )}
-              </Grid>
-              <Grid item xs={6} sm={6}>
-                <FormControl
-                  error={!!errors.priceItem}
-                  fullWidth
-                  variant="outlined"
-                  size={size}
-                >
-                  <InputLabel htmlFor="postage-adornment">Shipping Cost</InputLabel>
-                  <OutlinedInput
-                    id="postage-adornment"
-                    value={price.postage}
-                    type="number"
-                    error={!!errors.priceShipping}
-                    onChange={(e): void =>
-                      this.setState({
-                        price: { ...price, postage: parseFloat(e.target.value) },
-                        errors: { ...errors, priceShipping: "" },
-                      })
-                    }
-                    style={{ marginBottom: 8 }}
-                    startAdornment={<InputAdornment position="start">£</InputAdornment>}
-                    labelWidth={90}
-                  />
-                </FormControl>
-                {errors.priceShipping?.length > 0 && (
-                  <Typography className={classes.error}>
-                    {errors.priceShipping}
-                  </Typography>
-                )}
-              </Grid>
-            </Grid>
-          )}
-          <FeatureInput
-            size={size}
-            type={type}
-            variantIdx={variantIdx}
-            handleAddVariant={(features?): void => this.handleAddVariant(features)}
-            variantFeatures={features}
-            handleCancel={(): void =>
-              this.setState({
-                variantIdx: null,
-                dimensions: "",
-                instructions: "",
-                price: {
-                  item: 0,
-                  postage: 0,
-                },
-              })
-            }
-          />
+        {setPrice && (
           <Grid container spacing={1}>
-            {variants?.length > 0 &&
-              variants.map((variant: Variant, i: number) => (
-                <VariantCard
-                  variant={variant}
-                  i={i}
-                  key={i}
-                  variants={variants}
-                  updateVariants={updateVariants}
-                  currentFeatures={variant.features}
-                  updateVariantData={(data: UpdateVariantProps): void => {
-                    this.setState({ ...data });
+            <Grid item xs={6} sm={6}>
+              <FormControl
+                error={!!errors.priceItem}
+                fullWidth
+                variant="outlined"
+                size={size}
+              >
+                <InputLabel error={!!errors.priceItem} htmlFor="item-adornment">
+                  Product Cost
+                </InputLabel>
+                <OutlinedInput
+                  id="item-adornment"
+                  value={price.item}
+                  type="number"
+                  onChange={(e): void => {
+                    this.setState({
+                      price: { ...price, item: parseFloat(e.target.value) },
+                      errors: { ...errors, priceItem: "" },
+                    });
                   }}
+                  error={!!errors.priceItem}
+                  style={{ marginBottom: 8 }}
+                  startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                  labelWidth={90}
                 />
-              ))}
+              </FormControl>
+              {errors?.priceItem?.length > 0 && (
+                <Typography className={classes.error}>{errors.priceItem}</Typography>
+              )}
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <FormControl
+                error={!!errors.priceItem}
+                fullWidth
+                variant="outlined"
+                size={size}
+              >
+                <InputLabel htmlFor="postage-adornment">Shipping Cost</InputLabel>
+                <OutlinedInput
+                  id="postage-adornment"
+                  value={price.postage}
+                  type="number"
+                  error={!!errors.priceShipping}
+                  onChange={(e): void =>
+                    this.setState({
+                      price: { ...price, postage: parseFloat(e.target.value) },
+                      errors: { ...errors, priceShipping: "" },
+                    })
+                  }
+                  style={{ marginBottom: 8 }}
+                  startAdornment={<InputAdornment position="start">£</InputAdornment>}
+                  labelWidth={90}
+                />
+              </FormControl>
+              {errors.priceShipping?.length > 0 && (
+                <Typography className={classes.error}>{errors.priceShipping}</Typography>
+              )}
+            </Grid>
           </Grid>
-        </OutlinedContainer>
+        )}
+        <FeatureInput
+          size={size}
+          type={type}
+          variantIdx={variantIdx}
+          handleAddVariant={(features?): void => this.handleAddVariant(features)}
+          variantFeatures={features}
+          handleCancel={(): void =>
+            this.setState({
+              variantIdx: null,
+              dimensions: "",
+              instructions: "",
+              price: {
+                item: 0,
+                postage: 0,
+              },
+            })
+          }
+        />
+        <Grid container spacing={1}>
+          {variants?.length > 0 &&
+            variants.map((variant: Variant, i: number) => (
+              <VariantCard
+                variant={variant}
+                i={i}
+                key={i}
+                variants={variants}
+                updateVariants={updateVariants}
+                currentFeatures={variant.features}
+                updateVariantData={(data: UpdateVariantProps): void => {
+                  this.setState({ ...data });
+                }}
+              />
+            ))}
+        </Grid>
       </div>
     );
   }

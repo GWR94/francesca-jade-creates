@@ -32,6 +32,7 @@ export default createStyles({
     padding: 5,
     marginRight: 20,
     display: "inline-block",
+    cursor: "pointer",
   },
   logoFixed: {
     height: 40,
@@ -39,5 +40,6 @@ export default createStyles({
     padding: 5,
     position: "absolute",
     left: "calc(50% - 25px)",
+    cursor: "pointer",
   },
 });

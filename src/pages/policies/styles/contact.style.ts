@@ -7,9 +7,15 @@ export default createStyles({
     width: 120,
     margin: "0 auto",
     border: `3px solid ${COLORS.LightGray}`,
-    [breakpoints.down("sm")]: {
-      margin: "0 auto 10px",
-      float: "none",
+    [breakpoints.only("sm")]: {
+      height: 100,
+      width: 100,
+      marginBottom: 20,
+    },
+    [breakpoints.only("xs")]: {
+      height: 80,
+      width: 80,
+      marginBottom: 20,
     },
   },
   text: {

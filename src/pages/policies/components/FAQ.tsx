@@ -19,9 +19,12 @@ const FAQ = (): JSX.Element => {
       fontWeight: "bold",
       fontSize: "1.1rem",
       textAlign: "left",
+      color: "rgba(0,0,0, 0.7)",
     },
     text: {
       color: "rgba(0,0,0,0.6)",
+      marginLeft: 10,
+      textAlign: "justify",
     },
     contact: {
       width: 500,
@@ -77,64 +80,39 @@ const FAQ = (): JSX.Element => {
           </Typography>
         </div>
         <Typography variant="h6" style={{ textAlign: "left" }}>
-          Products
+          Account
         </Typography>
         <div style={{ marginLeft: 10 }}>
+          <Typography className={classes.title}>What data is stored about me?</Typography>
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            The data that is stored by us is the minimal amount possible to be able to
+            login and purchase items throughout this site. If you are logging in with a
+            social media account your name and email address will be saved. No passwords
+            or any other private data is stored on our system.
+          </Typography>
+          <Typography className={classes.title}>How can I delete my account?</Typography>
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            To delete your account you need to head over to the profile page (
+            <Link to="/profile">here</Link>) and click on the &quot;Delete Account&quot;
+            button at the bottom of the page, next to &quot;Edit Profile&quot;.
+          </Typography>
           <Typography className={classes.title}>
-            What ingredients are used to create your cakes?
+            Does deleting my account remove my data?
           </Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
-          </Typography>
-          <Typography className={classes.title}>
-            What materials are used to create your frames?
-          </Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            Deleting your account will remove all of your personal data from our database,
+            and your account will be removed, so you will be unable to login and place
+            another order without creating a new account.
           </Typography>
         </div>
         <Typography variant="h6" style={{ textAlign: "left" }}>
-          Shipping & Orders
+          Shipping
         </Typography>
         <div style={{ marginLeft: 10 }}>
           <Typography className={classes.title}>What is your return policy?</Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
-          </Typography>
-          <Typography className={classes.title}>
-            What are the shipping options?
-          </Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
-          </Typography>
-          <Typography className={classes.title}>What is your return policy?</Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            Returns are not accepted, however if there are any problems or faults with
+            your order we will be happy to correct them where necessary.
           </Typography>
           <Typography className={classes.title}>Do you ship internationally?</Typography>
           <Typography variant="body1" gutterBottom className={classes.text}>
@@ -143,13 +121,11 @@ const FAQ = (): JSX.Element => {
             <a href="/">here</a>.
           </Typography>
           <Typography className={classes.title}>When will I receive my item?</Typography>
-          <Typography
-            variant="body1"
-            gutterBottom
-            style={{ color: "red" }}
-            className={classes.text}
-          >
-            .......
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            Once we have received your order product creation will begin within 24-48
+            hours. Once your order has been completed you will be notified of this, and
+            your order will be dispatched via a courier and should be with you within 2
+            days.
           </Typography>
         </div>
         <div className={classes.contact}>

@@ -10,23 +10,18 @@ export default createStyles({
     minHeight: "calc(100vh - 54px)",
   },
   headingText: {
-    fontFamily: FONTS.Text,
-    fontSize: "2.8rem",
+    fontFamily: "Satisfy, cursive",
+    fontSize: "3rem",
     fontWeight: "bold",
     textAlign: "left",
-    [breakpoints.down("lg")]: {
-      fontSize: "2.6rem",
-    },
     [breakpoints.down("md")]: {
       fontSize: "2.4rem",
     },
-    // [breakpoints.down("sm")]: {
-    //   fontSize: "2.1rem",
-    // },
   },
   subheadingText: {
     color: "rgba(0,0,0,0.7)",
     lineHeight: 1.1,
+    marginLeft: 10,
     fontSize: "1.4rem",
     fontFamily: FONTS.Title,
     textAlign: "left",
@@ -51,7 +46,7 @@ export default createStyles({
     fontWeight: "bold",
     textAlign: "center",
     fontFamily: FONTS.Title,
-    color: "rgba(0,0,0,0.8)",
+    color: "rgba(0,0,0,0.7)",
     [breakpoints.down("md")]: {
       fontSize: "1rem",
     },

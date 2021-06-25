@@ -1,6 +1,6 @@
 import { Container, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import { breakpoints } from "../../../themes";
+import { breakpoints, COLORS } from "../../../themes";
 import ProductsList from "./ProductsList";
 
 interface CakesProps {
@@ -13,32 +13,32 @@ const Cakes = ({ admin }: CakesProps): JSX.Element => {
       margin: "10px auto 20px",
       textAlign: "justify",
       lineHeight: 1.2,
-      width: 800,
+      width: "80%",
       [breakpoints.down("md")]: {
-        width: 620,
-      },
-      [breakpoints.down("sm")]: {
         width: "90%",
       },
+    },
+    title: {
+      paddingTop: 12,
+      paddingBottom: 5,
+      position: "relative",
+      margin: "0 auto 20px",
+      width: 200,
+      borderBottom: `3px solid ${COLORS.DarkPink}`,
+      textAlign: "center",
     },
   });
   const classes = useStyles();
   return (
     <div className="content-container">
       <Container>
-        <Typography
-          variant="h4"
-          style={{
-            paddingTop: 12,
-          }}
-        >
-          Cakes
+        <Typography variant="h4" className={classes.title}>
+          PERSONALISED CAKES
         </Typography>
         <Typography variant="subtitle1" className={classes.text}>
-          All of our delicious cakes are baked with love on-site, using natural
-          ingredients, and are fully customisable and ready to request. Whether you want
-          some chocolate cupcakes for a party, or a princess themed birthday cake - just
-          send a request and we&apos;ll get back to you as soon as possible with a quote!
+          Delicious hand-baked cakes for every occasion, whether it be a birthday cake for
+          a kids birthday party, or a cake in celebration of an anniversary - we&apos;ve
+          got you covered with our large selection of personalisable cakes!
         </Typography>
         <Typography
           variant="subtitle2"

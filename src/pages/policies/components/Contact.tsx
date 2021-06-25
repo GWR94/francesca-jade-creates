@@ -30,15 +30,6 @@ const Contact = (): JSX.Element => {
               <Avatar alt="Francesca Jade" src={avatar} className={classes.avatar} />
             </Grid>
             <Grid item xs={12} sm={9}>
-              <Typography
-                className={classes.overview}
-                style={{
-                  marginBottom: 5,
-                  color: "red",
-                }}
-              >
-                Hi, i&apos;m ......... and I ........
-              </Typography>
               <Typography className={classes.overview}>
                 If you have any questions or queries, please get in touch and we&apos;ll
                 be happy to help. Feel free to contact us via any of the methods below and

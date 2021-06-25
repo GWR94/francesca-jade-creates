@@ -69,16 +69,6 @@ const Links: React.FC<LinksProps> = ({
     <div className={mobile ? classes.mobileLinks : classes.links}>
       <div className={mobile ? classes.navMobile : classes.navLeft}>
         <NavLink
-          to="/"
-          exact
-          activeClassName={classes.linkActive}
-          className={classes.link}
-          onClick={handleLinkClick}
-        >
-          <HomeRounded className={classes.navIcon} />
-          Home
-        </NavLink>
-        <NavLink
           to="/cakes"
           activeClassName={classes.linkActive}
           className={classes.link}
@@ -96,8 +86,6 @@ const Links: React.FC<LinksProps> = ({
           <BrushRounded className={classes.navIcon} />
           Creations
         </NavLink>
-      </div>
-      <div className={mobile ? classes.navMobile : classes.navRight}>
         <NavLink
           to="/themes"
           activeClassName={classes.linkActive}
@@ -107,6 +95,8 @@ const Links: React.FC<LinksProps> = ({
           <LocalOfferRounded className={classes.navIcon} />
           Themes
         </NavLink>
+      </div>
+      <div className={mobile ? classes.navMobile : classes.navRight}>
         {user ? (
           <>
             <div
@@ -131,7 +121,6 @@ const Links: React.FC<LinksProps> = ({
         ) : (
           <Login
             props={{
-              // @ts-ignore
               classOverride: navOpen ? classes.linkActiveDiv : classes.link,
               text: "Sign in",
               color: "inherit",
