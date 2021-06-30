@@ -30,20 +30,20 @@ const ThemeTile: React.FC<ThemeTileProps> = ({
       tabIndex={0}
       onMouseOver={(): void => handleHoverChange(id)}
       onFocus={(): void => handleHoverChange(id)}
+      onTouchStart={(): void => handleHoverChange(id)}
       onBlur={(): void => handleHoverChange(id, true)}
       onMouseLeave={(): void => handleHoverChange(id, true)}
+      onTouchEnd={(): void => handleHoverChange(id, true)}
     >
       <div
         // @ts-ignore
         className={`${classes.wrap} ${classes[tileClass]}`}
-        onMouseEnter={(): void => {
-          setHovering(true);
-        }}
+        onMouseEnter={(): void => setHovering(true)}
         onFocus={(): void => setHovering(true)}
+        onTouchStart={(): void => setHovering(true)}
         onBlur={(): void => setHovering(false)}
         onMouseLeave={(): void => setHovering(false)}
-        onTouchStart={(): void => setHovering(true)}
-        onTouchCancel={(): void => setHovering(false)}
+        onTouchEnd={(): void => setHovering(false)}
       >
         <div className={classes.text}>
           <Typography className={classes.title}>{title}</Typography>

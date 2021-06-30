@@ -13,341 +13,153 @@ const PopularThemes: React.FC<PopularThemesProps> = ({ switchToSearch }): JSX.El
   const classes = useStyles();
 
   const mobile = useMediaQuery(breakpoints.down("md"));
-  const xs = useMediaQuery(breakpoints.down("xs"));
 
   const handleHoverChange = (id: string, isLeaving = false): void => {
     // if user is on an extra small mobile screen, don't change the class/show animations
-    if (xs) return;
+    if (mobile) return;
     switch (id) {
       case "tile-brands":
-        // if the user is on a regular mobile screen then add class styles/animations for 2 images
-        if (mobile) {
-          // add class when user hovers/focus' with div
-          if (!isLeaving) {
-            document
-              .getElementById("tile-brands")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-love")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-brands")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-love")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-family")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-brands")?.classList.add(classes.containerLarge);
-            document.getElementById("tile-love")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-family")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document
+            .getElementById("tile-brands")
+            ?.classList.remove(classes.containerLarge);
+          document.getElementById("tile-love")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-family")
+            ?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-baby")?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-love":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-love")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-brands")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-love")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-family")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-love")?.classList.add(classes.containerLarge);
-            document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-family")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document.getElementById("tile-love")?.classList.remove(classes.containerLarge);
+          document
+            .getElementById("tile-brands")
+            ?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-family")
+            ?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-baby")?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-family":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-family")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-baby")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-family")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-love")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-family")?.classList.add(classes.containerLarge);
-            document.getElementById("tile-baby")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-love")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document
+            .getElementById("tile-family")
+            ?.classList.remove(classes.containerLarge);
+          document.getElementById("tile-baby")?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-love")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-brands")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-baby":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-baby")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-family")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-baby")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-love")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-family")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-baby")?.classList.add(classes.containerLarge);
-            document.getElementById("tile-brands")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-love")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-family")?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-baby")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-brands")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-love")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-family")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document.getElementById("tile-baby")?.classList.remove(classes.containerLarge);
+          document
+            .getElementById("tile-brands")
+            ?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-love")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-family")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-kids":
-        if (mobile) {
-          // add class when user hovers/focus' with div
-          if (!isLeaving) {
-            document
-              .getElementById("tile-kids")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-kids")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-birthday")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-friends")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-kids")?.classList.add(classes.containerLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerSmall);
-            document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document.getElementById("tile-kids")?.classList.remove(classes.containerLarge);
+          document
+            .getElementById("tile-birthday")
+            ?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-memory")
+            ?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-friends")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-birthday":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-kids")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-birthday")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-friends")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerLarge);
-            document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document
+            .getElementById("tile-birthday")
+            ?.classList.remove(classes.containerLarge);
+          document.getElementById("tile-kids")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-memory")
+            ?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-friends")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-memory":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-memory")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-memory")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-birthday")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-friends")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document.getElementById("tile-memory")?.classList.add(classes.containerLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerSmall);
-            document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document
+            .getElementById("tile-memory")
+            ?.classList.remove(classes.containerLarge);
+          document
+            .getElementById("tile-birthday")
+            ?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-kids")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-friends")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
       case "tile-friends":
-        if (mobile) {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerTwoLarge);
-            document
-              .getElementById("tile-memory")
-              ?.classList.add(classes.containerTwoSmall);
-          } else {
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerTwoLarge);
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerTwoSmall);
-          }
+        if (!isLeaving) {
+          document.getElementById("tile-friends")?.classList.add(classes.containerLarge);
+          document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
+          document.getElementById("tile-birthday")?.classList.add(classes.containerSmall);
         } else {
-          if (!isLeaving) {
-            document
-              .getElementById("tile-friends")
-              ?.classList.add(classes.containerLarge);
-            document.getElementById("tile-memory")?.classList.add(classes.containerSmall);
-            document.getElementById("tile-kids")?.classList.add(classes.containerSmall);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.add(classes.containerSmall);
-          } else {
-            document
-              .getElementById("tile-friends")
-              ?.classList.remove(classes.containerLarge);
-            document
-              .getElementById("tile-memory")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-kids")
-              ?.classList.remove(classes.containerSmall);
-            document
-              .getElementById("tile-birthday")
-              ?.classList.remove(classes.containerSmall);
-          }
+          document
+            .getElementById("tile-friends")
+            ?.classList.remove(classes.containerLarge);
+          document
+            .getElementById("tile-memory")
+            ?.classList.remove(classes.containerSmall);
+          document.getElementById("tile-kids")?.classList.remove(classes.containerSmall);
+          document
+            .getElementById("tile-birthday")
+            ?.classList.remove(classes.containerSmall);
         }
         break;
     }

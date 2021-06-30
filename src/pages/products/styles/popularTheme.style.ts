@@ -160,6 +160,7 @@ export default createStyles({
   wrap: {
     position: "relative",
     height: "100%",
+    width: "100%",
     backgroundSize: "cover",
     "&:before": {
       backgroundSize: "cover",
