@@ -1,6 +1,5 @@
-import { COLORS } from "./../../themes/index";
 import { createStyles } from "@material-ui/core";
-import { FONTS, breakpoints } from "../../themes";
+import { COLORS, FONTS, breakpoints } from "../../themes/index";
 
 export default createStyles({
   card: {
@@ -11,7 +10,7 @@ export default createStyles({
     position: "relative",
     margin: "0 auto",
     width: "100%",
-    WebkitTapHighlightColor: COLORS.P,
+    WebkitTapHighlightColor: COLORS.Pink,
     "@media (max-width: 599px)": {
       width: 320,
     },
@@ -27,21 +26,22 @@ export default createStyles({
     width: "100%",
   },
   price: {
-    textAlign: "left",
-    fontStyle: "italic",
+    textAlign: "center",
+    fontWeight: 200,
+    textTransform: "uppercase",
     fontSize: "0.8rem",
+    color: "rgba(0,0,0,0.7)",
     fontFamily: FONTS.Title,
     marginTop: 5,
   },
   tagline: {
-    textAlign: "left",
+    textAlign: "center",
     fontSize: "1rem",
     marginTop: -2,
   },
   title: {
-    textAlign: "left",
+    textAlign: "center",
     fontSize: "1.2rem",
-    paddingRight: 20,
     fontWeight: "bold",
     [breakpoints.down("sm")]: {
       fontSize: "1.1rem",

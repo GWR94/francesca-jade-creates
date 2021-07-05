@@ -53,29 +53,17 @@ export default createStyles({
       height: 200,
     },
   },
-  containerLarge: {
+  containerLG: {
     width: "40% !important",
     transition: "width 500ms, background-size 500ms",
     height: 300,
     cursor: "pointer",
   },
-  containerSmall: {
+  containerXS: {
     width: "20% !important",
     transition: "width 500ms, background-size 500ms",
     cursor: "pointer",
     height: 300,
-  },
-  containerTwoLarge: {
-    width: "65% !important",
-    height: 300,
-    cursor: "pointer",
-    transition: "width 500ms, background-size 500ms",
-  },
-  containerTwoSmall: {
-    width: "35% !important",
-    height: 300,
-    cursor: "pointer",
-    transition: "width 500ms, background-size 500ms",
   },
   brands: {
     background: `linear-gradient(to bottom, rgba(168, 50, 50, 0.32), rgba(138, 0, 0, 0.32)),

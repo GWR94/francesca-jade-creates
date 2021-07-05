@@ -121,7 +121,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
         <CardHeader
           classes={{
             title: classes.headerContainer,
-            // content: classes.content,
             root: classes.root,
             content: classes.cardContent,
           }}
@@ -172,7 +171,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }): JSX.Element => {
               </div>
             ) : (
               <div className={classes.content}>
-                <Typography className={classes.title}>{title}</Typography>
+                <Typography
+                  className={classes.title}
+                  style={{ paddingRight: admin ? 20 : 0 }}
+                >
+                  {title}
+                </Typography>
                 <Typography className={classes.tagline}>{tagline || ""}</Typography>
                 <Typography className={classes.price}>{handleGetPrices()}</Typography>
               </div>
