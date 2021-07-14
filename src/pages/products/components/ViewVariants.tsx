@@ -57,6 +57,9 @@ const ViewVariants = ({
       <Typography variant="h6" style={{ textAlign: "center" }}>
         Product Description
       </Typography>
+      <Typography style={{ textAlign: "center", marginBottom: 12 }}>
+        Check out the product details and customisable features below.
+      </Typography>
       {userShouldPickVariant && variants.length > 1 && (
         <div>
           <Typography variant="subtitle2">
@@ -131,7 +134,7 @@ const ViewVariants = ({
                 <Typography className={classes.title}>Customisable Features</Typography>
                 <ul style={{ margin: 0, paddingLeft: 33 }}>
                   {currentVariant.features.map((feature) => {
-                    return <li style={{ fontStyle: "italic" }}>{feature.name}</li>;
+                    return <li style={{ color: "rgba(0,0,0,0.7)" }}>{feature.name}</li>;
                   })}
                 </ul>
               </div>
@@ -144,7 +147,7 @@ const ViewVariants = ({
                 <ul style={{ margin: 0, paddingLeft: 33 }}>
                   {customOptions.map((option, i) => {
                     return (
-                      <li key={i} style={{ fontStyle: "italic" }}>
+                      <li key={i} style={{ color: "rgba(0,0,0,0.7)" }}>
                         {option}
                       </li>
                     );

@@ -78,46 +78,49 @@ const Footer = (): JSX.Element | null => {
       </Grid>
       <div className={classes.socialsContainer}>
         <Tooltip title="Francesca Jade Creates Facebook" arrow>
-          <i
-            className={`fab fa-facebook ${classes.icon}`}
-            onClick={(): void => {
-              window.location.href = "https://www.facebook.com/francescajadecreates/";
-            }}
-            role="button"
-            tabIndex={0}
-          />
+          <a
+            href="https://www.facebook.com/francescajadecreates/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className={`fab fa-facebook ${classes.icon}`}
+              style={{ color: "#3b5998" }}
+            />
+          </a>
         </Tooltip>
         <Tooltip title="Francesca Jade Creates Instagram" arrow>
-          <i
-            className={`fab fa-instagram ${classes.icon}`}
-            onClick={(): void => {
-              window.location.href = "https://www.instagram.com/francescajadecreates/";
-            }}
-            role="button"
-            tabIndex={0}
-            style={{ color: COLORS.DarkGrey }}
-          />
+          <a
+            href="https://www.instagram.com/FrancescaJadeCreates/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className={`fab fa-instagram ${classes.icon}`}
+              style={{ color: COLORS.DarkGrey }}
+            />
+          </a>
         </Tooltip>
         <Tooltip title="Francesca Jade Cakes Instagram" arrow>
-          <i
-            className={`fab fa-instagram ${classes.icon}`}
-            onClick={(): void => {
-              window.location.href = "https://www.instagram.com/francescajadecakes/";
-            }}
-            role="button"
-            style={{ color: COLORS.DarkPink }}
-            tabIndex={0}
-          />
+          <a
+            href="https://www.instagram.com/FrancescaJadeCakes/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className={`fab fa-instagram ${classes.icon}`}
+              style={{ color: COLORS.DarkPink }}
+            />
+          </a>
         </Tooltip>
         <Tooltip title="Francesca Jade Creates Etsy" arrow>
-          <i
-            className={`fab fa-etsy ${classes.icon}`}
-            onClick={(): void => {
-              window.location.href = "https://www.etsy.com/uk/shop/FrancescaJadeCreates";
-            }}
-            role="button"
-            tabIndex={0}
-          />
+          <a
+            href="https://www.etsy.com/uk/shop/FrancescaJadeCreates"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className={`fab fa-etsy ${classes.icon}`} style={{ color: "#D5641C" }} />
+          </a>
         </Tooltip>
       </div>
       <a

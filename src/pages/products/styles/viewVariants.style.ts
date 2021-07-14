@@ -5,7 +5,7 @@ const breakpoints = createBreakpoints({});
 
 export default createStyles({
   variantContainer: {
-    width: "70%",
+    width: "80%",
     margin: "0 auto",
     [breakpoints.down("sm")]: {
       width: "100%",
@@ -22,7 +22,7 @@ export default createStyles({
     flexWrap: "nowrap",
   },
   info: {
-    fontStyle: "italic",
+    color: "rgba(0,0,0,0.7)",
     marginLeft: 6,
   },
   featureContainer: {
@@ -31,7 +31,7 @@ export default createStyles({
     flexDirection: "column",
   },
   title: {
-    textDecoration: "underline",
+    fontWeight: 800,
   },
   iconTextContainer: {
     display: "inline-flex",
