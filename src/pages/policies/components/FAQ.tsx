@@ -62,8 +62,8 @@ const FAQ = (): JSX.Element => {
           <Typography variant="body1" gutterBottom className={classes.text}>
             If you need to make any changes to an order that has already been completed,
             please email us as soon as possible to let us know about any changes at{" "}
-            <a href="mailto:contact@francescajadecreates.com">
-              contact@francescajadecreates.com
+            <a href="mailto:contact@francescajadecreates.co.uk">
+              contact@francescajadecreates.co.uk
             </a>
             . Any changes that are requested after a product has started being created may
             incur additional charges.
@@ -126,6 +126,20 @@ const FAQ = (): JSX.Element => {
             hours. Once your order has been completed you will be notified of this, and
             your order will be dispatched via a courier and should be with you within 2
             days.
+          </Typography>
+        </div>
+        <Typography variant="h6" style={{ textAlign: "left" }}>
+          Nutritional Information
+        </Typography>
+        <div style={{ marginLeft: 10 }}>
+          <Typography className={classes.title}>
+            Do you cater for allergies and intolerance?
+          </Typography>
+          <Typography variant="body1" gutterBottom className={classes.text}>
+            We are currently in the process of creating gluten and dairy free cakes,
+            however they are not currently available at this time. They will be able to
+            purchase from &quot;Cakes&quot; in the near future, so keep an eye out for
+            them!
           </Typography>
         </div>
         <div className={classes.contact}>
