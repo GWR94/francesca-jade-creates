@@ -93,7 +93,7 @@ const FAQ = (): JSX.Element => {
           <Typography className={classes.title}>How can I delete my account?</Typography>
           <Typography variant="body1" gutterBottom className={classes.text}>
             To delete your account you need to head over to the profile page (
-            <Link to="/profile">here</Link>) and click on the &quot;Delete Account&quot;
+            <Link to="/account">here</Link>) and click on the &quot;Delete Account&quot;
             button at the bottom of the page, next to &quot;Edit Profile&quot;.
           </Typography>
           <Typography className={classes.title}>

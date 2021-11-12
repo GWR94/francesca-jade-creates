@@ -23,7 +23,7 @@ const AccountsPage: React.FC<AccountsPageProps> = ({
   user,
   userAttributes,
   admin,
-}): JSX.Element => {
+}: AccountsPageProps): JSX.Element => {
   const dispatch = useDispatch();
   const { currentTab } = useSelector(({ user }: AppState) => user);
   const renderCurrentTab = (): JSX.Element | null => {
