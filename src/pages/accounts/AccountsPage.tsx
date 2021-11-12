@@ -6,6 +6,7 @@ import {
   CreateTwoTone,
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import * as actions from "../../actions/user.actions";
 import AdminProducts from "./components/AdminProducts";
 import Profile from "./components/Profile";
@@ -14,6 +15,7 @@ import Orders from "./components/Orders";
 import AdminOrders from "./components/AdminOrders";
 import { AccountsPageProps } from "./interfaces/Accounts.i";
 import { AppState } from "../../store/store";
+import { openSnackbar } from "../../utils/Notifier";
 
 /**
  * Class component to group together all of the components that are used to control the users'
@@ -25,9 +27,20 @@ const AccountsPage: React.FC<AccountsPageProps> = ({
   admin,
 }: AccountsPageProps): JSX.Element => {
   const dispatch = useDispatch();
+  const history = useHistory();
+
+  if (!user) {
+    openSnackbar({
+      severity: "error",
+      message: "Please sign in to view your account page.",
+    });
+    history.push("/");
+  }
+
   const { currentTab } = useSelector(({ user }: AppState) => user);
   const renderCurrentTab = (): JSX.Element | null => {
     let tab: JSX.Element | null;
+    if (!user) return null;
     switch (currentTab) {
       case "profile":
         tab = <Profile user={user} userAttributes={userAttributes} />;

@@ -31,7 +31,7 @@ export interface CognitoUserProps {
 
 export interface AccountsPageProps {
   userAttributes: UserAttributeProps | null;
-  user: CognitoUserProps;
+  user: CognitoUserProps | null;
   admin: boolean;
 }
 

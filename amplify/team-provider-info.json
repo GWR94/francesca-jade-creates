@@ -9,7 +9,8 @@
       "UnauthRoleName": "amplify-francescajadecreates-staging-102644-unauthRole",
       "StackName": "amplify-francescajadecreates-staging-102644",
       "StackId": "arn:aws:cloudformation:eu-west-2:971259243149:stack/amplify-francescajadecreates-staging-102644/b6b9cbb0-0ada-11eb-8208-064437b396a4",
-      "AmplifyAppId": "dgbwgsahmq4wg"
+      "AmplifyAppId": "dgbwgsahmq4wg",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-francescajadecreates-staging-102644-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
@@ -30,7 +31,7 @@
         },
         "api": {
           "deploymentBucketName": "amplify-francescajadecreates-staging-102644-deployment",
-          "s3Key": "amplify-builds/api-7567302f5a6f496d4f54-build.zip"
+          "s3Key": "amplify-builds/api-69456d74375034674542-build.zip"
         }
       }
     }

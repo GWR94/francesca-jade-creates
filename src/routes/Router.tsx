@@ -262,17 +262,13 @@ class AppRouter extends React.Component<RouterProps> {
                 <Route
                   path="/account"
                   exact
-                  component={(): JSX.Element =>
-                    user ? (
-                      <AccountsPage
-                        admin={this.admin}
-                        userAttributes={userAttributes}
-                        user={user}
-                      />
-                    ) : (
-                      <Redirect to="/" />
-                    )
-                  }
+                  component={(): JSX.Element => (
+                    <AccountsPage
+                      admin={this.admin}
+                      userAttributes={userAttributes}
+                      user={user}
+                    />
+                  )}
                 />
                 <Route
                   path="/account/:id"
